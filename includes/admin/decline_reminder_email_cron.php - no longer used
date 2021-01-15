@@ -1,0 +1,128 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+// Send emails to 
+
+global $current_user, $wpscfunction, $wpdb;
+
+
+//Get term_ids for Decline status slugs - OLD
+/*
+$status_decline_initiated_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-initiated' );	 
+$status_decline_shipped_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-shipped' ); 
+$status_decline_pending_cancel_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-pending-cancel' );
+$status_decline_shipped_back_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-shipped-back' ); 
+$status_decline_complete_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-complete' ); 
+$status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' ); 
+*/
+
+
+
+//Get term_ids for Decline status slugs
+if( !taxonomy_exists('wppatt_return_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wppatt_return_statuses', 'wpsc_ticket', $args );
+} 
+
+$status_decline_initiated_term_id = get_term_by( 'slug', 'decline-initiated', 'wppatt_return_statuses' );	 
+$status_decline_shipped_term_id = get_term_by( 'slug', 'decline-shipped', 'wppatt_return_statuses' ); 
+$status_decline_pending_cancel_term_id = get_term_by( 'slug', 'decline-pending-cancel', 'wppatt_return_statuses' );
+$status_decline_shipped_back_term_id = get_term_by( 'slug', 'decline-shipped-back', 'wppatt_return_statuses' ); 
+$status_decline_complete_term_id = get_term_by( 'slug', 'decline-complete', 'wppatt_return_statuses' ); 
+$status_decline_cancelled_term_id = get_term_by( 'slug', 'decline-cancelled', 'wppatt_return_statuses' ); 
+
+
+
+
+
+
+// Get today's date
+// Set dates
+$current_datetime = date("yy-m-d"); 
+$two_weeks_ago = Date('yy-m-d', strtotime('-14 days'));
+$four_weeks_ago = Date('yy-m-d', strtotime('-30 days'));
+
+// Notifications for Digitization Staff to ship the Declined Boxes back to the Requester.
+// Get all entries that have not yet shipped and expire today
+$declines_expired_today = $wpdb->get_results(
+	"SELECT
+	    *
+	FROM
+	    wpqa_wpsc_epa_return
+	WHERE
+	    (
+	        return_date LIKE '" . $two_weeks_ago . "%' OR return_date LIKE '" . $four_weeks_ago . "%'
+	    ) AND return_status_id = " . $status_decline_initiated_term_id .  " "
+);
+
+
+// Loop through each Decline Initiated and send the appropriate notification
+foreach ( $declines_expired_today as $decline ) {
+	
+	// Two Week & Four Week notification
+	if( strpos( $decline->return_status_id, $two_weeks_ago ) !== false ) {
+		
+		$notification_post = 'email-decline-2-week';
+		
+	} elseif( strpos( $decline->return_status_id, $four_weeks_ago ) !== false ) {
+		
+		$notification_post = 'email-decline-4-week';
+		
+	}
+	
+
+	// Set PM Notifications 
+	
+	// Get ticket_id based on return_id
+	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $decline->return_id );
+	
+	// Get owner of ticket. 
+	$where = [ 'ticket_id' => $ticket_id ];
+	$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
+	
+	// Get all users on Decline (currently only the person who submitted it, and no way to add others)
+	$where = [ 'return_id' => $decline->return_id ]; // format: '0000002'
+	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
+	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
+	
+	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
+	$role_array_requester = [ 'Requester' ];
+	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $requestor_agent_id_array, $role_array_requester);
+	
+	// Combine Requester on Request with Requesters on Decline
+	$pattagentid_array = array_merge( $agent_id_array, $agent_id_requesters_array );
+	$pattagentid_array = array_unique( $pattagentid_array );
+	
+	$requestid = 'D-' . $decline->return_id; 
+	
+	$data = [
+        'item_id' => $requestid
+    ];
+	$email = 1;
+		
+	// PM Notification to the Requestor / owner
+	
+// 	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $agent_id_array, $requestid, $data, $email );
+	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+	
+	// UNo need to update the DB. As doing math from created date ( un-intuitively: return_date )
+	$where = [ 'id' => $recall->id ];
+	$current_datetime = date("yy-m-d H:i:s");
+ 	$data = [ 'expiration_date' => $expiration_date ]; 
+	//Patt_Custom_Func::update_recall_data( $data, $where );
+	
+}
+
+
+
+
+
+
+
+?>

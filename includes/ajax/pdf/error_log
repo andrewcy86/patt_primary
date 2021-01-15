@@ -1,0 +1,496 @@
+[27-Oct-2020 17:59:13 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[27-Oct-2020 17:59:13 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[28-Oct-2020 20:19:47 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 65 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 12:10:59 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 68 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:07 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:07 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:40 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:40 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:50 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 2 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:55 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 3 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:20:55 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 3 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:21:26 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 68 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:21:41 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 69 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:21:49 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 70 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:25:18 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:25:19 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:25:31 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:25:31 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:27:09 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 20:27:09 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:07:17 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:07:17 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:07:25 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 68 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:07:38 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 2 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:07:47 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 7 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:08:22 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[29-Oct-2020 23:08:22 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 10:56:46 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 10:56:47 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 10:58:31 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 10:58:31 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:37:00 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:37:00 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:44:38 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 70 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:44:50 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:44:50 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 11:44:58 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 71 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:33:03 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:33:03 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:34:24 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 71 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:34:39 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 71 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:53:10 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 69 LIMIT 1; made by PATT_DB->get_row
+[30-Oct-2020 12:53:22 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 73 LIMIT 1; made by PATT_DB->get_row
+[02-Nov-2020 12:10:33 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 73 LIMIT 1; made by PATT_DB->get_row
+[02-Nov-2020 12:10:33 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[02-Nov-2020 12:10:33 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[02-Nov-2020 21:04:35 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '0000099-2,0000099-3' at line 11 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE
+        wpqa_wpsc_epa_storage_location.aisle <> 0 AND 
+        wpqa_wpsc_epa_storage_location.bay <> 0 AND 
+        wpqa_wpsc_epa_storage_location.shelf <> 0 AND 
+        wpqa_wpsc_epa_storage_location.position <> 0 AND 
+        wpqa_wpsc_epa_storage_location.digitization_center <> 666 AND
+        wpqa_wpsc_epa_boxinfo.ticket_id = 0000099-1,0000099-2,0000099-3 made by fetch_location
+[02-Nov-2020 21:04:35 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000099-1'
+[02-Nov-2020 21:04:35 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000099-2'
+[02-Nov-2020 21:04:35 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000099-3'
+[03-Nov-2020 12:28:02 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 6 LIMIT 1; made by PATT_DB->get_row
+[03-Nov-2020 12:31:27 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 6 LIMIT 1; made by PATT_DB->get_row
+[03-Nov-2020 20:56:35 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 105 LIMIT 1; made by PATT_DB->get_row
+[03-Nov-2020 20:56:45 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 105 LIMIT 1; made by PATT_DB->get_row
+[04-Nov-2020 17:28:50 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 105 LIMIT 1; made by PATT_DB->get_row
+[16-Nov-2020 18:38:16 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+       ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000036-1'
+[16-Nov-2020 18:43:04 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+       ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000036-1'
+[16-Nov-2020 18:46:54 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 36 LIMIT 1; made by PATT_DB->get_row
+[16-Nov-2020 18:59:35 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+       ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000036-2'
+[16-Nov-2020 19:03:31 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+       ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000036-2'
+[16-Nov-2020 19:07:06 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+       ...' at line 3 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc  _epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000036-2'
+[23-Nov-2020 21:32:25 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 116 LIMIT 1; made by PATT_DB->get_row
+[16-Dec-2020 20:08:10 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 1 LIMIT 1; made by PATT_DB->get_row
+[17-Dec-2020 20:16:42 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 2 LIMIT 1; made by PATT_DB->get_row
+[29-Dec-2020 15:01:37 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 8 LIMIT 1; made by PATT_DB->get_row
+[29-Dec-2020 15:01:49 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 8 LIMIT 1; made by PATT_DB->get_row
+[29-Dec-2020 15:02:14 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 8 LIMIT 1; made by PATT_DB->get_row
+[29-Dec-2020 15:39:37 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 8 LIMIT 1; made by PATT_DB->get_row
+[29-Dec-2020 16:47:49 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_program_office.office_acronym' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_ticket   WHERE id = 8 LIMIT 1; made by PATT_DB->get_row
+[30-Dec-2020 15:54:16 UTC] WordPress database error Unknown column 'wpqa_wpsc_epa_folderdocinfo.title' in 'field list' for query SELECT wpqa_wpsc_epa_program_office.office_acronym as program_office, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_boxinfo.lan_id as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office  
+WHERE 
+wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
+wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND 
+wpqa_wpsc_epa_boxinfo.record_schedule_id = 150 AND
+wpqa_wpsc_epa_boxinfo.ticket_id = 8
+[30-Dec-2020 18:06:26 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT title
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location 
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND 
+        ((index_level = 1 AND freeze = 1) OR (index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        wpqa_wpsc_epa_boxinfo.ticket_id = 2 made by fetch_title
+[30-Dec-2020 18:06:30 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 4
+[30-Dec-2020 18:06:30 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 5
+[30-Dec-2020 18:06:30 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 6
+[30-Dec-2020 18:09:37 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
+        wp...' at line 4 for query SELECT title
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
+        wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND 
+        ((index_level = 1 AND freeze = 1) OR (index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        wpqa_wpsc_epa_boxinfo.ticket_id = 2 made by fetch_title
+[30-Dec-2020 18:21:49 UTC] WordPress database error Unknown column 'a.aisle' in 'where clause' for query SELECT a.folderdocinfo_id 
+        FROM wpqa_wpsc_epa_folderdocinfo a 
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.id = a.box_id
+        INNER JOIN wpqa_wpsc_epa_storage_location c ON c.id = b.storage_location_id
+        WHERE ((a.index_level = 1 AND a.freeze = 1) OR 
+        (a.index_level = 1 AND a.aisle <> 0 AND a.bay <> 0 AND a.shelf <> 0 AND a.position <> 0 AND a.digitization_center <> 666)) AND 
+        b.ticket_id = 2 made by fetch_folderdocinfo
+[30-Dec-2020 18:21:58 UTC] WordPress database error Unknown column 'a.aisle' in 'where clause' for query SELECT a.folderdocinfo_id 
+        FROM wpqa_wpsc_epa_folderdocinfo a 
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.id = a.box_id
+        INNER JOIN wpqa_wpsc_epa_storage_location c ON c.id = b.storage_location_id
+        WHERE ((a.index_level = 1 AND a.freeze = 1) OR 
+        (a.index_level = 1 AND a.aisle <> 0 AND a.bay <> 0 AND a.shelf <> 0 AND a.position <> 0 AND a.digitization_center <> 666)) AND 
+        b.ticket_id = 2 made by fetch_folderdocinfo
+[30-Dec-2020 18:22:10 UTC] WordPress database error Unknown column 'a.aisle' in 'where clause' for query SELECT a.folderdocinfo_id 
+        FROM wpqa_wpsc_epa_folderdocinfo a 
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.id = a.box_id
+        INNER JOIN wpqa_wpsc_epa_storage_location c ON c.id = b.storage_location_id
+        WHERE ((a.index_level = 1 AND a.freeze = 1) OR 
+        (a.index_level = 1 AND a.aisle <> 0 AND a.bay <> 0 AND a.shelf <> 0 AND a.position <> 0 AND a.digitization_center <> 666)) AND 
+        b.ticket_id = 2 made by fetch_folderdocinfo
+[30-Dec-2020 18:24:00 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 4
+[30-Dec-2020 18:24:00 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 5
+[30-Dec-2020 18:24:00 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = 6
+[04-Jan-2021 19:52:43 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '0000001-2' at line 11 for query 
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE
+        wpqa_wpsc_epa_storage_location.aisle <> 0 AND 
+        wpqa_wpsc_epa_storage_location.bay <> 0 AND 
+        wpqa_wpsc_epa_storage_location.shelf <> 0 AND 
+        wpqa_wpsc_epa_storage_location.position <> 0 AND 
+        wpqa_wpsc_epa_storage_location.digitization_center <> 666 AND
+        wpqa_wpsc_epa_boxinfo.ticket_id = 0000001-1,0000001-2 made by fetch_location
+[08-Jan-2021 19:53:00 UTC] WordPress database error execute command denied to user 'acy3_wp4'@'localhost' for routine 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id' for query SELECT wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        ((wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND wpqa_wpsc_epa_folderdocinfo_files.freeze = 1) OR (wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        folderdocinfo_id = '0000001-1-01-1'
+[08-Jan-2021 20:05:21 UTC] WordPress database error execute command denied to user 'acy3_wp4'@'localhost' for routine 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id' for query SELECT wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        ((wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND wpqa_wpsc_epa_folderdocinfo_files.freeze = 1) OR (wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        folderdocinfo_id = '0000001-1-01-1-a99'
+[08-Jan-2021 20:05:21 UTC] WordPress database error execute command denied to user 'acy3_wp4'@'localhost' for routine 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id' for query SELECT wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        ((wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND wpqa_wpsc_epa_folderdocinfo_files.freeze = 1) OR (wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        folderdocinfo_id = '0000001-1-01-1-a999'
+[08-Jan-2021 20:06:25 UTC] WordPress database error execute command denied to user 'acy3_wp4'@'localhost' for routine 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id' for query SELECT wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        ((wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND wpqa_wpsc_epa_folderdocinfo_files.freeze = 1) OR (wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        folderdocinfo_id = '0000001-1-01-1-a99'
+[08-Jan-2021 20:06:25 UTC] WordPress database error execute command denied to user 'acy3_wp4'@'localhost' for routine 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id' for query SELECT wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_folderdocinfo_files
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id
+        ((wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND wpqa_wpsc_epa_folderdocinfo_files.freeze = 1) OR (wpqa_wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+        folderdocinfo_id = '0000001-1-01-1-a999'
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:19:36 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:20:20 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  explode() expects at least 2 parameters, 1 given in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 130
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 131
+[10-Jan-2021 03:21:09 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php on line 138
+[10-Jan-2021 03:33:47 UTC] WordPress database error Unknown column 'title' in 'field list' for query SELECT folderdocinfo_id, title
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND 
+((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+folderdocinfo_id = '0000001-1-02-1'

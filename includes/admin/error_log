@@ -1,0 +1,268 @@
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '1'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '2'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '3'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '5'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '6'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '7'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '8'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '9'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '10'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '11'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '12'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '13'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '14'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '15'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '21'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '23'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '25'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '28'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '31'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '32'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '33'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '34'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '35'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '36'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '38'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '39'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '41'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '43'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '44'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '45'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '46'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '47'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '48'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '49'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '50'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '51'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '52'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '56'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '58'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '61'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '62'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '63'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '64'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '65'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '67'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '68'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '69'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '70'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '71'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '74'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '75'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '76'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '77'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '80'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '82'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '83'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '84'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '85'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '86'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '87'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '88'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '89'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '90'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '91'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '92'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '93'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '94'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '95'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '96'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '97'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '98'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '99'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '100'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '101'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '102'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '103'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '104'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '105'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '106'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '107'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '108'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '109'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '110'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '111'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '112'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '113'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '114'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '115'
+[09-Nov-2020 21:17:56 UTC] WordPress database error FUNCTION acy3_wp4.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual for query SELECT COUNT (box_id) as total_box_count
+    FROM wpqa_wpsc_epa_boxinfo
+    WHERE ticket_id = '116'
+[12-Nov-2020 15:26:41 America/Detroit] PHP Parse error:  syntax error, unexpected ''<br />'' (T_CONSTANT_ENCAPSED_STRING), expecting ',' or ';' in /home/acy3/public_html/wordpress3/wp-content/plugins/pattracking/includes/admin/ecms_ingestion_cron.php on line 47
