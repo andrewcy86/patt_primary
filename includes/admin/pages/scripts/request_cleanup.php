@@ -34,7 +34,7 @@ SELECT a.id as id
 FROM wpqa_wpsc_ticket a
 WHERE 
 (SELECT 
-count(b.id) from wpqa_wpsc_epa_folderdocinfo b INNER JOIN wpqa_wpsc_epa_boxinfo c ON b.box_id = c.id WHERE a.id = c.ticket_id) = 0
+count(b.id) from wpqa_wpsc_epa_folderdocinfo b INNER JOIN wpqa_wpsc_epa_boxinfo c ON b.box_id = c.id WHERE a.id = c.ticket_id) = 0 AND id != '-99999'
 "
 );
 

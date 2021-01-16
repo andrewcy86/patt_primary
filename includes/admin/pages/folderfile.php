@@ -186,7 +186,7 @@ color: rgb(255, 255, 255) !important;
 $convert_box_id = $wpdb->get_row(
 "SELECT wpqa_wpsc_epa_boxinfo.id
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
-WHERE wpqa_wpsc_epa_boxinfo.box = '" .  $GLOBALS['id'] . "'");
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'");
 
 $box_id = $convert_box_id->id;
 ?>
