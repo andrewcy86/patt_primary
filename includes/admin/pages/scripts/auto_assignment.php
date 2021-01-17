@@ -1,9 +1,11 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/', '', __DIR__);
-include ($path . 'wp-load.php');
-include ($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
+include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
 
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
