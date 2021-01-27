@@ -33,7 +33,15 @@ $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 
 ## Custom Field value
 $searchByDocID = str_replace(",", "|", $_POST['searchByDocID']);
-$searchByProgramOffice = $_POST['searchByProgramOffice'];
+
+//throwing Undefined Index error
+if(isset($_POST['searchByProgramOffice'])) {
+    $searchByProgramOffice = $_POST['searchByProgramOffice'];
+}
+else {
+    $searchByProgramOffice = '';
+}
+
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];

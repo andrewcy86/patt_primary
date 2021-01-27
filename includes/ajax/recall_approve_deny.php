@@ -65,6 +65,12 @@ ob_start();
 //echo "Recall ID: ".$recall_id."<br>";
 //echo "Ticket ID: ".$ticket_id."<br>";
 //echo "Type: ".$type."<br>";
+//echo 'recall_data[0]->user_id: ' . $recall_data[0]->user_id . '<br>';
+//echo '<pre>';
+//print_r($agent_id_array);
+//echo '</pre>';
+
+
 
 if( $type == 'approve_recall' ) {
 	echo $approve_message . $html_br;
@@ -273,7 +279,8 @@ if( ( $recall_staff_digi_valid == false || $recall_staff_requester_valid == fals
 							agent_id_array: requestor_list
 						}, 
 						success: function( response ) {
-							console.log('AJAX success: Check Assignement Balance')
+							console.log('AJAX success: Check Assignement Balance');
+							console.log(response);
 							
 							response = JSON.parse( response );
 							
@@ -484,7 +491,7 @@ ob_start();
 	old_requestor_list = old_requestor_list.map(Number);
 	console.log({old_requestor_list:old_requestor_list});
 	
-	let all_staff_valid = <?php echo json_encode( $recall_staff_meets_requirements ); ?>;
+	var all_staff_valid = <?php echo json_encode( $recall_staff_meets_requirements ); ?>;
 	console.log({all_staff_valid:all_staff_valid});
 	
 	if( !all_staff_valid && type == 'approve_recall' ) {

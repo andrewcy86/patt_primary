@@ -1,8 +1,10 @@
 <?php
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
-include($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
+include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+
 $subfolder_path = site_url( '', 'relative'); 
 
 global $wpdb;
@@ -275,13 +277,15 @@ INNER JOIN wpqa_wpsc_epa_storage_location c ON b.storage_location_id = c.id
         $obj_pdf->SetAutoPageBreak(true, 10);
         $obj_pdf->SetFont('helvetica', '', 11);
         
-$box_not_assigned = fetch_location();
-if($box_not_assigned != 'Not Assigned') {
+//$box_not_assigned = fetch_location();
+//if($box_not_assigned != 'Not Assigned') {
+$not_assigned_flag = 0;
 
 if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
     
         $obj_pdf->AddPage();
 
+//Request
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         //Obtain array of Box ID's
         $box_array = fetch_box_id();
@@ -291,8 +295,16 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         $box_date = fetch_create_date();
         $box_count = fetch_box_count();
         $box_ecms_sems = fetch_ecms_sems();
+        
+//Check array for Not Assigned
+if( in_array( "Not Assigned" ,$box_location ) )
+{
+$not_assigned_flag = 1;
 }
 
+}
+
+//Box
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
        $box_array = fetch_box_id_a();
 }
@@ -322,6 +334,11 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
         $box_location_a = strtoupper($box_digitization_center->digitization_center);
 
+//Check array for Not Assigned
+if( $box_location_a == 'Not Assigned')
+{
+$not_assigned_flag = 1;
+}
 
         $request_program_office = $wpdb->get_row("SELECT organization_acronym as acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND box_id = '" . $box_array[$i] ."'");
         
@@ -345,6 +362,8 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         $box_count_a = $get_box_count->count;
         
 }
+
+//if ($not_assigned_flag == 0) {
 
             //Begin if statement to determine where to add new pages
             if ($c == 2)
@@ -701,9 +720,11 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         //Generate PDF
         $obj_pdf->Output('patt_box_label_printout.pdf', 'I');     
 }
-} else {
-echo "Pass a valid ID in URL";
-}
+
+    
+//} else {
+//echo "One or more boxes are not assigned to a Digitization Center.";
+//}
 
     }
     else

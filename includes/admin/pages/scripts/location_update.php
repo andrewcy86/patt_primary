@@ -2,8 +2,8 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_POST['postvarbname']) && isset($_POST['postvarboxname']) && isset($_POST['postvarcentername'])){
    $shelf_position = $_POST['postvarspname'];

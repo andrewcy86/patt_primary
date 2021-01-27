@@ -36,10 +36,19 @@ $patt_box_id_arr = array();
     WHERE box_id = '" . $box_id . "'");
     $record_schedule = $box_record_schedule->record_schedule_number;
     
+    $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(fdif.validation = 1) as validated, COUNT(fdif.validation) as validation_total
+							FROM wpqa_wpsc_epa_boxinfo a
+							INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id 
+							INNER JOIN wpqa_wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
+							WHERE a.id = '" . $box_id . "'");
+							
+/*	OLD: before moving validation to fdi_files table
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(b.validation = 1) as validated, COUNT(b.validation) as validation_total
 FROM wpqa_wpsc_epa_boxinfo a
 INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id
 WHERE a.id = '" . $box_id . "'");
+*/
+
     $dc = $box_dc->box_destroyed;
     $validated = $box_dc->validated;
     $validation_total = $box_dc->validation_total;
@@ -56,6 +65,7 @@ WHERE a.id = '" . $box_id . "'");
 <?php
 $status_list = Patt_Custom_Func::get_restricted_box_status_list( $patt_box_id_arr, $agent_type );
 $restriction_reason = $status_list['restriction_reason']; // string with warnings (multiple lines)
+//echo $restriction_reason;
 ?>
 <div id='alert_status' class=''></div> 
 <strong>Box Status: <a href="#" aria-label="Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-box-status'); ?>"><i class="far fa-question-circle"></i></a></strong><br />

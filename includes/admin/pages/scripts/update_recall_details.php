@@ -2,13 +2,14 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 $recall_id = isset($_POST['recall_id']) ? sanitize_text_field($_POST['recall_id']) : '';
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $title = isset($_POST['title']) ? sanitize_text_field($_POST['title']) : '';
-$recall_ids = $_REQUEST['recall_ids']; 
+// $recall_ids = $_REQUEST['recall_ids']; 
+$recall_ids = isset( $_REQUEST['recall_ids'] ) ?  $_REQUEST['recall_ids']  : '';; 
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 $new_agent_id = isset($_POST['new_agent_id']) ? sanitize_text_field($_POST['new_agent_id']) : ''; // not being used. 
 $array_of_agent_ids = $_REQUEST['agent_id_array']; 
@@ -514,6 +515,8 @@ if( $type == 'request_date' ) {
 		"staff_requester_valid" => $recall_staff_requester_valid,
 		"agent_id_array" => $agent_id_array,
 		"new_agent_id" => $new_agent_id,
+		"results_digi" => $results_digi,
+		"results_requester" => $results_requester,
 		"test" => $test
 	);
 	

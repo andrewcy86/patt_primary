@@ -2,8 +2,8 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 if(
 !empty($_POST['postvarsil']) ||
@@ -291,7 +291,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 $metadata = implode (", ", $metadata_array);
 
 if (($il != $old_il) && ($pattdocid_new != $fdiid)) {
-$pattdocid = $pattdocid . ' > ' . $pattdocid_new;
+$pattdocid = $pattdocid_new;
 }
 
 //send notification and email when any folder/file metadata

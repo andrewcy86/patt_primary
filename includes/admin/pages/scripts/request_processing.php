@@ -58,8 +58,21 @@ $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
 $currentUser = $_POST['currentUser'];
 ## User Search
-$searchByUser = $_POST['searchByUser'];
-$searchByUserAAVal = $_POST['searchByUserAAVal'];
+//throwing Undefined Index error
+if(isset($_POST['searchByUser'])) {
+    $searchByUser = $_POST['searchByUser'];
+}
+else {
+    $searchByUser = '';
+}
+
+if(isset($_POST['searchByUserAAVal'])) {
+    $searchByUserAAVal = $_POST['searchByUserAAVal'];
+}
+else {
+    $searchByUserAAVal = '';
+}
+
 $searchByUserAAName = str_replace(",", "|", $_POST['searchByUserAAName']);
 $searchByUserAANameQuoted = str_replace(",", "','", $_POST['searchByUserAAName']);
 $searchByUserAANameQuoted = "'".$searchByUserAANameQuoted."'";
@@ -174,7 +187,8 @@ FROM wpqa_wpsc_ticket as a
 INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   wpqa_wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
@@ -203,7 +217,8 @@ FROM wpqa_wpsc_ticket as a
 INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   wpqa_wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
@@ -337,10 +352,11 @@ FROM wpqa_wpsc_ticket as a
 INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo f ON f.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = f.folderdocinfo_id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = z.id
+
 LEFT JOIN wpqa_users g ON g.user_email = a.customer_email
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   wpqa_wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')

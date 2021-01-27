@@ -20,6 +20,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     // Load admin scripts
     public function loadScripts(){
         wp_enqueue_script('jquery');
+        wp_enqueue_script( 'wppatt-disable-warnings', WPPATT_PLUGIN_URL . 'asset/js/disable-jquery-migrate-warnings.js', array(), time(), true ); // removed 13/15 jquery-migrate warnings from console. 
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-autocomplete', '', array('jquery-ui-widget', 'jquery-ui-position'), '1.8.6');
         wp_enqueue_script('jquery-ui-sortable');
@@ -38,6 +39,8 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
         wp_enqueue_script('wpsc-admin', WPSC_PLUGIN_URL.'asset/js/admin.js?version='.WPSC_VERSION, array('jquery'), null, true);
         wp_enqueue_script('wpsc-public', WPSC_PLUGIN_URL.'asset/js/public.js?version='.WPSC_VERSION, array('jquery'), null, true);
         wp_enqueue_script('wpsc-modal', WPSC_PLUGIN_URL.'asset/js/modal.js?version='.WPSC_VERSION, array('jquery'), null, true);
+        
+        
         
 //        wp_enqueue_script('wppatt-public', WPPATT_PLUGIN_URL.'asset/js/public.js', array('jquery'), null, true);
 //        wp_enqueue_script('wppatt-modal', WPPATT_PLUGIN_URL.'asset/js/modal.js', array('jquery'), null, true);        

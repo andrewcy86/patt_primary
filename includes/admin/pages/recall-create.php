@@ -325,7 +325,8 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		
 		<input type="hidden" id="captcha_code" name="captcha_code" value="">
 		<input type="hidden" id="box_fk" name="box_fk" value="">
-		<input type="hidden" id="folderdoc_fk" name="folderdoc_fk" value="">				
+		<input type="hidden" id="folderdoc_fk" name="folderdoc_fk" value="">
+		<input type="hidden" id="folderdoc_files_fk" name="folderdoc_files_fk" value="">						
 		<input type="hidden" id="program_office_fk" name="program_office" value="">
 		<input type="hidden" id="record_schedule_fk" name="record_schedule" value="">
 		<input type="hidden" id="user_id" name="user_id" value="">
@@ -983,6 +984,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		var title = "";
 		var box_fk = "";
 		var folderdoc_fk;
+		var folderdoc_files_fk;
 		var db_null = -99999;
 		var icon_freeze = '<i class="fas fa-snowflake" title="Freeze"></i>';
 		var icon_ua_destruction = '<i class="fas fa-flag" title="Unauthorized Destruction"></i>';
@@ -1000,6 +1002,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			title = '[No Title]';
 			box_fk = data.Box_id_FK;
 			folderdoc_fk = db_null;
+			folderdoc_files_fk = db_null;
 			//jQuery('#bff_id').html('Box ID'+required_html); 
 			//jQuery('#alert_status').html('<span class=" alert alert-success">Box <b>'+search_id+'</b> Found</span>'); 
 			message = 'Box <b>'+search_id+'</b> Found.';
@@ -1014,6 +1017,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			box_fk = data.Box_id_FK; 
 			box_id = data.box_id;
 			folderdoc_fk = data.Folderdoc_Info_id_FK;
+			folderdoc_files_fk = data.Folderdoc_Info_Files_id_FK;
 			
 			message = 'Folder/File <b>'+search_id+'</b> Found.';
 			set_alert( 'success', message );
@@ -1032,6 +1036,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		// Update hidden fields.
 		jQuery('#box_fk').val(box_fk); //
 		jQuery('#folderdoc_fk').val(folderdoc_fk);
+		jQuery('#folderdoc_files_fk').val(folderdoc_files_fk);		
 		jQuery('#record_schedule_name').html(data.Record_Schedule_Number +': '+data.Schedule_Title);
 		jQuery('#record_schedule_fk').val(data.Record_Schedule_id_FK);
 		jQuery('#program_office_name').html(data.office_acronym+': '+data.office_name);
@@ -1174,7 +1179,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	
 	
 	
-	
+	// Not being used?
 	// Search for Doc Folder File ID
 	function wppatt_search_id() {
 		check_color('found_item_id');
@@ -1201,6 +1206,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				dataType: "json",
 				cache: false,
 				success: function(response){
+					console.log('the response I care about');
 					console.log(response);
 					if(response) {												
 						if(response.search_error == true ) {
@@ -1240,6 +1246,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		jQuery('#title_from_id').html('');
 		jQuery('#box_fk').val('');
 		jQuery('#folderdoc_fk').val('');
+		jQuery('#folderdoc_files_fk').val('');
 		jQuery('#record_schedule_name').html('');
 		jQuery('#record_schedule_fk').val('');
 		jQuery('#program_office_name').html('');
@@ -1249,6 +1256,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	
 	
 	// OLD sets values for submittal and displays errors for OLD click search form. Superceded by function update_page	
+	// Not being used?
 	function update_recall_box_folder_file(response) {
 		console.log("In update recall_box_folder_file ");
 		//console.log(response);
@@ -1676,6 +1684,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			console.log('folderdoc_fk: ');
 			console.log( myobj_array['folderdoc_fk'] );
 			
+			console.log('folderdoc_files_fk: ');
+			console.log( myobj_array['folderdoc_files_fk'] );
+			
 			console.log('item_id: ');
 			console.log( myobj_array['item_id'] );
 				
@@ -1690,6 +1701,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			    program_office: myobj_array['program_office'],	
 			    box_fk: myobj_array['box_fk'],
 			    folderdoc_fk: myobj_array['folderdoc_fk'],	    
+			    folderdoc_files_fk: myobj_array['folderdoc_files_fk'],	    
 			    assigned_agent_ids : assigned_agent_id_array,		    
 			};
 			

@@ -93,6 +93,10 @@ Enter one or more Tracking Numbers:<br />
 
 <style>
 
+div.dataTables_processing { 
+    z-index: 1; 
+}
+
 div.dataTables_wrapper {
         width: 100%;
         margin: 0;

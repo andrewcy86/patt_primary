@@ -102,7 +102,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			
 			// OLD: $recall_obj->folderdoc_id == $db_null
 			
-			if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id_parent == $db_null ) {
+			if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id_parent == $db_empty ) {
 				$recall_type = "Box";
 				$title = "[Boxes Do Not Have Titles]";
 				$recall_item_id = $recall_obj->box_id;
@@ -223,9 +223,12 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			
 			// Set print button link based if Recall is for a Box ID or a Folder/File ID. 
 			if( $recall_type == 'Box' ) {
-				$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/box_label.php?id=' . $recall_item_id;
+				//echo WPPATT_PLUGIN_URL; includes/ajax/pdf/folder_separator_sheet.php?id=
+				//$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/box_label.php?id=' . $recall_item_id;
+				$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_label.php?id=' . $recall_item_id;
 			} elseif( $recall_type == 'Folder/File' ) {
-				$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
+				//$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
+				$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
 			}
 			
 			//echo '<br>Current user is on request: '.$current_user_on_request.'<br>';

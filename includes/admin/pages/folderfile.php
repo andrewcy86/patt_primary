@@ -5,9 +5,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-$GLOBALS['id'] = $_GET['id'];
-$GLOBALS['pid'] = $_GET['pid'];
-$GLOBALS['page'] = $_GET['page'];
+if(isset($_GET['id'])) {
+   $global_id = $_GET['id']; 
+}
+else {
+    $global_id = '';
+}
+
+if(isset($_GET['pid'])) {
+   $pid = $_GET['pid'];
+}
+else {
+    $pid = '';
+}
+
+if(isset($_GET['page'])) {
+   $page = $_GET['page'];
+}
+else {
+    $page = '';
+}
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
@@ -151,7 +168,7 @@ color: rgb(255, 255, 255) !important;
 #searchGeneric {
     padding: 0 30px !important;
 }
-
+div.dataTables_processing { z-index: 1; }
 
 
 </style>
@@ -186,14 +203,14 @@ color: rgb(255, 255, 255) !important;
 $convert_box_id = $wpdb->get_row(
 "SELECT wpqa_wpsc_epa_boxinfo.id
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
-WHERE wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'");
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '" .  $global_id . "'");
 
 $box_id = $convert_box_id->id;
 ?>
 <!--reuse box_id in update_validate and update_unauthorize_destruction-->
-<input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
-<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
+<input type='hidden' id='box_id' value='<?php echo $global_id; ?>' />
+<input type='hidden' id='page' value='<?php echo $page; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $pid; ?>' />
 </form>
 
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>

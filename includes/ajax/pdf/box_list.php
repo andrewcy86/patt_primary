@@ -1,7 +1,10 @@
 <?php
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
+include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+
 $subfolder_path = site_url( '', 'relative'); 
 
 //Check to see if URL has the correct Request ID
@@ -25,10 +28,12 @@ if (isset($_GET['id']))
     $obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA,'',PDF_FONT_SIZE_DATA));
     $obj_pdf->SetDefaultMonospacedFont('helvetica');
     $obj_pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-    $obj_pdf->SetMargins(6, '10', 5);
+    $obj_pdf->SetMargins(6, '25', 6);
     $obj_pdf->setPrintHeader(false);
     $obj_pdf->setPrintFooter(false);
-    $obj_pdf->SetAutoPageBreak(true, 12);
+
+// set auto page breaks
+$obj_pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
     $obj_pdf->SetFont('helvetica', '', 11);
         
         $record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum 
@@ -92,19 +97,6 @@ $boxlist_po = join(", ", $program_office_array_id);
 //$request_id = substr("000000{$GLOBALS['id']}", -$str_length);
 $request_id = Patt_Custom_Func::ticket_to_request_id($GLOBALS['id']);
 
-// $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
-
-/*
-        $args = [
-            'select' => 'DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office',
-            'where' => ['id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $request_key = $wpqa_wpsc_ticket->get_row($args, false);
-*/
-
-//$key = $request_key->ticket_auth_code;
-
 $url = 'http://' . $_SERVER['SERVER_NAME'] . $subfolder_path .'/wp-admin/admin.php?page=wpsc-tickets&id=' . $request_id;
 
 $request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE,H', '', '', '', 30, $style_barcode, 'N'));
@@ -128,7 +120,10 @@ $tbl = '
 <table style="width:970px">
   <tr>
     <td><h1 style="font-size: 40px">Box List</h1></td>
-    <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br /><strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$boxlist_po.' <br /><br /><strong>ECMS or SEMS:</strong> '.$ecms_sems.'</td>
+    <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br />
+    <strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br />
+    <strong>Program Office:</strong> '.$boxlist_po.' <br /><br />
+    <strong>ECMS or SEMS:</strong> '.$ecms_sems.'</td>
     <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" /><strong>&nbsp; &nbsp; &nbsp; &nbsp; '.$request_id.'</strong><br /></td>
   </tr>
 </table>

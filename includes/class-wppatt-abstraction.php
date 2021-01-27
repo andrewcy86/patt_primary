@@ -148,6 +148,7 @@ abstract class PATT_DB {
 	 */
 	public function get_results( $args, $count =  false) {
 		global $wpdb;
+		$limits = '';
 
 		$order = '';
 		if(isset($args['order'])){

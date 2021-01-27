@@ -85,21 +85,17 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 				<?php
 					$po_array = Patt_Custom_Func::fetch_program_office_array(); 
 				?>
-				<input type="search" list="searchByProgramOfficeList" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
-				<datalist id='searchByProgramOfficeList'>
-					<?php foreach($po_array as $key => $value) { ?>
-					<option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>
-					<?php } ?>
-				</datalist>
-				
-<!--
-				<?php $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-				<select id='searchByProgramOffice'>
-					<option value=''>-- Select Program Office --</option>
-					<?php foreach($po_array as $key => $value) { ?>
-						<option value='<?php echo $value; ?>'><?php echo $value; ?></option>
-				<?php } ?></select>
--->
+				<input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office' id="searchByProgramOffice"/>
+    <datalist id='searchByProgramOfficeList'>
+     <?php foreach($po_array as $key => $value) { ?>
+      
+    <?php 
+        $program_office = $wpdb->get_row("SELECT office_name FROM wpqa_wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
+        $office_name = $program_office->office_name;
+    ?>
+        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $office_name; ?>'></option>
+     <?php } ?>
+     </datalist>
 				<br><br>
 				<select id='searchByDigitizationCenter'>
 					<option value=''>-- Select Digitization Center --</option>
@@ -132,6 +128,10 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	<div class="col-sm-8 col-md-9 wpsc_it_body">
 
 	<style>
+	
+	div.dataTables_processing { 
+        z-index: 1; 
+    }
 	
 	div.dataTables_wrapper {
         width: 100%;

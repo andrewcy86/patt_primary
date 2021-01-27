@@ -2,8 +2,8 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 if(
 !empty($_POST['postvarsfolderdocid'])
@@ -45,7 +45,7 @@ WHERE folderdocinfo_id = '" . $key . "'"
 $folderdocinfo_db_id = $getfolderdocinfo_db_id->id;
 
 $getrecall_violation_count = $wpdb->get_row(
-"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_recallrequest WHERE folderdocinfofile_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
+"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_recallrequest WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $recall_violation_count = $getrecall_violation_count->count;
@@ -55,7 +55,7 @@ array_push($recall_array,$folderdocinfo_db_id);
 }
 
 $getreturn_violation_count = $wpdb->get_row(
-"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_return WHERE folderdocinfofile_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
+"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_return_items WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $return_violation_count = $getreturn_violation_count->count;
@@ -83,7 +83,7 @@ $ticket_id = $get_ticket_id->id;
 
 $get_box_id = $wpdb->get_row("
 SELECT a.box_id FROM wpqa_wpsc_epa_folderdocinfo  a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON a.folderdocinfo_id = b.folderdocinfo_id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;
@@ -234,7 +234,7 @@ if($page_id == 'filedetails') {
 
 $get_box_id = $wpdb->get_row("
 SELECT a.box_id FROM wpqa_wpsc_epa_folderdocinfo  a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON a.folderdocinfo_id = b.folderdocinfo_id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;

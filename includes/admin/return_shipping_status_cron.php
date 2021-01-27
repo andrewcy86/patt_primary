@@ -76,8 +76,8 @@ $shipped_return_status_query = $wpdb->get_results(
       AND
         shipping.shipped = 1
       AND 
-        ret.return_status_id = " . $status_decline_initiated_term_id .
-      " ORDER BY shipping.id ASC"
+        ( ret.return_status_id = " . $status_decline_initiated_term_id . " OR ret.return_status_id = " . $status_decline_cancelled_term_id
+      ") ORDER BY shipping.id ASC"
 	);
 
 	
@@ -98,6 +98,53 @@ foreach ($shipped_return_status_query as $item) {
 	
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
 	// No PM Notification for shipping Decline
+	
+	// CORNER CASE
+	// If return status was cancelled, but was still picked up, use the normal statuses, but send PM Message to admin and requestor
+	if( $item->return_status == $status_decline_cancelled_term_id ) {
+		
+		//
+		// PM Notification :: Decline Cancelled item shipped
+		//
+	
+		// Get ticket_id based on return_id
+		$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
+		
+		// Get owner of ticket. 
+		$where = [ 'ticket_id' => $ticket_id ];
+		$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
+		$role_array_requester = [ 'Requester' ];
+		$agent_id_array = Patt_Custom_Func::return_agent_ids_in_role( $agent_id_array, $role_array_requester);
+		
+		// Get all users on Decline (currently only the person who submitted it, and no way to add others)
+		$where = [ 'return_id' => $return_id ]; // format: '0000002'
+		$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
+		$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
+		
+		// Redundant as only one initiator allowed on Decline currently (which is the person who submitted decline). 
+		$role_array_admin = [ 'Administrator', 'Manager' ];
+		$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_admin);
+		
+		// Combine Requester on Request with Admin's on Decline
+		$pattagentid_array = array_merge( $agent_id_array, $agent_id_requesters_array );
+		$pattagentid_array = array_unique( $pattagentid_array );
+		
+		$requestid = 'D-' . $return_id; 
+		
+		$data = [
+	        //'item_id' => $requestid
+	    ];
+		$email = 1;
+		
+		$notification_post = 'email-decline-cancelled-but-shipped';
+			
+		// PM Notification to the Requestor / owner
+		$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+	
+
+		
+	}
+	
 }
 
 
@@ -329,7 +376,6 @@ foreach ($return_complete_return_status_query as $item) {
 	Patt_Custom_Func::update_return_data( $data, $where );
 	
 	// Set all boxes inside the Decline to have Box Status: Cancelled. // TEST ONCE NEW BOX STATUS CREATED UPDATED
-/*
 	$where = [
 		'return_id' => $item->return_id
 	];
@@ -340,13 +386,12 @@ foreach ($return_complete_return_status_query as $item) {
 	$cancelled_status_id = get_term_by( 'slug', 'cancelled', 'wpsc_box_statuses' ); //get id from slug
 	foreach( $return_box_array as $box ) {
 		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-		$data_update = array('box_status' => $cancelled_status_id );
+		$data_update = array('box_status' => $cancelled_status_id->term_id );
 		
-		$box_id = Patt_Custom_Func::get_box_file_details_by_id( $box )->Box_id_FK;	
+		$box_id = Patt_Custom_Func::get_box_file_details_by_id( $box )->Box_id_FK;
 		$data_where = array('id' => $box_id);
 		$wpdb->update($table_name, $data_update, $data_where);
 	}
-*/
 	
 	
 	//

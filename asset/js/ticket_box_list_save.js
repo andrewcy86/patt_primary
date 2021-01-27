@@ -146,7 +146,9 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
 // Upload boxlist document, and create the data table
 function wpsc_spreadsheet_new_upload(id, name, fileSS) {
-
+	
+	console.log('ECMS upload');
+	
     jQuery('#attachment_upload').unbind('change');
 
     jQuery.fn.dataTable.ext.errMode = 'none';
@@ -329,9 +331,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 
                                 // Validate Parent/Child
                                 let pcd = parsedData[count][18];
-                                console.log({pcd:pcd});
+                                //console.log({pcd:pcd});
                                 
-                                console.log( pcd == 'P' );
+                                //console.log( pcd == 'P' );
                                 
                                 if( flag != true && count > 1 && !( pcd == 'P' || pcd == 'C' || pcd == 'S' || pcd === undefined ) ) {
                                     alert("Invalid Parent/Child format for record " + (count + 1) );

@@ -11,7 +11,11 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
 $list_array = array();
         
-$box_index_result = $wpdb->get_results( "SELECT DISTINCT wpqa_wpsc_epa_folderdocinfo.index_level FROM wpqa_wpsc_epa_boxinfo INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id  WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id);
+$box_index_result = $wpdb->get_results( "SELECT DISTINCT c.index_level
+FROM wpqa_wpsc_epa_boxinfo a
+INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE a.ticket_id = " . $ticket_id);
 
 /*
 $args = [

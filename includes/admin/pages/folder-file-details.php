@@ -114,7 +114,7 @@ echo $slug;
 	//$folderfile_grant_number = $folderfile_details->grant_number;
 	
 	//$folderfile_file_location = $folderfile_details->file_location;
-	//$folderfile_file_object_id = $folderfile_details->file_object_id;
+	$folderfile_file_object_id = $folderfile_details->file_object_id;
 	//$folderfile_file_name = $folderfile_details->file_name;
 	
 	$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
@@ -526,7 +526,17 @@ if( $folderfile_details->file_size == null || $folderfile_details->file_size == 
 	
 }
 
+if( $folderfile_details->file_name == null || $folderfile_details->file_name == '' ) {
+	$file_name = '[ Document does not require file upload ]';
+} else {
+	$file_name = $folderfile_details->file_name;
+}
 
+if( $folderfile_details->source_file_location == null || $folderfile_details->source_file_location == '' ) {
+	$source_file_location = '[ Document does not require file upload ]';
+} else {
+	$source_file_location = $folderfile_details->source_file_location;
+}
 
 
 
@@ -542,8 +552,8 @@ echo '</div>';
 //echo '<br>';
 
 echo '<div id="single-file-uploader-details" >';
-echo '<span class="details-name" >File Name: </span><span class="" >' . $folderfile_details->file_name . '</span><br>';
-echo '<span class="details-name" >File Location: </span><span class="" >' . $folderfile_details->source_file_location . '</span><br>';
+echo '<span class="details-name" >File Name: </span><span class="" >' . $file_name . '</span><br>';
+echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 echo '<span class="details-name" id="file-preview" ><a href="' . $protocol . $folderfile_details->object_location . $host . '/' . $folderfile_details->object_key . '" target="_blank" >Preview File</a></span><br>';
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
@@ -563,20 +573,31 @@ echo '<input type="hidden" name="folderdocinfo_files_id" id="folderdocinfo_files
 // Hide DropZone if no file attachment aka no digital file.
 if( $folderfile_details->attachment == '0' ) {  ?> 
 	<script type="text/javascript">
-		$('#single-file-uploader-dropzone').hide();
-		$('#single-file-uploader-details').hide();
-		$('#upload-file-section').hide();
+		//jQuery('#single-file-uploader-dropzone').hide();
+		//jQuery('#single-file-uploader-details').hide();
+		//jQuery('#upload-file-section').hide();
 	</script> 
 	
 <?php
 	
 }
 
+// Hide DropZone if file uploaded to ECMS
+if( $folderfile_file_object_id != null || $folderfile_file_object_id != '' ) {  ?> 
+	<script type="text/javascript">
+		jQuery('#single-file-uploader-dropzone').hide();
+	</script> 
+	
+<?php
+	
+}
+
+
 // hide preview if not uploaded yet. 
 if( $folderfile_details->file_size == null || $folderfile_details->file_size == '' ) {
 		?> 
 	<script type="text/javascript">
-		$('#file-preview').hide();
+		jQuery('#file-preview').hide();
 	</script>
 	<?php
 } else {	
@@ -587,18 +608,20 @@ if( $folderfile_details->file_size == null || $folderfile_details->file_size == 
 <script type="text/javascript">	
 	// Sets the PK for folderdocinfo_files to be used by the s3upload.js file
 	let folderfileid = '<?php echo $folderfile_details->folderfileid; ?>';
-	$('input[name=folderdocinfo_files_id]').val( folderfileid ); 
+	jQuery('input[name=folderdocinfo_files_id]').val( folderfileid ); 
 </script>
 <?php
 
 
 // DEBUG - START
 
+/*
 echo '<hr>';
 echo '<h3>DEBUG</h3>';
 echo 'FolderDocInfo: <br><pre>';
 print_r( $folderfile_details );
 echo '</pre>';
+*/
 
 // DEBUG - END
 

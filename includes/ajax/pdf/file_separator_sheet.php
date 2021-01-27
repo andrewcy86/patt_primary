@@ -1,7 +1,9 @@
 <?php
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
+include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
 
 //Check to see if URL has the correct Request ID
 if (isset($_GET['id']))

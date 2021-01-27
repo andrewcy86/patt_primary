@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-$GLOBALS['id'] = $_GET['id'];
+//$GLOBALS['id'] = $_GET['id'];
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
@@ -114,20 +114,6 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 				<input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
 				<br />
 				
-				
-				<select id='searchByStatus'> 
-					<option value=''>-- Select Status --</option>
-					<?php 
-						foreach( $box_statuses as $status ) {
-							echo "<option value='".$status->name."'>".$status->name."</option>";
-						}
-						
-					?>
-
-				</select>
-				
-				<br><br>
-				
 				<?php
 					$po_array = Patt_Custom_Func::fetch_program_office_array(); 
 				?>
@@ -143,6 +129,20 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 				</datalist>
 				
 				<br /><br />
+				
+				<select id='searchByStatus'> 
+					<option value=''>-- Select Status --</option>
+					<?php 
+						foreach( $box_statuses as $status ) {
+							echo "<option value='".$status->name."'>".$status->name."</option>";
+						}
+						
+					?>
+
+				</select>
+				
+				<br><br>
+				
 				
 				<?php
 				//Priority slugs
@@ -200,6 +200,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 					</div>
 					<div id="assigned_agents" class="form-group col-md-12 ">
 						<?php
+						$is_single_item = '';
 						    if($is_single_item) {
 							    foreach ( $assigned_agents as $agent ) {
 									$agent_name = get_term_meta( $agent, 'label', true);
@@ -272,6 +273,10 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
  
 <style>
+
+div.dataTables_processing { 
+    z-index: 1; 
+}
 
 div.dataTables_wrapper {
         width: 100%;

@@ -334,8 +334,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					//Create boxinfo record
 					$boxinfo_id = $this->create_new_boxinfo( $boxarray );
 
-					$this->add_boxinfo_meta( $boxinfo_id, 'assigned_agent', '0' );
-					$this->add_boxinfo_meta( $boxinfo_id, 'prev_assigned_agent', '0' );
+					// Podbelski Update Jan 2021
+					//$this->add_boxinfo_meta( $boxinfo_id, 'assigned_agent', '0' );
+					//$this->add_boxinfo_meta( $boxinfo_id, 'prev_assigned_agent', '0' );
 					
 					
 					// $box = $boxinfo['Box'];
@@ -661,7 +662,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						fclose( $file );
 					}
 
-					$check_file_name = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$wpdb->prefix}wpsc_epa_folderdocinfo_files WHERE source_file_location = %s ', $boxinfo['Folder/Filename'] ), ARRAY_A );
+					$table_fdif = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+					
+					$check_file_name = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $table_fdif . ' WHERE source_file_location = %s ', $boxinfo['Folder/Filename'] ), ARRAY_A );
+					
+					//$check_file_name = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM {$wpdb->prefix}wpsc_epa_folderdocinfo_files WHERE source_file_location = %s ', $boxinfo['Folder/Filename'] ), ARRAY_A );
 
 					// Check if the same filename exists in table
 					if ( is_array( $check_file_name ) && isset( $check_file_name['post_id'] ) && $check_file_name['file_object_id'] ) {

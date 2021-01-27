@@ -12,7 +12,6 @@ $return_type = isset($_POST['return_type']) ? sanitize_text_field($_POST['return
 //$recall_ids = isset($_POST['recall_ids']) ? sanitize_text_field($_POST['recall_ids']) : '';
 $return_ids = $_REQUEST['return_ids']; 
 $num_of_items = count($return_ids);
-$subfolder_path = site_url( '', 'relative'); 
 
 //FAKE DATA
 $ticket_id = '0000001';
@@ -127,38 +126,38 @@ jQuery(document).ready(function() {
 		controller: {
 			loadData: function(filter){
 				var ticket_id = <?php echo $ticket_id; ?>; 
-				var subfolder = '<?php echo $subfolder_path; ?>';
+				var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
 				return jQuery.ajax({
 					type: "GET",
-					url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
-// 					url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php",
+					url: subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
+// 					url: subfolder+"includes/ajax/fetch_shipping_data.php",
 					data: filter
 				});
 		    },
 			insertItem: function(item){
 				var ticket_id = <?php echo $ticket_id; ?>; 
-				var subfolder = '<?php echo $subfolder_path; ?>';
+				var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
 				return jQuery.ajax({
 					type: "POST",
-					url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
+					url: subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
 					data:item
 				});
 			},
 			updateItem: function(item){
 				var ticket_id = <?php echo $ticket_id; ?>; 
-				var subfolder = '<?php echo $subfolder_path; ?>';
+				var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
 				return jQuery.ajax({
 					type: "PUT",
-					url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
+					url: subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
 					data: item
 				});
 			},
 			deleteItem: function(item){
 				var ticket_id = <?php echo $ticket_id; ?>; 
-				var subfolder = '<?php echo $subfolder_path; ?>';
+				var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
 				return jQuery.ajax({
 					type: "DELETE",
-					url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
+					url: subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id,
 					data: item
 				});
 			},

@@ -721,7 +721,7 @@ function set_alert( type, message ) {
 	jQuery('#'+alert_location).html('<div id="alert-' + hash + '" class=" alert '+alert_style+'">'+message+'</div>'); 
 	jQuery('#'+alert_location).addClass('alert_spacing');
 	
-	alert_dismiss( alert_location, hash );
+	//alert_dismiss( alert_location, hash );  // auto-dismissed alerts causing confusion when save is disabled and alert dismisses. 
 }
 
 

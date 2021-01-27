@@ -79,7 +79,7 @@ jQuery(document).ready(function() {
     
     var category = '<?php echo $category ?>';
     var ticket_id = <?php echo $ticket_id; ?>; 
-	var subfolder = '<?php echo $subfolder_path; ?>';
+	var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
 	var recall_ids = <?php echo json_encode($recall_ids); ?>;
 	var return_ids = <?php echo json_encode($return_ids); ?>;	
 	var shipping_table_ids = <?php echo json_encode($shipping_table_ids); ?>;
@@ -91,21 +91,21 @@ jQuery(document).ready(function() {
     console.log(category);
     
     if( category == 'return') {
-	    get_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&return_ids="+return_ids
+	    get_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&return_ids="+return_ids
 	    						+"&category=return";
-	    put_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&category=return";
+	    put_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&category=return";
 	    title = 'Return ID';
     } else if( category == 'recall') {
-	    get_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&recall_ids="+recall_ids;
-	    put_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id;
+	    get_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&recall_ids="+recall_ids;
+	    put_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id;
 	    title = 'Recall ID';
     } else if( category == 'shipping-status-editor') {
-	    get_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&shipping_table_ids="+shipping_table_ids+"&category=shipping-status-editor";
-	    put_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&category=shipping-status-editor";
+	    get_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&shipping_table_ids="+shipping_table_ids+"&category=shipping-status-editor";
+	    put_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&category=shipping-status-editor";
 	    title = 'ID';
     } else {
-	    get_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&recall_ids="+recall_ids;
-	    put_link = subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id;	    
+	    get_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id+"&recall_ids="+recall_ids;
+	    put_link = subfolder+"includes/ajax/fetch_shipping_data_multi.php?ticket_id="+ticket_id;	    
 	    title = 'Recall ID';	    
     }
      

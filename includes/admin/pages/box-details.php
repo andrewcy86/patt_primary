@@ -143,6 +143,10 @@ $priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$prior
     </div>
 <style>
 
+div.dataTables_processing { 
+    z-index: 1; 
+}
+
 div.dataTables_wrapper {
         width: 100%;
         margin: 0;
@@ -823,7 +827,9 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
 			        echo '<div class="wpsp_sidebar_labels"><strong>Location: </strong>' . $location_general . '</div>';
 			       
 			       //checks to make sure location of box is 'On Shelf' and that aisle/bay/shelf/position != 0
-			       if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+			       //for testing physical location can only be 'Pending', so 'On Shelf' won't be a requirement
+			       //if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+			       if((!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
     			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $location_bay . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>' . $location_shelf . '</div>';

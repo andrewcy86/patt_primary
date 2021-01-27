@@ -1,7 +1,10 @@
 <?php
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
-	
+
+global $wpdb, $current_user, $wpscfunction;
+
+
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */
 $password = DB_PASSWORD; /* Password */
@@ -12,8 +15,6 @@ $con = mysqli_connect($host, $user, $password,$dbname);
 if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
-
-global $current_user;
 
 ## Read value
 $draw = $_POST['draw'];
@@ -294,8 +295,10 @@ CONCAT(
 
 CASE WHEN 
 (
-SELECT sum(c.freeze = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id
+SELECT sum(c.freeze = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id
 ) <> 0 AND
 a.box_destroyed > 0 
 
@@ -313,13 +316,16 @@ END,
 
 
 CASE 
-WHEN (SELECT sum(c.freeze = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'
+WHEN (SELECT sum(c.freeze = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'
 ELSE '' 
 END,
 CASE 
-WHEN (SELECT sum(c.unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
+WHEN (SELECT sum(c.unauthorized_destruction = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
 ELSE '' 
 END
 ) as box_id_flag,
@@ -399,25 +405,52 @@ c.office_acronym as acronym,
 CONCAT(
 CASE 
 
-WHEN (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) = 0 AND (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) = 0
+WHEN (SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) = 0 AND
+(SELECT count(c.id) 
+FROM wpqa_wpsc_epa_folderdocinfo b
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE b.box_id = a.id) = 0
 THEN
 ''
 
-WHEN (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) != 0 AND (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) < (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id)
+WHEN (SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) != 0 AND 
+(SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) < (SELECT count(c.id) 
+FROM wpqa_wpsc_epa_folderdocinfo b
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE b.box_id = a.id)
 THEN 
 '<span style=\"font-size: 1.3em; color: #FF8C00;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
 
-WHEN (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) = 0 AND (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) < (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id)
+WHEN (SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE b.box_id = a.id) = 0 AND 
+(SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) < (SELECT count(c.id) 
+FROM wpqa_wpsc_epa_folderdocinfo b
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE b.box_id = a.id)
 THEN 
 '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
 
-WHEN (SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id) = (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id)
+WHEN (SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id) = (SELECT count(c.id) 
+FROM wpqa_wpsc_epa_folderdocinfo b
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE b.box_id = a.id)
 THEN 
 '<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> '
 
@@ -427,8 +460,10 @@ END,
 CASE 
 WHEN (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
 THEN
-CONCAT((SELECT sum(c.validation = 1) FROM wpqa_wpsc_epa_folderdocinfo b 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.folderdocinfo_id WHERE b.box_id = a.id), '/', (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id))
+CONCAT((SELECT sum(c.validation = 1) 
+FROM wpqa_wpsc_epa_folderdocinfo b 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id), '/', (SELECT count(fdif.id) FROM wpqa_wpsc_epa_folderdocinfo_files fdif INNER JOIN wpqa_wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id WHERE fdi.box_id = a.id))
 ELSE '-'
 END
 ) as validation
@@ -505,13 +540,13 @@ $response = array(
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data,
-  "test" => $boxQuery,
+  //"test" => $boxQuery,
   "box_ids_for_user" => $box_ids_for_user,
   "box_ids_for_users" => $box_ids_for_users,
   "searchByUser" => $searchByUser,
   "box_ids_for_user" => $box_ids_for_user,
-  "is_requester" => $is_requester
-//     "test" => $data[0]['box_id'] $searchByStatus
+  "is_requester" => $is_requester,
+"test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php'
 );
 
 echo json_encode($response);

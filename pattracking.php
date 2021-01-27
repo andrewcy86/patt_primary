@@ -2,7 +2,7 @@
 /**
  * Plugin Name: pattracking
  * Description: add-on to the support candy plugin specifically for the EPA Paper Asset Tracking Tool
- * Version: 0.3.11
+ * Version: 0.3.13
  * Requires at least: 4.4
  * Tested up to: 5.3
  * Text Domain: pattracking
@@ -18,7 +18,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
   final class Patt_Tracking {
   
       
-    public $version    = '0.3.11';
+    public $version    = '0.3.13';
     public $db_version = '2.0';
     
     public function __construct() {
@@ -61,7 +61,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         $this->define('WPPATT_STORE_URL', 'https://supportcandy.net');
         $this->define('WPPATT_PLUGIN_FILE', __FILE__);
         $this->define('WPPATT_ABSPATH', dirname(__FILE__) . '/');
-        $this->define('WPPATT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+        $this->define('WPPATT_PLUGIN_URL', plugin_dir_url( __FILE__ ));
         $this->define('WPPATT_PLUGIN_BASENAME', plugin_basename(__FILE__));
         $this->define('WPPATT_VERSION', $this->version);
         $this->define('WPPATT_DB_VERSION', $this->db_version);
@@ -349,7 +349,16 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 //             add_submenu_page( '', '', '', 'wpsc_agent', 'returncreate', 'return_create' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'declinecreate', 'return_create' ); 
             add_submenu_page( 'wpsc-tickets', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping', 'shipping_page' ); 
+            add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             }
+            
+function custom_menu_item_redirect_external_link() {
+        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
+        if($menu_redirect == 'qlik-report' ) {
+            echo '<script>window.location.replace("http://www.google.com");</script>';
+            exit();
+        }
+}
 
             function shipping_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/shipping.php'

@@ -7,8 +7,6 @@ global $wpdb, $current_user, $wpscfunction;
 
 $ticket_id 	 = isset($_POST['ticket_id']) ? intval($_POST['ticket_id']) : 0 ;
 
-$subfolder_path = site_url( '', 'relative'); 
-
 ob_start();
 ?>
 
@@ -65,37 +63,37 @@ ob_start();
      controller: {
       loadData: function(filter){
        var ticket_id = <?php echo $ticket_id; ?>; 
-       var subfolder = '<?php echo $subfolder_path; ?>';
+       var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
        return jQuery.ajax({
         type: "GET",
-        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: filter
        });
       },
       insertItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
-       var subfolder = '<?php echo $subfolder_path; ?>';
+       var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
        return jQuery.ajax({
         type: "POST",
-        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data:item
        });
       },
       updateItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
-       var subfolder = '<?php echo $subfolder_path; ?>';
+       var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
        return jQuery.ajax({
         type: "PUT",
-        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: item
        });
       },
       deleteItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
-       var subfolder = '<?php echo $subfolder_path; ?>';
+       var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
        return jQuery.ajax({
         type: "DELETE",
-        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: item
        });
       },

@@ -1,5 +1,6 @@
 <?php
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+//$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
 
 global $current_user, $wpscfunction, $wpdb;
@@ -130,6 +131,30 @@ if( !$is_folder_search ) {
 		
 		// if not recalled, check all folder/files inside of box for Destroyed Files
 		if( $details_array['in_recall'] == false ) {
+			
+			if( $details_array['Box_id_FK'] == '' || $details_array['Box_id_FK'] == null ) {
+				$details_array['Box_id_FK'] = 'null';
+			}
+			
+			
+			
+			$folder_rows = $wpdb->get_results( $wpdb->prepare(
+				'SELECT 
+					folderinfo.id as id, 
+				    fdif.folderdocinfofile_id as display_folderdocinfo_id,
+				    fdif.unauthorized_destruction as unauthorized_destruction
+				FROM 
+					wpqa_wpsc_epa_folderdocinfo as folderinfo
+				JOIN 
+                    wpqa_wpsc_epa_folderdocinfo_files as fdif ON fdif.folderdocinfo_id = folderinfo.id
+				WHERE
+				    folderinfo.box_id = ' . $details_array['Box_id_FK'] . '
+				   AND
+				    fdif.unauthorized_destruction = 1
+				ORDER BY id ASC'
+			));
+			
+/*          // OLD: before changing DB structure to move unauthorized_destruction to fdi_files
 			$folder_rows = $wpdb->get_results(
 				'SELECT 
 					folderinfo.id as id, 
@@ -143,6 +168,7 @@ if( !$is_folder_search ) {
 				    unauthorized_destruction = 1
 				ORDER BY id ASC'
 			);
+*/
 			
 			if( $folder_rows ) {
 				$list_of_destroyed_files = [];

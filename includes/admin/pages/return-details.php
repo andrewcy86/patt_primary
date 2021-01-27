@@ -78,6 +78,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			$blank_date = '0000-00-00 00:00:00';
 			$decline_status_pending_cancel = 'Decline Pending Cancel';
 			
+			
 			$return_reason = $return_obj->reason;
 
 			$comment = stripslashes($return_obj->comments);
@@ -89,6 +90,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			$shipping_status = $return_obj->status;
 			$decline_status_id = $return_obj->return_status_id;
 			$decline_status = Patt_Custom_Func::get_term_name_by_id( $decline_status_id ); 
+			//$status_slug = get_term_by('ID', $decline_status_id );
 			//$decline_status = get_term_by( 'id', 1023 ); 
 			//$real_array_of_users = ($return_obj->user_id) ? $return_obj->user_id : [];
 			$return_initiated_date = $return_obj->return_date;
@@ -125,9 +127,10 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			//
 			//echo 'Current user: '.$current_user->ID.'<br>';
 			//echo 'Current user term id: '.$assigned_agents[0];
-			//echo "<br>Decline Object: <br>";	
+			//echo "<br>Decline Object: <br><pre>";	
 			//print_r($return_obj);
-			//echo 'Decline status id: ' . $decline_status_id .'<br>';
+			//echo '</pre>';
+			//echo 'Decline status slug: ' . $status_slug .'<br>';
 			//echo 'Decline status: ' . $decline_status .'<br>';
 			//print_r( $decline_status );
 			//echo "count of array: ".count($recall_array);	
@@ -342,7 +345,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 	if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') )
 	{
 ?>       	
-<!--     	<button type="button" id="wppatt_return_cancel" onclick="wppatt_cancel_return();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_return_btn_css?>"><i class="fa fa-ban"></i> Cancel Decline</button> -->
+    	<button type="button" id="wppatt_return_cancel" onclick="wppatt_cancel_return();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_return_btn_css?>"><i class="fa fa-ban"></i> Cancel Decline</button>
     	<button type="button" id="wppatt_return_expiration_extend" onclick="wppatt_extend_return_expiration();" class="btn btn-sm wpsc_action_btn" style="<?php echo $extend_expiration_return_btn_css?>"><i class="fa fa-ban"></i> Extend Decline Expiration</button>
 <?php		
 	}

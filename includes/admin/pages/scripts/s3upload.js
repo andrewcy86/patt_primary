@@ -72,7 +72,7 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
     obj_size = self.fileInfo.size;
     obj_type = self.fileInfo.type;
     
-    $.post(self.SERVER_LOC, {
+    jQuery.post(self.SERVER_LOC, {
         command: 'create',
         fileInfo: self.fileInfo,
         //key: self.file.lastModified + '_' + self.file.name
@@ -102,7 +102,7 @@ S3MultiUpload.prototype.resumeMultipartUpload = function(uploadId) {
         key: self.file.lastModified + self.file.name
     };
 
-    $.post(self.SERVER_LOC, {
+    jQuery.post(self.SERVER_LOC, {
         command: 'listparts',
         sendBackData: self.sendBackData
     }).done(function(data) {
@@ -149,7 +149,7 @@ S3MultiUpload.prototype.uploadParts = function() {
             blobs.push(filePart);
 
             //console.log('Getting presigned URL for part ' + (partNum+1))
-            promises.push(this.uploadXHR[filePart]=$.post(this.SERVER_LOC, {
+            promises.push(this.uploadXHR[filePart]=jQuery.post(this.SERVER_LOC, {
                 command: 'part',
                 sendBackData: this.sendBackData,
                 partNumber: partNum+1,
@@ -159,7 +159,7 @@ S3MultiUpload.prototype.uploadParts = function() {
         }
         start = this.PART_SIZE * ++partNum;
     }
-    $.when.apply(null, promises)
+    jQuery.when.apply(null, promises)
      .then(this.sendAll.bind(this), this.onServerError)
      .done(this.onPrepareCompleted);
 
@@ -257,7 +257,7 @@ S3MultiUpload.prototype.cancel = function() {
     for (var i=0; i<this.uploadXHR.length; ++i) {
         this.uploadXHR[i].abort();
     }
-    $.post(self.SERVER_LOC, {
+    jQuery.post(self.SERVER_LOC, {
         command: 'abort',
         sendBackData: self.sendBackData
     }).done(function(data) {
@@ -272,7 +272,7 @@ S3MultiUpload.prototype.completeMultipartUpload = function() {
     var self = this;
     if (this.completed) return;
     this.completed=true;
-    $.post(self.SERVER_LOC, {
+    jQuery.post(self.SERVER_LOC, {
         command: 'complete',
         sendBackData: self.sendBackData
     }).done(function(data) {
@@ -295,7 +295,7 @@ S3MultiUpload.prototype.completeMultipartUpload = function() {
         console.log({obj_key:obj_key});
         
 
-        $("#mdocs-name-single-file").val( obj_key );
+        jQuery("#mdocs-name-single-file").val( obj_key );
         // After upload finishes, start the save file process.
         save_file();
         
@@ -320,12 +320,12 @@ function save_s3_data_in_fdi_files() {
 	//obj_s3link = input.locationinfo;
 	
 	// Set variables from MLD upload modal
-	let mduff = $('#mdocs-upload-file-field').val();
-	//let mdocs_name = $('#mdocs-name').val(); // works for modal
+	let mduff = jQuery('#mdocs-upload-file-field').val();
+	//let mdocs_name = jQuery('#mdocs-name').val(); // works for modal
 	
-	let mdocs_name = $("#mdocs-name-single-file").val(); // updated for single file upload on Folder File Details
+	let mdocs_name = jQuery("#mdocs-name-single-file").val(); // updated for single file upload on Folder File Details
 	
-	let mdocs_tags = $('#mdocs-tags').val();
+	let mdocs_tags = jQuery('#mdocs-tags').val();
 	
 	//let mdocs_type = $('input[name=mdocs-type]').val(); 
 	
@@ -356,7 +356,7 @@ function save_s3_data_in_fdi_files() {
 	}
 */
 	
-	let folderdocinfo_files_id = $('input[name=folderdocinfo_files_id]').val();
+	let folderdocinfo_files_id = jQuery('input[name=folderdocinfo_files_id]').val();
 	
 	console.log('I care about this.');
 	console.log({obj_key:obj_key, obj_size:obj_size, obj_type:obj_type, obj_s3link:obj_s3link, obj_name:obj_name, mduff:mduff, folderdocinfo_files_id:folderdocinfo_files_id});
@@ -406,7 +406,7 @@ function save_s3_data_in_fdi_files() {
 	
 	console.log({data:data});
 	
-	return $.post(wpsc_admin.ajax_url, data).done( function(response) {
+	return jQuery.post(wpsc_admin.ajax_url, data).done( function(response) {
 
         console.log('AJAX save_s3_data_in_fdi_files Successful');
         console.log(response);               
@@ -485,15 +485,15 @@ S3MultiUpload.prototype.onUploadCompleted = function(serverData) {};
 S3MultiUpload.prototype.onPrepareCompleted = function() {};
 
 
-$(document).ready(function(){
+jQuery(document).ready(function(){
 	
 	
 	
 	// Cover up color issue with MLD plugin
-	$("label[for='mdocs-name']").css( 'color', '#444' );
+	jQuery("label[for='mdocs-name']").css( 'color', '#444' );
 	
 	// Adds 'required' to MLD Name field. 
-	$("label[for='mdocs-name']").append('<span style="color:red;">*</span>');
+	jQuery("label[for='mdocs-name']").append('<span style="color:red;">*</span>');
 	
 	
 	//$(".modal-footer").append('<input type="submit" class="btn btn-primary" id="wppatt-mdocs-save-doc-btn" value="PATT Add/Update" />');
@@ -502,50 +502,50 @@ $(document).ready(function(){
 	//
 	// Adjust modal window to look like Support Candy's.
 	//
-	$("#mdocs-add-update-container > .page-header").attr( "id", "wpsc_popup_title" );
-	$("#mdocs-add-update .close").hide();
-	$("#mdocs-add-update .modal-footer").hide();	
+	jQuery("#mdocs-add-update-container > .page-header").attr( "id", "wpsc_popup_title" );
+	jQuery("#mdocs-add-update .close").hide();
+	jQuery("#mdocs-add-update .modal-footer").hide();	
 	
 	
 	let style_override = '<style> .modal-body{ padding: 0px !important; } h1{ color: #fff !important; } .page-header{ margin: 0px !important; } .well{ background-color: #fff !important; border: none !important; border-radius: 0px !important; } .well-lg{ border-radius: 0px !important; padding: 15px !important; } #wppatt_popup_footer{ padding: 15px; background-color: #F6F6F6; } .patt-button{ width: 145px; height: 40px; border-radius: 0px !important; border: 0px; cursor: pointer;} .patt-button-close{ background-color:#ffffff !important;color:#000000 !important; } .patt-button-save{ background-color:#0473AA !important;color:#FFFFFF !important; }</style>';
 	
-	$("#mdocs-add-update").append(style_override);
+	jQuery("#mdocs-add-update").append(style_override);
 	
 	
 	// Inital set save button to hide
-	$("#wppatt-mdocs-save-doc-btn").hide();
+	jQuery("#wppatt-mdocs-save-doc-btn").hide();
 	
 	// Show save button after name change
-	$('#mdocs-name').keyup( function() {
-		$("#wppatt-mdocs-save-doc-btn").show();
+	jQuery('#mdocs-name').keyup( function() {
+		jQuery("#wppatt-mdocs-save-doc-btn").show();
 	});
 	
 	// Show save button after tags change
-	$('#mdocs-tags').keyup( function() {
-		$("#wppatt-mdocs-save-doc-btn").show();
+	jQuery('#mdocs-tags').keyup( function() {
+		jQuery("#wppatt-mdocs-save-doc-btn").show();
 	});
 	
 	//
-	$('.patt-button-close').click(function(){
+	jQuery('.patt-button-close').click(function(){
 		console.log('close');
 		//upload_alert_dismiss();	
-		$( '#upload-alert' ).hide();
-		$( '.progress-bar' ).hide();
-		$( '.progress-number' ).hide();
+		jQuery( '#upload-alert' ).hide();
+		jQuery( '.progress-bar' ).hide();
+		jQuery( '.progress-number' ).hide();
 		
 	});
 	
 	// Submit button for PATT MLD integration. Validates and initiates save. 
-	$("#wppatt-mdocs-save-doc-btn").click(function() {
+	jQuery("#wppatt-mdocs-save-doc-btn").click(function() {
 		console.log('clickity click clack');
 		let validation = true;
 		
-		let name = $("#mdocs-name").val();
+		let name = jQuery("#mdocs-name").val();
 		name = name.trim();
-		let tags = $("#mdocs-tags").val();
+		let tags = jQuery("#mdocs-tags").val();
 		tags = tags.trim();
 // 		let s3_upload_status = $("#result").html(); 
-		let s3_upload_status = $("#upload-alert").html(); 
+		let s3_upload_status = jQuery("#upload-alert").html(); 
 		if( typeof s3_upload_status !== 'undefined' ) {
 			s3_upload_status = s3_upload_status.trim();
 		} else {
@@ -599,7 +599,7 @@ $(document).ready(function(){
 			console.log('Validated. Do it.');
 			
 // 			$.when( create_mld_post_from_s3_data() ).then( console.log( 'This is it.') ); //location.reload()
- 			$.when( create_mld_post_from_s3_data() ).then( location.reload() ); // working
+ 			jQuery.when( create_mld_post_from_s3_data() ).then( location.reload() ); // working
 //			$.when( create_mld_post_from_s3_data() ).then( console.log( 'finished create_mld_post_from_s3_data' ) ); 
 			
 			//create_mld_post_from_s3_data();
@@ -624,12 +624,12 @@ function save_file() {
 	console.log('clickity click');
 	let validation = true;
 	
-	let name = $("#mdocs-name-single-file").val();
+	let name = jQuery("#mdocs-name-single-file").val();
 	name = name.trim();
-	let tags = $("#mdocs-tags").val();
+	let tags = jQuery("#mdocs-tags").val();
 	tags = tags.trim();
 
-	let s3_upload_status = $("#upload-alert").html(); 
+	let s3_upload_status = jQuery("#upload-alert").html(); 
 	if( typeof s3_upload_status !== 'undefined' ) {
 		s3_upload_status = s3_upload_status.trim();
 	} else {
@@ -671,7 +671,7 @@ function save_file() {
 	if( validation ) {
 		console.log('Validated. Do it.');
 		
-			$.when( save_s3_data_in_fdi_files() ).then( function() {console.log('we here, we done.'); location.reload();} ); // working
+			jQuery.when( save_s3_data_in_fdi_files() ).then( function() {console.log('we here, we done.'); location.reload();} ); // working
 			//create_mld_post_from_s3_data
 	}
 	
@@ -760,7 +760,6 @@ function upload_alert_dismiss( ) {
 	
 	setTimeout( function(){ jQuery( '#upload-alert' ).fadeOut( 1000 ); }, 1000 ); 
 }
-
 
 
 

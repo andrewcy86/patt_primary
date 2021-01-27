@@ -145,7 +145,7 @@ canvas {
 <hr>
 <div class="">
 <!-- 	<h2>File Uploader</h2> -->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+<!-- 	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script> -->
 	<script src="<?php echo $new_path ?>"></script>
 	<div class="form-group form-group-lg">
 <!-- 		<p>Upload digitized files for transfer to ECMS here.</p> -->
@@ -192,34 +192,41 @@ canvas {
 <hr>
 
 <script>
-//console.log('page2 loaded');
+console.log('S3 Modal Slice page loaded');
+/*
+if (typeof jQuery != 'undefined') {  
+    // jQuery is loaded => print the version
+    alert(jQuery.fn.jquery);
+}
+*/
+
 var s3upload=null;
 function upload(file) {
     if (!(window.File && window.FileReader && window.FileList && window.Blob && window.Blob.prototype.slice)) {
         alert("You are using an unsupported browser. Please update your browser.");
         return;
     }
-    $(".fileinput-button").toggle();
-    $(".cancel-button").toggle();
+    jQuery(".fileinput-button").toggle();
+    jQuery(".cancel-button").toggle();
 //     $("#result").text(""); upload_alert_status_modal
-    $("#upload_alert_status_modal").text(""); 
-    $("#objectkey").val("");
-    $("#objectlocation").val("");
-    $('#progress .progress-bar').css('width',"0px");
-    $('#progress .progress-number').text("");
+    jQuery("#upload_alert_status_modal").text(""); 
+    jQuery("#objectkey").val("");
+    jQuery("#objectlocation").val("");
+    jQuery('#progress .progress-bar').css('width',"0px");
+    jQuery('#progress .progress-number').text("");
 
     s3upload = new S3MultiUpload(file);
     console.log('about to upload');
     console.log({s3upload:s3upload.fileInfo.size});
     
     
-    $('#alert-alert').remove();
+    jQuery('#alert-alert').remove();
     
     // If uploading a zero byte file, disallow and show warning. 
     if( s3upload.fileInfo.size == 0 ) {
 	    console.log('zero clear it');
-	    $(".cancel-button").toggle();
-	    $(".fileinput-button").toggle();
+	    jQuery(".cancel-button").toggle();
+	    jQuery(".fileinput-button").toggle();
 	    set_alert( 'danger', 'Zero Byte Files are not allowed. Please try again.' );
 	    
 	    return;
@@ -236,16 +243,16 @@ function upload(file) {
     };
     s3upload.onProgressChanged = function(uploadedSize, totalSize, speed, partsInProgress, partsCompleted) {
         var progress = parseInt(uploadedSize / totalSize * 100, 10);
-        $('#progress .progress-bar').css(
+        jQuery('#progress .progress-bar').css(
             'width',
             progress + '%'
         );
-        $(".progress-number").html(getReadableFileSizeString(uploadedSize)+" / "+getReadableFileSizeString(totalSize)
+        jQuery(".progress-number").html(getReadableFileSizeString(uploadedSize)+" / "+getReadableFileSizeString(totalSize)
             + " <span style='font-size:smaller;color:gray;'>("
             +uploadedSize+" / "+totalSize
             +" at "
             +getReadableFileSizeString(speed)+"ps"
-            +")</span>").css({'margin-left' : -$('.progress-number').width()/2});
+            +")</span>").css({'margin-left' : -jQuery('.progress-number').width()/2});
 
 
         /*var ctx = document.getElementById('progressGrid').getContext('2d'); 
@@ -273,10 +280,10 @@ function upload(file) {
     s3upload.onUploadCompleted = function() {
 //         $("#result").text("Upload successful.");
         set_upload_notification( 'success', 'Upload successful.');
-        $("#wppatt-mdocs-save-doc-btn").toggle();
-        $(".fileinput-button").toggle();
-        $(".cancel-button").toggle();
-        $("#uploadId").val("");
+        jQuery("#wppatt-mdocs-save-doc-btn").toggle();
+        jQuery(".fileinput-button").toggle();
+        jQuery(".cancel-button").toggle();
+        jQuery("#uploadId").val("");
         document.getElementById('uploadId').readOnly=false
     };
 //     $("#result").text("Preparing upload...");
@@ -302,31 +309,31 @@ function getReadableFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 }
 
-$(function(){
-    $("#fileInput").change(function() {
-        $("#objectkey").val("");
-        $("#objectlocation").val("");
-        upload($('#fileInput')[0].files[0]);
+jQuery(function(){
+    jQuery("#fileInput").change(function() {
+        jQuery("#objectkey").val("");
+        jQuery("#objectlocation").val("");
+        upload(jQuery('#fileInput')[0].files[0]);
     });
     // Drag & drop support.
-    $("#uploadForm").on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
+    jQuery("#uploadForm").on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
         e.preventDefault();
         e.stopPropagation();
     }).on('dragover dragenter', function() {
-        $(this).addClass('is-dragover');
+        jQuery(this).addClass('is-dragover');
     }).on('dragleave dragend drop', function() {
-        $(this).removeClass('is-dragover');
+        jQuery(this).removeClass('is-dragover');
     }).on('drop', function(e) {
         droppedFiles = e.originalEvent.dataTransfer.files;
         upload(droppedFiles[0]);
     });
-    $("#cancel").click(function() {
+    jQuery("#cancel").click(function() {
         s3upload.cancel();
-        $(".fileinput-button").toggle();
-        $(".cancel-button").toggle();
-        $("#uploadId").val("");
-        $("#objectkey").val("");
-        $("#objectlocation").val("");
+        jQuery(".fileinput-button").toggle();
+        jQuery(".cancel-button").toggle();
+        jQuery("#uploadId").val("");
+        jQuery("#objectkey").val("");
+        jQuery("#objectlocation").val("");
         document.getElementById('uploadId').readOnly=false
     });
 })

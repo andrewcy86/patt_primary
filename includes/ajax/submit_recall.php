@@ -15,6 +15,7 @@ $item_id = isset($_POST['item_id']) ? sanitize_text_field($_POST['item_id']) : '
 
 $box_fk = $_POST['box_fk'];
 $folderdoc_fk = $_POST['folderdoc_fk'];
+$folderdoc_files_fk = $_POST['folderdoc_files_fk'];
 
 $assigned_agent_ids = $_REQUEST['assigned_agent_ids'];
 
@@ -70,7 +71,8 @@ $recall_status_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
 
 $data = [ 
 	'box_id' => $box_fk, 	 
-	'folderdoc_id' => $folderdoc_fk,  	
+//	'folderdoc_id' => $folderdoc_fk,
+	'folderdoc_id' => $folderdoc_files_fk,	  	
 	'program_office_id' => $program_office, 
 	'shipping_tracking_id' => $db_null, 
 	'record_schedule_id' => $record_schedule, 

@@ -61,8 +61,21 @@ $searchByStatus = $_POST['searchByStatus'];
 $searchByPriority = $_POST['searchByPriority'];
 $currentUser = $_POST['currentUser'];
 ## User Search
-$searchByUser = $_POST['searchByUser'];
-$searchByUserAAVal = $_POST['searchByUserAAVal'];
+//throwing Undefined Index error
+if(isset($_POST['searchByUser'])) {
+    $searchByUser = $_POST['searchByUser'];
+}
+else {
+    $searchByUser = '';
+}
+
+if(isset($_POST['searchByUserAAVal'])) {
+    $searchByUserAAVal = $_POST['searchByUserAAVal'];
+}
+else {
+    $searchByUserAAVal = '';
+}
+
 $searchByUserAAName = str_replace(",", "|", $_POST['searchByUserAAName']);
 $searchByUserAANameQuoted = str_replace(",", "','", $_POST['searchByUserAAName']);
 $searchByUserAANameQuoted = "'".$searchByUserAANameQuoted."'";

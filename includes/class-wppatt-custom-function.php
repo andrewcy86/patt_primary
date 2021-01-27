@@ -868,7 +868,7 @@ public static function id_in_recall( $identifier, $type ) {
 //                "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_return_items" => ['box_id', 'folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_shipping_tracking" => ['company_name as shipping_carrier', 'tracking_number', 'status', 'shipped', 'delivered'],
-                "{$wpdb->prefix}terms" => ['name as reason'],
+                "{$wpdb->prefix}terms" => ['name as reason'],               
                 "{$wpdb->prefix}wpsc_epa_return_users" => ['user_id'],
             ];
 
@@ -994,6 +994,7 @@ public static function id_in_recall( $identifier, $type ) {
         {		
             global $wpdb; 		
             // die(print_r($wpdb->prefix));		
+            
             $array = array();		
             $args = [		
                 'where' => ['id', $id],		
@@ -1299,55 +1300,9 @@ public static function id_in_recall( $identifier, $type ) {
             // If result set is empty, search for file/folder
             //
             if( !is_object($box_details) && count($box_details) < 1 ){
-/*				// Before moving freeze, etc from wpsc_epa_folderdocinfo to wpsc_epa_folderdocinfo_files
-                $args = [
-                    'select' => "{$wpdb->prefix}wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
-                    {$wpdb->prefix}wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
-                    {$wpdb->prefix}wpsc_epa_folderdocinfo.folderdocinfo_id as Folderdoc_Info_id,
-                    {$wpdb->prefix}wpsc_epa_folderdocinfo.freeze,
-                    {$wpdb->prefix}wpsc_epa_folderdocinfo.unauthorized_destruction,  
-                    {$wpdb->prefix}wpsc_epa_boxinfo.program_office_id,  
-                    index_level,
-                    title, 
-                    box_destroyed,
-                    box_status,
-                    {$wpdb->prefix}wpsc_epa_boxinfo.box_id,
-                    {$wpdb->prefix}wpsc_epa_program_office.id as Program_Office_id_FK, 
-                    {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
-                    {$wpdb->prefix}wpsc_epa_program_office.office_name,
-                    {$wpdb->prefix}epa_record_schedule.id as Record_Schedule_id_FK,
-                    {$wpdb->prefix}epa_record_schedule.Record_Schedule_Number,
-                    {$wpdb->prefix}epa_record_schedule.Schedule_Title,
-                    {$wpdb->prefix}wpsc_epa_boxinfo.record_schedule_id",
-                    'join'   => [
-                        [
-                            'type' => 'INNER JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_boxinfo", 
-                            'foreign_key'  => 'box_id',
-                            'compare' => '=',
-                            'key' => 'id'
-                        ],
-                        [
-                            'base_table' => "{$wpdb->prefix}wpsc_epa_boxinfo",
-                            'type' => 'INNER JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_program_office", 
-                            'foreign_key'  => 'program_office_id',
-                            'compare' => '=',
-                            'key' => 'office_code'
-                        ],
-                        [
-                            'base_table' => "{$wpdb->prefix}wpsc_epa_boxinfo",
-                            'type' => 'INNER JOIN', 
-                            'table' => "{$wpdb->prefix}epa_record_schedule", 
-                            'foreign_key'  => 'record_schedule_id',
-                            'compare' => '=',
-                            'key' => 'id'
-                        ]
-                    ],
-                    'where' => ['folderdocinfo_id', "'{$search_id}'"],
-                ];
-*/
-
+				
+				
+/*				// Before shift of FK in recallrequest to point to FDIF.folderdocinfofile_id instead of FDI.folderdocinfo_id 
 				$args = [
                     'select' => "{$wpdb->prefix}wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
                     {$wpdb->prefix}wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
@@ -1355,6 +1310,7 @@ public static function id_in_recall( $identifier, $type ) {
                     {$wpdb->prefix}wpsc_epa_folderdocinfo_files.freeze,
                     {$wpdb->prefix}wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
                     {$wpdb->prefix}wpsc_epa_folderdocinfo_files.title,  
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
                     {$wpdb->prefix}wpsc_epa_boxinfo.program_office_id,  
                     box_destroyed,
                     box_status,
@@ -1393,17 +1349,79 @@ public static function id_in_recall( $identifier, $type ) {
                         [
                             'type' => 'INNER JOIN', 
                             'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files", 
-                            'foreign_key'  => 'folderdocinfo_id',
+//                             'foreign_key'  => 'folderdocinfo_id',
+                            'foreign_key'  => 'id',
                             'compare' => '=',
                             'key' => 'folderdocinfo_id'
+// 							'key' => 'id'
                         ]
                     ],
 //                     'where' => ['folderdocinfo_id', "'{$search_id}'"],
 						'where' => ["{$wpdb->prefix}wpsc_epa_folderdocinfo.folderdocinfo_id", "'{$search_id}'"],
                 ];
-
-
+                
                 $wpsc_epa_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_folderdocinfo");
+*/
+
+				
+				$args = [
+                    'select' => "{$wpdb->prefix}wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.folderdocinfofile_id as Folderdoc_Info_id,
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.freeze,
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.title,  
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
+                    {$wpdb->prefix}wpsc_epa_boxinfo.program_office_id,  
+                    box_destroyed,
+                    box_status,
+                    {$wpdb->prefix}wpsc_epa_boxinfo.box_id,
+                    {$wpdb->prefix}wpsc_epa_program_office.id as Program_Office_id_FK, 
+                    {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
+                    {$wpdb->prefix}wpsc_epa_program_office.office_name,
+                    {$wpdb->prefix}epa_record_schedule.id as Record_Schedule_id_FK,
+                    {$wpdb->prefix}epa_record_schedule.Record_Schedule_Number,
+                    {$wpdb->prefix}epa_record_schedule.Schedule_Title,
+                    {$wpdb->prefix}wpsc_epa_boxinfo.record_schedule_id",
+                    'join'   => [
+                        [
+                            'type' => 'INNER JOIN', 
+                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo", 
+                            'foreign_key'  => 'folderdocinfo_id',
+                            'compare' => '=',
+                            'key' => 'id'
+                        ],
+                        [
+                            'base_table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo",
+                            'type' => 'INNER JOIN', 
+                            'table' => "{$wpdb->prefix}wpsc_epa_boxinfo", 
+                            'foreign_key'  => 'box_id',
+                            'compare' => '=',
+                            'key' => 'id'
+                        ],
+                        [
+                            'base_table' => "{$wpdb->prefix}wpsc_epa_boxinfo",
+                            'type' => 'INNER JOIN', 
+                            'table' => "{$wpdb->prefix}wpsc_epa_program_office", 
+                            'foreign_key'  => 'program_office_id',
+                            'compare' => '=',
+                            'key' => 'office_code'
+                        ],
+                        [
+                            'base_table' => "{$wpdb->prefix}wpsc_epa_boxinfo",
+                            'type' => 'INNER JOIN', 
+                            'table' => "{$wpdb->prefix}epa_record_schedule", 
+                            'foreign_key'  => 'record_schedule_id',
+                            'compare' => '=',
+                            'key' => 'id'
+                        ]
+                        
+                    ],
+//                     'where' => ['folderdocinfo_id', "'{$search_id}'"],
+						'where' => ["{$wpdb->prefix}wpsc_epa_folderdocinfo_files.folderdocinfofile_id", "'{$search_id}'"],
+                ];
+
+                $wpsc_epa_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_folderdocinfo_files");
                 $box_details = $wpsc_epa_box->get_row($args, false);
                 if($box_details) {
                     $box_details->type = 'Folder/Doc';
@@ -1577,7 +1595,7 @@ public static function id_in_recall( $identifier, $type ) {
          * Get recall data
          * @return Id
          */
-        public static function get_recall_data( $where ){            
+        public static function get_recall_data( $where ){
             global $wpdb;   
 
             if(is_array($where) && count($where) > 0){
@@ -1706,39 +1724,19 @@ public static function id_in_recall( $identifier, $type ) {
                         ],
                         [
                             'type' => 'LEFT JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo", 
+                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files", 
                             'key'  => 'id',
                             'compare' => '=',
                             'foreign_key' => 'folderdoc_id'
                         ],
-/*
                         [
-                            'base_table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo",
+                            'base_table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files",
                             'type' => 'LEFT JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files", 
-                            'key'  => 'folderdocinfo_id',
+                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo", 
+                            'key'  => 'id',
                             'compare' => '=',
                             'foreign_key' => 'folderdocinfo_id'
                         ],
-*/
-                        [
-                            'base_table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo",
-                            'type' => 'LEFT JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files", 
-                            'key'  => 'folderdocinfo_id',
-                            'compare' => '=',
-                            'foreign_key' => 'id'
-                        ],
-
-/*
-                        [
-                            'type' => 'LEFT JOIN', 
-                            'table' => "{$wpdb->prefix}wpsc_epa_folderdocinfo_files", 
-                            'key'  => 'id',
-                            'compare' => '=',
-                            'foreign_key' => 'id'
-                        ],
-*/
                         [
                             'type' => 'LEFT JOIN', 
                             'table' => "{$wpdb->prefix}wpsc_epa_program_office", 
@@ -1767,7 +1765,7 @@ public static function id_in_recall( $identifier, $type ) {
                             'compare' => '=',
                             'foreign_key' => 'recall_status_id'
                         ]
-                        ];
+                    ];
 
             $wpsc_epa_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_recallrequest");
             $box_details = $wpsc_epa_box->get_results($args);
@@ -2064,7 +2062,8 @@ public static function id_in_recall( $identifier, $type ) {
 	        $id = (int)$where['ticket_id'];
 	        $the_row = $wpdb->get_row("SELECT customer_email FROM {$wpdb->prefix}wpsc_ticket WHERE id = ".$id);
 	        
-	        $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
+	        //$the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
+	        $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = '" . $the_row->customer_email . "'" );
 	        
 	        $user_obj = get_user_by( 'email', $the_row->customer_email );
 	        
@@ -2761,18 +2760,18 @@ public static function id_in_recall( $identifier, $type ) {
         }
 
 		//TESTING ONLY REMOVE CONVERT DB EMAIL to USER ID
-        public static function convert_db_contact_email($agent_email)
+        public static function convert_db_contact_email( $agent_email )
         {
             global $wpdb;
 
-	        $get_user_id = $wpdb->get_row("SELECT ID FROM wpqa_users WHERE user_email = '" . $agent_email . "'");
+	        $get_user_id = $wpdb->get_row( "SELECT ID FROM wpqa_users WHERE user_email = '" . $agent_email . "'" );
 	        
-	        if (count($get_user_id)> 0){
-	       	$user_id_array = array($get_user_id->ID);
-	        $user_id = self::translate_user_id( $user_id_array, 'agent_term_id');
+	        if ( count($get_user_id) > 0 ){
+		       	$user_id_array = array($get_user_id->ID);
+		        $user_id = self::translate_user_id( $user_id_array, 'agent_term_id' );
             
             } else {
-            $user_id = 'error';
+            	$user_id = 'error';
             }
             
 	        return $user_id;
@@ -2861,6 +2860,27 @@ public static function id_in_recall( $identifier, $type ) {
 				
 				
 				// Condition 2: Box is not validated (66,68,67)
+				$get_sum_total = $wpdb->get_row("SELECT
+												    SUM(q.total_count) AS sum_total_count
+												FROM
+												    (
+												    SELECT
+												        (
+												        SELECT
+												            COUNT(fdif.id)
+												        FROM
+												            wpqa_wpsc_epa_folderdocinfo AS c
+												        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = c.id
+												        WHERE
+												            c.box_id = a.id
+												    ) AS total_count
+												FROM
+												    wpqa_wpsc_epa_boxinfo AS a
+												WHERE
+												    a.id = '" . $box_obj->Box_id_FK . "'
+												) q");
+
+/*				// OLD: before DB move of validation to fdi_files
 				$get_sum_total = $wpdb->get_row("select sum(a.total_count) as sum_total_count
 													from (
 														SELECT (
@@ -2872,9 +2892,32 @@ public static function id_in_recall( $identifier, $type ) {
 														WHERE a.id = '" . $box_obj->Box_id_FK . "'
 													) 
 												a");
+*/
 				
 				$sum_total_val = $get_sum_total->sum_total_count;
+
+				$get_sum_validation = $wpdb->get_row("SELECT
+													    SUM(b.validation) AS sum_validation
+													FROM
+													    (
+													    SELECT
+													        (
+													        SELECT
+													            SUM(VALIDATION = 1)
+													        FROM
+													            wpqa_wpsc_epa_folderdocinfo_files fdif
+													        JOIN wpqa_wpsc_epa_folderdocinfo fdi ON
+													            fdi.id = fdif.folderdocinfo_id
+													        WHERE
+													            fdi.box_id = a.id
+															) AS VALIDATION
+														FROM
+														    wpqa_wpsc_epa_boxinfo AS a
+														WHERE
+														    a.id = '" . $box_obj->Box_id_FK . "'
+														) b");	
 				
+/* 				// OLD: before DB move of validation to fdi_files
 				$get_sum_validation = $wpdb->get_row("select sum(a.validation) as sum_validation
 														from (
 															SELECT (
@@ -2884,7 +2927,8 @@ public static function id_in_recall( $identifier, $type ) {
 															
 															WHERE a.id = '" . $box_obj->Box_id_FK . "'	
 														) 
-													a");									
+													a");	
+*/								
 									
 				$sum_validation = $get_sum_validation->sum_validation;
 			
@@ -3084,7 +3128,8 @@ public static function id_in_recall( $identifier, $type ) {
 				} // End IF $role == 'Agent'		
 				
 				// Waiting/Shelved and Re-scan should always be enabled except when status is Completed, Destruction Approval, or Dispositioned (1)
-				if( $current_status != 'Completed' || $current_status != 'Destruction Approval' || $current_status != 'Dispositioned' ) {
+// 				if( $current_status != 'Completed' || $current_status != 'Destruction Approval' || $current_status != 'Dispositioned' ) {
+				if( $current_status != 'Completed' && $current_status != 'Destruction Approval' && $current_status != 'Dispositioned' ) {
 					
 					$ws_index = array_search('Waiting/Shelved', $restricted_status_list);
 					$rs_index = array_search('Re-scan', $restricted_status_list);
@@ -3101,7 +3146,9 @@ public static function id_in_recall( $identifier, $type ) {
 				if ( $current_status_index ) {
 					unset($restricted_status_list[$current_status_index]);
 				}
-
+				
+				// Removed Box Status: Cancelled from list always. 
+				$restricted_status_list[] = 'Cancelled';
 				
 				
 			}
@@ -3500,7 +3547,8 @@ public static function get_wp_user_id_by_ticket_id( $ticket_id ) {
         $id = (int)$ticket_id;
         $the_row = $wpdb->get_row("SELECT customer_email FROM {$wpdb->prefix}wpsc_ticket WHERE id = ".$id);
         
-        $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
+        //$the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
+        $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = '" . $the_row->customer_email . "'" );
         
         $user_obj = get_user_by( 'email', $the_row->customer_email );
         
@@ -3666,7 +3714,7 @@ if($type == 'comment') {
 			
 			
 			// Check if item is currently in recall database 
-			
+			// Added: "WHERE recall_id <> -99999" in Jan 2021 
 			$recall_rows = $wpdb->get_results(
 			'SELECT 
 				wpqa_wpsc_epa_recallrequest.id as id, 
@@ -3679,16 +3727,17 @@ if($type == 'comment') {
 				wpqa_wpsc_epa_recallrequest.recall_status_id as status_id
 			FROM 
 				wpqa_wpsc_epa_recallrequest 
-				INNER JOIN 
+			INNER JOIN 
 					wpqa_wpsc_epa_boxinfo AS boxinfo 
 				ON (
 			                wpqa_wpsc_epa_recallrequest.box_id = boxinfo.id
 				)
-			        INNER JOIN 
+			INNER JOIN 
 					wpqa_wpsc_epa_folderdocinfo AS folderinfo 
 				ON (
 			                wpqa_wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
 				)
+			WHERE recall_id <> -99999   	
 			ORDER BY id ASC' );
 			
 			// Not needed as this is checked in the indiviual sections so that more details errors are returned. 
@@ -3723,48 +3772,41 @@ if($type == 'comment') {
 					
 					// if not recalled, check all folder/files inside of box for Destroyed Files
 					if( $details_array['in_recall'] == false ) {
-/*
-						$folder_rows = $wpdb->get_results(
-							'SELECT 
-								folderinfo.id as id, 
-							    folderinfo.folderdocinfo_id as display_folderdocinfo_id,
-							    folderinfo.unauthorized_destruction as unauthorized_destruction
-							FROM 
-								wpqa_wpsc_epa_folderdocinfo as folderinfo
-							WHERE
-							    folderinfo.box_id = '. $details_array['Box_id_FK'] .'
-							   AND
-							    unauthorized_destruction = 1
-							ORDER BY id ASC'
-						);
-*/
-						$folder_rows = $wpdb->get_results(
-							'SELECT 
-								folderinfo.id as id, 
-							    folderinfo.folderdocinfo_id as display_folderdocinfo_id,
-							    folderinfo.unauthorized_destruction as unauthorized_destruction
-							FROM 
-								wpqa_wpsc_epa_folderdocinfo as folderinfo
-							JOIN 
-								wpqa_wpsc_epa_folderdocinfo_files AS files ON files.folderdocinfo_id = folderinfo.folderdocinfo_id
-							WHERE
-							    folderinfo.box_id = '. $details_array['Box_id_FK'] .'
-							   AND
-							    files.unauthorized_destruction = 1
-							ORDER BY id ASC'
-						);
 						
-						if( $folder_rows ) {
-							$list_of_destroyed_files = [];
-					
-							foreach( $folder_rows as $folder ) {
-								$list_of_destroyed_files[] = $folder->display_folderdocinfo_id;
-							}
+						// check if box exists
+						if( $details_array['Box_id_FK'] == '' || $details_array['Box_id_FK'] == null ) {
+							$details_array['error_message'] = 'Box Does Not Exist';
+							$details_array['error'] = 'Box Does Not Exist';
+						} else {
 							
-							$details_array['error_message'] = 'Box Contains Destroyed Files';
-							$details_array['error'] = 'Box Contains Destroyed Files';
-							$details_array['destroyed_files'] = $list_of_destroyed_files;	
-						}	
+							$folder_rows = $wpdb->get_results(
+								'SELECT 
+									folderinfo.id as id, 
+								    folderinfo.folderdocinfo_id as display_folderdocinfo_id,
+								    files.unauthorized_destruction as unauthorized_destruction
+								FROM 
+									wpqa_wpsc_epa_folderdocinfo as folderinfo
+								JOIN 
+									wpqa_wpsc_epa_folderdocinfo_files AS files ON files.folderdocinfo_id = folderinfo.folderdocinfo_id
+								WHERE
+								    folderinfo.box_id = '. $details_array['Box_id_FK'] .'
+								   AND
+								    files.unauthorized_destruction = 1
+								ORDER BY id ASC'
+							);
+							
+							if( $folder_rows ) {
+								$list_of_destroyed_files = [];
+						
+								foreach( $folder_rows as $folder ) {
+									$list_of_destroyed_files[] = $folder->display_folderdocinfo_id;
+								}
+								
+								$details_array['error_message'] = 'Box Contains Destroyed Files';
+								$details_array['error'] = 'Box Contains Destroyed Files';
+								$details_array['destroyed_files'] = $list_of_destroyed_files;	
+							}	
+						}
 					}
 					
 					
@@ -3837,10 +3879,8 @@ if($type == 'comment') {
 							//$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status.';
 							$details_array['box_status_name'] = 'Dispositioned';
 							break;
-						
 					}
 					
-						
 				}
 			} else { // Folder/File Search
 				

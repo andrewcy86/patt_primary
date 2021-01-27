@@ -2,8 +2,8 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 if(
 !empty($_POST['postvarsfolderdocid'])
@@ -104,8 +104,12 @@ $get_freeze = $wpdb->get_row("SELECT freeze FROM wpqa_wpsc_epa_folderdocinfo_fil
 $get_freeze_val = $get_freeze->freeze;
 
 $get_request_id = substr($folderdocid_string, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id, freeze_approval FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
+$filedetails_freeze_approval = $get_ticket_id->freeze_approval;
+
+//freeze_approval was not being checked on the file details page before, would set the freeze flag with no constraints
+if($filedetails_freeze_approval == 1) {
 
 if ($get_freeze_val == 1){
 $freeze_reversal = 1;
@@ -121,7 +125,7 @@ $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_freeze', $ticket_id, $folderdocid_string);
 }
-
+}
 }
 
 if ($freeze_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
