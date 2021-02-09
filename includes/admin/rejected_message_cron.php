@@ -11,14 +11,14 @@ global $current_user, $wpscfunction, $wpdb;
 
 // Get all rejected tickets
 $get_rejected_requests = $wpdb->get_results("SELECT id as ticket_id, request_id
-FROM wpqa_wpsc_ticket
+FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE ticket_status = 670 AND active = 1 AND id <> -99999");
 
 foreach($get_total_request_count as $item) {
 $ticket_id = $item->ticket_id;
 
-$get_customer_name = $wpdb->get_row('SELECT customer_name FROM wpqa_wpsc_ticket WHERE id = "' . $ticket_id . '"');
-$get_user_id = $wpdb->get_row('SELECT ID FROM wpqa_users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+$get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
 
 $user_id_array = [$get_user_id->ID];
 $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');

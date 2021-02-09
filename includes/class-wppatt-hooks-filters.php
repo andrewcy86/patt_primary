@@ -86,7 +86,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$attachment_id = media_handle_upload( 'file', 0 );
 			if ( ! is_wp_error( $attachment_id ) ) {
 				update_post_meta( $attachment_id, 'folder', 'box-list' );
-				array_push( $attach_ids, $attachment_id );
+				//array_push( $attach_ids, $attachment_id ); // causing error, $attach_ids should be array, null given.
 
 				$request_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
 				echo 'File Upload Successfully -> ' . esc_attr( $request_page );
@@ -166,7 +166,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				$test = 'Box'; // DEBUG
 			} else {
 				// New SEMS BoxInfo
-				$boxinfodata = stripslashes( $data['superfund_data'] );
+				$boxinfodata = stripslashes( $data['box_info'] );
+				
+				// OLD: before SEMS dropzone merged with ECMS
+				//$boxinfodata = stripslashes( $data['superfund_data'] );
 				$boxinfo_array = json_decode( $boxinfodata, true );
 				$test = 'SEMS'; // DEBUG
 			}
@@ -224,7 +227,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			// Loop through box data
 			foreach ( $boxinfo_array as $boxinfo ) {
 				
-				// Shift Superfund to associative array
+/*
+				// Shift Superfund to associative array for separate SEMS xlsx ingestion file
 				if( $superfund ) {
 					$new_boxinfo['DOC_REGID'] = $boxinfo[0];
 					$new_boxinfo['DOC_ID'] = $boxinfo[1];
@@ -241,28 +245,23 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$new_boxinfo['RECORD_SCHEDULE'] = '108 1036a';
 					$new_boxinfo['INDEX_LEVEL'] = 'File';
 					
-					$boxinfo = $new_boxinfo;
+					// OLD: removes old superfund xlsx fields
+					// $boxinfo = $new_boxinfo;
 				}
+*/
 				
 				
 				// Set Box ID and box number
-				if( !$superfund ) {
-					$box_id = $request_id . '-' . $boxinfo['Box'];
-					$box_num = $boxinfo['Box'];
-					
-					if( $boxinfo['Parent/Child'] == 'P' ) {
-						$parent_child_single = 'parent';
-					} elseif( $boxinfo['Parent/Child'] == 'C' ) {
-						$parent_child_single = 'child';
-					} elseif( $boxinfo['Parent/Child'] == 'S' ) {
-						$parent_child_single = 'single';
-					} else {
-						$parent_child_single = 'single';
-					}
-					
+				$box_id = $request_id . '-' . $boxinfo['Box'];
+				$box_num = $boxinfo['Box'];
+				
+				if( $boxinfo['Parent/Child'] == 'P' ) {
+					$parent_child_single = 'parent';
+				} elseif( $boxinfo['Parent/Child'] == 'C' ) {
+					$parent_child_single = 'child';
+				} elseif( $boxinfo['Parent/Child'] == 'S' ) {
+					$parent_child_single = 'single';
 				} else {
-					$box_id = $request_id . '-' . $boxinfo['PATT_BOX'];
-					$box_num = $boxinfo['PATT_BOX'];
 					$parent_child_single = 'single';
 				}
 				
@@ -274,14 +273,40 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$folder_file_counter = 0;
 				}
 				
+				
 				//
 				// If new Box in Request
 				//
 				
-// 				if ( $box !== $boxinfo['Box'] ) {
+
 				if ( $box !== $box_num ) {
 					
 					// Record Schedule Number
+					$record_schedule_number_break = explode( ':', $boxinfo['Record Schedule & Item Number'] );
+					$record_schedule_number = trim( str_replace( array( '[', ']' ), '', $record_schedule_number_break[0] ) );
+					
+					// EPA Contact for Lan ID and Lan ID Details
+					$epa_contact = trim( $boxinfo['EPA Contact'] );
+					
+					// Program Office
+					if( !$superfund ) {
+						$program_office_break = explode( ':', $boxinfo['Program Office'] );
+						$program_office_id = trim( $program_office_break[0] );
+						$region_id = null;
+					} else {
+						// SEMS Default
+						$program_office_id = 'OLEM-OSRTI';
+						
+						// Get DOC_REGID
+						$program_office_break = explode( ':', $boxinfo['Program Office'] );
+						$region_break = explode( '-', $program_office_break[0] );
+						$region_code = $region_break[0];
+						$region_id = str_replace( 'R', '', $region_code);
+					}
+					
+					
+					// OLD: old superfund xlsx data
+/*
 					if( !$superfund ) {
 						$record_schedule_number_break = explode( ':', $boxinfo['Record Schedule & Item Number'] );
 						$record_schedule_number = trim( str_replace( array( '[', ']' ), '', $record_schedule_number_break[0] ) );
@@ -289,17 +314,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						//$record_schedule_number = 1036;
 						$record_schedule_number = $boxinfo['RECORD_SCHEDULE'];
 					}
-					
-					// Program Office
-					if( !$superfund ) {
-						$program_office_break = explode( ':', $boxinfo['Program Office'] );
-						$program_office_id = trim( $program_office_break[0] );
-					} else {
-						// SEMS Default
-						$program_office_id = 'OLEM-OSRTI';
-					}
+*/
 					
 					// EPA Contact for Lan ID and Lan ID Details
+					// OLD: old superfund xlsx data
+/*
 					if( !$superfund ) {
 						// $epa_contact = $boxinfo['EPA Contact'];
 						$epa_contact = trim( $boxinfo['EPA Contact'] );
@@ -307,6 +326,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$epa_contact = trim( $boxinfo['DOC_CREATOR/EDITOR'] );
 						$epa_contact_legacy = $epa_contact;
 					}
+*/
 					
 					
 					// Fetch lan id and json
@@ -333,15 +353,14 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 					//Create boxinfo record
 					$boxinfo_id = $this->create_new_boxinfo( $boxarray );
-
-					// Podbelski Update Jan 2021
+					
+					$box = $box_num;
+					
+					// Update Jan 2021
 					//$this->add_boxinfo_meta( $boxinfo_id, 'assigned_agent', '0' );
 					//$this->add_boxinfo_meta( $boxinfo_id, 'prev_assigned_agent', '0' );
 					
-					
-					// $box = $boxinfo['Box'];
-					$box = $box_num;
-					
+
 					
 					// DEBUG - START
 /*
@@ -353,7 +372,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						<?php 
 							echo 'superfund: ' . $superfund . '<br>';
 							echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
-							echo 'test: ' . $test . '<br>';
+							echo 'boxinfo_id: ' . $boxinfo_id . '<br>';
 							echo 'box: ' . $box . '<br>';
 							//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
 							echo '<pre>';
@@ -398,6 +417,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 								echo 'superfund: ' . $superfund . '<br>';
 								echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
 								echo 'test: ' . $test . '<br>';
+								echo 'Program Office: ' . $boxinfo['Program Office'] . '<br>';
 								//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
 								echo '<pre>';
 								print_r( $boxarray );
@@ -473,10 +493,17 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
 				} else {
 					// Superfund defaults
+					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
+					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '00' : '01';
+					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
+					
+					// OLD: before merging xlsx dropzone
+/*
 					$index_level = strtolower( $boxinfo['INDEX_LEVEL'] ) == 'file' ? 2 : 1;
 // 					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
 					$essential_record = '01';
 					$docinfo_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
+*/
 				}
 				
 				//
@@ -487,7 +514,70 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// if ( '' === $boxinfo['Folder/Filename'] || null === $boxinfo['Folder/Filename'] ) {  // electronic files allowed as parents
 				if( $parent_child_single != 'child' ) {
 				// Now: every entry sans child
+					$datetime = new DateTime();
+					//$newDate = $datetime->createFromFormat('d/m/Y', '23/05/2013');
+					$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
 					
+					$folderdocarray = array(
+						'folderdocinfo_id' => $docinfo_id,
+						'author' => "{$boxinfo['Author']}",
+						'addressee' => "{$boxinfo['Addressee']}",
+						'record_type' => "{$boxinfo['Record Type']}",
+						'site_name' => "{$boxinfo['Site Name']}",
+						'siteid' => "{$boxinfo['Site ID #']}",
+						'close_date' => $new_date->format( 'Y-m-d H:i:s' ),
+						'access_type' => "{$boxinfo['Access Type']}",
+						'folder_identifier' => "{$boxinfo['Folder Identifier']}",
+						'box_id' => $boxinfo_id,
+						'essential_record' => "{$essential_record}",
+						'date_created' => gmdate( 'Y-m-d H:i:s' ),
+						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+					);
+					
+					
+					
+					//
+					// DEBUG
+					//
+/*
+					ob_start();
+					?>
+					<div class="col-sm-12 ticket-error-msg">
+						<?php esc_html_e( 'Before the File.', 'pattracking' ); ?>
+						<br><br>
+						<?php 
+							echo 'superfund: ' . $superfund . '<br>';
+							echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
+							echo 'test: ' . $test . '<br>';
+							//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
+							echo '<pre>';
+							print_r( $folderdocarray );
+							echo '</pre>';
+							echo '<pre>';
+							print_r( $boxinfo_array );
+							echo '</pre>';
+						?>
+						<br>
+						<pre>
+						<?php print_r( $boxarray );  ?>
+						</pre>
+					</div>
+					<?php
+					$ticket_error_message = ob_get_clean();
+
+					$response = array(
+						'redirct_url'    => '',
+						'thank_you_page' => $ticket_error_message,
+					);
+
+					echo json_encode( $response );
+					die();
+*/
+
+					
+					
+					
+/*
 					if( !$superfund ) {
 						
 						$datetime = new DateTime();
@@ -508,7 +598,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'siteid' => "{$boxinfo['Site ID #']}",
 							//'close_date' => "{$boxinfo['Close Date']}",
 							'close_date' => $new_date->format( 'Y-m-d H:i:s' ),
-							'epa_contact_email' => '{}',
+							//'epa_contact_email' => '{}',
 							'access_type' => "{$boxinfo['Access Type']}",
 							//'source_format' => "{$boxinfo['Source Format']}",
 							// 'rights' => "{$boxinfo['Rights']}",
@@ -519,6 +609,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							// 'file_location' => '',
 							// 'freeze' => 1,
 							//'index_level' => $index_level,
+							//'qa_user_id' => '',
 							'box_id' => $boxinfo_id,
 							'essential_record' => "{$essential_record}",
 							'date_created' => gmdate( 'Y-m-d H:i:s' ),
@@ -564,6 +655,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							//'doc_regid' => $boxinfo['DOC_REGID'],
 						);
 					}
+*/
 					
 					
 /*
@@ -630,12 +722,50 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				} // Remove when removing $boxinfo['Folder/Filename'] check. Allows parent to be electronic // ADDED new if !child
 				
 				
+				
 				//
 				// Add data to folderdocinfo_files
 				//
 				
-				// Upload file only if one exists. // Superfund SEMS not possible .:. will not have digital files
-// 				if ( '' !== $boxinfo['Folder/Filename'] && null !== $boxinfo['Folder/Filename'] ) {
+				// Get & Set folderdocinfofile_id
+				if( $parent_child_single == 'parent' ) {
+					$folder_file_counter++;
+					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
+					$folder_file_sub_counter = 1; //Reset for new file folder
+					$folder_file_sub_id = $folder_file_id;
+				} elseif( $parent_child_single == 'child') {
+					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
+					$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
+					$folder_file_sub_counter++; //Increment it for next file.
+				} elseif( $parent_child_single == 'single' ) {
+					$folder_file_counter++;
+					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
+					$folder_file_sub_counter = 1; //Reset for new file folder
+					$folder_file_sub_id = $folder_file_id;
+				}
+				
+				// Get & Set relation_part & relation_part_of
+				$part_match = preg_match( "/\[Part(.*?)]/", $boxinfo['Title'], $matches);
+				$clean = trim($matches[1]);
+				
+				$x_of_y_match = preg_match( "/(\d+)(.of.?)(\d+)/", $clean, $matches_2);
+				
+				if ( $part_match && $x_of_y_match ) {
+				    $x_of = $matches_2[1];
+				    $of_y = $matches_2[3];
+				} else {
+					$x_of = '';
+					$of_y = '';
+				}
+				
+				if( !$superfund ) {
+					$source_format = "{$boxinfo['Source Format']}";
+				} else {
+					//$source_format = 'Paper';
+					$source_format = "{$boxinfo['Source Format']}";
+				}
+				
+				// Upload file only if one exists. //SEMS not possible .:. will not have digital files :: but, um like, totally possible.
 				if ( $boxinfo['Folder/Filename'] !== '' && $boxinfo['Folder/Filename'] !== null ) {
 				
 				// if electronic file
@@ -683,7 +813,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'post_type' => 'mdocs-posts',
 							'post_content' => '[mdocs_post_page new=true]'
 						);
-						$mdocs_post_id = wp_insert_post( $mdocs_post, true );
+						//$mdocs_post_id = wp_insert_post( $mdocs_post, true ); // FEB
 
 						$wp_filetype = wp_check_filetype( $file_path, null );
 						// Save mdocs attachment aka The Child
@@ -697,37 +827,13 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'post_date_gmt' => gmdate( 'Y-m-d H:i:s' ),
 							'post_content' => '[mdocs_media_attachment]'
 						);
-						$mdocs_attach_id = wp_insert_attachment( $attachment, $file_path, $mdocs_post_id );
+						//$mdocs_attach_id = wp_insert_attachment( $attachment, $file_path, $mdocs_post_id ); FEB
 					}
 					
 					// Updates sub_id to be Attachement
 					// Update when updating for Parent/Child
 					// add this to every child
-					// if child add -a, if not, don't. 
-					
-					
-					
-					if( $parent_child_single == 'parent' ) {
-						$folder_file_counter++;
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_counter = 1; //Reset for new file folder
-						$folder_file_sub_id = $folder_file_id;
-					} elseif( $parent_child_single == 'child') {
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
-						$folder_file_sub_counter++; //Increment it for next file.
-					} elseif( $parent_child_single == 'single' ) {
-						$folder_file_counter++;
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_counter = 1; //Reset for new file folder
-						$folder_file_sub_id = $folder_file_id;
-					}
-					
-/*
-					$folder_file_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-					$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
-					$folder_file_sub_counter++; //Increment it for next file.
-*/
+					// if child add -a, if not, don't. 				
 					
 					
 					// Convert Date
@@ -738,19 +844,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					// Save into folderdocinfo_files
 					//
 					
-					if( !$superfund ) {
-						$source_format = "{$boxinfo['Source Format']}";
-					} else {
-						$source_format = 'Paper';
-					}
 					
 					
+					// ECMS FDIF data
 					$folderdocfiles_info = [
-						'post_id' => $mdocs_post_id,
-// 						'post_id' => $mdocs_attach_id,
+						//'post_id' => $mdocs_post_id,
 						//'folderdocinfo_id'  => $folder_file_id, 
 						'folderdocinfo_id'  => $folderdocinfo_id, 
 						'folderdocinfofile_id'   => $folder_file_sub_id,
+						'doc_regid' => $region_id,
 						'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
 						'file_name'  => $file_name,
 						//'object_location'   => '/uploads/mdocs/',
@@ -759,9 +861,17 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						//'date' => $boxinfo['Date'],
 						'date' => $newdatetimeformat,
 						//'description'   => 'x',
-						//'tags' => $boxinfo['Tags'],
+						'tags' => $boxinfo['Tags'],
 						'source_format' => $source_format,
 						'index_level' => $index_level,
+						'description' => $boxinfo['Description of Record'],
+						'access_restriction' => $boxinfo['Access Restrictions'],
+						'use_restriction' => $boxinfo['Rights Restrictions'],
+						'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
+						'rights_holder' => $boxinfo['Rights Holder'],
+						'source_dimensions' => $boxinfo['Source Dimensions'],
+						'relation_part' => $x_of,
+						'relation_part_of' => $of_y
 					];
 					
 					// If Box is used for Litigation, Congressional, or FOIA 
@@ -809,7 +919,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						update_option('mdocs-cats',$mdocs_cats, '' , 'no');
 					}
 					
-					// Save files in wp_options name: 'mdocs-list'
+					// Save files in wp_options name: 'mdocs-list' // FEB
+/*
 					$mdocs = mdocs_array_sort(); // gets values from wp_options
 					array_push($mdocs, array(
 						'id'=> $mdocs_attach_id,
@@ -840,6 +951,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					$mdocs = mdocs_array_sort($mdocs);
 					mdocs_save_list($mdocs);
+*/
 					
 /*					// SAVE for visibility
 					array_push($mdocs, array(
@@ -885,24 +997,6 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					
 					
-					if( $parent_child_single == 'parent' ) {
-						$folder_file_counter++;
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_counter = 1; //Reset for new file folder
-						$folder_file_sub_id = $folder_file_id;
-					} elseif( $parent_child_single == 'child') {
-						
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
-						$folder_file_sub_counter++; //Increment it for next file.
-					} elseif( $parent_child_single == 'single' ) {
-						$folder_file_counter++;
-						$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
-						$folder_file_sub_counter = 1; //Reset for new file folder
-						$folder_file_sub_id = $folder_file_id;
-					}
-					
-					
 					// Insert into wp_posts
 					if( !$superfund ) {
 						$mdocs_post = array(
@@ -914,7 +1008,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'post_type' => 'mdocs-posts',
 							'post_content' => '[mdocs_post_page new=true]'
 						);
-						$mdocs_post_id = wp_insert_post( $mdocs_post, true );
+						//$mdocs_post_id = wp_insert_post( $mdocs_post, true ); // FEB
 						
 						//$folder_file_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 						
@@ -923,30 +1017,39 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
 						
 						// Insert data for folderdocinfo_files :: ECMS
+						// ECMS FDIF data
 						$folderdocfiles_info = [
-							'post_id' => $mdocs_post_id, 
-							//'folderdocinfo_id'  => $folder_file_id,
+							//'post_id' => $mdocs_post_id,
 							'folderdocinfo_id'  => $folderdocinfo_id, 
-// 							'folderdocinfofile_id'   => $folder_file_id,
 							'folderdocinfofile_id'   => $folder_file_sub_id,
 							'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
 							//'file_name'  => $file_name,
 							//'object_location'   => '/uploads/mdocs/',
 							//'source_file_location' => $boxinfo['Folder/Filename'],
 							'title'  => $boxinfo['Title'],
-							//'date' => $boxinfo['Date'],
 							'date' => $newdatetimeformat,
 							//'description'   => 'x',
-							//'tags' => $boxinfo['Tags'],
-							'source_format' => "{$boxinfo['Source Format']}",
-							'index_level' => $index_level
+							'tags' => $boxinfo['Tags'],
+							'source_format' => $source_format,
+							//'source_format' => "{$boxinfo['Source Format']}",
+							'index_level' => $index_level,
+							'description' => $boxinfo['Description of Record'],
+							'access_restriction' => $boxinfo['Access Restrictions'],
+							'use_restriction' => $boxinfo['Rights Restrictions'],
+							'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
+							'rights_holder' => $boxinfo['Rights Holder'],
+							'source_dimensions' => $boxinfo['Source Dimensions'],
+							'relation_part' => $x_of,
+							'relation_part_of' => $of_y
 						];
+
 						
 					} else {
 						// SUPERFUND
 						
 						$mdocs_post = array(
-							'post_title' => $boxinfo['TITLE'],
+							//'post_title' => $boxinfo['TITLE'],
+							'post_title' => $boxinfo['Title'],
 							'post_status' => 'publish',
 							'post_author' => $current_user->ID,
 							'post_date' => gmdate( 'Y-m-d H:i:s' ),
@@ -954,17 +1057,19 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'post_type' => 'mdocs-posts',
 							'post_content' => '[mdocs_post_page new=true]'
 						);
-						$mdocs_post_id = wp_insert_post( $mdocs_post, true );
+						// $mdocs_post_id = wp_insert_post( $mdocs_post, true ); // FEB
 						
-						$folder_file_id = $request_id . '-' . $boxinfo['PATT_BOX'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
+						//$folder_file_id = $request_id . '-' . $boxinfo['PATT_BOX'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
+						$folder_file_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 						
 						// Convert Date
-						$time = strtotime( $boxinfo['DATE'] );
-						$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
+						//$time = strtotime( $boxinfo['DATE'] );
+						$time = strtotime( $boxinfo['Date'] );
+						$newdatetimeformat = date( 'Y-m-d H:i:s', $time );
 						
 						// Insert data for folderdocinfo_files :: SEMS Superfund
 						$folderdocfiles_info = [
-							'post_id' => $mdocs_post_id,
+							//'post_id' => $mdocs_post_id,
 							//'folderdocinfo_id'  => $folder_file_id,
 							'folderdocinfo_id'  => $folderdocinfo_id, 
 							//'folderdocinfofile_id'   => $folder_file_id,
@@ -973,15 +1078,20 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							//'file_name'  => $file_name,
 							//'object_location'   => '/uploads/mdocs/',
 							//'source_file_location' => $boxinfo['Folder/Filename'],
-							'title'  => $boxinfo['TITLE'],
-							//'date' => $boxinfo['DATE'],
+							'title'  => $boxinfo['Title'],
 							'date' => $newdatetimeformat,
-							'doc_id' => $boxinfo['DOC_ID'],
-							'doc_regid' => $boxinfo['DOC_REGID'],
-							'source_format' => 'Paper',
+							'tags' => $boxinfo['Tags'],
+							'doc_regid' => $region_id,
+							'source_format' => $source_format,
 							'index_level' => $index_level,
-							//'description'   => 'x',
-							//'tags' => $boxinfo['Tags']
+							'description' => $boxinfo['Description of Record'],
+							'access_restriction' => $boxinfo['Access Restrictions'],
+							'use_restriction' => $boxinfo['Rights Restrictions'],
+							'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
+							'rights_holder' => $boxinfo['Rights Holder'],
+							'source_dimensions' => $boxinfo['Source Dimensions'],
+							'relation_part' => $x_of,
+							'relation_part_of' => $of_y
 						];
 					}
 					
@@ -1013,9 +1123,23 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							echo 'Folder/Filename: ' . $boxinfo['Folder/Filename'] . '<br>'; 
 							echo 'Folder/Filename null: ' . is_null( $boxinfo['Folder/Filename']) . '<br>'; 
 							echo 'folderdocfiles_info_id: ' . $folderdocfiles_info_id . '<br>'; 
-							echo 'mdocs_post: <br>'; 
+							echo 'region_code: ' . $region_code . '<br>';
+							echo 'region_id: ' . $region_id . '<br>';
+							
+							echo 'region_break: <br>'; 
 							echo '<pre>';
-							print_r( $mdocs_post );
+							print_r( $region_break );
+							echo '</pre>';
+							
+							
+							echo 'program_office_break: <br>'; 
+							echo '<pre>';
+							print_r( $program_office_break );
+							echo '</pre>';
+							
+							echo 'Matches: <br>'; 
+							echo '<pre>';
+							print_r( $matches );
 							echo '</pre>';
 							echo 'folderdocfiles_info: <br>';
 							echo '<pre>';
@@ -1212,6 +1336,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 								<th>Box</th>
 								<th>Folder Identifier</th>
 								<th>Title</th>
+								<th>Description of Record</th>
+								<th>Parent/Child</th>
 								<th>Date</th>
 								<th>Author</th>
 								<th>Addressee</th>
@@ -1220,15 +1346,18 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 								<th>Site Name</th>
 								<th>Site ID #</th>
 								<th>Close Date</th>
-								<th>EPA Contact</th>
-								<th>Access Type</th>
+								<th>EPA Contact</th>								
+								<th>Access Restrictions</th>
+								<th>Rights Restrictions</th>
+								<th>Specific Use Restrictions</th>
+								<th>Rights Holder</th>
 								<th>Source Format</th>
+								<th>Source Dimensions</th>
 								<th>Program Office</th>
 								<th>Index Level</th>
 								<th>Essential Record</th>
 								<th>Folder/Filename</th>
-<!-- 								<th>Tags</th> -->
-								<th>Parent/Child</th>
+								<th>Tags</th>
 							</tr>
 						</thead>
 					</table>
@@ -1292,6 +1421,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 // 					let superfund_2 = jQuery('#super-fund').val();
 					jQuery('#super-fund').change( function () {
+/*
 						superfund = jQuery('#super-fund').val();
 						if( superfund == 'yes' ) {							
 							jQuery('#boxdisplaydivSEMS').show();
@@ -1300,6 +1430,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							jQuery('#boxdisplaydivSEMS').hide();
 							jQuery('#boxdisplaydiv').show();							
 						}
+*/
 					});
 				</script>
 				<!-- End of new datatable -->

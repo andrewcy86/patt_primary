@@ -100,7 +100,7 @@ Enter one or more Document IDs:<br />
      <?php foreach($po_array as $key => $value) { ?>
       
     <?php 
-        $program_office = $wpdb->get_row("SELECT office_name FROM wpqa_wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
+        $program_office = $wpdb->get_row("SELECT office_name FROM " . $wpdb->prefix . "wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
         $office_name = $program_office->office_name;
     ?>
         <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $office_name; ?>'></option>
@@ -201,9 +201,10 @@ div.dataTables_processing { z-index: 1; }
 
 <?php
 $convert_box_id = $wpdb->get_row(
-"SELECT wpqa_wpsc_epa_boxinfo.id
-FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
-WHERE wpqa_wpsc_epa_boxinfo.box_id = '" .  $global_id . "'");
+"SELECT b.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE b.box_id = '" .  $global_id . "'");
 
 $box_id = $convert_box_id->id;
 ?>
@@ -419,11 +420,11 @@ postvarsfolderdocid : rows_selected.join(",")
        var substring_true = "true";
 
        if(response.indexOf(substring_false) >= 0) {
-       alert('Cannot print folder/file labels for documents that are destroyed or not assigned to a location.');
+       alert('Cannot print folder/file labels for documents that have been destroyed or are not assigned to a location.');
        }
        
        if(response.indexOf(substring_warn) >= 0) {
-       alert('One or more documents that you selected has been destroyed or does not have an assigned location and it\'s label will not generate.');
+       alert('One or more documents that you have selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
            // Loop through array
     [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);

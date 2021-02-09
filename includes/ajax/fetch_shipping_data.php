@@ -20,7 +20,7 @@ if($method == 'GET')
   ':ticket_id'    => $_GET['ticket_id']
  );
 
- $query = 'SELECT * FROM wpqa_wpsc_epa_shipping_tracking WHERE company_name LIKE :company_name AND tracking_number LIKE :tracking_number AND status LIKE :status AND ticket_id = :ticket_id ORDER BY id DESC';
+ $query = 'SELECT * FROM ' . $wpdb->prefix . 'wpsc_epa_shipping_tracking WHERE company_name LIKE :company_name AND tracking_number LIKE :tracking_number AND status LIKE :status AND ticket_id = :ticket_id ORDER BY id DESC';
 
  $statement = $connect->prepare($query);
  $statement->execute($data);
@@ -59,7 +59,7 @@ $tracking_num = '';
   ':tracking_number'    => $_POST["tracking_number"]
  );
 
- $query = "INSERT INTO wpqa_wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '-99999',  '-99999')";
+ $query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '-99999',  '-99999')";
  $statement = $connect->prepare($query);
  $statement->execute($data);
  do_action('wpppatt_after_add_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_POST["company_name"]).' - '.$_POST["tracking_number"]);
@@ -75,7 +75,7 @@ if($method == 'PUT')
   ':tracking_number' => $_PUT['tracking_number']
  );
  $query = "
- UPDATE wpqa_wpsc_epa_shipping_tracking 
+ UPDATE " . $wpdb->prefix . "wpsc_epa_shipping_tracking 
  SET
  company_name = :company_name, 
  tracking_number = :tracking_number
@@ -89,7 +89,7 @@ if($method == 'PUT')
 if($method == "DELETE")
 {
  parse_str(file_get_contents("php://input"), $_DELETE);
- $query = "DELETE FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$_DELETE["id"]."'";
+ $query = "DELETE FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id = '".$_DELETE["id"]."'";
  $statement = $connect->prepare($query);
  $statement->execute();
   do_action('wpppatt_after_remove_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_DELETE["company_name"]).' - '.$_DELETE["tracking_number"]);

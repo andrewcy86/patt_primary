@@ -40,7 +40,7 @@ $recalls_expired_today = $wpdb->get_results(
 	"SELECT
 	    *
 	FROM
-	    `wpqa_wpsc_epa_recallrequest`
+	    " . $wpdb->prefix . "wpsc_epa_recallrequest
 	WHERE
 	    expiration_date LIKE '" . $current_datetime . "%' 
 	AND recall_status_id <> " . $status_recall_denied_term_id . 

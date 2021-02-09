@@ -65,6 +65,8 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 		public static function approval_widget( $post_id ) {
 			global $wpdb;
 
+            $is_active = Patt_Custom_Func::ticket_active( $post_id );
+            
 			$wpsc_appearance_individual_ticket_page = get_option( 'wpsc_individual_ticket_page' );
 			$edit_btn_css = 'background-color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'] . ' !important;color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'] . ' !important;border-color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'] . '!important';
 
@@ -74,7 +76,11 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				<h4 class='widget_header'>
 					<i class="far fa-folder"></i> 
 					<?php esc_html_e( 'Assoc. Documents', 'pattracking' ); ?> 
+					<?php 
+					if($is_active == 1) {
+					?>
 					<button id="wpsc_individual_change_agent_fields" aria-label="Associated Documents edit button" onclick="wpsc_get_approval_details('<?php echo esc_attr( $post_id ); ?>')" class="btn btn-sm wpsc_action_btn" style="<?php echo esc_attr( $edit_btn_css ); ?>" ><i class="fas fa-edit"></i></button>
+				    <?php } ?>
 				</h4>
 				<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
 

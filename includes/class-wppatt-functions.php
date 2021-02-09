@@ -53,7 +53,7 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     }   
 
     // CRON for message cleanup
-    public function wppatt_private_message_cleanup(){    
+    public function wppatt_private_message_cleanup_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/private_message_cleanup_cron.php';
     }   
     

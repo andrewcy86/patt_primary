@@ -15,7 +15,7 @@ $folderdocid_arr = explode (",", $folderdocid_string);
 $page_id = $_POST['postvarpage'];
 $box_id = $_POST['boxid'];
 
-$table_name = 'wpqa_wpsc_epa_folderdocinfo_files';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
 $destroyed = 0;
 $unathorized_destroy = 0;
@@ -24,9 +24,9 @@ $freeze_approval = 0;
 
 foreach($folderdocid_arr as $key) {
 $get_destroyed = $wpdb->get_row("SELECT b.box_destroyed as box_destroyed 
-FROM wpqa_wpsc_epa_folderdocinfo a 
-LEFT JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = a.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = a.id
 WHERE c.freeze = 0 AND c.folderdocinfofile_id = '".$key."'");
 $get_destroyed_val = $get_destroyed->box_destroyed;
 
@@ -37,7 +37,7 @@ $destroyed++;
 
 foreach($folderdocid_arr as $key) {
 $get_unathorized_destroy = $wpdb->get_row("SELECT unauthorized_destruction 
-FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_unathorized_destroy_val = $get_unathorized_destroy->unauthorized_destruction;
 
 if ($get_unathorized_destroy_val == 1) {
@@ -48,10 +48,10 @@ $unathorized_destroy++;
 
 foreach($folderdocid_arr as $key) {
 $get_freeze_approval = $wpdb->get_row("SELECT c.freeze_approval as freeze_approval 
-FROM wpqa_wpsc_epa_folderdocinfo_files a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo d ON d.id = a.folderdocinfo_id
-LEFT JOIN wpqa_wpsc_epa_boxinfo b ON d.box_id = b.id 
-LEFT JOIN wpqa_wpsc_ticket c ON b.ticket_id = c.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo d ON d.id = a.folderdocinfo_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON d.box_id = b.id 
+LEFT JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id
 WHERE a.folderdocinfofile_id = '".$key."'");
 $freeze_approval_val = $get_freeze_approval->freeze_approval;
 
@@ -65,11 +65,11 @@ $folderdocid_arr_count = count($folderdocid_arr);
 
 if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
 foreach($folderdocid_arr as $key) {    
-$get_freeze = $wpdb->get_row("SELECT freeze FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_freeze = $wpdb->get_row("SELECT freeze FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_freeze_val = $get_freeze->freeze;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_freeze_val == 1){
@@ -99,12 +99,12 @@ echo "A folder/file flagged does not contain a litigation approval letter.<br />
 
 if($page_id == 'filedetails') {
 
-$get_freeze = $wpdb->get_row("SELECT freeze FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
+$get_freeze = $wpdb->get_row("SELECT freeze FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 
 $get_freeze_val = $get_freeze->freeze;
 
 $get_request_id = substr($folderdocid_string, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id, freeze_approval FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id, freeze_approval FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 $filedetails_freeze_approval = $get_ticket_id->freeze_approval;
 

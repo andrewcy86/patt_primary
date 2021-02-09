@@ -15,13 +15,13 @@ $box_id = $_POST["box_id"];
         
 ob_start();
 
-$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $patt_box_id = $box_patt_id->box_id;
 $user_id = $box_patt_id->lan_id;
 
-$pattdocid = $wpdb->get_row("SELECT wpqa_wpsc_epa_folderdocinfo.id as folderfileid 
-FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
-WHERE wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id AND wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_id . "'");
+$pattdocid = $wpdb->get_row("SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id as folderfileid 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_id . "'");
 $folderfile_id = $pattdocid->folderfileid;
 
 /*$curl = curl_init();

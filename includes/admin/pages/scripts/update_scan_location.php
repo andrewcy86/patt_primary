@@ -32,7 +32,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
         $box_insert = array_combine($box_id, $array_location);
  
         /* Identify the table */
-        $table_name = 'wpqa_wpsc_epa_scan_list';
+        $table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
 
         $column_name = '';
         $error_flag = 0;
@@ -46,7 +46,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
             
             $get_ticket_id = $wpdb->get_row("
                                         SELECT ticket_id
-                                        FROM wpqa_wpsc_epa_boxinfo
+                                        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
                                         WHERE
                                         box_id = '" . $key . "'
                                         ");
@@ -73,7 +73,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                             /* Change the box status has been changed to "Assigned to Scanner"  */
                                             $location_statuses = $wpdb->get_row(
                 			                                                "SELECT id as id,locations as locations
-                                                                            FROM wpqa_wpsc_epa_location_status                
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
                                                                             WHERE locations = 'Assigned to Scanner'
                                             			                ");
                                             			                
@@ -81,12 +81,12 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 			                $location_statuses_locations = $location_statuses->locations;
                                             
                                             /* Set status value for box id to the returned value from above statement*/
-                                            $loc_status_boxinfo_table_name = 'wpqa_wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
                                             $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
                                             $loc_status_boxinfo_data_where = array('box_id' => $key);
                                             $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
                         
-                        $scan_table_name = 'wpqa_wpsc_epa_scan_list';
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
                         $wpdb->insert($table_name, array(
                                         'box_id' => esc_sql($key),
                                         $column_name => esc_sql(strtoupper($value)),
@@ -110,7 +110,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                             /* Change the box status has been changed to "In Staging Area"  */
                                             $location_statuses = $wpdb->get_row(
                 			                                                "SELECT id as id,locations as locations
-                                                                            FROM wpqa_wpsc_epa_location_status                
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
                                                                             WHERE locations = 'In Staging Area'
                                             			                ");
                                             			                
@@ -118,12 +118,12 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 			                $location_statuses_locations = $location_statuses->locations;
                                             
                                             /* Set status value for box id to the returned value from above statement*/
-                                            $loc_status_boxinfo_table_name = 'wpqa_wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
                                             $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
                                             $loc_status_boxinfo_data_where = array('box_id' => $key);
                                             $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
         
-                        $scan_table_name = 'wpqa_wpsc_epa_scan_list';
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
                         $wpdb->insert($scan_table_name, array(
                                         'box_id' => esc_sql($key),
                                         $column_name => esc_sql(strtoupper($value)),
@@ -147,7 +147,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                             /* Change the box status has been changed to "on cart"  */
                                             $location_statuses = $wpdb->get_row(
                 			                                                "SELECT id as id,locations as locations
-                                                                            FROM wpqa_wpsc_epa_location_status                
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
                                                                             WHERE locations = 'On Cart'
                                             			                ");
                                             			                
@@ -155,13 +155,13 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 			                $location_statuses_locations = $location_statuses->locations;
                                             
                                             /* Set status value for box id to the returned value from above statement*/
-                                            $loc_status_boxinfo_table_name = 'wpqa_wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
                                             $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
                                             $loc_status_boxinfo_data_where = array('box_id' => $key);
                                             $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
                         
                         
-                        $scan_table_name = 'wpqa_wpsc_epa_scan_list';
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
                         $wpdb->insert($scan_table_name, array(
                                         'box_id' => esc_sql($key),
                                         $column_name => esc_sql(strtoupper($value)),
@@ -200,7 +200,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
             
             			    $storage_location_details = $wpdb->get_row(
             			                                                "SELECT shelf_id 
-            			                                                FROM wpqa_wpsc_epa_storage_status
+            			                                                FROM " . $wpdb->prefix . "wpsc_epa_storage_status
                                                                         WHERE shelf_id = '" . esc_sql($new_A_B_S_only_storage_location) . "'"
                                             			              );
                                             			              
@@ -214,8 +214,8 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 		        /* Determine if the position is occupied */
                 		        $existing_boxinfo_details = $wpdb->get_row(
                 			                                                "SELECT b.aisle as aisle,b.bay as bay,b.shelf as shelf,b.position as position,b.digitization_center as dc
-                                                                            FROM wpqa_wpsc_epa_boxinfo a                
-                                                                            LEFT JOIN wpqa_wpsc_epa_storage_location b ON a.storage_location_id = b.id
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a                
+                                                                            LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id
                                                                             WHERE a.box_id = '" . esc_sql($box_id_new_scan) . "'
                                             			                ");
                                       			              
@@ -235,20 +235,20 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                             /* Change the box status has been changed from "on cart" to "on shelf" */
                                             $location_statuses = $wpdb->get_row(
                 			                                                "SELECT id as id,locations as locations
-                                                                            FROM wpqa_wpsc_epa_location_status                
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
                                                                             WHERE locations = 'On Shelf'
                                             			                ");
                                             			                
                                             $location_statuses_id = $location_statuses->id;
                 			                $location_statuses_locations = $location_statuses->locations;
                                             
-                                            $loc_status_boxinfo_table_name = 'wpqa_wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
                                             $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
                                             $loc_status_boxinfo_data_where = array('box_id' => $key);
                                             $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
                                             
                         				    /* Update the scanning table */
-                                            $scan_table_name = 'wpqa_wpsc_epa_scan_list';
+                                            $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
                                             $wpdb->insert($scan_table_name, array(
                                                             'box_id' => esc_sql($key),
                                                             $column_name => esc_sql(strtoupper($value)),

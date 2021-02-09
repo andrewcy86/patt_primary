@@ -21,7 +21,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 			$rfid_count = $wpdb->get_row(
 				"SELECT count(id) as count
-            FROM wpqa_wpsc_epa_rfid_data"
+            FROM " . $wpdb->prefix . "wpsc_epa_rfid_data"
 			);
 
     $rfid_count_num = $rfid_count->count;
@@ -63,7 +63,7 @@ Enter one or more Box IDs:<br />
  $rfid_details = $wpdb->get_results("
 SELECT DISTINCT
 Reader_Name
-FROM wpqa_wpsc_epa_rfid_data
+FROM " . $wpdb->prefix . "wpsc_epa_rfid_data
 ");
 
 			$rfid_readerid_array = array();

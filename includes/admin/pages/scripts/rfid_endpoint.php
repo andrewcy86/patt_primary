@@ -3,12 +3,10 @@
 // Set error logging in db.php to yes or no.  Logs are written to log.txt
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
-
-$path = preg_replace('/wp-content.*$/', '', __DIR__);
-include ($path . 'wp-load.php');
-include ($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
-
+	
+include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */
@@ -54,12 +52,12 @@ $rawPostData = file_get_contents('php://input');
         $fld_value = str_replace("\\", "", $row);
         $row = $fld_value;
 
-$check_boxid = "SELECT count(box_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '".$box_id."'";
+$check_boxid = "SELECT count(box_id) as count FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '".$box_id."'";
 $boxid_result = mysqli_query($con,$check_boxid);
 $rowcount=mysqli_num_rows($boxid_result);
 
 if ($rowcount > 0) {
-$query = "INSERT INTO wpqa_wpsc_epa_rfid_data ($fieldNames) VALUES ($row)";
+$query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_rfid_data ($fieldNames) VALUES ($row)";
 //$query = "INSERT INTO wpqa_wpsc_epa_rfid_data (Reader_Name) VALUES ('".$rowcount."')";
 $retval = mysqli_query($con,$query);
 }

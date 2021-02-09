@@ -2,7 +2,7 @@
 /**
  * Plugin Name: pattracking
  * Description: add-on to the support candy plugin specifically for the EPA Paper Asset Tracking Tool
- * Version: 0.3.13
+ * Version: 0.3.11
  * Requires at least: 4.4
  * Tested up to: 5.3
  * Text Domain: pattracking
@@ -18,7 +18,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
   final class Patt_Tracking {
   
       
-    public $version    = '0.3.13';
+    public $version    = '0.3.11';
     public $db_version = '2.0';
     
     public function __construct() {
@@ -68,6 +68,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 				
 		$upload_dir = wp_upload_dir();
         $this->define('WPPATT_UPLOADS', trailingslashit( $upload_dir['basedir'] ) );
+        $this->define('WPPATT_UPLOADS_URL', trailingslashit( $upload_dir['baseurl'] ) );
     }
     
     function load_textdomain(){
@@ -102,7 +103,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add Return / Decline Shipping CRON
         add_action( 'wppatt_shipping_cron_return', array($frontend, 'wppatt_return_shipping_status_schedule'));
         // Add ECMS CRON
-        add_action( 'wppatt_ecms_cron', array($frontend, 'wppatt_ecms_cron_schedule')); 
+        //add_action( 'wppatt_ecms_cron', array($frontend, 'wppatt_ecms_cron_schedule')); 
         // Add EIDW CRON
         add_action( 'wppatt_eidw_cron', array($frontend, 'wppatt_eidw_cron_schedule')); 
         // Add Recycle Bin Cron
@@ -110,7 +111,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add ECMS Ingestion Cron
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON
-        add_action( 'wppatt_private_message_cleanup_cron', array($frontend, 'wppatt_private_message_cleanup'));
+        add_action( 'wppatt_private_message_cleanup_cron', array($frontend, 'wppatt_private_message_cleanup_cron_schedule'));
         
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );

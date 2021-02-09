@@ -14,10 +14,10 @@ $post_name = $_POST["post_name"];
 ob_start();
 
 			$get_post_details = $wpdb->get_row("SELECT a.post_title, a.post_content 
-			FROM wpqa_posts a 
-			INNER JOIN wpqa_term_relationships b ON a.id = b.object_id 
-			INNER JOIN wpqa_term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
-			INNER JOIN wpqa_terms d ON c.term_id = d.term_id WHERE a.post_status = 'publish' AND
+			FROM " . $wpdb->prefix . "posts a 
+			INNER JOIN " . $wpdb->prefix . "term_relationships b ON a.id = b.object_id 
+			INNER JOIN " . $wpdb->prefix . "term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
+			INNER JOIN " . $wpdb->prefix . "terms d ON c.term_id = d.term_id WHERE a.post_status = 'publish' AND
 			d.slug = 'help-messages' AND a.post_name = '" . $post_name . "'");
 			$post_details_subject = $get_post_details->post_title;
 			$post_details_content = $get_post_details->post_content; 

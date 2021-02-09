@@ -15,14 +15,14 @@ $folderdocarray = array();
 
 foreach($document_array as $key => $value) { 
     
-$get_document = $wpdb->get_row("SELECT a.folderdocinfofile_id as folderdocinfo_id
-FROM wpqa_wpsc_epa_folderdocinfo_files a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo d ON d.id = a.folderdocinfo_id
-INNER JOIN wpqa_wpsc_epa_boxinfo b ON d.box_id = b.id 
-INNER JOIN wpqa_wpsc_epa_storage_location c on b.storage_location_id = c.id 
-WHERE ((c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) 
-AND a.folderdocinfofile_id = '" . $value . "'");
-$document = $get_document->folderdocinfo_id;
+$get_document = $wpdb->get_row("SELECT a.folderdocinfofile_id as folderdocinfofile_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.id = a.folderdocinfo_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON b.box_id = c.id 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location d on c.storage_location_id = d.id 
+WHERE (d.aisle <> 0 AND d.bay <> 0 AND d.shelf <> 0 AND d.position <> 0 AND d.digitization_center <> 666) AND 
+(c.box_destroyed = 0) AND a.folderdocinfofile_id = '" . $value . "'");
+$document = $get_document->folderdocinfofile_id;
 
 if ($document != '') {
 array_push($folderdocarray, $document);

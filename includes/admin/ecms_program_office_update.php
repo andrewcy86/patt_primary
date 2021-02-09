@@ -3,12 +3,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+include WPPATT_UPLOADS.'api_authorization_strings.php';
+
 //$path = preg_replace('/wp-content.*$/','',__DIR__);
 //include($path.'wp-load.php');
 
 //ini_set('memory_limit','512M');
 
-$error_log_table = 'wpqa_epa_error_log';
+$error_log_table = $wpdb->prefix . 'epa_error_log';
 
 global $current_user, $wpscfunction, $wpdb;
 $GLOBALS['num'] = 1;
@@ -21,13 +23,13 @@ $items = 100;
 $page = $GLOBALS['num'];
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov/ecms/find/1.0?apiKey=031a8c90-f025-4e80-ab47-e2bd577410d7&dql=".urlencode($sql)."&items-per-page=".urlencode($items)."&page=".urlencode($page),
+  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov/ecms/find/1.0?apiKey=".$ecms_apikey."&dql=".urlencode($sql)."&items-per-page=".urlencode($items)."&page=".urlencode($page),
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_CUSTOMREQUEST => "GET",
   CURLOPT_FAILONERROR => true,
   //CURLOPT_POSTFIELDS => array('metadata' => $metadata,'contents'=> $curlFile),
   CURLOPT_HTTPHEADER => array(
-    "Authorization: Basic cGF0dF9hZG1pbjplY21zUGF0dDEyMw=="
+    $ecms_authorization
   ),
 ));
 

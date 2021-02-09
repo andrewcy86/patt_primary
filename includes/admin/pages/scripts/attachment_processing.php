@@ -52,7 +52,7 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_folderdocinfo_files
+$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 ");
 
 $records = mysqli_fetch_assoc($sel);
@@ -60,7 +60,7 @@ $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 //gets all folder/files for a user with the requester role, only shows their own folder/files
-$sel = mysqli_query($con,"select count(id) as allcount FROM wpqa_wpsc_epa_folderdocinfo_files
+$sel = mysqli_query($con,"select count(id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE 1 ".$searchQuery);
 
 $records = mysqli_fetch_assoc($sel);
@@ -76,7 +76,7 @@ file_object_id,
 title,
 description,
 tags
-FROM wpqa_wpsc_epa_folderdocinfo_files
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $docRecords = mysqli_query($con, $docQuery);

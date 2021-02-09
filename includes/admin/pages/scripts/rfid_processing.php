@@ -52,22 +52,22 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_rfid_data");
+$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_rfid_data");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
-$sel = mysqli_query($con,"select count(a.box_id) as allcount FROM wpqa_wpsc_epa_rfid_data as a 
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.box_id = b.box_id
-INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
+$sel = mysqli_query($con,"select count(a.box_id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_rfid_data as a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.box_id = b.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as c ON b.ticket_id = c.id
 WHERE 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$boxQuery = "SELECT a.Reader_Name, CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',c.request_id,'>',c.request_id,'</a>') as request_id, a.epc, a.DateAdded FROM wpqa_wpsc_epa_rfid_data as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.box_id = b.box_id
-INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
+$boxQuery = "SELECT a.Reader_Name, CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',c.request_id,'>',c.request_id,'</a>') as request_id, a.epc, a.DateAdded FROM " . $wpdb->prefix . "wpsc_epa_rfid_data as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.box_id = b.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as c ON b.ticket_id = c.id
 WHERE (c.active <> 0) AND 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();

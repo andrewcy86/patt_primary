@@ -20,11 +20,11 @@ $box_id  = isset($_POST['box_id']) ? sanitize_text_field($_POST['box_id']) : '' 
 ob_start();
 
 $box_details = $wpdb->get_row(
-"SELECT wpqa_wpsc_epa_storage_location.digitization_center as digitization_center, wpqa_wpsc_epa_boxinfo.box_id as patt_box_id, wpqa_wpsc_ticket.request_id as request_id
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id
-WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'"
+"SELECT " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center as digitization_center, " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as patt_box_id, " . $wpdb->prefix . "wpsc_ticket.request_id as request_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $wpdb->prefix . "wpsc_ticket.id
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'"
 			);
 
 $digitization_center = $box_details->digitization_center;

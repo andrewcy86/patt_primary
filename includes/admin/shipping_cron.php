@@ -20,7 +20,7 @@ switch ($shippingCompany) {
 
 $shipping_query = $wpdb->get_results(
 "SELECT *
-FROM wpqa_wpsc_epa_shipping_tracking
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
 WHERE company_name = 'usps' AND (shipped = 0 OR delivered = 0)"
 );
 
@@ -61,7 +61,7 @@ $status_delivered_array = array('DELIVERED');
 
 $status_shipped = strtoupper($deliveryStatus);
 
-$table_name = 'wpqa_wpsc_epa_shipping_tracking';
+$table_name = $wpdb->prefix .'wpsc_epa_shipping_tracking';
 
 
 switch ($status_shipped) {
@@ -90,7 +90,7 @@ $wpdb->update( $table_name, array( 'status' => $status_shipped),array('ID'=>$ite
     case "fedex":
 $shipping_query = $wpdb->get_results(
 "SELECT *
-FROM wpqa_wpsc_epa_shipping_tracking
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
 WHERE company_name = 'fedex' AND (shipped = 0 OR delivered = 0)"
 );
 
@@ -167,7 +167,7 @@ $deliveryStatus = $array['TrackReply']['CompletedTrackDetails']['TrackDetails'][
 
 $status_delivered_array = array('AD', 'AR', 'DL');
 $status_shipped_array = array('PF', 'AA', 'PL', 'AC', 'PM', 'PU', 'AF', 'PX', 'AP', 'AR', 'CH', 'DD', 'DE', 'SE', 'DR', 'SF', 'DY', 'TR', 'EA', 'ED', 'CC', 'EO', 'CD', 'CP', 'IP');
-$table_name = 'wpqa_wpsc_epa_shipping_tracking';
+$table_name = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
 
 if ( preg_match('('.implode('|',$status_shipped_array).')', strtoupper($deliveryCode))){
 $wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
@@ -187,7 +187,7 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
     case "ups":
 $shipping_query = $wpdb->get_results(
 "SELECT *
-FROM wpqa_wpsc_epa_shipping_tracking
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
 WHERE company_name = 'ups' AND (shipped = 0 OR delivered = 0)"
 );
 
@@ -263,7 +263,7 @@ $deliveryStatus = $array['TRACKRESPONSE']['SHIPMENT']['PACKAGE']['ACTIVITY']['ST
 
 $status_delivered_array = array('D');
 $status_shipped_array = array('I', 'X', 'P', 'M');
-$table_name = 'wpqa_wpsc_epa_shipping_tracking';
+$table_name = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
 
 if ( preg_match('('.implode('|',$status_shipped_array).')', strtoupper($deliveryCode))){
 $wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
@@ -282,7 +282,7 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
     case "dhl":
 $shipping_query = $wpdb->get_results(
 "SELECT *
-FROM wpqa_wpsc_epa_shipping_tracking
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
 WHERE company_name = 'dhl' AND (shipped = 0 OR delivered = 0)"
 );
 
@@ -323,7 +323,7 @@ $deliveryStatus = $json['shipments']['0']['status']['description'].' : '
 
 $status_delivered_array = array('DELIVERY', 'DELIVERED', 'HOME', 'PICKED', 'FRONT', 'DOOR', 'PORCH');
 $status_shipped_array = array('PICKED','ARRIVAL','ARRIVED','RECEIVED','PROCESSED','ACCEPTED','DEPARTED','DEPARTURE','DEPART','EN ROUTE', 'PROCESSED', 'TENDERED', 'TRANSIT','ARRIVAL','ARRIVED','PROCESSED','LOADED','CUSTOMS');
-$table_name = 'wpqa_wpsc_epa_shipping_tracking';
+$table_name = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
 
 if ( preg_match('('.implode('|',$status_shipped_array).')', strtoupper($deliveryStatus))){
 $wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
@@ -345,7 +345,7 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
         
 $get_unique_tickets = $wpdb->get_results(
 	"SELECT DISTINCT ticket_id
-FROM wpqa_wpsc_epa_shipping_tracking WHERE ticket_id != '-99999'"
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE ticket_id != '-99999'"
 );
 
 foreach ($get_unique_tickets as $item) {
@@ -360,7 +360,7 @@ $status_id   	= $ticket_data['ticket_status'];
 
 $get_shipped_status = $wpdb->get_results(
  	"SELECT shipped
- FROM wpqa_wpsc_epa_shipping_tracking
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
  WHERE ticket_id = " . $item->ticket_id
  );
 
@@ -379,7 +379,7 @@ $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
 
 $get_delivered_status = $wpdb->get_results(
  	"SELECT delivered
- FROM wpqa_wpsc_epa_shipping_tracking
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
  WHERE ticket_id = " . $item->ticket_id
  );
 

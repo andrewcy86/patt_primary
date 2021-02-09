@@ -15,7 +15,7 @@ ob_start();
 $db_id = $_POST['db_id'];
 
     $get_shipping_details = $wpdb->get_row("SELECT company_name, tracking_number
-    FROM wpqa_wpsc_epa_shipping_tracking
+    FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
     WHERE id = '" . $db_id[0] . "'");
     $tracking_number = $get_shipping_details->tracking_number;
     $company_name = $get_shipping_details->company_name;

@@ -47,16 +47,16 @@ $json = json_decode($response, true);
 $results = $json['totalResults'];
 
 if ($results >= 1) {
-$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
+$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $ticket_id = $get_ticket_id->ticket_id;
 
 $metadata_array = array();
-$table_name = 'wpqa_wpsc_epa_boxinfo';
+$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
-$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
+$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $old_lanid = $old_box_lanid->lan_id;
 
-$folderfile_table = 'wpqa_wpsc_epa_folderdocinfo';
+$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
 
 //updates the epa contact by entering a LANID
 if(!empty($lanid)) {
@@ -77,8 +77,8 @@ if($old_lanid != $lanid) {
 do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
 
 //sends email/notification to user when epa contact is updated
-$get_customer_name = $wpdb->get_row('SELECT customer_name FROM wpqa_wpsc_ticket WHERE id = "' . $ticket_id . '"');
-$get_user_id = $wpdb->get_row('SELECT ID FROM wpqa_users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+$get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
 $user_id_array = [$get_user_id->ID];
 $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
 $patt_agent_id = implode($convert_patt_id);

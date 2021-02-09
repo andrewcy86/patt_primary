@@ -21,7 +21,8 @@ $error_message = '';
 
 if( $shipping_carrier == '' ) {
 	$error_message .= 'Carrier not found from Shipping Tracking Number. | ';
-	$shipping_carrier = 'submit_return_error';
+	//$shipping_carrier = 'submit_return_error';
+	$shipping_carrier = '';
 }
 
 $item_ids = $_REQUEST['item_ids'];

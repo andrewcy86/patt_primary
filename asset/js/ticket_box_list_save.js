@@ -132,13 +132,17 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 	    }
 	} else if( superfundx == 'yes' ) {
 		
+		if(0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+	        alert('Please upload the Box List excel sheet');
+	        return false;
+	    }
+		
+/*		// OLD code for when
 		if( 0 === jQuery('#file_upload_cr_SEMS').val() || "0" === jQuery('#file_upload_cr_SEMS' ).val()){
 	        alert('Please upload the SEMS excel sheet');
 	        return false;
 	    }
-		
-		//alert('Superfund Ingestion is currently in development. You should not be testing this yet.');
-	    //return false;
+*/
 		
 	}
 });
@@ -264,7 +268,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             let prev_program_office = '';
                             let prev_record_schedule = '';
 
+							// Required Field Checks
                             let arr_fields = ['Box', 'Title', 'Date', 'Close Date', 'Program Office', 'Index Level', 'Essential Records'];
+                             
+                            
 
                             let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
 
@@ -276,37 +283,37 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 }
 
                                 /* Required fields check. */
-                                if ( flag != true && count > 1 && ( ( invalid_index = [parsedData[count][0], parsedData[count][2], parsedData[count][3], parsedData[count][10], parsedData[count][14], parsedData[count][15], parsedData[count][16]].indexOf( null ) ) > -1 ) ) {
-/*
-	                                let invalid_index = [
-	                                	parsedData[count][0], 
-	                                	parsedData[count][2], 
-	                                	parsedData[count][3], 
-	                                	parsedData[count][10],
-	                                	parsedData[count][14], 
-	                                	parsedData[count][15], 
-	                                	parsedData[count][16]
-	                                ]; 
+                                //if ( flag != true && count > 1 && ( ( invalid_index = [parsedData[count][0], parsedData[count][2], parsedData[count][3], parsedData[count][10], parsedData[count][14], parsedData[count][15], parsedData[count][16]].indexOf( null ) ) > -1 ) ) {								
+	                            // Required fields
+	                            let invalid_index = [
+	                            	parsedData[count][0], 
+	                            	parsedData[count][2], 
+	                            	parsedData[count][5], 
+	                            	parsedData[count][12],
+	                            	parsedData[count][20], 
+	                            	parsedData[count][21], 
+	                            	parsedData[count][22]
+	                            ];  
 	                                
-	                                if ( flag != true && count > 1 && ( ( invalid_index.indexOf( null ) ) > -1 ) ) {
-*/
+	                            if ( flag != true && count > 1 && ( ( invalid_index.indexOf( null ) ) > -1 ) ) {
 
                                     alert("Invalid value for column " + arr_fields[invalid_index] + " for record " + (count + 1) + ". This field is required." );
                                     flag = true;
                                 
                                 }
-
-                                // Validate date
-                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][10] ) == false ) {
+								
+								// Validate Creation date
+                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][5] ) == false ) {
+                                    alert("Invalid Creation Date for record " + (count + 1) );
+                                    flag = true;
+                                }
+								
+                                // Validate Close Date
+                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][12] ) == false ) {
                                     alert("Invalid Close Date for record " + (count + 1) );
                                     flag = true;
                                 }
 
-                                // Validate date
-                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][3] ) == false ) {
-                                    alert("Invalid Date for record " + (count + 1) );
-                                    flag = true;
-                                }
 
                                 // Box ID validation
                                 if( flag != true && count > 1 && (parsedData[count][0] == null || parsedData[count][0] === undefined)) {
@@ -315,27 +322,28 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 }
 
                                  // Index level validation
-                                if(flag != true && count > 1 && (parsedData[count][15].toLowerCase() != 'file' && parsedData[count][15].toLowerCase() != 'folder')){
-                                    alert('Index level value "'+parsedData[count][15]+'" seems incorrect for the record number '+ (count + 1) );
+                                if(flag != true && count > 1 && (parsedData[count][21].toLowerCase() != 'file' && parsedData[count][21].toLowerCase() != 'folder')){
+                                    alert('Index level value "'+parsedData[count][21]+'" seems incorrect for the record number '+ (count + 1) );
                                     flag = true;
                                 }
 
                                 // Epa contact, program office, record no validation
-                                if(flag != true && count > 1 && ( prev_box != '' && prev_box === parsedData[count][0] ) && ( prev_epa_contact !== parsedData[count][11] || prev_program_office !== parsedData[count][14] || prev_record_schedule !== parsedData[count][7] ) ) {
+                                if(flag != true && count > 1 && ( prev_box != '' && prev_box === parsedData[count][0] ) && ( prev_epa_contact !== parsedData[count][13] || prev_program_office !== parsedData[count][20] || prev_record_schedule !== parsedData[count][9] ) ) {
 
-                                    _column = ( prev_epa_contact !== parsedData[count][11] ? ' EPA Contact ' : ( prev_program_office !== parsedData[count][14] ? ' Program Office ' : ( prev_record_schedule !== parsedData[count][7] ? ' Record Schedule & Item Number ' : '' ) ) );
+                                    _column = ( prev_epa_contact !== parsedData[count][13] ? ' EPA Contact ' : ( prev_program_office !== parsedData[count][20] ? ' Program Office ' : ( prev_record_schedule !== parsedData[count][9] ? ' Record Schedule & Item Number ' : '' ) ) );
 
                                     alert("Invalid value in column " + _column + " for record " + (count + 1) );
                                     flag = true;
                                 }
                                 
                                 // Validate Parent/Child
-                                let pcd = parsedData[count][18];
+                                let pcd = parsedData[count][4];
                                 //console.log({pcd:pcd});
                                 
-                                //console.log( pcd == 'P' );
+                                //console.log( pcd == null );
+                                // old blank check: pcd === undefined
                                 
-                                if( flag != true && count > 1 && !( pcd == 'P' || pcd == 'C' || pcd == 'S' || pcd === undefined ) ) {
+                                if( flag != true && count > 1 && !( pcd == 'P' || pcd == 'C' || pcd == 'S' || pcd == null ) ) {
                                     alert("Invalid Parent/Child format for record " + (count + 1) );
                                     flag = true;
                                 }
@@ -358,9 +366,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 if (parsedData[count] !== undefined && parsedData[count].length > 0 && parsedData[count][0].toString().trim() != "Box") {
 
                                     prev_box = parsedData[count][0];
-                                    prev_epa_contact = parsedData[count][11];
-                                    prev_program_office = parsedData[count][14];
-                                    prev_record_schedule = parsedData[count][7];
+                                    prev_epa_contact = parsedData[count][13];
+                                    prev_program_office = parsedData[count][20];
+                                    prev_record_schedule = parsedData[count][9];
 
                                     datatable.row.add([
                                         parsedData[count][0],
@@ -382,7 +390,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                         parsedData[count][16],
                                         parsedData[count][17], // For Folder/Filename field value
                                         //parsedData[count][18], // For Tags field value // removed
-                                        parsedData[count][18] // For Parent/Child field value
+                                        parsedData[count][18], // For Parent/Child field value
+                                        parsedData[count][19],
+                                        parsedData[count][20],
+                                        parsedData[count][21],
+                                        parsedData[count][22],
+                                        parsedData[count][23],
+                                        parsedData[count][24]
                                     ]).draw().node();
                                 }
                             }

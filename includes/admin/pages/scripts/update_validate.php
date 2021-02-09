@@ -15,7 +15,7 @@ $get_userid = $_POST['postvarsuserid'];
 $folderdocid_arr = explode (",", $folderdocid_string);  
 $page_id = $_POST['postvarpage'];
 
-$table_name = 'wpqa_wpsc_epa_folderdocinfo_files';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
 $validation_reversal = 0;
 $destroyed = 0;
@@ -24,9 +24,9 @@ $unathorized_destroy = 0;
 
 foreach($folderdocid_arr as $key) {
 $get_destroyed = $wpdb->get_row("SELECT b.box_destroyed as box_destroyed 
-FROM wpqa_wpsc_epa_folderdocinfo_files a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.id = a.folderdocinfo_id
-LEFT JOIN wpqa_wpsc_epa_boxinfo b ON c.box_id = b.id 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.id = a.folderdocinfo_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON c.box_id = b.id 
 WHERE a.freeze = 0 AND a.folderdocinfofile_id = '".$key."'");
 $get_destroyed_val = $get_destroyed->box_destroyed;
 
@@ -36,7 +36,7 @@ $destroyed++;
 }
 
 foreach($folderdocid_arr as $key) {
-$get_unathorized_destroy = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_unathorized_destroy = $wpdb->get_row("SELECT unauthorized_destruction FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_unathorized_destroy_val = $get_unathorized_destroy->unauthorized_destruction;
 
 if ($get_unathorized_destroy_val == 1) {
@@ -45,7 +45,7 @@ $unathorized_destroy++;
 }
 
 foreach($folderdocid_arr as $key) {
-$get_rescan = $wpdb->get_row("SELECT rescan FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_rescan = $wpdb->get_row("SELECT rescan FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_rescan_val = $get_rescan->rescan;
 
 if ($get_rescan_val == 1) {
@@ -57,11 +57,11 @@ if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $
 
 foreach($folderdocid_arr as $key) {
     
-$get_validation = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_validation = $wpdb->get_row("SELECT validation FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_validation_val = $get_validation->validation;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_validation_val == 1){
@@ -97,14 +97,14 @@ echo "A folder/file has been selected that has been flagged as requiring a re-sc
 
 if($page_id == 'filedetails') {
  
-$get_validation = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
+$get_validation = $wpdb->get_row("SELECT validation FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 $get_validation_val = $get_validation->validation;
 
 $get_request_id = substr($folderdocid_string, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
-$get_rescan = $wpdb->get_row("SELECT rescan FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
+$get_rescan = $wpdb->get_row("SELECT rescan FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 $get_rescan_val = $get_rescan->rescan;
 
 if ($get_validation_val == 1 && $get_rescan_val == 0){

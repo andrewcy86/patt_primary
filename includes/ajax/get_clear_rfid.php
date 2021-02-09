@@ -16,7 +16,7 @@ ob_start();
   $rfid_details = $wpdb->get_results("
 SELECT DISTINCT
 Reader_Name
-FROM wpqa_wpsc_epa_rfid_data
+FROM " . $wpdb->prefix . "wpsc_epa_rfid_data
 ");
 
 			$rfid_readerid_array = array();

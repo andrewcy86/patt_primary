@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -103,8 +104,8 @@ $lan_id_details = 'Error';
 			$active_check = $lan_id;
 			} else {
 				
-			$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM wpqa_users a
-INNER JOIN wpqa_wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id . "'");
+			$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM ".$wpdb->prefix."users a
+INNER JOIN ".$wpdb->prefix."wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id . "'");
 
 			$requester_lanid = $find_requester->user_login;
 	
@@ -225,6 +226,67 @@ switch (true) {
     
 }
 
+/**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as unauthorized destruction
+ * @return Boolean
+ */
+ 
+public static function id_in_unauthorized_destruction( $identifier, $type ) {
+    global $wpdb;
+    
+    $unauthorized_destruction_array = array();
+    
+    if($type == 'request') {
+        $get_unauthorized_destruction_data = $wpdb->get_results("SELECT DISTINCT a.id as ticket_id
+        FROM wpqa_wpsc_ticket a
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+        WHERE d.unauthorized_destruction = 1");
+        
+        foreach ($get_unauthorized_destruction_data as $key) {
+        	$keys = $key->ticket_id;
+			array_push($unauthorized_destruction_array, $keys);
+        }
+	        
+		if (in_array($identifier, $unauthorized_destruction_array)) {
+			echo 'Request - unauthorized destruction flag: true' . '<br />';
+			return true;
+		}
+		else {
+		    echo 'Request - unauthorized destruction flag: false' .'<br />';
+			return false;
+		}
+    }
+    
+    else if($type == 'box') {
+        $get_unauthorized_destruction_data = $wpdb->get_results("SELECT DISTINCT a.id as box_id
+        FROM wpqa_wpsc_epa_boxinfo a
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE c.unauthorized_destruction = 1");
+        
+        foreach ($get_unauthorized_destruction_data as $key) {
+        	$keys = $key->box_id;
+        	//echo $keys . "<br/>";
+			array_push($unauthorized_destruction_array, $keys);
+        }
+	        
+		if (in_array($identifier, $unauthorized_destruction_array)) {
+			echo 'Box - unauthorized destruction flag: true' .'<br />';
+			return true;
+		}
+		else {
+		    echo 'Box - unauthorized destruction flag: false' .'<br />';
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile') {
+        
+    }
+
+}
 
 /**
  * Determine if ID (Request,Box,Folder/File) contains a recall
@@ -258,13 +320,14 @@ public static function id_in_recall( $identifier, $type ) {
 */
         $get_recall_data = $wpdb->get_results("
 			SELECT DISTINCT LEFT(b.box_id, 7) as id
-			FROM wpqa_wpsc_epa_recallrequest a
-			INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
+			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
+			INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
 			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
 			UNION
-			SELECT DISTINCT LEFT(b.folderdocinfo_id, 7) as request_id
-			FROM wpqa_wpsc_epa_recallrequest a
-			INNER JOIN wpqa_wpsc_epa_folderdocinfo b on a.folderdoc_id = b.id
+			SELECT DISTINCT LEFT(c.folderdocinfofile_id, 7) as request_id
+			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
+			INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c on a.folderdoc_id = c.id
+			INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo b on c.folderdocinfo_id = b.id
 			WHERE a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
 		 ");
 
@@ -282,8 +345,8 @@ public static function id_in_recall( $identifier, $type ) {
 	} else if($type == 'box') {
 	    $get_recall_data = $wpdb->get_results("
 			SELECT DISTINCT b.box_id as id
-			FROM wpqa_wpsc_epa_recallrequest a
-			INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
+			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
+			INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
 			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
 		 ");
 	    
@@ -300,8 +363,8 @@ public static function id_in_recall( $identifier, $type ) {
 	} else if($type == 'folderfile') {
 	        $get_entire_box_recall_data = $wpdb->get_results("
 				SELECT DISTINCT b.box_id as id
-				FROM wpqa_wpsc_epa_recallrequest a
-				INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
+				FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
+				INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
 				WHERE a.box_id <> '-99999' AND a.folderdoc_id = '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
 	        ");
 	
@@ -323,11 +386,11 @@ public static function id_in_recall( $identifier, $type ) {
 					SELECT
 					    c.folderdocinfofile_id AS folderdocinfo
 					FROM
-					    wpqa_wpsc_epa_folderdocinfo a
-					INNER JOIN wpqa_wpsc_epa_boxinfo b ON
+					    ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo a ON
+					    c.folderdocinfo_id = a.id    
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON
 					    a.box_id = b.id
-					INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON
-					    c.folderdocinfo_id = a.id
 					WHERE
 					    b.box_id = '" . $recall_box_id_vals . "'");
 				
@@ -357,11 +420,9 @@ public static function id_in_recall( $identifier, $type ) {
 			SELECT DISTINCT
 			    c.folderdocinfofile_id AS id
 			FROM
-			    wpqa_wpsc_epa_recallrequest a
-			INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON
-			    a.folderdoc_id = b.id
-			INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON
-			    c.folderdocinfo_id = b.id
+			    ".$wpdb->prefix."wpsc_epa_recallrequest a
+			INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c ON
+			    c.id = a.folderdoc_id
 			WHERE
 			    a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
 		 "); 
@@ -398,9 +459,9 @@ public static function id_in_recall( $identifier, $type ) {
 			if ( $type == 'request' )  {
 		        $get_return_data = $wpdb->get_results("
 						SELECT DISTINCT LEFT(b.box_id, 7) as id
-						FROM wpqa_wpsc_epa_return_items a
-						INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
-						INNER JOIN wpqa_wpsc_epa_return c ON a.return_id = c.id
+						FROM ".$wpdb->prefix."wpsc_epa_return_items a
+						INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
+						INNER JOIN ".$wpdb->prefix."wpsc_epa_return c ON a.return_id = c.id
 						WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (" . 
 						$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
 		        ");
@@ -420,9 +481,9 @@ public static function id_in_recall( $identifier, $type ) {
 			} else if( $type == 'box' ) {
 		        $get_return_data = $wpdb->get_results("
 					SELECT DISTINCT b.box_id as id
-					FROM wpqa_wpsc_epa_return_items a
-					INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
-					INNER JOIN wpqa_wpsc_epa_return c ON a.return_id = c.id
+					FROM ".$wpdb->prefix."wpsc_epa_return_items a
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_return c ON a.return_id = c.id
 					WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
 		        ");
 		        
@@ -439,9 +500,9 @@ public static function id_in_recall( $identifier, $type ) {
 			} else if( $type == 'folderfile' ) {
 		        $get_entire_box_return_data = $wpdb->get_results("
 			        SELECT DISTINCT b.box_id as id
-					FROM wpqa_wpsc_epa_return_items a
-					INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id
-					INNER JOIN wpqa_wpsc_epa_return c ON a.return_id = c.id
+					FROM ".$wpdb->prefix."wpsc_epa_return_items a
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
+					INNER JOIN ".$wpdb->prefix."wpsc_epa_return c ON a.return_id = c.id
 					WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (" . $status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
 			    ");
 			
@@ -465,10 +526,10 @@ public static function id_in_recall( $identifier, $type ) {
 							SELECT
 							    c.folderdocinfofile_id AS folderdocinfo
 							FROM
-							    wpqa_wpsc_epa_folderdocinfo a
-							INNER JOIN wpqa_wpsc_epa_boxinfo b ON
+							    ".$wpdb->prefix."wpsc_epa_folderdocinfo a
+							INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON
 							    a.box_id = b.id
-							INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON 
+							INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c ON 
 								a.id = c.folderdocinfo_id
 							WHERE
 							    b.box_id = '" . $return_box_id_vals . "'");
@@ -974,7 +1035,7 @@ public static function id_in_recall( $identifier, $type ) {
         public static function get_full_name_by_customer_name($customer_name) {
             global $wpdb;
             
-            $get_customer_id = $wpdb->get_row("SELECT a.ID as user_id FROM wpqa_users as a WHERE a.display_name = '" . $customer_name . "'");
+            $get_customer_id = $wpdb->get_row("SELECT a.ID as user_id FROM ".$wpdb->prefix."users as a WHERE a.display_name = '" . $customer_name . "'");
 		    $customer_id = $get_customer_id->user_id;
 		    $get_first_name = get_user_meta( $customer_id, 'first_name', true );
 		    $get_last_name = get_user_meta( $customer_id, 'last_name', true );
@@ -2098,7 +2159,7 @@ public static function id_in_recall( $identifier, $type ) {
                     THEN 0
                     ELSE 1 
                     END values_differs
-        FROM wpqa_wpsc_epa_storage_status
+        FROM ".$wpdb->prefix."wpsc_epa_storage_status
         WHERE digitization_center = '" . $dc_final . "'
         ),
         cte2 AS 
@@ -2124,7 +2185,7 @@ public static function id_in_recall( $identifier, $type ) {
         cte1 AS
         (
         SELECT shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
-        FROM wpqa_wpsc_epa_storage_status
+        FROM ".$wpdb->prefix."wpsc_epa_storage_status
         WHERE digitization_center = '" . $dc_final . "' AND
         id BETWEEN 1 AND '" . $seq_shelfid_final . "'
         )
@@ -2148,15 +2209,15 @@ public static function id_in_recall( $identifier, $type ) {
         global $wpdb; 
 
         $obtain_box_ids_details = $wpdb->get_results("
-        SELECT wpqa_wpsc_epa_boxinfo.storage_location_id
-        FROM wpqa_wpsc_epa_boxinfo 
-        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
+        SELECT ".$wpdb->prefix."wpsc_epa_boxinfo.storage_location_id
+        FROM ".$wpdb->prefix."wpsc_epa_boxinfo 
+        INNER JOIN ".$wpdb->prefix."wpsc_epa_storage_location ON ".$wpdb->prefix."wpsc_epa_boxinfo.storage_location_id = ".$wpdb->prefix."wpsc_epa_storage_location.id 
         WHERE
-        wpqa_wpsc_epa_storage_location.aisle = 0 AND 
-        wpqa_wpsc_epa_storage_location.bay = 0 AND 
-        wpqa_wpsc_epa_storage_location.shelf = 0 AND 
-        wpqa_wpsc_epa_storage_location.position = 0 AND
-        wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
+        ".$wpdb->prefix."wpsc_epa_storage_location.aisle = 0 AND 
+        ".$wpdb->prefix."wpsc_epa_storage_location.bay = 0 AND 
+        ".$wpdb->prefix."wpsc_epa_storage_location.shelf = 0 AND 
+        ".$wpdb->prefix."wpsc_epa_storage_location.position = 0 AND
+        ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
         ");
 
         $box_id_array = array();
@@ -2173,10 +2234,10 @@ public static function id_in_recall( $identifier, $type ) {
 
             // Get Distinct program office ID
             $get_program_office_id = $wpdb->get_results("
-	            SELECT wpqa_wpsc_epa_program_office.organization_acronym as acronym
-	            FROM wpqa_wpsc_epa_boxinfo 
-	            LEFT JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code 
-	            WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $id . "'
+	            SELECT ".$wpdb->prefix."wpsc_epa_program_office.organization_acronym as acronym
+	            FROM ".$wpdb->prefix."wpsc_epa_boxinfo 
+	            LEFT JOIN ".$wpdb->prefix."wpsc_epa_program_office ON ".$wpdb->prefix."wpsc_epa_boxinfo.program_office_id = ".$wpdb->prefix."wpsc_epa_program_office.office_code 
+	            WHERE ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id = '" . $id . "'
 	            ");
 
             $program_office_east_array = array();
@@ -2264,7 +2325,7 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             
         $po_result = $wpdb->get_results("
-        SELECT DISTINCT office_acronym FROM wpqa_wpsc_epa_program_office
+        SELECT DISTINCT office_acronym FROM ".$wpdb->prefix."wpsc_epa_program_office
         WHERE id <> -99999
         ");
 
@@ -2282,7 +2343,7 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             $array = array();
             
-            $record_schedule = $wpdb->get_results("SELECT * FROM wpqa_epa_record_schedule WHERE Reserved_Flag = 0 AND id <> -99999 AND Ten_Year = 1 ORDER BY Record_Schedule_Number");
+            $record_schedule = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."epa_record_schedule WHERE Reserved_Flag = 0 AND id <> -99999 AND Ten_Year = 1 ORDER BY Record_Schedule_Number");
             
             foreach($record_schedule as $rs)
             {
@@ -2312,7 +2373,7 @@ public static function id_in_recall( $identifier, $type ) {
         {
             global $wpdb;
 
-            $request_id_get = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id as request_id FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "' AND wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id");
+            $request_id_get = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id as request_id FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket WHERE ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $id . "' AND ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id = ".$wpdb->prefix."wpsc_ticket.id");
             
             $request_id_val = $request_id_get->request_id;
             
@@ -2381,7 +2442,7 @@ public static function id_in_recall( $identifier, $type ) {
         }
         
         //Function to obtain box ID, location, shelf, bay and index from ticket 
-        
+        /*
         public static function fetch_box_details($id)
         {
             global $wpdb; 
@@ -2406,7 +2467,7 @@ public static function id_in_recall( $identifier, $type ) {
             }
             return $array;
         }
-
+*/
         //Function to obtain box details from box ID
         public static function fetch_box_id_a( $id )
         {
@@ -2432,6 +2493,7 @@ public static function id_in_recall( $identifier, $type ) {
             return $array;
         }
 
+        /*
         //Function to obtain program office from database
         public static function fetch_program_office( $id )
         {
@@ -2462,11 +2524,12 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             $array = array();
             // $request_shelf = $wpdb->get_results("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
+            $db_prefix = $wpdb->prefix;
             $args = [
                 'select' => 'shelf',
                 'where' => [
                     ['ticket_id',  $id],
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND'],
+                    [$db_prefix.'wpsc_epa_boxinfo.ticket_id', $db_prefix.'wpsc_ticket.id', 'AND'],
                 ],
             ];
             $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo, {$wpdb->prefix}wpsc_ticket");
@@ -2484,12 +2547,12 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             $array = array();
             // $request_bay = $wpdb->get_results("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
-
+            $db_prefix = $wpdb->prefix;
             $args = [
                 'select' => 'bay',
                 'where' => [
                     ['ticket_id',  $id],
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND'],
+                    [$db_prefix.'wpsc_epa_boxinfo.ticket_id', $db_prefix.'wpsc_ticket.id', 'AND'],
                 ],
             ];
             $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo, {$wpdb->prefix}wpsc_ticket");
@@ -2500,7 +2563,7 @@ public static function id_in_recall( $identifier, $type ) {
             }
             return $array;
         }
-
+*/
         //Function to obtain create month and year from database
         public static function fetch_create_date( $id )
         {
@@ -2764,9 +2827,9 @@ public static function id_in_recall( $identifier, $type ) {
         {
             global $wpdb;
 
-	        $get_user_id = $wpdb->get_row( "SELECT ID FROM wpqa_users WHERE user_email = '" . $agent_email . "'" );
+	        $get_user_id = $wpdb->get_row( "SELECT count(ID) FROM wpqa_users WHERE user_email = '" . $agent_email . "'" );
 	        
-	        if ( count($get_user_id) > 0 ){
+	        if ( $get_user_id > 0 ){
 		       	$user_id_array = array($get_user_id->ID);
 		        $user_id = self::translate_user_id( $user_id_array, 'agent_term_id' );
             
@@ -2869,13 +2932,13 @@ public static function id_in_recall( $identifier, $type ) {
 												        SELECT
 												            COUNT(fdif.id)
 												        FROM
-												            wpqa_wpsc_epa_folderdocinfo AS c
-												        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = c.id
+												            ".$wpdb->prefix."wpsc_epa_folderdocinfo AS c
+												        INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = c.id
 												        WHERE
 												            c.box_id = a.id
 												    ) AS total_count
 												FROM
-												    wpqa_wpsc_epa_boxinfo AS a
+												    ".$wpdb->prefix."wpsc_epa_boxinfo AS a
 												WHERE
 												    a.id = '" . $box_obj->Box_id_FK . "'
 												) q");
@@ -2905,14 +2968,14 @@ public static function id_in_recall( $identifier, $type ) {
 													        SELECT
 													            SUM(VALIDATION = 1)
 													        FROM
-													            wpqa_wpsc_epa_folderdocinfo_files fdif
-													        JOIN wpqa_wpsc_epa_folderdocinfo fdi ON
+													            ".$wpdb->prefix."wpsc_epa_folderdocinfo_files fdif
+													        JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo fdi ON
 													            fdi.id = fdif.folderdocinfo_id
 													        WHERE
 													            fdi.box_id = a.id
 															) AS VALIDATION
 														FROM
-														    wpqa_wpsc_epa_boxinfo AS a
+														    ".$wpdb->prefix."wpsc_epa_boxinfo AS a
 														WHERE
 														    a.id = '" . $box_obj->Box_id_FK . "'
 														) b");	
@@ -2958,7 +3021,7 @@ public static function id_in_recall( $identifier, $type ) {
 				
 				// Condition 3 - Destruction Approval
 				
-			 	$box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM wpqa_wpsc_ticket WHERE id='".$ticket_id_obj['ticket_id']."'");				
+			 	$box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM ".$wpdb->prefix."wpsc_ticket WHERE id='".$ticket_id_obj['ticket_id']."'");				
 				
 				// Condition 3 SET - Show destruction approval setting?
 				if( $box_destruction_approval->destruction_approval ) {
@@ -3200,8 +3263,8 @@ public static function id_in_recall( $identifier, $type ) {
 												    Item.return_id as return_id,
 												    Ret.return_status_id as return_status
 												FROM
-												    wpqa_wpsc_epa_return_items Item
-												JOIN wpqa_wpsc_epa_return Ret ON
+												    ".$wpdb->prefix."wpsc_epa_return_items Item
+												JOIN ".$wpdb->prefix."wpsc_epa_return Ret ON
 												    Ret.id = Item.return_id
 												WHERE
 												    Ret.return_status_id <> " . $decline_cancelled_term_id . " AND Item.box_id = '" .  $box_fk . "'");	
@@ -3279,7 +3342,310 @@ public static function id_in_recall( $identifier, $type ) {
 		    return $return_info;
 	    }
 
+        /**
+         * Archive Restore Request
+         * @return true
+         */
+         
+        public static function restore_archive($ticket_id)
+        {
+			global $wpdb;
+			
+$folderdocinfo_array = array();
+$folderdocinfo_file_array = array();
 
+//BEGIN RESTORING DATA FROM ARCHIVE
+$get_related_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
+
+foreach ($get_related_boxes as $relatedbox) {
+
+$get_related_folderdocinfo = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive WHERE box_id = '".$relatedbox->id."'");
+
+foreach ($get_related_folderdocinfo as $folderdocinfo) {
+
+$get_related_folderdocinfo_file = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive WHERE folderdocinfo_id = '".$folderdocinfo->id."'");
+
+$folderdocinfo_id = $folderdocinfo->id;
+array_push($folderdocinfo_array, $folderdocinfo_id);
+$folderdocinfo_folderdocinfo_id = $folderdocinfo->folderdocinfo_id;
+$folderdocinfo_author = $folderdocinfo->author;
+$folderdocinfo_addressee = $folderdocinfo->addressee;
+$folderdocinfo_record_type = $folderdocinfo->record_type;
+$folderdocinfo_site_name = $folderdocinfo->site_name;
+$folderdocinfo_siteid = $folderdocinfo->siteid;
+$folderdocinfo_close_date = $folderdocinfo->close_date;
+$folderdocinfo_access_type = $folderdocinfo->access_type;
+$folderdocinfo_box_id = $folderdocinfo->box_id;
+$folderdocinfo_essential_record = $folderdocinfo->essential_record;
+$folderdocinfo_folder_identifier= $folderdocinfo->folder_identifier;
+$folderdocinfo_date_created = $folderdocinfo->date_created;
+$folderdocinfo_date_updated = $folderdocinfo->date_updated;
+
+				$wpdb->insert(
+					$wpdb->prefix . 'wpsc_epa_folderdocinfo',
+					array(
+						'id'  => $folderdocinfo_id,
+						'folderdocinfo_id'   => $folderdocinfo_folderdocinfo_id,
+						'author' => $folderdocinfo_author,
+						'addressee' => $folderdocinfo_addressee,
+						'record_type' => $folderdocinfo_record_type,
+						'site_name' => $folderdocinfo_site_name,
+						'siteid' => $folderdocinfo_siteid,
+						'close_date' => $folderdocinfo_close_date,
+						'access_type' => $folderdocinfo_access_type,
+						'box_id' => $folderdocinfo_box_id,
+						'essential_record' => $folderdocinfo_essential_record,
+						'folder_identifier' => $folderdocinfo_folder_identifier,
+						'date_created' => $folderdocinfo_date_created,
+						'date_updated' => $folderdocinfo_date_updated
+					)
+				);
+				
+foreach ($get_related_folderdocinfo_file as $folderdocinfofile) {
+
+$folderdocinfofile_id = $folderdocinfofile->id;
+array_push($folderdocinfo_file_array, $folderdocinfofile_id);
+$folderdocinfofile_post_id = $folderdocinfofile->post_id;
+$folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
+$folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
+$folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
+$folderdocinfofile_approve_ingestion = $folderdocinfofile->approve_ingestion;
+$folderdocinfofile_attachment = $folderdocinfofile->attachment;
+$folderdocinfofile_file_name = $folderdocinfofile->file_name;
+$folderdocinfofile_object_key = $folderdocinfofile->object_key;
+$folderdocinfofile_object_location = $folderdocinfofile->object_location;
+$folderdocinfofile_source_file_location= $folderdocinfofile->source_file_location;
+$folderdocinfofile_file_object_id = $folderdocinfofile->file_object_id;
+$folderdocinfofile_file_size = $folderdocinfofile->file_size;
+$folderdocinfofile_title = $folderdocinfofile->title;
+$folderdocinfofile_date = $folderdocinfofile->date;
+$folderdocinfofile_description = $folderdocinfofile->description;
+$folderdocinfofile_tags = $folderdocinfofile->tags;
+$folderdocinfofile_relation_part = $folderdocinfofile->relation_part;
+$folderdocinfofile_relation_part_of = $folderdocinfofile->relation_part_of;
+$folderdocinfofile_access_restriction = $folderdocinfofile->access_restriction;
+$folderdocinfofile_use_restriction = $folderdocinfofile->use_restriction;
+$folderdocinfofile_specific_use_restriction = $folderdocinfofile->specific_use_restriction;
+$folderdocinfofile_rights_holder = $folderdocinfofile->rights_holder;
+$folderdocinfofile_source_format = $folderdocinfofile->source_format;
+$folderdocinfofile_source_dimensions = $folderdocinfofile->source_dimensions;
+$folderdocinfofile_validation = $folderdocinfofile->validation;
+$folderdocinfofile_validation_user_id = $folderdocinfofile->validation_user_id;
+$folderdocinfofile_qa_user_id = $folderdocinfofile->qa_user_id;
+$folderdocinfofile_rescan = $folderdocinfofile->rescan;
+$folderdocinfofile_unauthorized_destruction = $folderdocinfofile->unauthorized_destruction;
+$folderdocinfofile_freeze = $folderdocinfofile->freeze;
+$folderdocinfofile_index_level = $folderdocinfofile->index_level;
+$folderdocinfofile_ecms_delete_timestamp = $folderdocinfofile->ecms_delete_timestamp;
+$folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment;
+
+				$wpdb->insert(
+					$wpdb->prefix . 'wpsc_epa_folderdocinfo_files',
+					array(
+'id' => $folderdocinfofile_id,
+'post_id' => $folderdocinfofile_post_id,
+'folderdocinfo_id' => $folderdocinfofile_folderdocinfo_id,
+'folderdocinfofile_id' => $folderdocinfofile_folderdocinfofile_id,
+'DOC_REGID' => $folderdocinfofile_DOC_REGID,
+'approve_ingestion' => $folderdocinfofile_approve_ingestion,
+'attachment' => $folderdocinfofile_attachment,
+'file_name' => $folderdocinfofile_file_name,
+'object_key' => $folderdocinfofile_object_key,
+'object_location' => $folderdocinfofile_object_location,
+'source_file_location' => $folderdocinfofile_source_file_location,
+'file_object_id' => $folderdocinfofile_file_object_id,
+'file_size' => $folderdocinfofile_file_size,
+'title' => $folderdocinfofile_title,
+'date' => $folderdocinfofile_date,
+'description' => $folderdocinfofile_description,
+'tags' => $folderdocinfofile_tags,
+'relation_part' => $folderdocinfofile_relation_part,
+'relation_part_of' => $folderdocinfofile_relation_part_of,
+'access_restriction' => $folderdocinfofile_access_restriction,
+'use_restriction' => $folderdocinfofile_use_restriction,
+'specific_use_restriction' => $folderdocinfofile_specific_use_restriction,
+'rights_holder' => $folderdocinfofile_rights_holder,
+'source_format' => $folderdocinfofile_source_format,
+'source_dimensions' => $folderdocinfofile_source_dimensions,
+'validation' => $folderdocinfofile_validation,
+'validation_user_id' => $folderdocinfofile_validation_user_id,
+'qa_user_id' => $folderdocinfofile_qa_user_id,
+'rescan' => $folderdocinfofile_rescan,
+'unauthorized_destruction' => $folderdocinfofile_unauthorized_destruction,
+'freeze' => $folderdocinfofile_freeze,
+'index_level' => $folderdocinfofile_index_level,
+'ecms_delete_timestamp' => $folderdocinfofile_ecms_delete_timestamp,
+'ecms_delete_comment' => $folderdocinfofile_ecms_delete_comment
+					)
+				);
+
+}
+
+}
+
+	}
+
+foreach ($folderdocinfo_array as $key => $value) {
+
+//Remove from wpsc_epa_folderdocinfo
+$wpdb->delete( $wpdb->prefix . 'wpsc_epa_folderdocinfo_archive', array( 'id' => $value) );
+}
+
+foreach ($folderdocinfo_file_array as $key => $value) {
+
+//Remove from wpsc_epa_folderdocinfo_files
+$wpdb->delete( $wpdb->prefix . 'wpsc_epa_folderdocinfo_files_archive', array( 'id' => $value) );
+}
+return 'true';
+
+        }
+
+
+        /**
+         * Archive Request
+         * @return true
+         */
+         
+        public static function send_to_archive($ticket_id)
+        {
+			global $wpdb;
+			
+$folderdocinfo_array = array();
+$folderdocinfo_file_array = array();
+
+$get_related_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
+
+foreach ($get_related_boxes as $relatedbox) {
+
+$get_related_folderdocinfo = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo WHERE box_id = '".$relatedbox->id."'");
+
+foreach ($get_related_folderdocinfo as $folderdocinfo) {
+
+$get_related_folderdocinfo_file = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfo_id = '".$folderdocinfo->id."'");
+
+$folderdocinfo_id = $folderdocinfo->id;
+array_push($folderdocinfo_array, $folderdocinfo_id);
+$folderdocinfo_folderdocinfo_id = $folderdocinfo->folderdocinfo_id;
+$folderdocinfo_author = $folderdocinfo->author;
+$folderdocinfo_addressee = $folderdocinfo->addressee;
+$folderdocinfo_record_type = $folderdocinfo->record_type;
+$folderdocinfo_site_name = $folderdocinfo->site_name;
+$folderdocinfo_siteid = $folderdocinfo->siteid;
+$folderdocinfo_close_date = $folderdocinfo->close_date;
+$folderdocinfo_access_type = $folderdocinfo->access_type;
+$folderdocinfo_box_id = $folderdocinfo->box_id;
+$folderdocinfo_essential_record = $folderdocinfo->essential_record;
+$folderdocinfo_folder_identifier= $folderdocinfo->folder_identifier;
+$folderdocinfo_date_created = $folderdocinfo->date_created;
+$folderdocinfo_date_updated = $folderdocinfo->date_updated;
+
+				$wpdb->insert(
+					$wpdb->prefix . 'wpsc_epa_folderdocinfo_archive',
+					array(
+						'id'  => $folderdocinfo_id,
+						'folderdocinfo_id'   => $folderdocinfo_folderdocinfo_id,
+						'author' => $folderdocinfo_author,
+						'addressee' => $folderdocinfo_addressee,
+						'record_type' => $folderdocinfo_record_type,
+						'site_name' => $folderdocinfo_site_name,
+						'siteid' => $folderdocinfo_siteid,
+						'close_date' => $folderdocinfo_close_date,
+						'access_type' => $folderdocinfo_access_type,
+						'box_id' => $folderdocinfo_box_id,
+						'essential_record' => $folderdocinfo_essential_record,
+						'folder_identifier' => $folderdocinfo_folder_identifier,
+						'date_created' => $folderdocinfo_date_created,
+						'date_updated' => $folderdocinfo_date_updated
+					)
+				);
+
+foreach ($get_related_folderdocinfo_file as $folderdocinfofile) {
+
+$folderdocinfofile_id = $folderdocinfofile->id;
+array_push($folderdocinfo_file_array, $folderdocinfofile_id);
+$folderdocinfofile_post_id = $folderdocinfofile->post_id;
+$folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
+$folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
+$folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
+$folderdocinfofile_approve_ingestion = $folderdocinfofile->approve_ingestion;
+$folderdocinfofile_attachment = $folderdocinfofile->attachment;
+$folderdocinfofile_file_name = $folderdocinfofile->file_name;
+$folderdocinfofile_object_key = $folderdocinfofile->object_key;
+$folderdocinfofile_object_location = $folderdocinfofile->object_location;
+$folderdocinfofile_source_file_location= $folderdocinfofile->source_file_location;
+$folderdocinfofile_file_object_id = $folderdocinfofile->file_object_id;
+$folderdocinfofile_file_size = $folderdocinfofile->file_size;
+$folderdocinfofile_title = $folderdocinfofile->title;
+$folderdocinfofile_date = $folderdocinfofile->date;
+$folderdocinfofile_description = $folderdocinfofile->description;
+$folderdocinfofile_tags = $folderdocinfofile->tags;
+$folderdocinfofile_relation_part = $folderdocinfofile->relation_part;
+$folderdocinfofile_relation_part_of = $folderdocinfofile->relation_part_of;
+$folderdocinfofile_access_restriction = $folderdocinfofile->access_restriction;
+$folderdocinfofile_use_restriction = $folderdocinfofile->use_restriction;
+$folderdocinfofile_specific_use_restriction = $folderdocinfofile->specific_use_restriction;
+$folderdocinfofile_rights_holder = $folderdocinfofile->rights_holder;
+$folderdocinfofile_source_format = $folderdocinfofile->source_format;
+$folderdocinfofile_source_dimensions = $folderdocinfofile->source_dimensions;
+$folderdocinfofile_validation = $folderdocinfofile->validation;
+$folderdocinfofile_validation_user_id = $folderdocinfofile->validation_user_id;
+$folderdocinfofile_qa_user_id = $folderdocinfofile->qa_user_id;
+$folderdocinfofile_rescan = $folderdocinfofile->rescan;
+$folderdocinfofile_unauthorized_destruction = $folderdocinfofile->unauthorized_destruction;
+$folderdocinfofile_freeze = $folderdocinfofile->freeze;
+$folderdocinfofile_index_level = $folderdocinfofile->index_level;
+$folderdocinfofile_ecms_delete_timestamp = $folderdocinfofile->ecms_delete_timestamp;
+$folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment;
+
+				$wpdb->insert(
+					$wpdb->prefix . 'wpsc_epa_folderdocinfo_files_archive',
+					array(
+'id' => $folderdocinfofile_id,
+'post_id' => $folderdocinfofile_post_id,
+'folderdocinfo_id' => $folderdocinfofile_folderdocinfo_id,
+'folderdocinfofile_id' => $folderdocinfofile_folderdocinfofile_id,
+'DOC_REGID' => $folderdocinfofile_DOC_REGID,
+'approve_ingestion' => $folderdocinfofile_approve_ingestion,
+'attachment' => $folderdocinfofile_attachment,
+'file_name' => $folderdocinfofile_file_name,
+'object_key' => $folderdocinfofile_object_key,
+'object_location' => $folderdocinfofile_object_location,
+'source_file_location' => $folderdocinfofile_source_file_location,
+'file_object_id' => $folderdocinfofile_file_object_id,
+'file_size' => $folderdocinfofile_file_size,
+'title' => $folderdocinfofile_title,
+'date' => $folderdocinfofile_date,
+'description' => $folderdocinfofile_description,
+'tags' => $folderdocinfofile_tags,
+'relation_part' => $folderdocinfofile_relation_part,
+'relation_part_of' => $folderdocinfofile_relation_part_of,
+'access_restriction' => $folderdocinfofile_access_restriction,
+'use_restriction' => $folderdocinfofile_use_restriction,
+'specific_use_restriction' => $folderdocinfofile_specific_use_restriction,
+'rights_holder' => $folderdocinfofile_rights_holder,
+'source_format' => $folderdocinfofile_source_format,
+'source_dimensions' => $folderdocinfofile_source_dimensions,
+'validation' => $folderdocinfofile_validation,
+'validation_user_id' => $folderdocinfofile_validation_user_id,
+'qa_user_id' => $folderdocinfofile_qa_user_id,
+'rescan' => $folderdocinfofile_rescan,
+'unauthorized_destruction' => $folderdocinfofile_unauthorized_destruction,
+'freeze' => $folderdocinfofile_freeze,
+'index_level' => $folderdocinfofile_index_level,
+'ecms_delete_timestamp' => $folderdocinfofile_ecms_delete_timestamp,
+'ecms_delete_comment' => $folderdocinfofile_ecms_delete_comment
+					)
+				);
+
+}
+
+}
+
+	}
+return 'true';
+
+        }
+        
         /**
          * Convert Ticket ID to Request ID
          * @return id Request ID
@@ -3305,14 +3671,219 @@ return $padded_request_id;
 		   	global $wpdb;
 
 			$get_post_details = $wpdb->get_row("SELECT a.post_content 
-			FROM wpqa_posts a 
-			INNER JOIN wpqa_term_relationships b ON a.id = b.object_id 
-			INNER JOIN wpqa_term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
-			INNER JOIN wpqa_terms d ON c.term_id = d.term_id WHERE a.post_status = 'publish' AND
+			FROM ".$wpdb->prefix."posts a 
+			INNER JOIN ".$wpdb->prefix."term_relationships b ON a.id = b.object_id 
+			INNER JOIN ".$wpdb->prefix."term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
+			INNER JOIN ".$wpdb->prefix."terms d ON c.term_id = d.term_id WHERE a.post_status = 'publish' AND
 			d.slug = 'help-messages' AND a.post_name = '" . $post_name . "'");
 			$post_details_content = $get_post_details->post_content; 
 
 return $post_details_content;
+
+        }
+        
+        /**
+         * Determine if request is active or archived
+         * @return boolean
+         */
+         
+        public static function request_status($request_id)
+        {
+		   	global $wpdb;
+
+			$get_request_details = $wpdb->get_row("SELECT active 
+			FROM ".$wpdb->prefix."wpsc_ticket
+		    WHERE request_id = '" . $request_id . "'");
+			$request_status = $get_request_details->active; 
+
+        return $request_status;
+
+        }
+        
+        /**
+         * Determine if request is active or archived
+         * @return boolean
+         */
+         
+        public static function ticket_active($ticket_id)
+        {
+		   	global $wpdb;
+
+			$get_ticket_details = $wpdb->get_row("SELECT active 
+			FROM ".$wpdb->prefix."wpsc_ticket
+		    WHERE id = '" . $ticket_id . "'");
+			$ticket_active = $get_ticket_details->active; 
+
+        return $ticket_active;
+
+        }
+
+        /**
+         * Archive audit log information
+         * @return true
+         */
+         
+        public static function audit_log_backup($ticket_id)
+        {
+
+global $current_user, $wpscfunction, $wpdb;
+
+include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-load.php');
+include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/includes/image.php');
+include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/includes/media.php');
+include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/includes/file.php');
+
+
+function strip_tags_deep($value)
+{
+  return is_array($value) ?
+    array_map('strip_tags_deep', $value) :
+    strip_tags(preg_replace( "/\r|\n/", "", $value ));
+}
+
+function add_quotes($str) {
+    return sprintf('"%s"', $str);
+}
+
+                       $converted_request_id = self::convert_request_db_id($ticket_id);
+                       $file = 'log_backup'; // csv file name
+                       $pre_results = $wpdb->get_results("
+SELECT 
+rel.post_id as id,
+posts.post_date as date,
+posts.post_content as content
+    FROM " . $wpdb->prefix . "posts AS posts
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel ON 
+            posts.ID = rel.post_id
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel2 ON
+            posts.ID = rel2.post_id
+    WHERE
+        posts.post_type = 'wpsc_ticket_thread' AND
+        posts.post_status = 'publish' AND 
+        rel2.meta_key = 'thread_type' AND
+        rel2.meta_value = 'log' AND
+        rel.meta_key = 'ticket_id' AND
+        rel.meta_value =" .$ticket_id ."
+    ORDER BY
+    posts.post_date DESC",ARRAY_A);
+    
+                       $results = strip_tags_deep($pre_results);
+// CONVERT TO EST
+foreach ($results as $key => &$value) {
+   $date = new DateTime($value['date'], new DateTimeZone('UTC'));
+   $date->setTimezone(new DateTimeZone('America/New_York'));
+   $value['date'] = $date->format('m-d-Y h:i:s a');
+}
+
+                        // get column names
+                        $columnNamesList = ['ID','Date','Content'];
+
+
+                        foreach ( $columnNamesList as $column_name ) {
+                            $csv_output.=$column_name.",";
+                        }
+
+
+                        // remove last additional comma 
+                        $csv_output = substr($csv_output,0,strlen($csv_output)-1);
+
+                        // start dumping csv rows in new line
+                        $csv_output.="\n";
+
+                       if(count($results) > 0){
+                          foreach($results as $result){
+                          $result = array_values($result);
+                          $result =  implode(',', array_map('add_quotes', $result));
+                          
+                          $csv_output .= htmlspecialchars_decode($result)."\n";
+                        }
+                      
+
+                      $filename = $converted_request_id."_".$file."_".date("Y-m-d_H-i",time()).".csv";
+                      $backup_file  = WPPATT_UPLOADS."/backups/audit/".$filename;
+                      
+                      //Direct File Download
+                      //header("Content-type: application/vnd.ms-excel");
+                      //header("Content-disposition: csv" . date("Y-m-d") . ".csv");
+                      //header( "Content-disposition: filename=".$filename.".csv");
+                      //header("Pragma: no-cache");
+                      //header("Expires: 0");
+                      //print $csv_output;
+                      
+
+                      file_put_contents($backup_file, $csv_output);
+                        }
+
+                      /* Check the file type and fetch the mime of the file uploaded */
+                      $wp_filetype = wp_check_filetype( $filename, null );
+
+                      /* Attachment information to be saved in the database */
+                      $attachment = array(
+                        'post_mime_type' => $wp_filetype['type'], /* Mime type */
+                        'post_title' => sanitize_file_name( $filename ), /* Title */
+                        'post_content' => '', /* Content */
+                        'post_status' => 'inherit' /* Status */
+                      );
+
+                      /* Inserts the attachment and returns the attachment ID */
+                      $attach_id = wp_insert_attachment( $attachment, $backup_file );
+
+                      /* Generates metadata for the attachment */
+                      $attach_data = wp_generate_attachment_metadata( $attach_id, $backup_file );
+
+                      /* Update metadata for the attachment */
+                      wp_update_attachment_metadata( $attach_id, $attach_data );
+
+                      /**
+                       * To display folder in the media plugin, the code is added as follows
+                       * File: pattracking/includes/class-wppatt-request-approval-widget.php
+                       * Filter: add_filter( 'media_folder_list', __CLASS__ . '::media_folder_list_callback', 10, 1 );
+                       * Code in the filter : array_push( $folders, array( 'name' => 'backups' ) ); (Added the name of the folder in the list).
+                       */
+
+                      /* Add meta with key 'Folder' and name of the folder as value */
+                      update_post_meta( $attach_id, 'folder', 'backups' );
+
+                      /**
+                       * Delete attachment
+                       * wp_delete_attachment( $attach_id, $force_delete );
+                       * $attach_id: Attachment ID
+                       * $force_delete: true ( Skips trash and directly deletes the attachment ), false ( moves attachment to trash )
+                       */
+
+// DELETE ROWS
+$get_log = $wpdb->get_results("
+SELECT 
+rel.post_id as id,
+posts.post_date as date,
+posts.post_content as content
+    FROM " . $wpdb->prefix . "posts AS posts
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel ON 
+            posts.ID = rel.post_id
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel2 ON
+            posts.ID = rel2.post_id
+    WHERE
+        posts.post_type = 'wpsc_ticket_thread' AND
+        posts.post_status = 'publish' AND 
+        rel2.meta_key = 'thread_type' AND
+        rel2.meta_value = 'log' AND
+        rel.meta_key = 'ticket_id' AND
+        rel.meta_value =" . $ticket_id ."
+    ORDER BY
+    posts.post_date DESC");
+    
+foreach($get_log as $info){
+    $log_id = $info->id;
+    
+$table_post = $wpdb->prefix."posts";
+$wpdb->delete( $table_post, array( 'id' => $log_id ) );
+
+$table_post_meta = $wpdb->prefix."postmeta";
+$wpdb->delete( $table_post_meta, array( 'post_id' => $log_id ) );
+}
+
+
+        return true;
 
         }
         
@@ -3328,11 +3899,17 @@ if (strpos($patt_id, 'R-') !== false) {
 $patt_type = 'recall';
 } elseif ((strpos($patt_id, 'D-') !== false) || (strpos($patt_id, 'RTN-') !== false)) {
 $patt_type = 'decline';
+//No leter check plus length check
 } elseif (strlen($patt_id) == 7 && !preg_match('/[A-Za-z]/', $patt_id)) {
 $patt_type = 'request';
+//No leter check plus dash check
 } elseif (substr_count($patt_id, '-') == 1 && !preg_match('/[A-Za-z]/', $patt_id)) {
 $patt_type = 'box';
+//No leter check plus dash check
 } elseif (substr_count($patt_id, '-') == 3 && !preg_match('/[A-Za-z]/', $patt_id)) {
+$patt_type = 'folder_file';
+//Attachments check
+} elseif (substr_count($patt_id, '-') == 4 && preg_match('/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/ ', $patt_id)) {
 $patt_type = 'folder_file';
 }
 
@@ -3349,10 +3926,10 @@ return $patt_type;
 			global $wpdb;
 			
 			// Get post details
-			$get_post_details = $wpdb->get_row("SELECT a.post_title, a.post_content FROM wpqa_posts a
-			INNER JOIN wpqa_term_relationships b ON a.id = b.object_id 
-			INNER JOIN wpqa_term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
-			INNER JOIN wpqa_terms d ON c.term_id = d.term_id
+			$get_post_details = $wpdb->get_row("SELECT a.post_title, a.post_content FROM ".$wpdb->prefix."posts a
+			INNER JOIN ".$wpdb->prefix."term_relationships b ON a.id = b.object_id 
+			INNER JOIN ".$wpdb->prefix."term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
+			INNER JOIN ".$wpdb->prefix."terms d ON c.term_id = d.term_id
 			WHERE a.post_status = 'publish' AND d.slug = 'email-messages' AND a.post_name = '" . $post_name . "'");
 			$post_details_subject = $get_post_details->post_title;
 			$post_details_content = $get_post_details->post_content;
@@ -3423,8 +4000,9 @@ return $patt_type;
 					$post_details_content = str_replace( $tags, $replacement, $get_post_details->post_content );
 				 
 				}
-							
-				$wpdb->insert('wpqa_pm', array(
+				
+				$table_pm = $wpdb->prefix."pm";
+				$wpdb->insert($table_pm, array(
 					'identifier' => $patt_id,
 				    'subject' => $post_details_subject,
 				    'content' => $post_details_content,
@@ -3439,8 +4017,9 @@ return $patt_type;
 				
 				foreach ($wp_user_id_array as $wp_user_id) {
 
+                    $table_pm_users = $wpdb->prefix."pm_users";
 					//For each username
-					$wpdb->insert('wpqa_pm_users', array(
+					$wpdb->insert($table_pm_users, array(
 					    'pm_id' => $insert_id,
 					    'recipient' => $wp_user_id,
 					    'viewed' => 0,
@@ -3503,13 +4082,13 @@ public static function agents_assigned_request( $ticket_id ) {
   
 	//OBTAIN BOX IDs
 
-	$get_box_ids = $wpdb->get_results("SELECT id from wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
+	$get_box_ids = $wpdb->get_results("SELECT id from ".$wpdb->prefix."wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
 	
 	$user_id_array = array();
 
 	foreach ($get_box_ids as $item) {
 		$box_id = $item->id;
-		$get_user_ids = $wpdb->get_results("SELECT user_id from wpqa_wpsc_epa_boxinfo_userstatus where box_id = " . $box_id);
+		$get_user_ids = $wpdb->get_results("SELECT user_id from ".$wpdb->prefix."wpsc_epa_boxinfo_userstatus where box_id = " . $box_id);
 
 		foreach ($get_user_ids as $item) {
 		    $user_id = $item->user_id;
@@ -3627,7 +4206,7 @@ This email is sent automatically. Please don\'t reply.';
 
 
                         foreach($user_ids as $item) {
-                           $additional_email = $wpdb->get_row( "SELECT user_email from wpqa_users WHERE ID = " . $item ); 
+                           $additional_email = $wpdb->get_row( "SELECT user_email from ".$wpdb->prefix."users WHERE ID = " . $item ); 
 
                            array_push($email_array, $additional_email->user_email);
                         }
@@ -3717,25 +4296,25 @@ if($type == 'comment') {
 			// Added: "WHERE recall_id <> -99999" in Jan 2021 
 			$recall_rows = $wpdb->get_results(
 			'SELECT 
-				wpqa_wpsc_epa_recallrequest.id as id, 
-			    wpqa_wpsc_epa_recallrequest.recall_id as recall_id,	
-				wpqa_wpsc_epa_recallrequest.box_id as box_id, 
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.id as id, 
+			    '.$wpdb->prefix.'wpsc_epa_recallrequest.recall_id as recall_id,	
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.box_id as box_id, 
 				boxinfo.box_id as display_box_id,
 				boxinfo.box_destroyed as box_destroyed,
 			    folderinfo.folderdocinfo_id as dispay_folder_id,
-				wpqa_wpsc_epa_recallrequest.folderdoc_id as folderdoc_id,
-				wpqa_wpsc_epa_recallrequest.recall_status_id as status_id
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.folderdoc_id as folderdoc_id,
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.recall_status_id as status_id
 			FROM 
-				wpqa_wpsc_epa_recallrequest 
+				'.$wpdb->prefix.'wpsc_epa_recallrequest 
 			INNER JOIN 
-					wpqa_wpsc_epa_boxinfo AS boxinfo 
+					'.$wpdb->prefix.'wpsc_epa_boxinfo AS boxinfo 
 				ON (
-			                wpqa_wpsc_epa_recallrequest.box_id = boxinfo.id
+			                '.$wpdb->prefix.'wpsc_epa_recallrequest.box_id = boxinfo.id
 				)
 			INNER JOIN 
-					wpqa_wpsc_epa_folderdocinfo AS folderinfo 
+					'.$wpdb->prefix.'wpsc_epa_folderdocinfo AS folderinfo 
 				ON (
-			                wpqa_wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
+			                '.$wpdb->prefix.'wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
 				)
 			WHERE recall_id <> -99999   	
 			ORDER BY id ASC' );
@@ -3785,9 +4364,9 @@ if($type == 'comment') {
 								    folderinfo.folderdocinfo_id as display_folderdocinfo_id,
 								    files.unauthorized_destruction as unauthorized_destruction
 								FROM 
-									wpqa_wpsc_epa_folderdocinfo as folderinfo
+									'.$wpdb->prefix.'wpsc_epa_folderdocinfo as folderinfo
 								JOIN 
-									wpqa_wpsc_epa_folderdocinfo_files AS files ON files.folderdocinfo_id = folderinfo.folderdocinfo_id
+									'.$wpdb->prefix.'wpsc_epa_folderdocinfo_files AS files ON files.folderdocinfo_id = folderinfo.folderdocinfo_id
 								WHERE
 								    folderinfo.box_id = '. $details_array['Box_id_FK'] .'
 								   AND
@@ -4136,12 +4715,12 @@ if($type == 'comment') {
 			$sql = "SELECT
 				    *
 				FROM
-				    wpqa_posts p
-				LEFT JOIN wpqa_term_relationships rel ON
+				    ".$wpdb->prefix."posts p
+				LEFT JOIN ".$wpdb->prefix."term_relationships rel ON
 				    rel.object_id = p.ID
-				LEFT JOIN wpqa_term_taxonomy tax ON
+				LEFT JOIN ".$wpdb->prefix."term_taxonomy tax ON
 				    tax.term_taxonomy_id = rel.term_taxonomy_id
-				LEFT JOIN wpqa_terms t ON
+				LEFT JOIN ".$wpdb->prefix."terms t ON
 				    t.term_id = tax.term_id
 				WHERE 
 				    p.post_type = 'wpsc_canned_reply'
@@ -4174,11 +4753,11 @@ if($type == 'comment') {
 			$sql = "SELECT
 					    request_id
 					FROM
-					    wpqa_wpsc_ticket ticket
-					LEFT JOIN wpqa_wpsc_epa_boxinfo box
+					    ".$wpdb->prefix."wpsc_ticket ticket
+					LEFT JOIN ".$wpdb->prefix."wpsc_epa_boxinfo box
 					ON
 					    box.ticket_id = ticket.request_id
-					LEFT JOIN wpqa_wpsc_epa_recallrequest rr
+					LEFT JOIN ".$wpdb->prefix."wpsc_epa_recallrequest rr
 					ON
 					    rr.box_id = box.id
 					WHERE
@@ -4211,11 +4790,11 @@ if($type == 'comment') {
 			$sql = "SELECT
 					    request_id
 					FROM
-					    wpqa_wpsc_ticket ticket
-					LEFT JOIN wpqa_wpsc_epa_boxinfo box
+					    ".$wpdb->prefix."wpsc_ticket ticket
+					LEFT JOIN ".$wpdb->prefix."wpsc_epa_boxinfo box
 					ON
 					    box.ticket_id = ticket.request_id
-					LEFT JOIN wpqa_wpsc_epa_return_items ri
+					LEFT JOIN ".$wpdb->prefix."wpsc_epa_return_items ri
 					ON
 					    ri.box_id = box.id
 					WHERE

@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $current_user, $wpscfunction, $wpdb;
-$subfolder_path = site_url( '', 'relative'); 
-
 if (!isset($_SESSION)) {
     session_start();    
 }
@@ -22,7 +20,7 @@ $dbid_arr = explode (",", $dbid_string);
 <?php
 $number = 0;
 foreach($dbid_arr as $key => $value):
-$get_delete_flag = $wpdb->get_row("SELECT ecms_delete_timestamp, ecms_delete_comment FROM wpqa_wpsc_epa_folderdocinfo_files WHERE id = '".$value."'");
+$get_delete_flag = $wpdb->get_row("SELECT ecms_delete_timestamp, ecms_delete_comment FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '".$value."'");
 $attach_ecms_timestamp = $get_delete_flag->ecms_delete_timestamp;
 $attach_ecms_comment = $get_delete_flag->ecms_delete_comment;
  if(strtotime($attach_ecms_timestamp) > 0 && $attach_ecms_comment != ''){

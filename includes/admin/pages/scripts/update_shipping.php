@@ -13,13 +13,13 @@ $type = $_POST['postvartype'];
 $dbid_string = $_POST['postvarsdbid'];
 $dbid_arr = explode (",", $dbid_string);
 
-$table_name = 'wpqa_wpsc_epa_shipping_tracking';
+$table_name = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
 
 $ticket_arr = array();
 
 foreach($dbid_arr as $key) {
 
-$get_tn = $wpdb->get_row("SELECT tracking_number, ticket_id FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$key."'");
+$get_tn = $wpdb->get_row("SELECT tracking_number, ticket_id FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id = '".$key."'");
 $get_tn_val = $get_tn->tracking_number;
 $get_ticket_id_val = $get_tn->ticket_id;
 
@@ -27,10 +27,10 @@ if ($get_ticket_id_val != '-99999') {
 array_push($ticket_arr, $get_ticket_id_val);
 }
 
-$get_shipped = $wpdb->get_row("SELECT shipped FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$key."'");
+$get_shipped = $wpdb->get_row("SELECT shipped FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id = '".$key."'");
 $get_shipped_val = $get_shipped->shipped;
 
-$get_delievered = $wpdb->get_row("SELECT delivered FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$key."'");
+$get_delievered = $wpdb->get_row("SELECT delivered FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id = '".$key."'");
 $get_delievered_val = $get_delievered->delivered;
 
 if (($type == 1) && ($get_delievered_val != 1)){
@@ -89,7 +89,7 @@ $padded_request_id = substr("000000{$num}", -$str_length);
 
 $get_shipped_status = $wpdb->get_results(
  	"SELECT shipped
- FROM wpqa_wpsc_epa_shipping_tracking
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
  WHERE ticket_id <> '-99999' AND ticket_id = " . $key
  );
 
@@ -108,7 +108,7 @@ $delivered_array = array();
 
 $get_delivered_status = $wpdb->get_results(
  	"SELECT delivered
- FROM wpqa_wpsc_epa_shipping_tracking
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
  WHERE ticket_id <> '-99999' AND ticket_id = " . $key
  );
 

@@ -77,25 +77,25 @@ $status_box_dispositioned_term_id = Patt_Custom_Func::get_term_by_slug( 'stored'
 
 $recall_rows = $wpdb->get_results(
 'SELECT 
-	wpqa_wpsc_epa_recallrequest.id as id, 
-    wpqa_wpsc_epa_recallrequest.recall_id as recall_id,	
-	wpqa_wpsc_epa_recallrequest.box_id as box_id, 
+	' . $wpdb->prefix . 'wpsc_epa_recallrequest.id as id, 
+    ' . $wpdb->prefix . 'wpsc_epa_recallrequest.recall_id as recall_id,	
+	' . $wpdb->prefix . 'wpsc_epa_recallrequest.box_id as box_id, 
 	boxinfo.box_id as display_box_id,
 	boxinfo.box_destroyed as box_destroyed,
     folderinfo.folderdocinfo_id as dispay_folder_id,
-	wpqa_wpsc_epa_recallrequest.folderdoc_id as folderdoc_id,
-	wpqa_wpsc_epa_recallrequest.recall_status_id as status_id
+	' . $wpdb->prefix . 'wpsc_epa_recallrequest.folderdoc_id as folderdoc_id,
+	' . $wpdb->prefix . 'wpsc_epa_recallrequest.recall_status_id as status_id
 FROM 
-	wpqa_wpsc_epa_recallrequest 
+	' . $wpdb->prefix . 'wpsc_epa_recallrequest 
 	INNER JOIN 
-		wpqa_wpsc_epa_boxinfo AS boxinfo 
+		' . $wpdb->prefix . 'wpsc_epa_boxinfo AS boxinfo 
 	ON (
-                wpqa_wpsc_epa_recallrequest.box_id = boxinfo.id
+                ' . $wpdb->prefix . 'wpsc_epa_recallrequest.box_id = boxinfo.id
 	)
         INNER JOIN 
-		wpqa_wpsc_epa_folderdocinfo AS folderinfo 
+		' . $wpdb->prefix . 'wpsc_epa_folderdocinfo AS folderinfo 
 	ON (
-                wpqa_wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
+                ' . $wpdb->prefix . 'wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
 	)
  ORDER BY id ASC' );
  
@@ -144,9 +144,9 @@ if( !$is_folder_search ) {
 				    fdif.folderdocinfofile_id as display_folderdocinfo_id,
 				    fdif.unauthorized_destruction as unauthorized_destruction
 				FROM 
-					wpqa_wpsc_epa_folderdocinfo as folderinfo
+					' . $wpdb->prefix . 'wpsc_epa_folderdocinfo as folderinfo
 				JOIN 
-                    wpqa_wpsc_epa_folderdocinfo_files as fdif ON fdif.folderdocinfo_id = folderinfo.id
+                    ' . $wpdb->prefix . 'wpsc_epa_folderdocinfo_files as fdif ON fdif.folderdocinfo_id = folderinfo.id
 				WHERE
 				    folderinfo.box_id = ' . $details_array['Box_id_FK'] . '
 				   AND

@@ -14,7 +14,7 @@ $folderfileid = $_POST['postvarsfolderfileid'];
 $dbid_string = $_POST['postvarsattachid'];
 $dbid_arr = explode (",", $dbid_string);
 
-$table_name = 'wpqa_wpsc_epa_folderdocinfo_files';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 $timestamp = date("Y-m-d H:i:s"); 
 
 $object_ids = array();
@@ -24,7 +24,7 @@ $data_update = array('ecms_delete_timestamp' => $timestamp, 'ecms_delete_comment
 $data_where = array('id' => $value);
 $wpdb->update($table_name, $data_update, $data_where);
 
-$get_object_id = $wpdb->get_row("select file_object_id from wpqa_wpsc_epa_folderdocinfo_files where id = '".$value."'");
+$get_object_id = $wpdb->get_row("select file_object_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files where id = '".$value."'");
 
 array_push($object_ids, $get_object_id->file_object_id);
 

@@ -16,7 +16,8 @@ $requestid_arr = explode (",", $requestid_string);
 
 
 foreach($requestid_arr as $key) {
-$get_ticket_status = $wpdb->get_row("SELECT request_id, ticket_status FROM wpqa_wpsc_ticket WHERE id = '".$key."'");
+$get_ticket_status = $wpdb->get_row("SELECT id, request_id, ticket_status FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$key."'");
+$get_ticket_id_val = $get_ticket_status->id;
 $get_ticket_requestid_val = $get_ticket_status->request_id;
 $get_ticket_status_val = $get_ticket_status->ticket_status;
 
@@ -27,7 +28,7 @@ if($get_ticket_status_val == 69){
    $ticket_status = 1; 
 }
 
-$get_box_status = $wpdb->get_results("SELECT box_status FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = '".$key."'");
+$get_box_status = $wpdb->get_results("SELECT box_status FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$key."'");
 
 $get_box_status_array = array();
 
@@ -41,14 +42,15 @@ if (array_unique($get_box_status_array) === array($dispositioned_tag->term_id)) 
     $box_status = 1;
 }
 
-$table_name = 'wpqa_wpsc_ticket';
+$table_name = $wpdb->prefix . 'wpsc_ticket';
 
 if($ticket_status == 1 || $box_status == 1){
 $data_update = array('active' => 0);
 $data_where = array('id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpsc_after_recycle', $key);
-
+//Archive audit log
+Patt_Custom_Func::audit_log_backup($get_ticket_id_val);
 echo '<strong>'.$get_ticket_requestid_val.'</strong> - Has been moved to the recycle bin.<br />';
 
 //sends email/notification to admins/managers when request is deleted
@@ -66,7 +68,7 @@ $email = 1;
 Patt_Custom_Func::insert_new_notification('email-request-deleted',$pattagentid_array,$get_ticket_requestid_val,$data,$email);
 
 //BEGIN TESTING ONLY REMOVE
-$get_ticket_tmp_contact = $wpdb->get_row("SELECT tmp_contact FROM wpqa_wpsc_ticket WHERE id = '".$key."'");
+$get_ticket_tmp_contact = $wpdb->get_row("SELECT tmp_contact FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$key."'");
 
 $tmp_contact = $get_ticket_tmp_contact->tmp_contact;
 
@@ -83,9 +85,15 @@ Patt_Custom_Func::insert_new_notification('email-request-deleted',$test_agent_id
 }
 //END TESTING ONLY REMOVE
 
+//BEGIN CLONING DATA TO ARCHIVE
+Patt_Custom_Func::send_to_archive($key);
+
+
+
 } else {
     echo '<strong>'.$get_ticket_requestid_val.'</strong> - Request must either be cancelled or all boxes under the request must be in the dispositioned status.<br />';
 }
+
 
 }
 

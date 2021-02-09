@@ -120,11 +120,11 @@ function update_location_sql( $sql, $meta_query ) {
 											SEPARATOR ', ') 
 								    AS combo_loco 
 								FROM 
-								    wpqa_wpsc_epa_boxinfo AS bi 
+								    " . $wpdb->prefix . "wpsc_epa_boxinfo AS bi 
 								JOIN 
-								    wpqa_wpsc_epa_storage_location AS esl ON bi.storage_location_id = esl.id 
+								    " . $wpdb->prefix . "wpsc_epa_storage_location AS esl ON bi.storage_location_id = esl.id 
 								JOIN
-							        wpqa_terms AS terms
+							        " . $wpdb->prefix . "terms AS terms
 							      ON
 							        esl.digitization_center = terms.term_id
 								JOIN
@@ -132,11 +132,11 @@ function update_location_sql( $sql, $meta_query ) {
 									SELECT 
 									    DISTINCT bi.ticket_id AS bidx
 									    FROM 
-									        wpqa_wpsc_epa_boxinfo AS bi 
+									        " . $wpdb->prefix . "wpsc_epa_boxinfo AS bi 
 									    JOIN 
-									        wpqa_wpsc_epa_storage_location AS esl ON bi.storage_location_id = esl.id 
+									        " . $wpdb->prefix . "wpsc_epa_storage_location AS esl ON bi.storage_location_id = esl.id 
 									     AND EXISTS ( SELECT esl.digitization_center
-									                  FROM wpqa_wpsc_epa_storage_location as esl
+									                  FROM " . $wpdb->prefix . "wpsc_epa_storage_location as esl
 									                 WHERE esl.digitization_center IN (".$sql_location_value.")
 									                   AND bi.storage_location_id IN (esl.id )
 									                ) 
@@ -167,13 +167,13 @@ function update_location_sql( $sql, $meta_query ) {
           SEPARATOR ', '
       ) AS combo_loco
     FROM
-      wpqa_wpsc_epa_boxinfo AS bi
+      " . $wpdb->prefix . "wpsc_epa_boxinfo AS bi
       JOIN 
-        wpqa_wpsc_epa_storage_location AS esl 
+        " . $wpdb->prefix . "wpsc_epa_storage_location AS esl 
         ON 
         bi.storage_location_id = esl.id
       JOIN
-        wpqa_terms AS terms
+        " . $wpdb->prefix . "terms AS terms
         ON
         esl.digitization_center = terms.term_id
     GROUP BY

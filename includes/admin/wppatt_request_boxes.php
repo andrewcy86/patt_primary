@@ -108,13 +108,17 @@ width: 100%;
 }
 </style>
 <?php
+
+//check whether request is active, if not disable buttons
+$is_active = Patt_Custom_Func::ticket_active( $ticket_id );
+
 //unauthorized destruction notification
 $box_details = $wpdb->get_row(
-"SELECT count(wpqa_wpsc_epa_folderdocinfo_files.id) as count
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+"SELECT count(" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id
+WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
 
 $unauthorized_destruction_count = $box_details->count;
@@ -130,11 +134,11 @@ if($unauthorized_destruction_count > 0){
 
 <?php
 //freeze notification
-$box_freeze = $wpdb->get_row("SELECT count(wpqa_wpsc_epa_folderdocinfo_files.id) as count
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE wpqa_wpsc_epa_folderdocinfo_files.freeze = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+$box_freeze = $wpdb->get_row("SELECT count(" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id
+WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.freeze = 1 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
 $freeze_count = $box_freeze->count;
 
 if($freeze_count > 0) {
@@ -152,52 +156,94 @@ $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'w
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
 
 //$status_id_arr = array('3','670','69');
-$status_id_arr = array($new_request_tag, $initial_review_rejected_tag, $cancelled_tag);
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id);
 ?>
 
 <h4>Boxes Related to Request</h4>
 <?php
+if($is_active == 1) {
 $box_details = $wpdb->get_results("SELECT 
-wpqa_wpsc_epa_boxinfo.id as id, 
-wpqa_wpsc_epa_boxinfo.id as box_data_id,
-(SELECT wpqa_terms.name FROM wpqa_wpsc_epa_boxinfo, wpqa_terms WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as status,
-wpqa_wpsc_epa_boxinfo.box_status as status_id,
-wpqa_terms.name as status_name,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
+(SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_status as status_id,
+" . $wpdb->prefix . "terms.name as status_name,
 (SELECT sum(b.unauthorized_destruction = 1)
-FROM wpqa_wpsc_epa_folderdocinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
-WHERE a.box_id = wpqa_wpsc_epa_boxinfo.id) as ud,
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as ud,
 (SELECT sum(b.validation = 1) FROM 
-wpqa_wpsc_epa_folderdocinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
-WHERE a.box_id = wpqa_wpsc_epa_boxinfo.id) as val_sum,
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as val_sum,
 (SELECT sum(b.freeze = 1) 
-FROM wpqa_wpsc_epa_folderdocinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
-WHERE a.box_id = wpqa_wpsc_epa_boxinfo.id) as freeze_sum,
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as freeze_sum,
 (SELECT count(b.id) 
-FROM wpqa_wpsc_epa_folderdocinfo a 
- INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
- WHERE a.box_id = wpqa_wpsc_epa_boxinfo.id) as doc_total,
-wpqa_wpsc_epa_boxinfo.box_id as box_id, 
-(SELECT wpqa_terms.name 
-FROM wpqa_terms, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location 
-WHERE wpqa_wpsc_epa_storage_location.digitization_center = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as digitization_center,
-(SELECT wpqa_terms.slug 
-FROM wpqa_wpsc_epa_storage_location, wpqa_terms, wpqa_wpsc_epa_boxinfo 
-WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id and wpqa_wpsc_epa_boxinfo.id = box_data_id) as digitization_center_slug, 
-wpqa_wpsc_epa_storage_location.aisle as aisle, 
-wpqa_wpsc_epa_storage_location.bay as bay, 
-wpqa_wpsc_epa_storage_location.shelf as shelf, 
-wpqa_wpsc_epa_storage_location.position as position, 
-wpqa_wpsc_epa_location_status.locations as physical_location,
-wpqa_wpsc_epa_boxinfo.box_destroyed as bd
-FROM wpqa_wpsc_epa_boxinfo 
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
-INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_boxinfo.box_status
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
-
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+ WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as doc_total,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as box_id, 
+(SELECT " . $wpdb->prefix . "terms.name 
+FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_storage_location 
+WHERE " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as digitization_center,
+(SELECT " . $wpdb->prefix . "terms.slug 
+FROM " . $wpdb->prefix . "wpsc_epa_storage_location, " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo 
+WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center AND " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id and " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as digitization_center_slug, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed as bd
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+} else {
+$box_details = $wpdb->get_results("SELECT 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
+(SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_status as status_id,
+" . $wpdb->prefix . "terms.name as status_name,
+(SELECT sum(b.unauthorized_destruction = 1)
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as ud,
+(SELECT sum(b.validation = 1) FROM 
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id 
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as val_sum,
+(SELECT sum(b.freeze = 1) 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id 
+WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as freeze_sum,
+(SELECT count(b.id) 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
+ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id
+ WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as doc_total,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as box_id, 
+(SELECT " . $wpdb->prefix . "terms.name 
+FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_storage_location 
+WHERE " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as digitization_center,
+(SELECT " . $wpdb->prefix . "terms.slug 
+FROM " . $wpdb->prefix . "wpsc_epa_storage_location, " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo 
+WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center AND " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id and " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as digitization_center_slug, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed as bd
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+}
 			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
 	<table id="tbl_templates_request_details" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
@@ -205,7 +251,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
   <tr>';
   
   
-if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))) {
+if ( !(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
 $tbl .=  '<th class="datatable_header"></th>';
 }     
                     
@@ -237,7 +283,6 @@ $tbl .=  '<th class="datatable_header"></th>';
 			    $boxlist_physical_location = $info->physical_location;
 			    $boxlist_val_sum = $info->val_sum;
 			    $boxlist_doc_total = $info->doc_total;
-			    
 				if (($info->aisle == '0') || ($info->bay == '0') || ($info->shelf == '0') || ($info->position == '0')) {
 				$boxlist_location = 'Currently Unassigned';
 				} else {
@@ -252,6 +297,7 @@ $tbl .=  '<th class="datatable_header"></th>';
 				$boxlist_unathorized_destruction = $info->ud;
 				$boxlist_box_destroyed = $info->bd;
 				$boxlist_freeze_sum = $info->freeze_sum;
+				
 			/*	
 			if($boxlist_unathorized_destruction > 0) {
 			$tbl .= '<tr class="wpsc_tl_row_item" style="background-color: #e7c3c3;">';
@@ -261,7 +307,7 @@ $tbl .=  '<th class="datatable_header"></th>';
 			*/
 			$tbl .= '<tr class="wpsc_tl_row_item">';
 
- if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))) {
+ if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
 			$tbl .= '<td>'. $boxlist_id .'</td>';
 }    
 
@@ -308,7 +354,9 @@ $tbl .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="f
             $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''. $boxlist_id .'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span></td>';
             $tbl .= '<td>' . $boxlist_status . '</td>';  
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
-			if (!(in_array($status_id, $status_id_arr)) && ($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+			//if (!(in_array($status_id, $status_id_arr)) && ($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+            //Can edit location if box isn't destroyed and is in the correct request status
+            if (!(in_array($status_id, $status_id_arr)) && ($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
             {
             if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Not Unassigned') {
             $tbl .= '<td>' . $boxlist_location;
@@ -353,13 +401,13 @@ $tbl .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="f
 $ticket_data = $wpscfunction->get_ticket($ticket_id);
 $status_id   	= $ticket_data['ticket_status'];
 
-$get_request_id = $wpdb->get_row("SELECT request_id FROM wpqa_wpsc_ticket WHERE id = '".$ticket_id."'");
+$get_request_id = $wpdb->get_row("SELECT request_id FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$ticket_id."'");
 $get_request_id_val = $get_request_id->request_id;
 
-$get_rescan_total = $wpdb->get_row("SELECT count(id) as totalcount FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id LIKE '".$get_request_id_val."%'");
+$get_rescan_total = $wpdb->get_row("SELECT count(id) as totalcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id LIKE '".$get_request_id_val."%'");
 $get_rescan_total_val = $get_rescan_total->totalcount;
 
-$get_rescan_count = $wpdb->get_row("SELECT count(id) as count FROM wpqa_wpsc_epa_folderdocinfo_files WHERE rescan = 0 AND folderdocinfofile_id LIKE '".$get_request_id_val."%'");
+$get_rescan_count = $wpdb->get_row("SELECT count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE rescan = 0 AND folderdocinfofile_id LIKE '".$get_request_id_val."%'");
 $get_rescan_count_val = $get_rescan_count->count;
 
 $validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses');
@@ -378,12 +426,15 @@ $wpscfunction->change_status($ticket_id, $rescan_tag->term_id);
 }
 
 $box_rescan = $wpdb->get_row("SELECT count(c.id) as count
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON b.id = c.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON b.id = c.folderdocinfo_id
 WHERE c.rescan = 1 AND a.ticket_id = '" . $ticket_id . "'");
 $rescan_count = $box_rescan->count;
 
+
+//DISPAY IF NOT ARCHIVED
+if($is_active == 1){
 if($rescan_count > 0) {
 ?>
 </br></br>
@@ -415,9 +466,9 @@ if($rescan_count > 0) {
 <tbody>
 <?php
 $rescan_details = $wpdb->get_results("SELECT a.box_id as box_id, c.title as title, c.folderdocinfofile_id as folderdocinfo_id 
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
 WHERE c.rescan = 1 AND a.ticket_id = '" . $ticket_id . "'");
 
 foreach ($rescan_details as $info) {
@@ -440,6 +491,8 @@ echo $tbl;
 </div>
 <?php
 }
+// END DISPLAY IF NOT ARCHIVED
+}
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
@@ -456,6 +509,7 @@ echo $tbl;
 	     "autoWidth": true,
 	     "scrollX" : true,
          "paging" : true,
+         "bDestroy": true,
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
 		<?php
 		  if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) ) {
@@ -484,9 +538,10 @@ echo $tbl;
 	     "autoWidth": true,
 	     "scrollX" : true,
          "paging" : true,
+         "bDestroy": true,
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
 		 <?php
-		  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))) {
+		  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
         ?>
         'columnDefs': [	
          {
@@ -510,6 +565,10 @@ echo $tbl;
       'order': [[1, 'asc']],
       <?php } ?>
 		});
+		
+		
+		
+		
 	// Code block for toggling edit buttons on/off when checkboxes are set
 	jQuery('#tbl_templates_request_details tbody').on('click', 'input', function () {        
 	// 	console.log('checked');

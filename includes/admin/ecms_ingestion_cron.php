@@ -15,14 +15,14 @@ global $current_user, $wpscfunction, $wpdb;
 
 //get all active requests
 $get_total_request_count = $wpdb->get_results("SELECT id as ticket_id
-FROM wpqa_wpsc_ticket
+FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE active = 1 AND id <> -99999");
 
 foreach($get_total_request_count as $item) {
     $ticket_id = $item->ticket_id;
     
     $get_total_box_count = $wpdb->get_row("SELECT COUNT(box_id) as total_box_count
-    FROM wpqa_wpsc_epa_boxinfo
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
     WHERE ticket_id = '" . $ticket_id . "'");
     $total_box_count = $get_total_box_count->total_box_count;
   
@@ -30,8 +30,8 @@ foreach($get_total_request_count as $item) {
     $ingestion_term_id = $ingestion_tag->term_id;
     
     $get_ingestion_box_status_count = $wpdb->get_row("SELECT COUNT(a.box_id) as ingestion_box_count
-    FROM wpqa_wpsc_epa_boxinfo a
-    INNER JOIN wpqa_wpsc_ticket b ON b.id = a.ticket_id
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
     WHERE a.box_status = ".$ingestion_term_id." AND b.id = '" . $ticket_id . "'");
     $ingestion_box_status_count = $get_ingestion_box_status_count->ingestion_box_count;
         

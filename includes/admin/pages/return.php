@@ -96,7 +96,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
      <?php foreach($po_array as $key => $value) { ?>
       
     <?php 
-        $program_office = $wpdb->get_row("SELECT office_name FROM wpqa_wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
+        $program_office = $wpdb->get_row("SELECT office_name FROM " . $wpdb->prefix . "wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
         $office_name = $program_office->office_name;
     ?>
         <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $office_name; ?>'></option>
@@ -180,7 +180,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php
 $convert_box_id = $wpdb->get_row(
 "SELECT id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE box_id = '" .  $GLOBALS['id'] . "'");
 
 $box_id = $convert_box_id->id;

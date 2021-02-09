@@ -17,7 +17,7 @@ $doc_id = $_POST["doc_id"];
 ob_start();
 
 $get_folderdocinfo_id = $wpdb->get_row("SELECT folderdocinfo_id
-FROM wpqa_wpsc_epa_folderdocinfo
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo
 WHERE id = '" . $doc_id . "'");
 $folderdocinfo_id = $get_folderdocinfo_id->folderdocinfo_id;
 ?>

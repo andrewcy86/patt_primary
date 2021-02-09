@@ -20,7 +20,7 @@ foreach ($bay_array as $value) {
     
     $get_available_bay = $wpdb->get_row(
 				"SELECT count(id) as count
-FROM wpqa_wpsc_epa_storage_location
+FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE aisle = '" . $_GET['aisle_id'] . "' AND bay = '" . $value . "' AND  digitization_center = '" . $_GET['center'] . "'"
 			);
 

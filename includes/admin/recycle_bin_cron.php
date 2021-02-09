@@ -14,7 +14,7 @@ global $current_user, $wpscfunction, $wpdb;
 
 //get all active requests
 $get_total_request_count = $wpdb->get_results("SELECT id as ticket_id
-FROM wpqa_wpsc_ticket
+FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE active = 1 AND id <> -99999");
 
 foreach($get_total_request_count as $item) {
@@ -25,7 +25,7 @@ foreach($get_total_request_count as $item) {
     $cancelled_term_id = $cancelled_tag->term_id;
     
     $get_cancelled_request = $wpdb->get_row("SELECT COUNT(id) as cancelled_count
-    FROM wpqa_wpsc_ticket a
+    FROM " . $wpdb->prefix . "wpsc_ticket a
     WHERE ticket_status = ".$cancelled_term_id." AND id =  '" . $ticket_id . "'");
     $total_cancelled_requests = $get_cancelled_request->cancelled_count;
     
@@ -37,7 +37,7 @@ foreach($get_total_request_count as $item) {
     $completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
     
     $get_ecms_request = $wpdb->get_row("SELECT COUNT(id) as ecms
-    FROM wpqa_wpsc_ticket a
+    FROM " . $wpdb->prefix . "wpsc_ticket a
     WHERE ticket_status = ".$ecms_term_id." AND id =  '" . $ticket_id . "'");
     $total_ecms_requests = $get_ecms_request->ecms;
     
@@ -50,6 +50,9 @@ foreach($get_total_request_count as $item) {
         $data_update = array('active' => 0);
         $data_where = array('id' => $ticket_id);
         $wpdb->update('wpqa_wpsc_ticket' , $data_update, $data_where);
+
+        //BEGIN CLONING DATA TO ARCHIVE
+        Patt_Custom_Func::send_to_archive($ticket_id);
     }
     
     /*$get_total_box_count = $wpdb->get_row("SELECT COUNT(box_id) as total_box_count
@@ -74,5 +77,22 @@ foreach($get_total_request_count as $item) {
         }
     */
 }
+
+/*
+//get all active requests
+Handled currently in private message cleanup cron
+$get_unwanted_pm = $wpdb->get_results("SELECT DISTINCT pm_id FROM " . $wpdb->prefix . "pm_users WHERE deleted = '2'");
+
+//Empty deleted private messages
+foreach($get_unwanted_pm as $item) {
+    $pm_id = $item->pm_id;
+
+    $table_pm = $wpdb->prefix . 'pm';
+    $wpdb->delete( $table_pm, array( 'id' => $pm_id ) );
+
+    $table_pm_users = $wpdb->prefix . 'pm_users';
+    $wpdb->delete( $table_pm_users, array( 'pm_id' => $pm_id ) );
+}
+*/
 
 ?>

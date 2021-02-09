@@ -439,7 +439,12 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		//}
 	
 		//echo $status_id;
-	if ($status_id != 3) {
+		
+		//Remove ability to edit widget when active = 0
+	    $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
+	    $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+	    
+	if ($status_id != $new_request_tag->term_id) {
 	
 		$ticket_widget_name = __( 'Shipping', 'supportcandy' );
 	
@@ -451,7 +456,10 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		echo 'border-color:' . $wpsc_appearance_individual_ticket_page[ 'wpsc_ticket_widgets_border_color' ] . ' !important;';
 		echo '">';
 	
-		echo '<h4 class="widget_header"><i class="fa fa-truck"></i> ' . $ticket_widget_name . ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit"></i></button></h4>';
+		echo '<h4 class="widget_header"> <i class="fa fa-truck"></i> ' . $ticket_widget_name;
+		if($is_active == 1) {
+		echo ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit"></i></button></h4>';
+		}
 		echo '<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">';
 		
 	  if ($get_shipping_count > 0) {

@@ -53,6 +53,7 @@ foreach( $reasons as $reason_obj ) {
 	$return_reason_description_array[$reason_obj->name] = get_term_meta( $reason_obj->term_id, 'wppatt_return_reason_description', true);
 }
 
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 /*
 echo '<pre>';
@@ -65,6 +66,7 @@ echo '</pre>';
 //echo 'test agent term id: '.$agent_ids[$test_key]['agent_term_id'].'<br>';
 //echo 'User: '.get_user_by('id', 5);
 //print_r($agent_ids);
+//echo 'agent permissions label: ' . $agent_permissions['label'] . '<br>';
 
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
@@ -227,9 +229,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					<textarea id="return_comment_text" name="return_comment" rows="2" cols="30" class="form-control " style="height: auto !important;" ></textarea>
 				</div>
 				
-				<div  data-fieldtype="text" data-visibility="" class="col-sm-9 visible wppatt_required form-group wpsc_form_field">
+				<div  data-fieldtype="text" data-visibility="" class="col-sm-9 visible form-group wpsc_form_field">
 					<label class="wpsc_ct_field_label" for="<?php echo $form_field->slug;?>">
-						Shipping Tracking Number <?php echo $required_html ?>
+						Shipping Tracking Number <?php //echo $required_html ?>
 					</label>
 					
 					<input id="return_shipping_tracking" name="return_shipping_tracking" cols="30" class="form-control" > </input>
@@ -431,6 +433,15 @@ margin: 0px 0px 25px 15px;
 	var dataTable = null;
 	
 	jQuery(document).ready(function(){
+		
+		// If Requester tries to access page, redirect back to Dashboard
+		let agent_permissions = '<?php echo $agent_permissions['label'] ?>';
+		console.log({agent_permissions:agent_permissions});
+		if( agent_permissions == 'Requester' ) {
+			alert('You do not have access to this page. You will be redirected to the Decline Dashboard');
+			location.href='admin.php?page=decline';
+		}
+		
 		
 		dataTable = jQuery('#tbl_templates_create_return').DataTable({
 			'processing': true,
@@ -1111,13 +1122,14 @@ margin: 0px 0px 25px 15px;
 		    || /\b(\d{4}[- ]?\d{4}[- ]?\d{2}|\d{3}[- ]?\d{8}|[A-Z]{3}\d{7})\b/i.test(return_tracking_num)) {
 		    	var trackingIsTrue = true;
 		    } else {
-		    	var trackingIsTrue = false;
-		    	//validation = false; // if set false here, then error will display incorrectly
 		    	
-		    	//let error_message = 'The Shipping Tracking Number is not valid.'; 			
-				//set_alert( 'danger', error_message);
+		    	var trackingIsTrue = false;
+		    	
 		    }
 			
+		} else {
+			// If no tracking number is provided, set trackingIsTrue to true, as it's not required. 
+			var trackingIsTrue = true;
 		}
 		console.log('tracking validation: '+trackingIsTrue);
 		

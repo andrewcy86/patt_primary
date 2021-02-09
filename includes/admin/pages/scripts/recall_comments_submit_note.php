@@ -101,7 +101,7 @@ $thread_id = Patt_Custom_Func::submit_recall_thread( $args );
     $comment = $wpscfunction->replace_macro($reply_body,$ticket_id);
     
     $user_ids = array();
-    $current_users_id = $wpdb->get_row( "SELECT ID from wpqa_users WHERE user_email = '" .  $customer_email . "'"); 
+    $current_users_id = $wpdb->get_row( "SELECT ID from " . $wpdb->prefix . "users WHERE user_email = '" .  $customer_email . "'"); 
     array_push($user_ids, $current_users_id->ID);
     
     $agent_ids = Patt_Custom_Func::agents_assigned_request($ticket_id);

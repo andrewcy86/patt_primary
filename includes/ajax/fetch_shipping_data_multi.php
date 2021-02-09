@@ -192,12 +192,12 @@ if($method == 'GET')
 						    Tracking.shipped,
                             Tracking.delivered
 						FROM
-						    wpqa_wpsc_epa_shipping_tracking Tracking
-						INNER JOIN wpqa_wpsc_ticket Ticket ON
+						    " . $wpdb->prefix . "wpsc_epa_shipping_tracking Tracking
+						INNER JOIN " . $wpdb->prefix . "wpsc_ticket Ticket ON
 						    Ticket.id = Tracking.ticket_id
-						INNER JOIN wpqa_wpsc_epa_recallrequest Recall ON
+						INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest Recall ON
 						    Recall.id = Tracking.recallrequest_id
-						INNER JOIN wpqa_wpsc_epa_return ReturnX ON
+						INNER JOIN " . $wpdb->prefix . "wpsc_epa_return ReturnX ON
 						    ReturnX.id = Tracking.return_id
 						WHERE
 						    Tracking.id = :shipping_table_id";
@@ -491,12 +491,12 @@ if($method == 'PUT') {
 					    Tracking.shipped,
                         Tracking.delivered
 					FROM
-					    wpqa_wpsc_epa_shipping_tracking Tracking
-					INNER JOIN wpqa_wpsc_ticket Ticket ON
+					    " . $wpdb->prefix . "wpsc_epa_shipping_tracking Tracking
+					INNER JOIN " . $wpdb->prefix . "wpsc_ticket Ticket ON
 					    Ticket.id = Tracking.ticket_id
-					INNER JOIN wpqa_wpsc_epa_recallrequest Recall ON
+					INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest Recall ON
 					    Recall.id = Tracking.recallrequest_id
-					INNER JOIN wpqa_wpsc_epa_return ReturnX ON
+					INNER JOIN " . $wpdb->prefix . "wpsc_epa_return ReturnX ON
 					    ReturnX.id = Tracking.return_id
 					WHERE
 					    Tracking.id = :shipping_table_id";
@@ -603,7 +603,7 @@ if($method == 'PUT') {
 		if( $validated ) { 
 			
 			// Update Data
-			$query = "UPDATE wpqa_wpsc_epa_shipping_tracking SET company_name=:company_name, tracking_number=:tracking_number, status='' WHERE id =:id ";
+			$query = "UPDATE " . $wpdb->prefix . "wpsc_epa_shipping_tracking SET company_name=:company_name, tracking_number=:tracking_number, status='' WHERE id =:id ";
 			$statement = $connect->prepare($query);
 			$statement->execute($data);
 
@@ -772,7 +772,7 @@ if($method == 'PUT') {
 
 if($method == "DELETE") {
 	parse_str(file_get_contents("php://input"), $_DELETE);
-	$query = "DELETE FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$_DELETE["id"]."'";
+	$query = "DELETE FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id = '".$_DELETE["id"]."'";
 	$statement = $connect->prepare($query);
 	$statement->execute();
 	do_action('wpppatt_after_remove_request_shipping_tracking', $_GET['ticket_id'], $_DELETE["tracking_number"]);

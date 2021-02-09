@@ -20,17 +20,26 @@ $boxidarray = array();
 foreach($box_arr as $key => $value) { 
     
 $get_destroy_status = $wpdb->get_row("
-SELECT box_destroyed, box_id FROM wpqa_wpsc_epa_boxinfo 
-WHERE box_id = '" . $value . "'
+SELECT a.box_destroyed, a.box_id, b.aisle, b.bay, b.shelf, b.position, b.digitization_center
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b on a.storage_location_id = b.id 
+WHERE a.box_id = '" . $value . "'
 ");
 $destroy_status = $get_destroy_status->box_destroyed;
 $box_id = $get_destroy_status->box_id;
 
-if ($destroy_status == 0) {
+//checking assigned location
+$aisle = $get_destroy_status->aisle;
+$bay = $get_destroy_status->bay;
+$shelf = $get_destroy_status->shelf;
+$position = $get_destroy_status->position;
+$digitization_center = $get_destroy_status->digitization_center;
+
+if ($destroy_status == 0 && ($aisle != 0 && $bay != 0 && $shelf != 0 && $position != 0 && $digitization_center != 666)) {
 array_push($boxidarray, $box_id);
 }
 
-if ($destroy_status == 1) {
+if ($destroy_status == 1 || ($aisle == 0 || $bay == 0 || $shelf == 0 || $position == 0 || $digitization_center == 666)) {
 $count++;
 }
 

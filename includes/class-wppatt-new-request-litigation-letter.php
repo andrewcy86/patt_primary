@@ -38,7 +38,7 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 			}
 
 			// Delete associated documents when ticket delete.
-			$get_associated_doc_ticket_meta = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM wpqa_wpsc_ticketmeta WHERE ticket_id = %d AND ( meta_key = 'destruction_authorizations_image' OR meta_key = 'litigation_letter_image' OR meta_key = 'congressional_file' OR meta_key = 'foia_file' ) ", array( $ticket_id ) ), ARRAY_A );
+			$get_associated_doc_ticket_meta = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM " . $wpdb->prefix . "wpsc_ticketmeta WHERE ticket_id = %d AND ( meta_key = 'destruction_authorizations_image' OR meta_key = 'litigation_letter_image' OR meta_key = 'congressional_file' OR meta_key = 'foia_file' ) ", array( $ticket_id ) ), ARRAY_A );
 
 			if ( is_array( $get_associated_doc_ticket_meta ) ) {
 				array_walk(
@@ -67,13 +67,13 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 			}
 
 			// PATT BEGIN.
-			$get_associated_boxes = $wpdb->get_results( $wpdb->prepare( ' SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = %d ', array( $ticket_id ) ) );
+			$get_associated_boxes = $wpdb->get_results( $wpdb->prepare( ' SELECT id, storage_location_id FROM ' . $wpdb->prefix . 'wpsc_epa_boxinfo WHERE ticket_id = %d ', array( $ticket_id ) ) );
 
 			foreach ( $get_associated_boxes as $info ) {
 				$associated_box_ids = $info->id;
 				$associated_storage_ids = $info->storage_location_id;
 
-				$box_details = $wpdb->get_row( $wpdb->prepare( 'SELECT digitization_center, aisle, bay, shelf, position FROM wpqa_wpsc_epa_storage_location WHERE id = %d ', array( $associated_storage_ids ) ) );
+				$box_details = $wpdb->get_row( $wpdb->prepare( 'SELECT digitization_center, aisle, bay, shelf, position FROM ' . $wpdb->prefix . 'wpsc_epa_storage_location WHERE id = %d ', array( $associated_storage_ids ) ) );
 
 				$box_storage_digitization_center = $box_details->digitization_center;
 				$box_storage_aisle = $box_details->aisle;
@@ -81,7 +81,7 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 				$box_storage_shelf = $box_details->shelf;
 				$box_sotrage_shelf_id = $box_storage_aisle . '_' . $box_storage_bay . '_' . $box_storage_shelf;
 
-				$box_storage_status = $wpdb->get_row( "SELECT occupied, remaining FROM wpqa_wpsc_epa_storage_status WHERE shelf_id = '" . $box_sotrage_shelf_id . "'" );
+				$box_storage_status = $wpdb->get_row( "SELECT occupied, remaining FROM " . $wpdb->prefix . "wpsc_epa_storage_status WHERE shelf_id = '" . $box_sotrage_shelf_id . "'" );
 
 				$box_storage_status_occupied = $box_storage_status->occupied;
 				$box_storage_status_remaining = $box_storage_status->remaining;

@@ -5,7 +5,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 global $wpdb, $current_user, $wpscfunction;
 
-include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 //Grab ticket ID and Selected Digitization Center from Modal
 	$ticket_id = $_POST['postvartktid'];

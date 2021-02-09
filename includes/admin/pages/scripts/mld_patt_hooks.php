@@ -57,8 +57,8 @@ function mld_get_patt_mdocs_cat( $post_vars ) {
 		"SELECT
 		    folderdocinfofile_id
 		FROM
-		    wpqa_wpsc_epa_folderdocinfo_files fdif
-		JOIN wpqa_wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id
+		    " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif
+		JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id
 		WHERE
 		    fdif.attachment = '1' AND fdi.folderdocinfo_id = '" . $post_vars['mdocs-cat'] . "'");	
 	

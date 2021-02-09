@@ -4,8 +4,9 @@
 //	exit; // Exit if accessed directly
 //}
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 global $current_user, $wpscfunction, $wpdb;
@@ -14,7 +15,7 @@ global $current_user, $wpscfunction, $wpdb;
 $lanid_query = $wpdb->get_results(
 "
 SELECT 
-DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, b.request_id as request_id from wpqa_wpsc_epa_boxinfo a INNER JOIN wpqa_wpsc_ticket b ON a.ticket_id = b.request_id WHERE a.lan_id <> ''
+DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, b.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_boxinfo a INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.ticket_id = b.request_id WHERE a.lan_id <> ''
 "
 );
 
@@ -66,12 +67,12 @@ $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterpris
 $lan_id_username = $json['Resources'][0]['userName'];
 
 if ($results == 0) {
-$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM wpqa_users a
-INNER JOIN wpqa_wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
+$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
 
 $requester_lanid = $find_requester->user_login;
 
-$boxinfo_table = 'wpqa_wpsc_epa_boxinfo';
+$boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
 $data_lan_update = array('lan_id' => $requester_lanid);
 $data_lan_where = array('id' => $id_val);
@@ -80,7 +81,7 @@ $wpdb->update($boxinfo_table, $data_lan_update, $data_lan_where);
 
 if ($results >= 1) {
 
-$id_query = $wpdb->get_results("SELECT DISTINCT id from wpqa_wpsc_epa_boxinfo WHERE lan_id = '" . $lan_id_val . "'");
+$id_query = $wpdb->get_results("SELECT DISTINCT id from " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE lan_id = '" . $lan_id_val . "'");
 
 
 
@@ -108,7 +109,7 @@ $lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username
 // Detects update to contact info, if yes then update table
 if ($lan_id_details != $lan_id_details_val && $lan_id_details != 'Error')
 {
-$boxinfo_table = 'wpqa_wpsc_epa_boxinfo';
+$boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
 $data_update = array('lan_id_details' => $json);
 $data_where = array('id' => $db_lan_id);

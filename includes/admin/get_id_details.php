@@ -34,10 +34,10 @@ $ticket_id_val = substr($id, 0, 7);
 $program_office_array_id = array();
 
 $boxlist_get_po = $wpdb->get_results(
-	"SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
+	"SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
 );
 
 foreach ($boxlist_get_po as $item) {
@@ -50,22 +50,22 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 	switch ($dash_count) {
 		case 0:
 			$request_info = $wpdb->get_row(
-				"SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, wpqa_terms.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
-FROM wpqa_wpsc_ticket
+				"SELECT " . $wpdb->prefix . "wpsc_ticket.id as id, " . $wpdb->prefix . "wpsc_ticket.customer_name as customer_name, " . $wpdb->prefix . "wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, " . $wpdb->prefix . "terms.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, " . $wpdb->prefix . "wpsc_ticket.date_created as date_created
+FROM " . $wpdb->prefix . "wpsc_ticket
 
-    INNER JOIN wpqa_terms AS status ON (
-        wpqa_wpsc_ticket.ticket_status = status.term_id
+    INNER JOIN " . $wpdb->prefix . "terms AS status ON (
+        " . $wpdb->prefix . "wpsc_ticket.ticket_status = status.term_id
     )
-INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $wpdb->prefix . "wpsc_ticket.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
 
-    INNER JOIN wpqa_terms AS priority ON (
-        wpqa_wpsc_ticket.ticket_priority = priority.term_id
+    INNER JOIN " . $wpdb->prefix . "terms AS priority ON (
+        " . $wpdb->prefix . "wpsc_ticket.ticket_priority = priority.term_id
     )  
 
-WHERE wpqa_wpsc_ticket.request_id = " . $id
+WHERE " . $wpdb->prefix . "wpsc_ticket.request_id = " . $id
 			);
 			
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
@@ -81,20 +81,20 @@ WHERE wpqa_wpsc_ticket.request_id = " . $id
 
 			$box_details = $wpdb->get_results(
 				"
-SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.id as box_data_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, 
-wpqa_terms.name as digitization_center,
-wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location,
-(SELECT wpqa_terms.name FROM wpqa_wpsc_epa_boxinfo, wpqa_terms WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as status,
-wpqa_wpsc_epa_program_office.office_acronym as program_office,
-wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
-INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, " . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id, " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as box_id, 
+" . $wpdb->prefix . "terms.name as digitization_center,
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, " . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
+(SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
+" . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office,
+" . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as record_schedule
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.office_code = " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "epa_record_schedule.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id
 
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 			);
 
 			$tbl = '<br /><br /><strong>Boxes associated with this request:</strong>
@@ -161,38 +161,38 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 			$box_details = $wpdb->get_row(
 				"
 SELECT 
-wpqa_wpsc_epa_boxinfo.id as pk, 
-wpqa_wpsc_epa_boxinfo.id as box_data_id, 
-wpqa_wpsc_ticket.request_id as ticket,
-wpqa_wpsc_epa_boxinfo.box_id as id, 
-wpqa_wpsc_epa_folderdocinfo.index_level as index_level,
-wpqa_terms.name as location, 
-wpqa_wpsc_epa_storage_location.aisle as aisle, 
-wpqa_wpsc_epa_storage_location.bay as bay, 
-wpqa_wpsc_epa_storage_location.shelf as shelf, 
-wpqa_wpsc_epa_storage_location.position as position, 
-wpqa_wpsc_epa_location_status.locations as physical_location,
-wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
-(SELECT wpqa_terms.name as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as box_status
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as pk, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id, 
+" . $wpdb->prefix . "wpsc_ticket.request_id as ticket,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as id, 
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo.index_level as index_level,
+" . $wpdb->prefix . "terms.name as location, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
+" . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum,
+(SELECT " . $wpdb->prefix . "terms.name as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as box_status
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $wpdb->prefix . "wpsc_ticket.id 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " . $wpdb->prefix . "epa_record_schedule.id
 
-WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
 
 			);
 
 			$box_details_id = $box_details->pk;
 
 			$box_content = $wpdb->get_results(
-				"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
-FROM wpqa_wpsc_epa_folderdocinfo
-INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
-WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
+				"SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo.folderdocinfo_id as id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.index_level as index_level, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.date as date, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.site_name as site, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.epa_contact_email as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.source_format as source_format
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
+WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			);
 
 
@@ -276,7 +276,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 		case 3:
 			$folderfile_details = $wpdb->get_row(
 				"SELECT *
-            FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
+            FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
 			);
 
 			$folderfile_boxid = $folderfile_details->box_id;
@@ -296,27 +296,27 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			$folderfile_folderid = $folderfile_details->folder_identifier;
 			$folderfile_essential_record = $folderfile_details->essential_record;
 			$box_details = $wpdb->get_row(
-"SELECT wpqa_wpsc_epa_boxinfo.id, 
-wpqa_wpsc_epa_boxinfo.box_id as box_id, 
-wpqa_wpsc_epa_folderdocinfo.index_level as index_level, 
+"SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as box_id, 
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo.index_level as index_level, 
 
-wpqa_terms.name as location, 
-wpqa_wpsc_epa_storage_location.aisle as aisle, 
-wpqa_wpsc_epa_storage_location.bay as bay, 
-wpqa_wpsc_epa_storage_location.shelf as shelf, 
-wpqa_wpsc_epa_storage_location.position as position, 
-wpqa_wpsc_epa_location_status.locations as physical_location,
+" . $wpdb->prefix . "terms.name as location, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
 
-wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, 
-wpqa_wpsc_epa_program_office.office_acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_location_status.id =  wpqa_wpsc_epa_boxinfo.location_status_id
-WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
+" . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum, 
+" . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " . $wpdb->prefix . "epa_record_schedule.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_location_status.id =  " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			);
 
 			$box_boxid = $box_details->box_id;

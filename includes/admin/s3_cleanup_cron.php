@@ -4,8 +4,9 @@
 //	exit; // Exit if accessed directly
 //}
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
 require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 

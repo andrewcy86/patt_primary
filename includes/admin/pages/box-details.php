@@ -19,6 +19,17 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
+
+
+$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
+$location_request_id = $request_id->request_id;
+
+$is_active = Patt_Custom_Func::request_status( $location_request_id );
+
+$get_request_status_id = $wpdb->get_row("SELECT ticket_status
+FROM ".$wpdb->prefix."wpsc_ticket
+WHERE request_id = ".$location_request_id);
+$request_status_id = $get_request_status_id->ticket_status;
 ?>
 
 <div class="bootstrap-iso">
@@ -33,14 +44,21 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
         	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
         <?php		
-        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
 		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button>-->
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
+		<?php
+		$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+		$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+		$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+		if($request_status_id != $new_request_tag->term_id && $request_status_id != $initial_review_rejected_tag->term_id && $request_status_id != $cancelled_tag->term_id) {
+		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button>
 		<?php
+		}
         }
         ?>
 
@@ -87,13 +105,23 @@ LEFT JOIN wpqa_terms f ON d.ticket_status = f.term_id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
 */
 
-$convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM wpqa_terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM wpqa_terms WHERE term_id = d.ticket_status) as ticket_status_name
-FROM wpqa_wpsc_epa_boxinfo a
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id
-INNER JOIN wpqa_terms c ON a.box_status = c.term_id
-INNER JOIN wpqa_wpsc_ticket d ON d.id = a.ticket_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files e ON e.folderdocinfo_id = b.id
+if($is_active == 1) {
+$convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
+LEFT JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo b ON a.id = b.box_id
+INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
+INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files e ON e.folderdocinfo_id = b.id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
+} else {
+$convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
+LEFT JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_archive b ON a.id = b.box_id
+INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
+INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files_archive e ON e.folderdocinfo_id = b.id
+WHERE a.box_id = '" .  $GLOBALS['id'] . "'");  
+}
 
 $the_real_box_id = $convert_box_id->box_id;
 $box_id = $convert_box_id->id;
@@ -138,6 +166,12 @@ $priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$prior
             <?php } ?>
   
 		  <?php } ?>	
+		  
+		  <?php
+if($is_active == 0){
+echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This box is archived</span><br />';
+}
+?>
       </h3>
 
     </div>
@@ -188,7 +222,7 @@ div.dataTables_wrapper {
         <thead>
             <tr>
                     <?php		
-                    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+                        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                     {
                     ?>
                     <th class="datatable_header"></th>
@@ -209,6 +243,7 @@ div.dataTables_wrapper {
 <input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
 <input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
+<input type='hidden' id='is_active' value='<?php echo $is_active; ?>' />
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
@@ -230,6 +265,8 @@ jQuery(document).ready(function(){
     'paging' : true,
     'drawCallback': function( settings ) {
         jQuery('[data-toggle="tooltip"]').tooltip();
+        	        var response = settings.json;
+	        console.log(response);
      },
     'stateSaveParams': function(settings, data) {
       data.sg = jQuery('#searchGeneric').val();
@@ -246,16 +283,18 @@ jQuery(document).ready(function(){
           var boxid = jQuery('#box_id').val();
           var page = jQuery('#page').val();
           var pid = jQuery('#p_id').val();
+          var isactive = jQuery('#is_active').val();
           // Append to data
           data.searchGeneric = sg;
           data.BoxID = boxid;
           data.PID = pid;
           data.page = page;
+          data.isactive = isactive;
        }
     },
     "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
     <?php		
-    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+    if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
     {
     ?>
     'columnDefs': [
@@ -280,7 +319,7 @@ jQuery(document).ready(function(){
       ?>	
     'columns': [
         <?php		
-        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+            if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
        { data: 'folderdocinfo_id' },
@@ -331,7 +370,7 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 
     <?php
     // BEGIN ADMIN BUTTONS
-    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
     {
     ?>
     //validation button
@@ -507,11 +546,11 @@ postvarsfolderdocid : rows_selected.join(",")
        var substring_true = "true";
 
        if(response.indexOf(substring_false) >= 0) {
-       alert('Cannot print folder/file labels for documents that are destroyed or not assigned to a location.');
+       alert('Cannot print folder/file labels for documents that have been destroyed or are not assigned to a location.');
        }
        
        if(response.indexOf(substring_warn) >= 0) {
-       alert('One or more documents that you selected has been destroyed or does not have an assigned location and it\'s label will not generate.');
+       alert('One or more documents that you have selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
            // Loop through array
     [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);
@@ -593,11 +632,11 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 
 <?php
 $box_details = $wpdb->get_row(
-"SELECT count(wpqa_wpsc_epa_folderdocinfo_files.id) as count
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
+"SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
+FROM ".$wpdb->prefix."wpsc_epa_boxinfo
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo ON ".$wpdb->prefix."wpsc_epa_boxinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo.box_id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wpsc_epa_folderdocinfo.folderdocinfo_id = ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.folderdocinfo_id
+WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
 			);
 
 $unauthorized_destruction_count = $box_details->count;
@@ -612,11 +651,11 @@ jQuery('#ud_alert').hide();
 <?php
 //freeze notification
 $box_freeze = $wpdb->get_row(
-"SELECT count(wpqa_wpsc_epa_folderdocinfo_files.id) as count
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files ON wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE wpqa_wpsc_epa_folderdocinfo_files.freeze = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
+"SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
+FROM ".$wpdb->prefix."wpsc_epa_boxinfo
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo ON ".$wpdb->prefix."wpsc_epa_boxinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo.box_id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wpsc_epa_folderdocinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.folderdocinfo_id
+WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.freeze = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
 );
 $freeze_count = $box_freeze->count;
 
@@ -635,23 +674,21 @@ jQuery('#freeze_alert').hide();
   </div>
  
  <?php
-    $request_id = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
-    $location_request_id = $request_id->request_id;
-    
-    $program_office = $wpdb->get_row("SELECT wpqa_wpsc_epa_program_office.office_acronym as acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+
+    $program_office = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_epa_program_office.office_acronym as acronym FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_epa_program_office WHERE ".$wpdb->prefix."wpsc_epa_program_office.office_code = ".$wpdb->prefix."wpsc_epa_boxinfo.program_office_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_program_office = $program_office->acronym;
     
-    $record_schedule = $wpdb->get_row("SELECT Record_Schedule_Number FROM wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
+    $record_schedule = $wpdb->get_row("SELECT Record_Schedule_Number FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."epa_record_schedule WHERE ".$wpdb->prefix."epa_record_schedule.id = ".$wpdb->prefix."wpsc_epa_boxinfo.record_schedule_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
     $location_record_schedule = $record_schedule->Record_Schedule_Number;
     
-    $box_location = $wpdb->get_row("SELECT wpqa_terms.name as digitization_center, aisle, bay, shelf, position FROM wpqa_terms, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_boxinfo WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+    $box_location = $wpdb->get_row("SELECT ".$wpdb->prefix."terms.name as digitization_center, aisle, bay, shelf, position FROM ".$wpdb->prefix."terms, ".$wpdb->prefix."wpsc_epa_storage_location, ".$wpdb->prefix."wpsc_epa_boxinfo WHERE ".$wpdb->prefix."terms.term_id = ".$wpdb->prefix."wpsc_epa_storage_location.digitization_center AND ".$wpdb->prefix."wpsc_epa_storage_location.id = ".$wpdb->prefix."wpsc_epa_boxinfo.storage_location_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_digitization_center = $box_location->digitization_center;
     $location_aisle = $box_location->aisle;
     $location_bay = $box_location->bay;
     $location_shelf = $box_location->shelf;
     $location_position = $box_location->position;
     
-    $general_box_location = $wpdb->get_row("SELECT locations FROM wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+    $general_box_location = $wpdb->get_row("SELECT locations FROM ".$wpdb->prefix."wpsc_epa_location_status, ".$wpdb->prefix."wpsc_epa_boxinfo WHERE ".$wpdb->prefix."wpsc_epa_boxinfo.location_status_id = ".$wpdb->prefix."wpsc_epa_location_status.id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_general = $general_box_location->locations;
     
     
@@ -703,7 +740,7 @@ jQuery('#freeze_alert').hide();
 	<?php
 	    $agent_permissions = $wpscfunction->get_current_agent_permissions();
         $agent_permissions['label'];
-        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+        if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
           echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor('.$box_id.');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
         } 
@@ -711,14 +748,14 @@ jQuery('#freeze_alert').hide();
 	</h4>
 			<hr class="widget_divider">
 <?php
-$lan_id = $wpdb->get_row("SELECT lan_id, lan_id_details FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+$lan_id = $wpdb->get_row("SELECT lan_id, lan_id_details FROM ".$wpdb->prefix."wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $lan_id_details = $lan_id->lan_id_details;
 $lan_id_username = $lan_id->lan_id;
 
 $obj = json_decode($lan_id_details);
 
 $program_office = $wpdb->get_row("SELECT office_acronym 
-FROM wpqa_wpsc_epa_program_office
+FROM ".$wpdb->prefix."wpsc_epa_program_office
 WHERE office_code = '" . $obj->{'org'} . "'");
 $program_office_code = $program_office->office_acronym;
 
@@ -757,7 +794,7 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
-                if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+                if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
                   echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
                 } 
@@ -853,7 +890,7 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
-                if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
+                if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
                   echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
                 } 

@@ -15,6 +15,10 @@ $wpsc_appearance_ticket_list = get_option('wpsc_appearance_ticket_list');
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 $current_agent_id  = $wpscfunction->get_current_user_agent_id();
 
+$request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
+$is_active = Patt_Custom_Func::request_status( $request_id );
+
+
 $restrict_rules = array(
 	'relation' => 'AND',
 	array(
@@ -83,9 +87,37 @@ $ticket_list_items = get_terms([
 ]);
 ob_start();
 ?>
-<div class="col-sm-8 col-md-9 wpsc_it_body">
+<div class="wpsc_thread_audit wpsc_it_body">
 		<div class="row wpsc_threads_container">
-		    <div class="col-md-8 col-md-offset-2 logtitle"><h4>Request History: <a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/print_log.php?id=' . htmlentities($ticket_id); ?>" target="_blank"><i class="fas fa-print" title="Print Request Log"></i></a></h4></div>
+		    <?php
+		    //audit log backup placeholder
+            $get_all_csv_files = $wpdb->get_results("SELECT b.post_date, b.post_date_gmt, a.meta_value
+            FROM wpqa_postmeta a
+            INNER JOIN wpqa_posts b ON b.ID = a.post_id
+            WHERE a.meta_value LIKE '%".$ticket_id."_log_backup%' ORDER BY b.post_date DESC");
+            
+            if(count($get_all_csv_files) > 0) { ?>
+                <div class="wpsc_thread_audit"><h4>Archived History: </h4>
+                <ul>
+            <?php
+            foreach($get_all_csv_files as $key) { 
+                $filename = explode("/", $key->meta_value);
+                $date = new DateTime($key->post_date, new DateTimeZone('UTC'));
+                $date->setTimezone(new DateTimeZone('America/New_York'));
+
+                ?>
+               <li><a href="<?php echo WPPATT_UPLOADS_URL."backups/audit/".$filename[2] ?>" target="_blank">Audit log archived on <?php echo $date->format('m-d-Y h:i:s a'); ?> EST
+                <i class="fas fa-download" title="Download Archived Request Log"></i></a></li>
+            <?php }
+            }
+		    ?>
+		    </ul>
+		    </div>
+		    <?php 
+		    if ($is_active == 1) {
+		    ?>
+		    <div class="wpsc_thread_audit logtitle"><h4>Request History: <a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/print_log.php?id=' . htmlentities($ticket_id); ?>" target="_blank"><i class="fas fa-print" title="Print Request Log"></i></a></h4></div>
+
 			<?php
 			$order = $reply_form_position ? 'ASC' : 'DESC';
 			$args = array(
@@ -139,21 +171,30 @@ ob_start();
 			?>
 		</div>
 		<?php } ?>
-<div class="col-md-8 col-md-offset-2 load">
+<div class="wpsc_thread_audit load">
 <a href="#" id="loadMore"><i class="fas fa-sync"></i> Load More</a>
 </div>
-
+			<?php 
+            }
+            ?>
   </div>
 
 </div>
+
 <style>
+
+.wpsc_thread_audit {
+    display: table;
+    width: 75%;
+    padding: 10px;
+    background-color: #FFFFFF;
+}
 
 .wpsc_thread_log {
     display:none;
 }
 .logtitle {
     display:none;
-    padding-left: 0px !important;
     margin-bottom: 10px;
     overflow: hidden;
 }

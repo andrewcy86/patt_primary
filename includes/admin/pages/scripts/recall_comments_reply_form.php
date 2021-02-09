@@ -17,6 +17,8 @@ foreach ($fields as $field) {
 	}
 }
 
+//echo 'term_id: ' . $term_id . '<br>';
+
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 $reply_to_close_ticket = get_option('wpsc_allow_reply_to_close_ticket');
 $wpsc_allow_reply_to_public_tickets = get_option('wpsc_allow_reply_to_public_tickets');
@@ -117,9 +119,11 @@ if($allow_reply){
 								</button>
 	      <?php endif;?>
 				<?php if ($wpscfunction->has_permission('add_note',$ticket_id)):?>
+<!--
 		            <button type="button" id="wpsc_individual_add_note_btn" onclick="javascript:wppatt_submit_reply('note');" class="btn"style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_other_reply_form_btn_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_other_reply_form_btn_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_other_reply_form_btn_border_color']?> !important;">
 				          <i class="far fa-comment"></i> <?php _e('Add Note','supportcandy')?> 
 				        </button>
+-->
 	      <?php endif;?>
 				<?php do_action('wpsc_add_addon_reply_tab');?>
 	    </div>
@@ -135,7 +139,11 @@ if($allow_reply){
 
 <script type="text/javascript">
  
-function wpsc_attachment_upload(id,name){
+function wpsc_attachment_upload( id, name ){
+	
+	// D E B U G
+	console.log({id:id, name:name});
+	
 	jQuery('#attachment_upload').unbind('change');
 	jQuery('#attachment_upload').on('change', function(){
 		var flag = false;
@@ -200,9 +208,12 @@ function wpsc_attachment_upload(id,name){
 		              return xhr;
 						 },
 						 processData: false,
-		         contentType: false,
+						 contentType: false,
 						 success : function(response){
-	             
+						 	
+						 	console.log( 'upload response' );
+						 	console.log( response );
+						 	
 							 var return_obj =JSON.parse(response);
 							 
 							 jQuery(attachment).find('.attachment_cancel').show();

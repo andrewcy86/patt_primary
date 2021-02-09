@@ -1,9 +1,10 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-  exit; // Exit if accessed directly
-}
-//$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
-//require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
+//if ( ! defined( 'ABSPATH' ) ) {
+//  exit; // Exit if accessed directly
+//}
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 include($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-admin/includes/image.php');
 include($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-admin/includes/media.php');
@@ -18,23 +19,33 @@ function strip_tags_deep($value)
     strip_tags(preg_replace( "/\r|\n/", "", $value ));
 }
 
-function add_quotes($str) {
-    return sprintf('"%s"', $str);
-}
-
-                       $file = 'message_backup'; // csv file name
-                       $pre_results = $wpdb->get_results("select a.pm_id, c.user_login, b.subject, b.content, b.date from " . $wpdb->prefix . "pm_users a INNER JOIN " . $wpdb->prefix . "pm b ON a.pm_id = b.id INNER JOIN " . $wpdb->prefix . "users c ON a.recipient = c.ID WHERE a.deleted = 2",ARRAY_A );
+$ticket_id = 6;
+                       $converted_request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
+                       $file = 'log_backup'; // csv file name
+                       $pre_results = $wpdb->get_results("
+SELECT 
+rel.post_id as id,
+posts.post_date as date,
+posts.post_content as content
+    FROM " . $wpdb->prefix . "posts AS posts
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel ON 
+            posts.ID = rel.post_id
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel2 ON
+            posts.ID = rel2.post_id
+    WHERE
+        posts.post_type = 'wpsc_ticket_thread' AND
+        posts.post_status = 'publish' AND 
+        rel2.meta_key = 'thread_type' AND
+        rel2.meta_value = 'log' AND
+        rel.meta_key = 'ticket_id' AND
+        rel.meta_value =" .$ticket_id ."
+    ORDER BY
+    posts.post_date DESC",ARRAY_A);
+    
                        $results = strip_tags_deep($pre_results);
 
-// CONVERT TO EST
-foreach ($results as $key => &$value) {
-   $date = new DateTime($value['date'], new DateTimeZone('UTC'));
-   $date->setTimezone(new DateTimeZone('America/New_York'));
-   $value['date'] = $date->format('m-d-Y h:i:s a');
-}
-
                         // get column names
-                        $columnNamesList = ['PM ID','Recipient','Subject','Content','Date'];
+                        $columnNamesList = ['ID','Date','Content'];
 
 
                         foreach ( $columnNamesList as $column_name ) {
@@ -51,13 +62,13 @@ foreach ($results as $key => &$value) {
                        if(count($results) > 0){
                           foreach($results as $result){
                           $result = array_values($result);
-                          $result =  implode(',', array_map('add_quotes', $result));
+                          $result = implode(", ", $result);
                           $csv_output .= $result."\n";
                         }
                       
 
-                      $filename = $file."_".date("Y-m-d_H-i",time()).".csv";
-                      $backup_file  = WPPATT_UPLOADS."/backups/pm/".$filename;
+                      $filename = $converted_request_id."_".$file."_".date("Y-m-d_H-i",time()).".csv";
+                      $backup_file  = WPPATT_UPLOADS."/backups/audit/".$filename;
                       
                       //Direct File Download
                       //header("Content-type: application/vnd.ms-excel");
@@ -108,7 +119,7 @@ foreach ($results as $key => &$value) {
                        * $force_delete: true ( Skips trash and directly deletes the attachment ), false ( moves attachment to trash )
                        */
 
-// DELETE ROWS
+/*// DELETE ROWS
 $delete_pm_id = $wpdb->get_results("select id, pm_id from " . $wpdb->prefix . "pm_users WHERE deleted = 2");
 foreach ($delete_pm_id as $data) {
 $table_pm = $wpdb->prefix . 'pm';
@@ -116,8 +127,8 @@ $wpdb->delete( $table_pm, array( 'id' => $data->pm_id ) );
 
 $table_pm_users = $wpdb->prefix . 'pm_users';
 $wpdb->delete( $table_pm_users, array( 'id' => $data->id ) );
-}
+}*/
 
-                      exit;
+        return true;
 
 ?>

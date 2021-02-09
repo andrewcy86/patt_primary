@@ -8,10 +8,10 @@ global $wpdb, $current_user, $wpscfunction;
 $box_id = $_GET['box_id'];
 
 $box_details = $wpdb->get_row(
-"SELECT wpqa_wpsc_epa_storage_location.digitization_center as digitization_center
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $box_id . "'"
+"SELECT " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center as digitization_center
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $box_id . "'"
 			);
 
 $digitization_center = $box_details->digitization_center;
@@ -38,7 +38,7 @@ $aisle_array = range(1, $digitization_center_aisle_total);
 foreach ($aisle_array as $value) {
     $get_available_aisle = $wpdb->get_row(
 				"SELECT count(id) as count
-FROM wpqa_wpsc_epa_storage_location
+FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE aisle = '" . $value . "' AND digitization_center = '" . $digitization_center . "'"
 			);
 			

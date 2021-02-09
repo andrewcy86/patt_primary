@@ -100,13 +100,13 @@ foreach( $searchByID as $item ) {
 		
 		$return_check = $wpdb->get_row(
 										"SELECT return_id
-										FROM wpqa_wpsc_epa_return_items
+										FROM " . $wpdb->prefix . "wpsc_epa_return_items
 										WHERE box_id = '" .  $details_array['Box_id_FK'] . "'");
 		
 		if( $return_check->return_id != null ) {
 			
 			$return_status = $wpdb->get_row( "SELECT return_status_id
-												FROM wpqa_wpsc_epa_return
+												FROM " . $wpdb->prefix . "wpsc_epa_return
 												WHERE id = '" .  $return_check->return_id . "'");
 			
 			// If Decline not Complete // Decline Cancelled cannot be Declined again (no phyiscal path for this to be possible)
@@ -138,7 +138,7 @@ foreach( $searchByID as $item ) {
 		
 		$return_check = $wpdb->get_row(
 										"SELECT return_id
-										FROM wpqa_wpsc_epa_return_items
+										FROM " . $wpdb->prefix . "wpsc_epa_return_items
 										WHERE folderdoc_id = '" .  $details_array['Folderdoc_Info_id_FK'] . "'");
 		
 		if( $return_check->return_id != null ) {

@@ -89,7 +89,7 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_shipping_tracking WHERE id <> -99999 AND tracking_number <> ''");
+$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id <> -99999 AND tracking_number <> ''");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
@@ -129,11 +129,11 @@ WHEN delivered = 1 THEN 1
 WHEN delivered = 0 THEN 0
 END as delivered
 
-FROM wpqa_wpsc_epa_shipping_tracking Tracking
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking Tracking
 
-INNER JOIN wpqa_wpsc_ticket Ticket ON Ticket.id = Tracking.ticket_id
-INNER JOIN wpqa_wpsc_epa_recallrequest Recall ON Recall.id = Tracking.recallrequest_id
-INNER JOIN wpqa_wpsc_epa_return ReturnX ON ReturnX.id = Tracking.return_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket Ticket ON Ticket.id = Tracking.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest Recall ON Recall.id = Tracking.recallrequest_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return ReturnX ON ReturnX.id = Tracking.return_id
 
 WHERE 1 ";
 // .$searchQuery." and Tracking.id <> -99999 AND tracking_number <> '' order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;

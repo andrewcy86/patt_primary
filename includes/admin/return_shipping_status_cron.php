@@ -63,9 +63,9 @@ $shipped_return_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )
@@ -77,7 +77,7 @@ $shipped_return_status_query = $wpdb->get_results(
         shipping.shipped = 1
       AND 
         ( ret.return_status_id = " . $status_decline_initiated_term_id . " OR ret.return_status_id = " . $status_decline_cancelled_term_id
-      ") ORDER BY shipping.id ASC"
+      . ") ORDER BY shipping.id ASC"
 	);
 
 	
@@ -162,9 +162,9 @@ $return_complete_return_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )
@@ -271,9 +271,9 @@ $return_pending_cancel_2week_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )
@@ -344,9 +344,9 @@ $return_complete_return_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )
@@ -447,9 +447,9 @@ $shipped_return_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )
@@ -499,9 +499,9 @@ $return_complete_return_status_query = $wpdb->get_results(
       ret.return_id as return_id,
       ret.return_status_id as return_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_return AS ret 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
 	ON (
         shipping.return_id = ret.id
 	   )

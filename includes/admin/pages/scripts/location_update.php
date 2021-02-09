@@ -32,7 +32,7 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
 
 			$box_details = $wpdb->get_row(
 "SELECT storage_location_id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE box_id = '" . $boxid . "'"
 			);
 
@@ -42,7 +42,7 @@ WHERE box_id = '" . $boxid . "'"
 
 			$storage_location_details = $wpdb->get_row(
 "SELECT aisle,bay,shelf,position
-FROM wpqa_wpsc_epa_storage_location
+FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE id = '" . $box_storage_location_id . "'"
 			);
 
@@ -54,7 +54,7 @@ WHERE id = '" . $box_storage_location_id . "'"
 
 $existing_shelf_update = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $existing_shelf_id . "' AND
 digitization_center = '" . $center . "'
@@ -62,7 +62,7 @@ digitization_center = '" . $center . "'
 
 $existing_shelf_update_remaining = $existing_shelf_update->remaining + 1;
 
-				$existing_ss_table_name = 'wpqa_wpsc_epa_storage_status';
+				$existing_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				
 				if ($existing_shelf_update_remaining == 4) {
 				$existing_ss_data_update = array('occupied' => 0, 'remaining' => $existing_shelf_update_remaining);
@@ -76,7 +76,7 @@ $existing_shelf_update_remaining = $existing_shelf_update->remaining + 1;
 				
 // Update wpqa_wpsc_epa_storage_location with new location that was selected
 
-$table_name = 'wpqa_wpsc_epa_storage_location';
+$table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 $data_update = array('aisle' => $aisle ,'bay'=>$bay,'shelf'=>$shelf,'position'=>$position);
 $data_where = array('id' => $box_storage_location_id);
 $wpdb->update($table_name , $data_update, $data_where);
@@ -86,7 +86,7 @@ $new_shelf_id_update = $aisle.'_'.$bay.'_'.$shelf;
 // Update storage status remove box from new shelf location
 				$new_shelf_update = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $new_shelf_id_update . "' AND
 digitization_center = '" . $center_term_id . "'
@@ -94,7 +94,7 @@ digitization_center = '" . $center_term_id . "'
 
 				$new_shelf_update_remaining = $new_shelf_update->remaining - 1;
 
-				$new_ss_table_name = 'wpqa_wpsc_epa_storage_status';
+				$new_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				$new_ss_data_update = array('occupied' => 1, 'remaining' => $new_shelf_update_remaining);
 				$new_ss_data_where = array('shelf_id' => $new_shelf_id_update);
 
@@ -102,7 +102,7 @@ digitization_center = '" . $center_term_id . "'
 
 				$get_ticket_id = $wpdb->get_row("
 SELECT ticket_id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
 box_id = '" . $boxid . "'
 ");

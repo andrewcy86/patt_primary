@@ -130,7 +130,7 @@ $thread_id = Patt_Custom_Func::submit_recall_thread( $args );
 	    $user_ids = array();
 	    
 	    // curent user
-	    $current_users_id = $wpdb->get_row( "SELECT ID from wpqa_users WHERE user_email = '" .  $customer_email . "'"); 
+	    $current_users_id = $wpdb->get_row( "SELECT ID from " . $wpdb->prefix . "users WHERE user_email = '" .  $customer_email . "'"); 
         array_push($user_ids, $current_users_id->ID);
         
         // owner of the request

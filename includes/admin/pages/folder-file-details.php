@@ -32,6 +32,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 $slug = basename(get_permalink());
 echo $slug;
 
+$ticket_string = substr($GLOBALS['id'],0,7);
+$is_active = Patt_Custom_Func::request_status( $ticket_string );
 //echo $GLOBALS['id'];
 ?>
 
@@ -47,6 +49,8 @@ echo $slug;
 		]
 	]);	
 
+    //switch out SQL statement depending on if the request is archived
+    if($is_active == 1) {
 	$folderfile_details = $wpdb->get_row(
 		"SELECT 
 	a.id as id,
@@ -59,7 +63,6 @@ echo $slug;
 	a.site_name as site_name,
 	a.siteid as site_id,
 	a.close_date as close_date,
-	a.epa_contact_email as epa_contact_email,
 	a.access_type as access_type,
 	b.source_format as source_format,
 	a.folderdocinfo_id as folderdocinfo_id,
@@ -72,7 +75,6 @@ echo $slug;
 	b.freeze as freeze,
 	a.addressee as addressee,
 	b.DOC_REGID as sems_reg_id,
-	b.DOC_ID as sems_doc_id,
 	b.folderdocinfofile_id as folderdocinfofile_id,
 	b.id as folderfileid,
 	b.attachment,
@@ -81,13 +83,67 @@ echo $slug;
 	b.object_location,
 	b.source_file_location,
 	b.file_object_id,
-	b.file_size
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
 	
-    FROM wpqa_wpsc_epa_folderdocinfo a
-    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
     WHERE b.folderdocinfofile_id = '" . $GLOBALS['id'] . "'"
 	);
-    
+    }
+    else {
+	$folderfile_details = $wpdb->get_row(
+		"SELECT 
+	a.id as id,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	a.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	a.access_type as access_type,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id
+    WHERE b.folderdocinfofile_id = '" . $GLOBALS['id'] . "'"
+	);
+    }
     //folderdocinfo table id
     $folderfile_id = $folderfile_details->id;
     
@@ -103,11 +159,9 @@ echo $slug;
 	$folderfile_site_name = $folderfile_details->site_name;
 	$folderfile_site_id = $folderfile_details->site_id;
 	$folderfile_close_date = $folderfile_details->close_date;
-	$folderfile_epa_contact_email = $folderfile_details->epa_contact_email;
 	$folderfile_access_type = $folderfile_details->access_type;
 	$folderfile_source_format = $folderfile_details->source_format;
 	
-	$folderfile_sems_doc_id = $folderfile_details->sems_doc_id;
 	$folderfile_sems_reg_id = $folderfile_details->sems_reg_id;
 	//$folderfile_rights = $folderfile_details->rights;
 	//$folderfile_contract_number = $folderfile_details->contract_number;
@@ -128,6 +182,14 @@ echo $slug;
     $folderfile_identifier = $folderfile_details->folder_identifier;
     $folderfile_freeze = $folderfile_details->freeze;
     $folderfile_addressee = $folderfile_details->addressee;
+    
+    $folderfile_description = $folderfile_details->description;
+    $folderfile_tags = $folderfile_details->tags;
+    $folderfile_access_restriction = $folderfile_details->access_restriction;
+    $folderfile_use_restriction = $folderfile_details->use_restriction;
+    $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
+    $folderfile_rights_holder = $folderfile_details->rights_holder;
+    $folderfile_source_dimensions = $folderfile_details->source_dimensions;
 
     $user = get_user_by( 'id', $folderfile_validation_user);
     
@@ -135,16 +197,13 @@ echo $slug;
 FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket, wpqa_terms
 WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");*/
     
-    $box_details = $wpdb->get_row("SELECT d.name, a.id, a.box_status, a.box_destroyed, c.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, a.lan_id, c.ticket_priority as ticket_priority, 
-(SELECT name as ticket_priority FROM wpqa_terms WHERE term_id = c.ticket_priority) as ticket_priority_name, c.ticket_status as ticket_status, 
-(SELECT name as ticket_status FROM wpqa_terms WHERE term_id = c.ticket_status) as ticket_status_name
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_ticket c ON c.id = a.ticket_id
-INNER JOIN wpqa_terms d ON a.box_status = d.term_id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files e ON e.folderdocinfo_id = b.id
-WHERE a.id = '" . $folderfile_boxid . "' 
-LIMIT 1");
+    $box_details = $wpdb->get_row("SELECT c.name, a.id, a.box_status, a.box_destroyed, b.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, a.lan_id, b.ticket_priority as ticket_priority, 
+(SELECT name as ticket_priority FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_priority) as ticket_priority_name, b.ticket_status as ticket_status, 
+(SELECT name as ticket_status FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as ticket_status_name
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.box_status
+WHERE a.id = '" . $folderfile_boxid . "'");
     
     $box_boxid = $box_details->box_id;
 	$box_ticketid = $box_details->ticket_id;
@@ -181,27 +240,24 @@ LIMIT 1");
     
     //record schedule
     $box_record_schedule = $wpdb->get_row("SELECT b.Record_Schedule_Number as rsnum 
-FROM wpqa_wpsc_epa_boxinfo a 
-INNER JOIN wpqa_epa_record_schedule b ON b.id = a.record_schedule_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule b ON b.id = a.record_schedule_id
 WHERE a.id = '" . $folderfile_boxid . "'");
     $box_rs = $box_record_schedule->rsnum;
     
     //program office
     $box_program_office = $wpdb->get_row("SELECT a.office_acronym as program_office 
-FROM wpqa_wpsc_epa_program_office a 
-INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
 WHERE b.id = '" . $folderfile_boxid . "'");
     $box_po = $box_program_office->program_office;
     
     //box location
-    $location = $wpdb->get_row("SELECT e.name as location, c.aisle as aisle, c.bay as bay, c.shelf as shelf, c.position as position
-FROM wpqa_wpsc_epa_boxinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_storage_location c ON c.id = a.storage_location_id
-INNER JOIN wpqa_terms e ON e.term_id = c.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files f ON f.folderdocinfo_id = b.id
-WHERE a.id = '" . $folderfile_boxid . "'
-LIMIT 1");
+    $location = $wpdb->get_row("SELECT c.name as location, b.aisle as aisle, b.bay as bay, b.shelf as shelf, b.position as position
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON b.id = a.storage_location_id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = b.digitization_center
+WHERE a.id ='" . $folderfile_boxid . "'");
     $box_location = $location->location;
 	$box_aisle = $location->aisle;
 	$box_bay = $location->bay;
@@ -249,7 +305,7 @@ div.dataTables_wrapper {
     	
     	<?php	
     	
-        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
         <?php 
@@ -404,6 +460,15 @@ echo '</div>';
             ?>]<?php if($box_destruction > 0 && $folderfile_freeze == 0){?></span> <span style="font-size: .8em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span><?php } ?>
 		  <?php } ?>		
 
+<?php
+if($is_active == 0){
+if ($folderfile_index_level == '1') {
+echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This folder is archived</span>';
+} else {
+echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This file is archived</span>';
+}
+}
+?>
 		  <?php 
 $decline_icon = '';
 $recall_icon = '';
@@ -420,12 +485,13 @@ echo $decline_icon.$recall_icon;
 		  ?>
 		  
 		  <?php 
-		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+		  if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
 			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderdocinfofileid . ')"><i class="fas fa-edit fa-xs"></i></a>';
-			    }
+			    ?>
+			    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-folder-id-edit-icon'); ?>"><i class="far fa-question-circle"></i></a>
+                <?php }
 		  ?>
-		  <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-folder-id-edit-icon'); ?>"><i class="far fa-question-circle"></i></a>
       </h3>
 
     </div>
@@ -493,16 +559,44 @@ echo $decline_icon.$recall_icon;
 			}
 			
 			if($folderfile_essential_record == 1) {
-			    echo "<strong>Essential Record:</strong> Yes";
+			    echo "<strong>Essential Record:</strong> Yes" . "<br />";
 			}
 			else {
-			    echo "<strong>Essential Record:</strong> No";
+			    echo "<strong>Essential Record:</strong> No" . "<br />";
+			}
+			
+			if(!empty($folderfile_description)) {
+			    echo "<strong>Description:</strong> " . $folderfile_description . "<br />";
+			}
+			
+			if(!empty($folderfile_tags)) {
+			    echo "<strong>Tags:</strong> " . $folderfile_tags . "<br />";
+			}
+			
+			if(!empty($folderfile_access_restriction)) {
+			    echo "<strong>Access Restriction:</strong> " . $folderfile_access_restriction . "<br />";
+			}
+			
+			if(!empty($folderfile_use_restriction)) {
+			    echo "<strong>Use Restriction:</strong> " . $folderfile_use_restriction . "<br />";
+			}
+			
+			if(!empty($folderfile_specific_use_restriction)) {
+			    echo "<strong>Specific Use Restriction:</strong> " . $folderfile_specific_use_restriction . "<br />";
+			}
+			
+			if(!empty($folderfile_rights_holder)) {
+			    echo "<strong>Rights Holder:</strong> " . $folderfile_rights_holder . "<br />";
+			}
+			
+			if(!empty($folderfile_source_dimensions)) {
+			    echo "<strong>Source Dimensions:</strong> " . stripslashes($folderfile_source_dimensions);
 			}
 
 wp_get_current_user();
 echo "<br /><br />";
 $ticket_details = $wpdb->get_row("SELECT customer_name
-FROM wpqa_wpsc_ticket
+FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE id = '" . $box_ticketid . "'");
 
 $ticket_user = $ticket_details->customer_name;
@@ -541,6 +635,7 @@ if( $folderfile_details->source_file_location == null || $folderfile_details->so
 
 
 // Display Upload File Section
+if($is_active == 1) {
 $protocol = 'https://';
 $host = '.s3.us-gov-west-1.amazonaws.com';
 echo '<div id="upload-file-section" >';
@@ -624,7 +719,7 @@ echo '</pre>';
 */
 
 // DEBUG - END
-
+}
 
 ?>
 <style>
@@ -657,7 +752,7 @@ echo '</pre>';
 
 <?php
 
-if ($folderfile_sems_reg_id != '' || $folderfile_sems_doc_id != '') {
+if ($folderfile_sems_reg_id != '' || $folderfile_folderdocinfofile_id != '') {
 ?>
 
 <h3 style="display: inline;">Links to Electronic Records in SEMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle"></i></a></h3>
@@ -672,11 +767,11 @@ if ($folderfile_sems_reg_id != '' || $folderfile_sems_doc_id != '') {
 		</tr>-->
 		<tr>
 						<td><strong>Title</strong></td>
-					<td><a href="https://semspub.epa.gov/work/<?php echo $folderfile_sems_reg_id; ?>/<?php echo $folderfile_sems_doc_id; ?>.pdf" target="_blank"><?php echo $folderfile_title; ?></a></td>
+					<td><a href="https://semspub.epa.gov/work/<?php echo $folderfile_sems_reg_id; ?>/<?php echo $folderfile_folderdocinfofile_id; ?>.pdf" target="_blank"><?php echo $folderfile_title; ?></a></td>
 		</tr>
 		<tr>
 			<td><strong>Doc ID</strong></td>
-			<td><?php echo $folderfile_sems_doc_id; ?></td>
+			<td><?php echo $folderfile_folderdocinfofile_id; ?></td>
 		</tr>
 	</tbody></table>
 </div>
@@ -694,7 +789,7 @@ WHERE object_key != '' AND file_object_id != '' AND folderdocinfo_id = '" . $GLO
 */
 
 $get_all_ecms_attachments = $wpdb->get_results("SELECT *
-FROM wpqa_wpsc_epa_folderdocinfo_files
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE file_object_id != '' AND folderdocinfofile_id = '" . $GLOBALS['id'] . "'");
 
 if (count($get_all_ecms_attachments)> 0 && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent')  || ($agent_permissions['label'] == 'Manager') || $current_user->nickname == $ticket_user)) {
@@ -1114,7 +1209,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                            </div>
 	                            
 	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong> 
-	                            <?php 
+	                            <?php
 	                            if (!empty($box_boxid)) {
 	                                if ($GLOBALS['pid'] == 'requestdetails') {
 	                                echo "<a href='admin.php?pid=requestdetails&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";

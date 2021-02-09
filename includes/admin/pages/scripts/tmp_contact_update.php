@@ -13,11 +13,11 @@ if(
 $postvarsrequest_id = $_POST['postvarsrequest_id'];
 $postvarsemail = $_POST['postvarsemail'];
 
-$get_ticket_tmp_contact = $wpdb->get_row("SELECT tmp_contact FROM wpqa_wpsc_ticket WHERE id = '".$postvarsrequest_id."'");
+$get_ticket_tmp_contact = $wpdb->get_row("SELECT tmp_contact FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$postvarsrequest_id."'");
 $tmp_contact = $get_ticket_tmp_contact->tmp_contact;
 
 if($tmp_contact != $postvarsemail) {
-$table_name = 'wpqa_wpsc_ticket';
+$table_name = $wpdb->prefix . 'wpsc_ticket';
 
 $data_update = array('tmp_contact' => $postvarsemail);
 $data_where = array('id' => $postvarsrequest_id);

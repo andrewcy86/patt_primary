@@ -15,7 +15,7 @@ $folderdocid_arr = explode (",", $folderdocid_string);
 $page_id = $_POST['postvarpage'];
 $box_id = $_POST['boxid'];
 
-$table_name = 'wpqa_wpsc_epa_folderdocinfo_files';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
 $destruction_reversal = 0;
 $destruction_violation = 0;
@@ -23,7 +23,7 @@ $destruction_violation = 0;
 $frozen = 0;
 
 foreach($folderdocid_arr as $key) {
-$get_frozen = $wpdb->get_row("SELECT freeze FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_frozen = $wpdb->get_row("SELECT freeze FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_frozen_val = $get_frozen->freeze;
 
 if ($get_frozen_val == 1) {
@@ -38,14 +38,14 @@ foreach($folderdocid_arr as $key) {
 $getfolderdocinfo_db_id = $wpdb->get_row(
 "SELECT 
 id
-FROM wpqa_wpsc_epa_folderdocinfo_files
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE folderdocinfo_id = '" . $key . "'"
 			);
 
 $folderdocinfo_db_id = $getfolderdocinfo_db_id->id;
 
 $getrecall_violation_count = $wpdb->get_row(
-"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_recallrequest WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
+"SELECT IF( EXISTS( SELECT * FROM " . $wpdb->prefix . "wpsc_epa_recallrequest WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $recall_violation_count = $getrecall_violation_count->count;
@@ -55,7 +55,7 @@ array_push($recall_array,$folderdocinfo_db_id);
 }
 
 $getreturn_violation_count = $wpdb->get_row(
-"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_return_items WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
+"SELECT IF( EXISTS( SELECT * FROM " . $wpdb->prefix . "wpsc_epa_return_items WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $return_violation_count = $getreturn_violation_count->count;
@@ -74,22 +74,22 @@ $destruction_violation = 1;
 
 if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $frozen == 0 ) {
 foreach($folderdocid_arr as $key) {    
-$get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_destruction_val = $get_destruction->unauthorized_destruction;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 $get_box_id = $wpdb->get_row("
-SELECT a.box_id FROM wpqa_wpsc_epa_folderdocinfo  a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+SELECT a.box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo  a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;
 
 $get_storage_id = $wpdb->get_row("
-SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo 
+SELECT id, storage_location_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
 WHERE id = '" . $box_id . "'
 ");
 $storage_location_id = $get_storage_id->storage_location_id;
@@ -102,8 +102,8 @@ b.aisle,
 b.bay,
 b.shelf,
 b.position
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_storage_location b WHERE a.storage_location_id = b.id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b WHERE a.storage_location_id = b.id
 AND a.id = '" . $box_id . "'"
 			);
 			
@@ -117,7 +117,7 @@ $box_storage_status = $wpdb->get_row(
 "SELECT 
 occupied,
 remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE shelf_id = '" . $box_storage_shelf_id . "'"
 			);
 
@@ -128,8 +128,8 @@ $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 $folder_file_count = $wpdb->get_row(
 "SELECT 
 count(b.id) as sum
-FROM wpqa_wpsc_epa_folderdocinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE a.box_id = '" . $box_id . "'"
 			);
 
@@ -138,8 +138,8 @@ $folder_file_count_sum = $folder_file_count->sum;
 $destruction_count = $wpdb->get_row(
 "SELECT 
 count(b.id) as sum
-FROM wpqa_wpsc_epa_folderdocinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.unauthorized_destruction = 1 AND a.box_id = '" . $box_id . "'"
 			);
 
@@ -154,7 +154,7 @@ $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 
 //Reverse the destruction
-$table_box_name = 'wpqa_wpsc_epa_boxinfo';
+$table_box_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $data_update_d = array('box_destroyed' => 0);
 $data_where_d = array('id' => $box_id);
 $wpdb->update($table_box_name, $data_update_d, $data_where_d);
@@ -181,8 +181,8 @@ $wpdb->update($table_name , $data_update, $data_where);
 $destruction_count = $wpdb->get_row(
 "SELECT 
 count(b.id) as sum
-FROM wpqa_wpsc_epa_folderdocinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.unauthorized_destruction = 1 AND a.box_id = '" . $box_id . "'"
 			);
 
@@ -195,20 +195,20 @@ $destruction_count_sum = $destruction_count->sum;
 
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
-$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '6','box_destroyed' => '1');
 $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
 
 //SET SHELF LOCATION TO 0
-$table_sl = 'wpqa_wpsc_epa_storage_location';
+$table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
 $sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
 //ADD AVALABILITY TO STORAGE STATUS
 if ($box_storage_status_remaining <= 4) {
-$table_ss = 'wpqa_wpsc_epa_storage_status';
+$table_ss = $wpdb->prefix . 'wpsc_epa_storage_status';
 $ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
@@ -233,25 +233,25 @@ echo "A frozen folder/file has been selected and cannot be flagged as unauthoriz
 if($page_id == 'filedetails') {
 
 $get_box_id = $wpdb->get_row("
-SELECT a.box_id FROM wpqa_wpsc_epa_folderdocinfo  a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+SELECT a.box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo  a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;
 
-$get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
+$get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 
 $get_destruction_val = $get_destruction->unauthorized_destruction;
 
 $get_request_id = substr($folderdocid_string, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 $folder_file_count = $wpdb->get_row(
 "SELECT 
 count(b.id) as sum
-FROM wpqa_wpsc_epa_folderdocinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE a.box_id = '" . $box_id . "'"
 			);
 
@@ -275,8 +275,8 @@ $wpdb->update($table_name , $data_update, $data_where);
 $destruction_count = $wpdb->get_row(
 "SELECT 
 count(b.id) as sum
-FROM wpqa_wpsc_epa_folderdocinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
 WHERE b.unauthorized_destruction = 1 AND a.box_id ='" . $box_id . "'"
 			);
 
@@ -290,20 +290,20 @@ $destruction_count_sum = $destruction_count->sum;
 
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
-$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '6','box_destroyed' => '1');
 $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
 
 //SET SHELF LOCATION TO 0
-$table_sl = 'wpqa_wpsc_epa_storage_location';
+$table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
 $sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
 //ADD AVALABILITY TO STORAGE STATUS
 if ($box_storage_status_remaining <= 4) {
-$table_ss = 'wpqa_wpsc_epa_storage_status';
+$table_ss = $wpdb->prefix . 'wpsc_epa_storage_status';
 $ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
@@ -320,7 +320,7 @@ do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 }
 }
 
-$get_destruction_sum = $wpdb->get_row("SELECT sum(b.unauthorized_destruction) as sum FROM wpqa_wpsc_epa_folderdocinfo a INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id  WHERE a.box_id = '".$box_id."'");
+$get_destruction_sum = $wpdb->get_row("SELECT sum(b.unauthorized_destruction) as sum FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id  WHERE a.box_id = '".$box_id."'");
 
 $get_destruction_sum_val = $get_destruction_sum->sum;
 

@@ -194,8 +194,8 @@ foreach( $item_ids as $key=>$id ) {
 	$storage_location = $wpdb->get_row("SELECT
 										    *
 										FROM
-										    wpqa_wpsc_epa_storage_location Location
-										INNER JOIN wpqa_wpsc_epa_boxinfo Box ON
+										    " . $wpdb->prefix . "wpsc_epa_storage_location Location
+										INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo Box ON
 										    Box.storage_location_id = Location.id
 										WHERE
 										    Box.box_id = '" . $id . "'");
@@ -234,7 +234,7 @@ foreach($item_ids as $the_box_id) {
 		$the_users_obj = $wpdb->get_results("SELECT
 											    user_id
 											FROM
-											    wpqa_wpsc_epa_boxinfo_userstatus
+											    " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus
 											WHERE
 											    box_id = " . $the_fk_box_ID . " AND status_id = " . $status_term . "");
 		

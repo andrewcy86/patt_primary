@@ -59,9 +59,9 @@ $shipped_recall_status_query = $wpdb->get_results(
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
+		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
 	ON (
         shipping.recallrequest_id = rr.id
 	   )
@@ -185,9 +185,9 @@ $on_loan_recall_status_query = $wpdb->get_results(
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
+		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
 	ON (
         shipping.recallrequest_id = rr.id
 	   )
@@ -281,9 +281,9 @@ $shipped_back_recall_status_query = $wpdb->get_results(
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
+		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
 	ON (
         shipping.recallrequest_id = rr.id
 	   )
@@ -395,9 +395,9 @@ $recall_complete_recall_status_query = $wpdb->get_results(
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status
     FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
+		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
 	ON (
         shipping.recallrequest_id = rr.id
 	   )

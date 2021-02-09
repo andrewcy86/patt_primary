@@ -107,7 +107,7 @@ if($searchByUser == 'search for user') {
 	$user_id_str = substr($user_id_str, 0, -2);
 	
 	$box_ids_for_users = '';
-	$mini_query = "select distinct box_id from wpqa_wpsc_epa_boxinfo_userstatus where user_id IN (".$user_id_str.")";
+	$mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id IN (".$user_id_str.")";
 	$mini_records = mysqli_query($con, $mini_query);
 	while ($rox = mysqli_fetch_assoc($mini_records)) {
 		$box_ids_for_users .= $rox['box_id'].", ";
@@ -183,28 +183,28 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
-FROM wpqa_wpsc_ticket as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = z.id AND h.folderdoc_id <> '-99999')
    
 LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY box_id ) AS i ON i.box_id = b.id
 LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = z.id
 WHERE a.id <> -99999 AND a.active <> 0 group by a.request_id) t");
@@ -213,28 +213,28 @@ $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
-FROM wpqa_wpsc_ticket as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.folderdocinfo_id = z.id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = z.id AND h.folderdoc_id <> '-99999')
    
 LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY box_id ) AS i ON i.box_id = b.id
 LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = z.id
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 group by a.request_id ".$searchHaving.") t");
@@ -267,20 +267,20 @@ END
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
 ';color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
 ';\">',
-(SELECT name from wpqa_terms where term_id = a.ticket_priority),
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
 '</span>') as ticket_priority,
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
 ';color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
 ';\">',
-(SELECT name from wpqa_terms where term_id = a.ticket_status),
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_status),
 '</span>') as ticket_status,
 
 CASE 
@@ -325,17 +325,17 @@ ELSE
 END
  as ticket_status_order,
 
-CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
+CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
 CONCAT (
 CASE
-WHEN ((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
 g.user_login
 ,'\">',
 
 (
-    CASE WHEN length(CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
-        CONCAT(LEFT(CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
-    ELSE CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
     END
 )
 
@@ -348,32 +348,32 @@ a.date_updated as date_updated,
 
 GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 
-FROM wpqa_wpsc_ticket as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo as z ON z.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = z.id
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = z.id
 
-LEFT JOIN wpqa_users g ON g.user_email = a.customer_email
+LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   wpqa_wpsc_epa_recallrequest
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = z.id AND h.folderdoc_id <> '-99999')
    
    
 LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY box_id ) AS i ON i.box_id = b.id
 LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   wpqa_wpsc_epa_return_items a
-   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = z.id
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999

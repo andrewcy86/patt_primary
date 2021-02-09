@@ -3,7 +3,7 @@
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $subfolder_path = site_url( '', 'relative'); 
 
@@ -31,15 +31,20 @@ if (isset($_GET['id']))
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
+$get_all_csv_files = $wpdb->get_row("SELECT count(a.post_id) as count
+            FROM wpqa_postmeta a
+            INNER JOIN wpqa_posts b ON b.ID = a.post_id
+            WHERE a.meta_value LIKE '%".$GLOBALS['id']."_log_backup%' ORDER BY b.post_date DESC");
+            
 $get_log = $wpdb->get_results("
 SELECT 
 rel.post_id as id,
 posts.post_date as date,
 posts.post_content as content
-    FROM wpqa_posts AS posts
-        LEFT JOIN wpqa_postmeta AS rel ON 
+    FROM " . $wpdb->prefix . "posts AS posts
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel ON 
             posts.ID = rel.post_id
-        LEFT JOIN wpqa_postmeta AS rel2 ON
+        LEFT JOIN " . $wpdb->prefix . "postmeta AS rel2 ON
             posts.ID = rel2.post_id
     WHERE
         posts.post_type = 'wpsc_ticket_thread' AND
@@ -55,13 +60,19 @@ $num = $GLOBALS['id'];
 $str_length = 7;
 $padded_request_id = substr("000000{$num}", -$str_length);
 
-$tbl = '
-<h1 style="font-size: 18px">Request logs for Request #'.$padded_request_id.'</h1>
+$tbl = '<h1 style="font-size: 18px">Request logs for Request #'.$padded_request_id.'</h1>';
 
+if($get_all_csv_files->count > 0) {
+
+$tbl .= '<strong style="color:red">This request contains archived logs. To view these logs please visit the <a href="'.get_site_url().'/wp-admin/admin.php?page=wpsc-tickets&id='.$padded_request_id.'">request details page</a>.</strong><br /><br />';
+
+}
+
+$tbl .= '
 <table style="width: 638px;" cellspacing="0" nobr="true">
   <tr>
     <th style="border: 1px solid #000000; width: 45px; background-color: #f5f5f5; font-weight: bold;">ID</th>
-    <th style="border: 1px solid #000000; width: 150px; background-color: #f5f5f5; font-weight: bold;">Log Date</th>
+    <th style="border: 1px solid #000000; width: 153px; background-color: #f5f5f5; font-weight: bold;">Log Date</th>
     <th style="border: 1px solid #000000; width: 365px; background-color: #f5f5f5; font-weight: bold;">Log Content</th>
   </tr>
 ';
@@ -71,9 +82,12 @@ foreach($get_log as $info){
     $log_date =  $info->date;
     $log_content = $info->content;
     
+    $date = new DateTime($log_date, new DateTimeZone('UTC'));
+    $date->setTimezone(new DateTimeZone('America/New_York'));
+    
     $tbl .= '<tr>
             <td style="border: 1px solid #000000; width: 45px;">'.$log_id.'</td>
-            <td style="border: 1px solid #000000; width: 150px;">'.$log_date.'</td>
+            <td style="border: 1px solid #000000; width: 153px;">'.$date->format('m-d-Y h:i:s a').' EST</td>
             <td style="border: 1px solid #000000; width: 365px;">'.$log_content.'</td>
             </tr>';
     

@@ -22,30 +22,30 @@ ob_start();
 
 $patt_box_id_arr = array();
 
-    $box_patt_id = $wpdb->get_row("SELECT box_id FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+    $box_patt_id = $wpdb->get_row("SELECT box_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
     $patt_box_id = $box_patt_id->box_id;
     array_push($patt_box_id_arr,$patt_box_id);
     
     $box_program_office = $wpdb->get_row("SELECT b.office_acronym as acronym 
-    FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_epa_program_office as b ON a.program_office_id = b.office_code
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as b ON a.program_office_id = b.office_code
     WHERE box_id = '" . $box_id . "'");
     $program_office = $box_program_office->acronym;
     
     $box_record_schedule = $wpdb->get_row("SELECT c.Record_Schedule_Number as record_schedule_number 
-    FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_epa_record_schedule as c ON record_schedule_id = c.id
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a INNER JOIN " . $wpdb->prefix . "epa_record_schedule as c ON record_schedule_id = c.id
     WHERE box_id = '" . $box_id . "'");
     $record_schedule = $box_record_schedule->record_schedule_number;
     
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(fdif.validation = 1) as validated, COUNT(fdif.validation) as validation_total
-							FROM wpqa_wpsc_epa_boxinfo a
-							INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id 
-							INNER JOIN wpqa_wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
+							FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+							INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id 
+							INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
 							WHERE a.id = '" . $box_id . "'");
 							
 /*	OLD: before moving validation to fdi_files table
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(b.validation = 1) as validated, COUNT(b.validation) as validation_total
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id
 WHERE a.id = '" . $box_id . "'");
 */
 
@@ -53,10 +53,10 @@ WHERE a.id = '" . $box_id . "'");
     $validated = $box_dc->validated;
     $validation_total = $box_dc->validation_total;
     
-    $box_status = $wpdb->get_row("SELECT wpqa_terms.term_id as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_terms.term_id = wpqa_wpsc_epa_boxinfo.box_status AND wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'");
+    $box_status = $wpdb->get_row("SELECT " . $wpdb->prefix . "terms.term_id as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
     $status_id = $box_status->box_status;
     
-    $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM wpqa_wpsc_ticket, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'");
+    $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM " . $wpdb->prefix . "wpsc_ticket, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
     $destruction_approval = $box_destruction_approval->destruction_approval;
 ?>   
 <!--converts program office and record schedules into a datalist-->
@@ -140,7 +140,7 @@ if (($agent_permissions['label'] == 'Administrator')  || ($agent_permissions['la
      <?php foreach($po_array as $key => $value) { 
      
     $program_office = $wpdb->get_row("SELECT office_code, office_name
-FROM wpqa_wpsc_epa_program_office 
+FROM " . $wpdb->prefix . "wpsc_epa_program_office 
 WHERE office_acronym  = '" . $value . "'");
     $program_office_id = $program_office->office_code;
     $program_office_name = $program_office->office_name;
@@ -159,7 +159,7 @@ WHERE office_acronym  = '" . $value . "'");
      <?php foreach($rs_array as $key => $value) { 
      
      $record_schedule = $wpdb->get_row("SELECT id, Schedule_Title
-FROM wpqa_epa_record_schedule 
+FROM " . $wpdb->prefix . "epa_record_schedule 
 WHERE Ten_Year = 1 AND Record_Schedule_Number = '" . $value . "'");
     $record_schedule_id = $record_schedule->id;
     $record_schedule_title = $record_schedule->Schedule_Title;

@@ -23,7 +23,7 @@ if( $type == 'box_status' ) {
 	$new_status = isset($_POST['new_status']) ? sanitize_text_field($_POST['new_status']) : '';
 	//$old_status = isset($_POST['old_status']) ? sanitize_text_field($_POST['old_status']) : '';	
 
-	$table_name = 'wpqa_wpsc_epa_boxinfo';
+	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 	$data_update = array('box_status' => $new_status);
 
 /*

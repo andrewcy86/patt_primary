@@ -17,12 +17,12 @@ $folderdocid_arr = explode (",", $_POST['postvarselection']);
 foreach($folderdocid_arr as $key) {
 
             $get_folderdbid = $wpdb->get_row("SELECT id
-FROM wpqa_wpsc_epa_folderdocinfo_files
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE folderdocinfofile_id = '" . $key . "'");
             
             $folderdbid = $get_folderdbid->id;
             
-$table_name = 'wpqa_wpsc_epa_folderdocinfo_files';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 $data_update = array('rescan' => 0);
 $data_where = array('id' => $folderdbid);
 

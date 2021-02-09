@@ -10,7 +10,7 @@ if(
 ){
    $reader_id = $_POST['postvarsreaderid'];
 
-$table_name = 'wpqa_wpsc_epa_rfid_data';
+$table_name = $wpdb->prefix . 'wpsc_epa_rfid_data';
 
 $wpdb->delete($table_name, array( 'Reader_Name' => $reader_id ) );
   

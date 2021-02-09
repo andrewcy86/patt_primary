@@ -121,7 +121,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 				<datalist id='searchByProgramOfficeList'>
 					<?php foreach($po_array as $key => $value) { ?>
 					<?php 
-					    $program_office = $wpdb->get_row("SELECT office_name FROM wpqa_wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
+					    $program_office = $wpdb->get_row("SELECT office_name FROM " . $wpdb->prefix . "wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
 					    $office_name = $program_office->office_name;
 					?>
 					<option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $office_name; ?>'></option>
@@ -689,11 +689,11 @@ jQuery(document).ready(function(){
 	
 	        
 	       if(response.indexOf(substring_false) >= 0) {
-	       alert('Cannot print box labels for destroyed boxes.');
+	       alert('Cannot print box labels for boxes that have been destroyed or do not have an assigned location.');
 	       }
 	       
 	       if(response.indexOf(substring_warn) >= 0) {
-	       alert('One or more boxes that you selected are destroyed and it\'s label will not generate.');
+	       alert('One or more boxes that you selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
 	       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+boxidinfo, "_blank");
 	       }
 	       

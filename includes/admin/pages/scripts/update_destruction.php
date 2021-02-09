@@ -14,7 +14,7 @@ $boxid_string = $_POST['postvarsboxid'];
 $boxid_arr = explode (",", $boxid_string);  
 $page_id = $_POST['postvarpage'];
 
-$box_table_name = 'wpqa_wpsc_epa_boxinfo';
+$box_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
 $destruction_reversal = 0;
 
@@ -24,29 +24,29 @@ foreach($boxid_arr as $key) {
 $counter++;
 
 
-$get_box_db_id = $wpdb->get_row("select id from wpqa_wpsc_epa_boxinfo where box_id = '".$key."'");
+$get_box_db_id = $wpdb->get_row("select id from " . $wpdb->prefix . "wpsc_epa_boxinfo where box_id = '".$key."'");
 $box_db_id = $get_box_db_id->id;
 
 $get_sum_total = $wpdb->get_row("select count(b.id) as sum_total_count 
-from wpqa_wpsc_epa_folderdocinfo a 
-inner join wpqa_wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+from " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+inner join " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
 where a.box_id = '".$box_db_id."'");
 $sum_total_val = $get_sum_total->sum_total_count;
 
 $get_sum_validation = $wpdb->get_row("select sum(b.validation) as sum_validation 
-from wpqa_wpsc_epa_folderdocinfo a 
-inner join wpqa_wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+from " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+inner join " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
 where b.validation = 1 AND a.box_id = '".$box_db_id."'");
 $sum_validation = $get_sum_validation->sum_validation;
 
-$get_status = $wpdb->get_row("select box_status as status from wpqa_wpsc_epa_boxinfo where id = '".$box_db_id."'");
+$get_status = $wpdb->get_row("select box_status as status from " . $wpdb->prefix . "wpsc_epa_boxinfo where id = '".$box_db_id."'");
 $request_status = $get_status->status;
 
-$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da from wpqa_wpsc_ticket a INNER JOIN wpqa_wpsc_epa_boxinfo b ON a.id = b.ticket_id where b.id = '".$box_db_id."'");
+$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da from " . $wpdb->prefix . "wpsc_ticket a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.id = b.ticket_id where b.id = '".$box_db_id."'");
 $destruction_auth_status = $get_destruction_auth_status->da;
 
 $get_storage_id = $wpdb->get_row("
-SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo 
+SELECT id, storage_location_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
 WHERE box_id = '" . $key . "'
 ");
 $storage_location_id = $get_storage_id->storage_location_id;
@@ -58,8 +58,8 @@ b.aisle,
 b.bay,
 b.shelf,
 b.position
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_storage_location b WHERE a.storage_location_id = b.id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b WHERE a.storage_location_id = b.id
 AND a.box_id = '" . $key . "'"
 			);
 			
@@ -73,7 +73,7 @@ $box_storage_status = $wpdb->get_row(
 "SELECT 
 occupied,
 remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE shelf_id = '" . $box_storage_shelf_id . "'"
 			);
 
@@ -91,11 +91,11 @@ echo '<br />';
 }
 
 } else {
-$get_destruction = $wpdb->get_row("SELECT box_destroyed FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '".$key."'");
+$get_destruction = $wpdb->get_row("SELECT box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '".$key."'");
 $get_destruction_val = $get_destruction->box_destroyed;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_destruction_val == 1){
@@ -119,14 +119,14 @@ $pl_where = array('box_id' => $key);
 $wpdb->update($box_table_name , $pl_update, $pl_where);
 
 //SET SHELF LOCATION TO 0
-$table_sl = 'wpqa_wpsc_epa_storage_location';
+$table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
 $sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
 //ADD AVALABILITY TO STORAGE STATUS
 if ($box_storage_status_remaining <= 4) {
-$table_ss = 'wpqa_wpsc_epa_storage_status';
+$table_ss = $wpdb->prefix . 'wpsc_epa_storage_status';
 $ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);

@@ -116,10 +116,15 @@ $cancel_recall_btn_css = $action_default_btn_css;
 				$recall_type = "Test Data";
 				$title = $recall_obj->title;	
 				$recall_item_id = $recall_obj->folderdoc_id;			
-			} elseif( $recall_obj->box_id == $db_null && $recall_obj->folderdoc_id == $db_null ) {
+			} elseif( $recall_obj->box_id == $db_empty && $recall_obj->folderdoc_id == $db_empty ) {
 				$recall_type = "Not Real";
 				$recall_item_id = 'Not Real Data';
 			}
+			
+			//echo $recall_type;
+			//echo '<br>';
+			//echo $recall_item_id;
+			//echo '<br>';			
 			
 			//User Info - always put into an array.
 //			if( !is_array($recall_obj->user_id))
@@ -223,12 +228,15 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			
 			// Set print button link based if Recall is for a Box ID or a Folder/File ID. 
 			if( $recall_type == 'Box' ) {
-				//echo WPPATT_PLUGIN_URL; includes/ajax/pdf/folder_separator_sheet.php?id=
-				//$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/box_label.php?id=' . $recall_item_id;
 				$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_label.php?id=' . $recall_item_id;
 			} elseif( $recall_type == 'Folder/File' ) {
-				//$print_button_link = $subfolder_path . '/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
-				$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
+				
+				$folderdoc_array = explode( '-', $recall_obj->folderdoc_id );
+				if( $folderdoc_array[2] == '02' ) {
+					$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/file_separator_sheet.php?id=' . $recall_item_id;
+				} elseif( $folderdoc_array[2] == '01' ) {
+					$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
+				}
 			}
 			
 			//echo '<br>Current user is on request: '.$current_user_on_request.'<br>';
@@ -277,7 +285,8 @@ $cancel_recall_btn_css = $action_default_btn_css;
 	}
 ?>
 
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="window.open('<?php echo $print_button_link ?>','_blank')"><i class="fas fa-tags"></i> Print Label</button>
+<!-- <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="window.open('<?php echo $print_button_link ?>','_blank')"><i class="fas fa-tags"></i> Print Label</button> -->
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="print_label();"><i class="fas fa-tags"></i> Print Label</button>
 		
 		
 		
@@ -501,6 +510,11 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					);
 					$threads = get_posts($args);
 					
+					// Get auth_id to allow attachment downloads
+					//$ticket_auth_code = $wpscfunction->get_ticket_fields($this->ticket_id,'ticket_auth_code');
+					$ticket_auth_code = $wpscfunction->get_ticket_fields( $ticket_id, 'ticket_auth_code');
+					$auth_id          = $ticket_auth_code;
+					
 					if(apply_filters('wpsc_print_thread',true)){	
 					foreach ($threads as $thread):
 						$reply = stripslashes(htmlspecialchars_decode($thread->post_content, ENT_QUOTES));
@@ -579,6 +593,25 @@ $cancel_recall_btn_css = $action_default_btn_css;
 															$attach[$key] = $value[0];
 														}	
 														$download_url = site_url('/').'?wpsc_attachment='.$attachment.'&tid='.$ticket_id.'&tac='.$auth_id;
+														// PATT addition to get correct file
+														$table = $wpdb->prefix . 'termmeta';
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment;
+														$term_array = $wpdb->get_results( $sql );
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "time_uploaded"';
+														$time_array = $wpdb->get_results( $sql );
+														$time_pieces = explode( ' ', $time_array[0]->meta_value );
+														$date_pieces = explode( '-', $time_pieces[0] );
+														$folder_year = $date_pieces[0];
+														$folder_month = $date_pieces[1];
+														
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "save_file_name"';
+														$file_name_array = $wpdb->get_results( $sql );
+														$file_name = $file_name_array[0]->meta_value;
+														
+														$download_url = str_replace( 'mu-plugins/pattracking/', '', WPPATT_PLUGIN_URL );
+														$download_url .= 'uploads/wpsc/' . $folder_year . '/' . $folder_month . '/';
+														$download_url .= $file_name;
+														// PATT end
 														?>
 														<tr class="wpsc_attachment_tr">
 															<td>
@@ -674,6 +707,27 @@ $cancel_recall_btn_css = $action_default_btn_css;
 															$attach[$key] = $value[0];
 														}
 														$download_url = site_url('/').'?wpsc_attachment='.$attachment.'&tid='.$ticket_id.'&tac='.$auth_id;
+														
+														// PATT addition to get correct file
+														$table = $wpdb->prefix . 'termmeta';
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment;
+														$term_array = $wpdb->get_results( $sql );
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "time_uploaded"';
+														$time_array = $wpdb->get_results( $sql );
+														$time_pieces = explode( ' ', $time_array[0]->meta_value );
+														$date_pieces = explode( '-', $time_pieces[0] );
+														$folder_year = $date_pieces[0];
+														$folder_month = $date_pieces[1];
+														
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "save_file_name"';
+														$file_name_array = $wpdb->get_results( $sql );
+														$file_name = $file_name_array[0]->meta_value;
+														
+														$download_url = str_replace( 'mu-plugins/pattracking/', '', WPPATT_PLUGIN_URL );
+														$download_url .= 'uploads/wpsc/' . $folder_year . '/' . $folder_month . '/';
+														$download_url .= $file_name;
+														// PATT end
+														
 														?>
 														<tr class="wpsc_attachment_tr">
 															<td>
@@ -767,6 +821,26 @@ $cancel_recall_btn_css = $action_default_btn_css;
 														}
 														$download_url = site_url('/').'?wpsc_attachment='.$attachment.'&tid='.$ticket_id.'&tac='.$auth_id;
 														
+														// PATT addition to get correct file
+														$table = $wpdb->prefix . 'termmeta';
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment;
+														$term_array = $wpdb->get_results( $sql );
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "time_uploaded"';
+														$time_array = $wpdb->get_results( $sql );
+														$time_pieces = explode( ' ', $time_array[0]->meta_value );
+														$date_pieces = explode( '-', $time_pieces[0] );
+														$folder_year = $date_pieces[0];
+														$folder_month = $date_pieces[1];
+														
+														$sql = 'SELECT * FROM ' . $table . ' where term_id = ' . $attachment .' AND meta_key = "save_file_name"';
+														$file_name_array = $wpdb->get_results( $sql );
+														$file_name = $file_name_array[0]->meta_value;
+														
+														$download_url = str_replace( 'mu-plugins/pattracking/', '', WPPATT_PLUGIN_URL );
+														$download_url .= 'uploads/wpsc/' . $folder_year . '/' . $folder_month . '/';
+														$download_url .= $file_name;
+														// PATT end
+														
 														?>
 														<tr class="wpsc_attachment_tr">
 															<td>
@@ -853,17 +927,26 @@ $cancel_recall_btn_css = $action_default_btn_css;
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <script>
- jQuery(document).ready(function() {
+jQuery(document).ready(function() {
 	 
-	 // Updates Admin Menu to highlight the submenu page that this page is under. 
-	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 
-	 jQuery('#toplevel_page_wpsc-tickets a:first').removeClass('wp-not-current-submenu');
-	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-has-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
-	 jQuery('#menu-dashboard').removeClass('current');
-	 jQuery('#menu-dashboard a:first').removeClass('current');
+	//Check if real data, otherwise set alert 
+	let recall_type = '<?php echo $recall_type ?>';
+	console.log({recall_type:recall_type});
+	if( recall_type == 'Not Real' ) {
+		let recall_id = '<?php echo $GLOBALS['recall_id'] ?>';
+		console.log({recall_id:recall_id});
+		alert( 'R-' + recall_id + ' is not a valid Recall ID');
+	}
+	 
+	// Updates Admin Menu to highlight the submenu page that this page is under. 
+	jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
+	jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
+	jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 
+	jQuery('#toplevel_page_wpsc-tickets a:first').removeClass('wp-not-current-submenu');
+	jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-has-current-submenu'); 
+	jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
+	jQuery('#menu-dashboard').removeClass('current');
+	jQuery('#menu-dashboard a:first').removeClass('current');
 	 
 	 <?php
     if ($_GET['page'] == 'recallcreate') {
@@ -1162,6 +1245,52 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 		    jQuery('#wpsc_cat_name').focus();
 		}); 
 
+	}
+	
+	function print_label() {
+		
+		let print_button_link = '<?php echo $print_button_link ?>';
+		let recall_item_id = '<?php echo $recall_item_id ?>';
+		let recall_type = '<?php echo $recall_type ?>';
+		let post_url;
+		let post_var;
+		
+		console.log( {print_button_link:print_button_link, recall_item_id:recall_item_id, recall_type:recall_type} );
+		
+		if( recall_type == 'Box' ) {
+			post_url = '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/boxlabels_processing.php';
+			post_var = { postvarsboxid: recall_item_id };
+		} else if( recall_type == 'Folder/File' ) {
+			post_url = '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/documentlabels_processing.php';
+			post_var = { postvarsfolderdocid: recall_item_id };
+		}
+		console.log({post_url:post_url, post_var:post_var});
+		
+		jQuery.post(
+			post_url, post_var, 
+			function (response) {
+				console.log( {response:response});
+				
+				var folderdocinfo = response.split('|')[1];
+				var folderdocinfo_array = folderdocinfo.split(',');
+				var substring_false = "false";
+				var substring_warn = "warn";
+				var substring_true = "true";
+				
+				if(response.indexOf(substring_false) >= 0) {
+					alert('Cannot print folder/file labels for documents that are destroyed or not assigned to a location.');
+				}
+				
+				if(response.indexOf(substring_warn) >= 0) {
+					alert('One or more documents that you selected has been destroyed or does not have an assigned location and it\'s label will not generate.');
+				}
+				
+				if(response.indexOf(substring_true) >= 0) {
+					window.open( print_button_link,'_blank');
+				}
+		});
+		
+		
 	}
 	
 	

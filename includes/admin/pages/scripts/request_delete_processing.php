@@ -137,17 +137,17 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 }
 
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 1");
+$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_ticket WHERE id <> -99999 AND active <> 1");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
-FROM wpqa_wpsc_ticket as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-LEFT JOIN wpqa_users g ON g.display_name = a.customer_name
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+LEFT JOIN " . $wpdb->prefix . "users g ON g.display_name = a.customer_name
 WHERE 1 ".$searchQuery." AND a.active <> 1 group by a.request_id ".$searchHaving.") t");
 
 $records = mysqli_fetch_assoc($sel);
@@ -181,11 +181,11 @@ END
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
 ';color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
 ';\">',
-(SELECT name from wpqa_terms where term_id = a.ticket_priority),
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
 '</span>') as ticket_priority,
 
 CASE 
@@ -199,11 +199,11 @@ as ticket_priority_order,
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
 ';color:',
-(SELECT meta_value from wpqa_termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
 ';\">',
-(SELECT name from wpqa_terms where term_id = a.ticket_status),
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_status),
 '</span>') as ticket_status,
 
 CASE 
@@ -217,17 +217,17 @@ ELSE 999
 END
 as ticket_status_order,
 
-CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
+CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
 CONCAT (
 CASE
-WHEN ((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
 g.user_login
 ,'\">',
 
 (
-    CASE WHEN length(CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
-        CONCAT(LEFT(CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
-    ELSE CONCAT((SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM wpqa_usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
     END
 )
 
@@ -239,13 +239,13 @@ END
 a.date_updated as date_updated,
 
 GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
-FROM wpqa_wpsc_ticket as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
-INNER JOIN wpqa_wpsc_epa_folderdocinfo f ON f.box_id = b.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = f.id
-LEFT JOIN wpqa_users g ON g.user_email = a.customer_email
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive f ON f.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive k ON k.folderdocinfo_id = f.id
+LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
 WHERE 1 ".$searchQuery." AND a.active <> 1 AND a.id <> -99999
 group by request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 

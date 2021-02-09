@@ -32,7 +32,6 @@ ob_start();
 			a.site_name as site_name,
 			a.siteid as site_id,
 			a.close_date as close_date,
-			a.epa_contact_email as epa_contact_email,
 			a.access_type as access_type,
 			b.source_format as source_format,
 			a.folderdocinfo_id as folderdocinfo_id,
@@ -40,10 +39,17 @@ ob_start();
 			a.folder_identifier as folder_identifier,
 			a.addressee as addressee,
 			b.folderdocinfofile_id as folderdocinfofile_id,
-			b.id as folderdocinfofileid
+			b.id as folderdocinfofileid,
+            b.description,
+            b.tags,
+            b.access_restriction,
+            b.use_restriction,
+            b.specific_use_restriction,
+            b.rights_holder,
+            b.source_dimensions
 			
-            FROM wpqa_wpsc_epa_folderdocinfo a
-            INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+            FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+            INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
             WHERE b.id = '" . $doc_id . "'");
             
             $folderfile_id = $folderfile_details->id;
@@ -57,7 +63,6 @@ ob_start();
 			$folderfile_site_name = $folderfile_details->site_name;
 			$folderfile_site_id = $folderfile_details->site_id;
 			$folderfile_close_date = $folderfile_details->close_date;
-			//$folderfile_epa_contact_email = $folderfile_details->epa_contact_email;
 			$folderfile_access_type = $folderfile_details->access_type;
 			$folderfile_source_format = $folderfile_details->source_format;
 			//$folderfile_rights = $folderfile_details->rights;
@@ -71,6 +76,14 @@ ob_start();
 			
 			$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;
 			$folderdocinfofileid = $folderfile_details->folderdocinfofileid;
+			
+			$folderfile_description = $folderfile_details->description;
+            $folderfile_tags = $folderfile_details->tags;
+            $folderfile_access_restriction = $folderfile_details->access_restriction;
+            $folderfile_use_restriction = $folderfile_details->use_restriction;
+            $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
+            $folderfile_rights_holder = $folderfile_details->rights_holder;
+            $folderfile_source_dimensions = $folderfile_details->source_dimensions;
 ?>
 
 <form>
@@ -140,6 +153,7 @@ else {
     echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
 }
 
+//use_restriction may be replacing the access_type
 if(!empty($folderfile_access_type)) {
     echo "<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= '$folderfile_access_type'></br></br>";
 }
@@ -184,27 +198,6 @@ else {
     </datalist>
 </br></br>
 <?php
-/*if(!empty($folderfile_rights)) {
-    echo "<strong>Rights:</strong><br /><input type='text' id='rights' placeholder= '$folderfile_rights'></br></br>";
-}
-else {
-    echo "<strong>Rights:</strong><br /><input type='text' id='rights' placeholder= 'Enter folder/file rights...'></br></br>";
-}
-
-if(!empty($folderfile_contract_number)) {
-    echo "<strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= '$folderfile_contract_number'></br></br>";
-}
-else {
-    echo "<strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= 'Enter contract number...'></br></br>";
-}
-
-if(!empty($folderfile_grant_number)) {
-    echo "<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= '$folderfile_grant_number'>";
-}
-else {
-    echo "<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= 'Enter grant number...'>";
-}*/
-
 if(!empty($folderfile_identifier)) {
     echo "<strong>Folder Identifier:</strong><br /><input type='text' id='folder_identifier' placeholder= '$folderfile_identifier'><br />";
 }
@@ -217,7 +210,58 @@ else {
 <select id="er" name="er">
   <option value="1" <?php if ($folderfile_essential_record == 1 ) echo 'selected' ; ?>>Yes</option>
   <option value="0" <?php if ($folderfile_essential_record == 0) echo 'selected' ; ?>>No</option>
-</select></br>
+</select></br></br>
+
+<?php 
+if(!empty($folderfile_description)) {
+    echo "<strong>Description:</strong><br /><input type='text' id='description' placeholder= '$folderfile_description'><br /><br />";
+}
+else {
+    echo "<strong>Description:</strong><br /><input type='text' id='description' placeholder= 'Enter description...'><br /><br />";
+}
+
+if(!empty($folderfile_tags)) {
+    echo "<strong>Tags:</strong><br /><input type='text' id='tags' placeholder= '$folderfile_tags'><br /><br />";
+}
+else {
+    echo "<strong>Tags:</strong><br /><input type='text' id='tags' placeholder= 'Enter tags...'><br /><br />";
+}
+
+if(!empty($folderfile_access_restriction)) {
+    echo "<strong>Access Restriction:</strong><br /><input type='text' id='access_restriction' placeholder= '$folderfile_access_restriction'><br />";
+}
+else {
+    echo "<strong>Access Restriction:</strong><br /><input type='text' id='access_restriction' placeholder= 'Enter access restriction...'><br />";
+}
+?>
+<br><strong>Use Restriction:</strong><br />
+<select id="use_restriction" name="use_restriction">
+  <option value="Shared" <?php if ($folderfile_use_restriction == 'Shared' || $folderfile_use_restriction == 'shared') echo 'selected' ; ?>>Shared</option>
+  <option value="Private" <?php if ($folderfile_use_restriction == 'Private' || $folderfile_use_restriction == 'private') echo 'selected' ; ?>>Private</option>
+</select></br><br />
+
+<?php
+if(!empty($folderfile_specific_use_restriction)) {
+    echo "<strong>Specific Use Restriction:</strong><br /><input type='text' id='specific_use_restriction' placeholder= '$folderfile_specific_use_restriction'><br /><br />";
+}
+else {
+    echo "<strong>Specific Use Restriction:</strong><br /><input type='text' id='specific_use_restriction' placeholder= 'Enter specific use restriction...'><br /><br />";
+}
+
+if(!empty($folderfile_rights_holder)) {
+    echo "<strong>Rights Holder:</strong><br /><input type='text' id='rights_holder' placeholder= '$folderfile_rights_holder'><br /><br />";
+}
+else {
+    echo "<strong>Rights Holder:</strong><br /><input type='text' id='rights_holder' placeholder= 'Enter rights holder...'><br /><br />";
+}
+
+if(!empty($folderfile_source_dimensions)) {
+    echo "<strong>Source Dimensions:</strong><br /><input type='text' id='source_dimensions' placeholder= '$folderfile_source_dimensions'><br />";
+}
+else {
+    echo "<strong>Source Dimensions:</strong><br /><input type='text' id='source_dimensions' placeholder= 'Enter source dimensions...'><br />";
+}
+?>
 
 <input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_folderdocinfoid; ?>">
@@ -259,7 +303,14 @@ postvarssf: jQuery('#sf').val(),
 //postvarsgn: jQuery("#grant_number").val(),
 postvarser: jQuery("#er").val(),
 postvarsfi: jQuery("#folder_identifier").val(),
-postvarsaddressee: jQuery("#addressee").val()
+postvarsaddressee: jQuery("#addressee").val(),
+postvarsdescription: jQuery("#description").val(),
+postvarstags: jQuery("#tags").val(),
+apostvarsaccessrestriction: jQuery("#access_restriction").val(),
+postvarsuserestriction: jQuery("#use_restriction").val(),
+postvarsspecificuserestriction: jQuery("#specific_use_restriction").val(),
+postvarsrightsholder: jQuery("#rights_holder").val(),
+postvarssourcedimensions: jQuery("#source_dimensions").val()
 }, 
 
    function (response) {

@@ -4,7 +4,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 global $wpdb, $current_user, $wpscfunction;
 
-include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
@@ -13,7 +13,7 @@ include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php'
 //Obtain Ticket Status
 	$ticket_details = $wpdb->get_row("
 SELECT ticket_status 
-FROM wpqa_wpsc_ticket 
+FROM " . $wpdb->prefix . "wpsc_ticket 
 WHERE
 id = '" . $tkid . "'
 ");
@@ -33,7 +33,7 @@ SELECT id,
             THEN 0
             ELSE 1 
             END values_differs
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE digitization_center = '" . $dc_final . "'
 ),
 cte2 AS 
@@ -56,16 +56,16 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 
 //Select count of boxes that have not been auto assigned
 	$box_details = $wpdb->get_row("
-SELECT wpqa_wpsc_epa_boxinfo.id, count(wpqa_wpsc_epa_boxinfo.id) as count 
-FROM wpqa_wpsc_epa_boxinfo 
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id, count(" . $wpdb->prefix . "wpsc_epa_boxinfo.id) as count 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
 WHERE
-wpqa_wpsc_epa_storage_location.digitization_center IS NOT NULL AND
-wpqa_wpsc_epa_storage_location.aisle = 0 AND 
-wpqa_wpsc_epa_storage_location.bay = 0 AND 
-wpqa_wpsc_epa_storage_location.shelf = 0 AND 
-wpqa_wpsc_epa_storage_location.position = 0 AND
-wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
+" . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center IS NOT NULL AND
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle = 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay = 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf = 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position = 0 AND
+" . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 ");
 
 	$box_details_count = $box_details->count;
@@ -83,7 +83,7 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 // Get count of first available position
 $nc_count_single_rows = $wpdb->get_row("
 SELECT count(shelf_id) as count
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE occupied = 1 AND
 remaining = 1 AND
 digitization_center = '" . $dc_final . "'
@@ -100,7 +100,7 @@ if (($box_details_count == 1) && ($nc_count > 0)) {
 // Find first available slot for requests with boxes equal to 1
 			$nc_shelf = $wpdb->get_row("
 SELECT shelf_id
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE occupied = 1 AND
 remaining = 1 AND
 digitization_center = '" . $dc_final . "'
@@ -113,7 +113,7 @@ LIMIT 1
 
 // Get first available position
 			$nc_position_details = $wpdb->get_results("
-SELECT position FROM wpqa_wpsc_epa_storage_location 
+SELECT position FROM " . $wpdb->prefix . "wpsc_epa_storage_location 
 WHERE aisle = '" . $nc_aisle . "' 
 AND bay = '" . $nc_bay . "' 
 AND shelf = '" . $nc_shelf . "' 
@@ -141,7 +141,7 @@ AND digitization_center = '" . $dc_final . "'
 			foreach ($nc_aisle_bay_shelf_position as $key => $value) {
 				[$ncf_aisle, $ncf_bay, $ncf_shelf, $ncf_position] = explode("_", $value);
 // Make auto-assignment in database
-				$ncsl_table_name = 'wpqa_wpsc_epa_storage_location';
+				$ncsl_table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 				$ncsl_data_update = array(
 					'aisle' => $ncf_aisle, 'bay' => $ncf_bay, 'shelf' => $ncf_shelf, 'position' => $ncf_position, 'digitization_center' => $dc_final
 				);
@@ -153,7 +153,7 @@ AND digitization_center = '" . $dc_final . "'
 // Update storage status table
 				$nc_shelf_update = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $nc_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
@@ -161,7 +161,7 @@ digitization_center = '" . $dc_final . "'
 
 				$nc_shelf_update_remaining = $nc_shelf_update->remaining - 1;
 
-				$ncss_table_name = 'wpqa_wpsc_epa_storage_status';
+				$ncss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				$ncss_data_update = array('occupied' => 1, 'remaining' => $nc_shelf_update_remaining);
 				$ncss_data_where = array('shelf_id' => $nc_shelf_id_update);
 
@@ -172,7 +172,7 @@ digitization_center = '" . $dc_final . "'
 // Get count of first available position
 $get_box_id = $wpdb->get_row("
 SELECT id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
 storage_location_id = '" . $box_id_assignment[$key] . "'
 ");
@@ -180,7 +180,7 @@ storage_location_id = '" . $box_id_assignment[$key] . "'
 $bid = $get_box_id->id;
 
 //SET PHYSICAL LOCATION TO IN TRANSIT
-$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '1');
 $pl_where = array('id' => $bid);
 $wpdb->update($table_pl , $pl_update, $pl_where);
@@ -194,7 +194,7 @@ WITH
 cte1 AS
 (
 SELECT shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE digitization_center = '" . $dc_final . "' AND
 id BETWEEN 1 AND '" . $sequence_shelfid . "'
 )
@@ -238,7 +238,7 @@ GROUP BY group_num
 				//echo $gap_shelf;
 				$current_row_details = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $value . "' AND
 digitization_center = '" . $dc_final . "'
@@ -250,7 +250,7 @@ digitization_center = '" . $dc_final . "'
 if($get_current_row_details_value != 4) {
 // Get all positions in an array to determine available positions
 				$position_gap_details = $wpdb->get_results("
-SELECT position FROM wpqa_wpsc_epa_storage_location 
+SELECT position FROM " . $wpdb->prefix . "wpsc_epa_storage_location 
 WHERE aisle = '" . $gap_aisle . "' 
 AND bay = '" . $gap_bay . "' 
 AND shelf = '" . $gap_shelf . "' 
@@ -300,7 +300,7 @@ array_push($position_gap_array, $array_gap_val_final);
 			foreach ($gap_aisle_bay_shelf_position as $key => $value) {
 				[$gap_aisle, $gap_bay, $gap_shelf, $gap_position] = explode("_", $value);
 // Make auto-assignment in database
-				$gapsl_table_name = 'wpqa_wpsc_epa_storage_location';
+				$gapsl_table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 				$gapsl_data_update = array(
 					'aisle' => $gap_aisle, 'bay' => $gap_bay, 'shelf' => $gap_shelf, 'position' => $gap_position, 'digitization_center' => $dc_final
 				);
@@ -312,7 +312,7 @@ array_push($position_gap_array, $array_gap_val_final);
 // Update storage status table
 				$gap_shelf_update = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $gap_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
@@ -320,7 +320,7 @@ digitization_center = '" . $dc_final . "'
 
 				$gap_shelf_update_remaining = $gap_shelf_update->remaining - 1;
 
-				$gapss_table_name = 'wpqa_wpsc_epa_storage_status';
+				$gapss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				$gapss_data_update = array('occupied' => 1, 'remaining' => $gap_shelf_update_remaining);
 				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
 
@@ -329,14 +329,14 @@ digitization_center = '" . $dc_final . "'
 // Get count of first available position
 $get_box_id = $wpdb->get_row("
 SELECT id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
 storage_location_id = '" . $box_id_assignment[$key] . "'
 ");
 
 $bid = $get_box_id->id;
 //SET PHYSICAL LOCATION TO IN TRANSIT
-$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '1');
 $pl_where = array('id' => $bid);
 $wpdb->update($table_pl , $pl_update, $pl_where);
@@ -349,7 +349,7 @@ $wpdb->update($table_pl , $pl_update, $pl_where);
 
 				$previous_row_details = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 id = '" . $previous_sequence_shelfid . "' AND
 digitization_center = '" . $dc_final . "'
@@ -366,7 +366,7 @@ $sequence_upperlimit = $sequence_shelfid + ceil($box_details_count / 4) - 1;
 }
 
 			$find_sequence_details = $wpdb->get_results("
-SELECT shelf_id FROM wpqa_wpsc_epa_storage_status 
+SELECT shelf_id FROM " . $wpdb->prefix . "wpsc_epa_storage_status 
 WHERE ID BETWEEN '" . $sequence_shelfid . "' AND '" . $sequence_upperlimit . "' AND
 digitization_center = '" . $dc_final . "'
 ");
@@ -390,7 +390,7 @@ if($previous_sequence_shelfid_value != 4) {
 
 				$current_row_details = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $value . "' AND
 digitization_center = '" . $dc_final . "'
@@ -402,7 +402,7 @@ digitization_center = '" . $dc_final . "'
 if($get_current_row_details_value != 4) {
 // Get all positions in an array to determine available positions
 				$position_seq_details = $wpdb->get_results("
-SELECT position FROM wpqa_wpsc_epa_storage_location 
+SELECT position FROM " . $wpdb->prefix . "wpsc_epa_storage_location 
 WHERE aisle = '" . $seq_aisle . "' 
 AND bay = '" . $seq_bay . "' 
 AND shelf = '" . $seq_shelf . "' 
@@ -471,7 +471,7 @@ array_push($position_seq_array, $array_seq_val_final);
 			foreach ($seq_aisle_bay_shelf_position as $key => $value) {
 				[$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);
 // Make auto-assignment in database
-				$seqsl_table_name = 'wpqa_wpsc_epa_storage_location';
+				$seqsl_table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 				$seqsl_data_update = array(
 					'aisle' => $seq_aisle, 'bay' => $seq_bay, 'shelf' => $seq_shelf, 'position' => $seq_position, 'digitization_center' => $dc_final
 				);
@@ -483,7 +483,7 @@ array_push($position_seq_array, $array_seq_val_final);
 // Update storage status table
 				$seq_shelf_update = $wpdb->get_row("
 SELECT remaining
-FROM wpqa_wpsc_epa_storage_status
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $seq_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
@@ -491,7 +491,7 @@ digitization_center = '" . $dc_final . "'
 
 				$seq_shelf_update_remaining = $seq_shelf_update->remaining - 1;
 
-				$seqss_table_name = 'wpqa_wpsc_epa_storage_status';
+				$seqss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				$seqss_data_update = array('occupied' => 1, 'remaining' => $seq_shelf_update_remaining);
 				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
 
@@ -500,12 +500,12 @@ digitization_center = '" . $dc_final . "'
 // Get count of first available position
 $get_box_id = $wpdb->get_row("
 SELECT id
-FROM wpqa_wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
 storage_location_id = '" . $box_id_assignment[$key] . "'
 ");
 //SET PHYSICAL LOCATION TO IN TRANSIT
-$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '1');
 $pl_where = array('id' => $bid);
 $wpdb->update($table_pl , $pl_update, $pl_where);

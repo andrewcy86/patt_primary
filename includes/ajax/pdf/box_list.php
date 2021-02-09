@@ -3,7 +3,7 @@
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-include (plugin_dir_url( __DIR__ ) . 'includes/class-wppatt-custom-function.php');
+include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $subfolder_path = site_url( '', 'relative'); 
 
@@ -36,30 +36,30 @@ if (isset($_GET['id']))
 $obj_pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
     $obj_pdf->SetFont('helvetica', '', 11);
         
-        $record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum 
-FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo 
-WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id AND wpqa_wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
+        $record_schedules = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum 
+FROM " . $wpdb->prefix . "epa_record_schedule, " . $wpdb->prefix . "wpsc_epa_boxinfo 
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " . $wpdb->prefix . "epa_record_schedule.id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
 //print_r($record_schedules);
 
 foreach($record_schedules as $rs_num)
     {
 //fixed where source_format is pointing to, may need to fix it for index_level as well
-$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.office_acronym as program_office, wpqa_wpsc_epa_folderdocinfo_files.index_level as index_level, wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo_files.title as title, wpqa_wpsc_epa_folderdocinfo_files.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_boxinfo.lan_id as contact, wpqa_wpsc_epa_folderdocinfo_files.source_format as source_format 
-FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_folderdocinfo_files
+$box_list = $wpdb->get_results("SELECT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level as index_level, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, SUBSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, INSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, '-') + 1) as box, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.site_name as site, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.source_format as source_format 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE
-wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
-wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND 
-wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id ." AND
-wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id = wpqa_wpsc_epa_folderdocinfo.id AND
-wpqa_wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id ." AND
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id AND
+" . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']
 );
         
-$box_list_get_count = $wpdb->get_row("SELECT count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count
-FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule
+$box_list_get_count = $wpdb->get_row("SELECT count(distinct " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id) as box_count
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "epa_record_schedule
 WHERE 
-wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
-wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id . " AND
-wpqa_wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']);
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id . " AND
+" . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']);
 //print_r($box_list_get_count);
 
 $box_list_count = $box_list_get_count->box_count;
@@ -67,9 +67,9 @@ $box_list_count = $box_list_get_count->box_count;
 
 $program_office_array_id = array();
         
-$boxlist_get_po = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office
-WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
+$boxlist_get_po = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
 //print_r($boxlist_get_po);
 
 foreach ($boxlist_get_po as $item) {
@@ -103,8 +103,8 @@ $request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE
 
 //ECMS/SEMS indicator
 $get_ecms_sems = $wpdb->get_row("SELECT a.request_id, b.meta_key, b.meta_value as ecms_sems
-    FROM wpqa_wpsc_ticket a
-    INNER JOIN wpqa_wpsc_ticketmeta b ON b.ticket_id = a.id
+    FROM " . $wpdb->prefix . "wpsc_ticket a
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta b ON b.ticket_id = a.id
     WHERE b.meta_key = 'super_fund' AND a.id = " . $GLOBALS['id']);
 $ecms_sems_indicator = $get_ecms_sems->ecms_sems;
 
@@ -117,7 +117,7 @@ else {
 }
 
 $tbl = '
-<table style="width:970px">
+<table style="width:97%;">
   <tr>
     <td><h1 style="font-size: 40px">Box List</h1></td>
     <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br />

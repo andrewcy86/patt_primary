@@ -12,9 +12,9 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 $list_array = array();
         
 $box_index_result = $wpdb->get_results( "SELECT DISTINCT c.index_level
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
 WHERE a.ticket_id = " . $ticket_id);
 
 /*
@@ -40,9 +40,9 @@ ob_start();
 
 //error handling: if there are no boxes in a request then steps won't display
 $total_box_count = $wpdb->get_row("SELECT COUNT(a.box_id) as box_count
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_ticket b ON b.id = a.ticket_id
-INNER JOIN wpqa_wpsc_epa_storage_location c on a.storage_location_id = c.id 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c on a.storage_location_id = c.id 
 WHERE ((c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666) AND a.box_destroyed = 0)
 AND b.id = " . $ticket_id);
 $box_count = $total_box_count->box_count;
