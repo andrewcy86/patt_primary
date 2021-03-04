@@ -27,6 +27,26 @@ foreach($get_all_users as $user) {
         wp_update_user( array( 'ID' => $user_id, 'display_name' => $username ) );
     }
 }
+
+
+// Cleanup Pallet Locations from Box Info Table
+$get_box_ids_with_locations = $wpdb->get_results(
+"
+SELECT box_id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE 
+box_id IS NOT NULL
+"
+);
+
+foreach ($get_box_ids_with_locations as $data) {
+$box_id_with_location = $data->box_id;
+$table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
+$pallet_boxinfo_update = array('pallet_id' => NULL);
+$pallet_boxinfo_where = array('box_id' => $box_id_with_location);
+$wpdb->update($table_box, $pallet_boxinfo_update, $pallet_boxinfo_where);
+}
+
 /*
 $request_no_files = $wpdb->get_results(
 "

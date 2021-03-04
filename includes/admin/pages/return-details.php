@@ -931,4 +931,17 @@ To be added to a css file later
 		padding-right: 5px;
 	}
 	
+	.datatable_header {
+		background-color: rgb(66, 73, 73) !important; 
+		color: rgb(255, 255, 255) !important; 
+	}
+	
+	.fa-snowflake {
+		color: #009ACD;
+	}
+	
+	.fa-flag {
+		color: #8b0000;
+	}
+	
 </style>

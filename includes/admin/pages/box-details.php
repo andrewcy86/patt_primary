@@ -19,12 +19,17 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
-
-
 $request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
 $location_request_id = $request_id->request_id;
 
 $is_active = Patt_Custom_Func::request_status( $location_request_id );
+
+if($is_active == 1) {
+    $type = 'box';
+}
+else {
+    $type = 'box_archive';
+}
 
 $get_request_status_id = $wpdb->get_row("SELECT ticket_status
 FROM ".$wpdb->prefix."wpsc_ticket
@@ -131,6 +136,8 @@ $box_freeze = $convert_box_id->freeze;
 $box_status_id = $convert_box_id->box_status_id;
 $ticket_priority_id = $convert_box_id->ticket_priority;
 $ticket_status_id = $convert_box_id->ticket_status;
+
+$box_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($GLOBALS['id'], $type);
 
 $status_background = get_term_meta($box_status_id, 'wpsc_box_status_background_color', true);
 $status_color = get_term_meta($box_status_id, 'wpsc_box_status_color', true);
@@ -261,7 +268,10 @@ jQuery(document).ready(function(){
     'serverSide': true,
     'serverMethod': 'post',
     'stateSave': true,
-    'scrollX' : true,
+    //'scrollX' : true,
+    "initComplete": function (settings, json) {
+        jQuery("#tbl_templates_box_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+    },
     'paging' : true,
     'drawCallback': function( settings ) {
         jQuery('[data-toggle="tooltip"]').tooltip();
@@ -631,6 +641,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 ?>
 
 <?php
+/*
 $box_details = $wpdb->get_row(
 "SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo
@@ -638,10 +649,12 @@ INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo ON ".$wpdb->prefix."wpsc_epa_
 INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wpsc_epa_folderdocinfo.folderdocinfo_id = ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.folderdocinfo_id
 WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
 			);
-
 $unauthorized_destruction_count = $box_details->count;
+*/
 
-if($unauthorized_destruction_count == 0){
+$unauthorized_destruction_count = Patt_Custom_Func::id_in_unauthorized_destruction($GLOBALS['id'], $type);
+//if($unauthorized_destruction_count == 0){
+if($unauthorized_destruction_count != 1){
 ?>
 jQuery('#ud_alert').hide();
 <?php
@@ -674,12 +687,8 @@ jQuery('#freeze_alert').hide();
   </div>
  
  <?php
-
-    $program_office = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_epa_program_office.office_acronym as acronym FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_epa_program_office WHERE ".$wpdb->prefix."wpsc_epa_program_office.office_code = ".$wpdb->prefix."wpsc_epa_boxinfo.program_office_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
-    $location_program_office = $program_office->acronym;
-    
-    $record_schedule = $wpdb->get_row("SELECT Record_Schedule_Number FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."epa_record_schedule WHERE ".$wpdb->prefix."epa_record_schedule.id = ".$wpdb->prefix."wpsc_epa_boxinfo.record_schedule_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
-    $location_record_schedule = $record_schedule->Record_Schedule_Number;
+    $location_program_office = Patt_Custom_Func::get_program_office_by_id($GLOBALS['id'],$type);
+    $location_record_schedule = Patt_Custom_Func::get_record_schedule_by_id($GLOBALS['id'],$type); 
     
     $box_location = $wpdb->get_row("SELECT ".$wpdb->prefix."terms.name as digitization_center, aisle, bay, shelf, position FROM ".$wpdb->prefix."terms, ".$wpdb->prefix."wpsc_epa_storage_location, ".$wpdb->prefix."wpsc_epa_boxinfo WHERE ".$wpdb->prefix."terms.term_id = ".$wpdb->prefix."wpsc_epa_storage_location.digitization_center AND ".$wpdb->prefix."wpsc_epa_storage_location.id = ".$wpdb->prefix."wpsc_epa_boxinfo.storage_location_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_digitization_center = $box_location->digitization_center;
@@ -821,6 +830,10 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
                 echo '<div class="wpsp_sidebar_labels"><strong >Box Status: </strong>' . $box_status . '</div>';
             }
             
+            if(!empty($box_pallet_id)) {
+                echo '<div class="wpsp_sidebar_labels"><strong >Pallet ID: </strong>' . $box_pallet_id . '</div>';
+            }
+            
             if(!empty($location_program_office)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
             }
@@ -860,19 +873,22 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
             if(!empty($location_digitization_center)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>' . $location_digitization_center . '</div>';
                 
-                if(!empty($location_general)) {
-			        echo '<div class="wpsp_sidebar_labels"><strong>Location: </strong>' . $location_general . '</div>';
-			       
-			       //checks to make sure location of box is 'On Shelf' and that aisle/bay/shelf/position != 0
+                if(!empty($location_general) && Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type) != '') {
+			        echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>' . $location_general . '<br /> (' . Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type) . ') </div>';
+			    }
+			    else {
+			        echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>' . $location_general . '</div>';
+			    }
+			    
+			    //checks to make sure location of box is 'On Shelf' and that aisle/bay/shelf/position != 0
 			       //for testing physical location can only be 'Pending', so 'On Shelf' won't be a requirement
-			       //if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
-			       if((!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+			       if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+			       //if((!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
     			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $location_bay . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>' . $location_shelf . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
 			        } 
-			    }
             }
 			?>
 			

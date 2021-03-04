@@ -111,8 +111,8 @@ width: 100%;
 
 //check whether request is active, if not disable buttons
 $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
-
 //unauthorized destruction notification
+/*
 $box_details = $wpdb->get_row(
 "SELECT count(" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
@@ -122,8 +122,20 @@ WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.unauthorized_destruction
 			);
 
 $unauthorized_destruction_count = $box_details->count;
+*/
 
-if($unauthorized_destruction_count > 0){
+if($is_active == 1) {
+    $request_type = 'request';
+    $type = 'box';
+}
+else {
+    $request_type = 'request_archive';
+    $type = 'box_archive';
+}
+
+$converted_to_request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
+//if($unauthorized_destruction_count > 0){
+if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-danger" role="alert">
 <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
@@ -134,14 +146,17 @@ if($unauthorized_destruction_count > 0){
 
 <?php
 //freeze notification
+/*
 $box_freeze = $wpdb->get_row("SELECT count(" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id
 WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.freeze = 1 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
 $freeze_count = $box_freeze->count;
+*/
 
-if($freeze_count > 0) {
+//if($freeze_count > 0) {
+if(Patt_Custom_Func::id_in_freeze($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-info" role="alert">
 <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents related to this request contains a frozen folder/file.
@@ -165,21 +180,14 @@ if($is_active == 1) {
 $box_details = $wpdb->get_results("SELECT 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
+" . $wpdb->prefix . "wpsc_epa_boxinfo.pallet_id as pallet_id,
 (SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status as status_id,
 " . $wpdb->prefix . "terms.name as status_name,
-(SELECT sum(b.unauthorized_destruction = 1)
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
-WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as ud,
 (SELECT sum(b.validation = 1) FROM 
 " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
 WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as val_sum,
-(SELECT sum(b.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id 
-WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as freeze_sum,
 (SELECT count(b.id) 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
  INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
@@ -195,8 +203,7 @@ WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage
 " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
 " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
 " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
-" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
-" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed as bd
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
@@ -209,18 +216,10 @@ $box_details = $wpdb->get_results("SELECT
 (SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status as status_id,
 " . $wpdb->prefix . "terms.name as status_name,
-(SELECT sum(b.unauthorized_destruction = 1)
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id
-WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as ud,
 (SELECT sum(b.validation = 1) FROM 
 " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id 
 WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as val_sum,
-(SELECT sum(b.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id 
-WHERE a.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id) as freeze_sum,
 (SELECT count(b.id) 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
  INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON a.id = b.folderdocinfo_id
@@ -236,8 +235,7 @@ WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage
 " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
 " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
 " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
-" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
-" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed as bd
+" . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
@@ -257,6 +255,7 @@ $tbl .=  '<th class="datatable_header"></th>';
                     
          $tbl .=   '<th class="datatable_header">Box ID</th>
     	  			<th class="datatable_header">Box Status</th>
+    	  		    <th class="datatable_header">Pallet</th>
     	  			<th class="datatable_header">Physical Location</th>
     	  			<th class="datatable_header">Assigned Location</th>
     	  			<th class="datatable_header">Digitization Center</th>
@@ -268,6 +267,13 @@ $tbl .=  '<th class="datatable_header"></th>';
 			foreach ($box_details as $info) {
 			    $boxlist_dbid = $info->id;
 			    $boxlist_id = $info->box_id;
+			    
+			    $boxlist_pallet_id = $info->pallet_id;
+			    if ($boxlist_pallet_id == '') {
+			        $boxlist_pallet_id = 'Unassigned';
+			      } 
+			    
+
 			    $boxlist_status_id = $info->status_id;
 			    $status_background = get_term_meta($boxlist_status_id, 'wpsc_box_status_background_color', true);
 	            $status_color = get_term_meta($boxlist_status_id, 'wpsc_box_status_color', true);
@@ -294,9 +300,11 @@ $tbl .=  '<th class="datatable_header"></th>';
 				} else {
                 $boxlist_dc_location = $info->digitization_center;
 				}
-				$boxlist_unathorized_destruction = $info->ud;
-				$boxlist_box_destroyed = $info->bd;
-				$boxlist_freeze_sum = $info->freeze_sum;
+				
+				//switching out icons using functions
+				//$boxlist_unathorized_destruction = $info->ud;
+				//$boxlist_box_destroyed = $info->bd;
+				//$boxlist_freeze_sum = $info->freeze_sum;
 				
 			/*	
 			if($boxlist_unathorized_destruction > 0) {
@@ -310,37 +318,40 @@ $tbl .=  '<th class="datatable_header"></th>';
  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
 			$tbl .= '<td>'. $boxlist_id .'</td>';
 }    
-
-            if($boxlist_box_destroyed > 0 && $boxlist_freeze_sum == 0) {
+            
+            //if($boxlist_box_destroyed > 0 && $boxlist_freeze_sum == 0) {
+            if(Patt_Custom_Func::id_in_box_destroyed($boxlist_id,$type) == 1 && Patt_Custom_Func::id_in_freeze($boxlist_id,$type) != 1) {
                  $tbl .= '
-            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important; text-decoration: line-through;">' . $boxlist_id . '</a>';
+            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important; text-decoration: line-through;">' . $boxlist_id . '</a>';
 
-            } else if ($boxlist_box_destroyed > 0 && $boxlist_freeze_sum > 0){
+            } else if (Patt_Custom_Func::id_in_box_destroyed($boxlist_id,$type) == 1 && Patt_Custom_Func::id_in_freeze($boxlist_id,$type) == 1){
                 $tbl .= '
-            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a>';
+            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a>';
                 
             } else {
                 $tbl .= '
-            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
+            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
 
             }
             
-            if($boxlist_box_destroyed > 0) {
+            //if($boxlist_box_destroyed > 0) {
+            if(Patt_Custom_Func::id_in_box_destroyed($boxlist_id, $type) == 1) {
             $tbl .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
             }
             
-            if($boxlist_unathorized_destruction > 0) {
-            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+            //if($boxlist_freeze_sum > 0) {
+             if(Patt_Custom_Func::id_in_freeze($boxlist_id, $type) == 1) {
+                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
             }
             
-            if($boxlist_freeze_sum > 0) {
-                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            //if($boxlist_unathorized_destruction > 0) {
+            if(Patt_Custom_Func::id_in_unauthorized_destruction($boxlist_id, $type) == 1) {
+            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
             
 
 $decline_icon = '';
 $recall_icon = '';
-$type = 'box';
 
 if(Patt_Custom_Func::id_in_return($boxlist_id,$type) == 1){
 $tbl .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
@@ -349,11 +360,23 @@ $tbl .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class
 if(Patt_Custom_Func::id_in_recall($boxlist_id,$type) == 1){
 $tbl .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
 }
-            
-   
+
             $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''. $boxlist_id .'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span></td>';
-            $tbl .= '<td>' . $boxlist_status . '</td>';  
-            $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
+            $tbl .= '<td>' . $boxlist_status . '</td>'; 
+            $tbl .= '<td>'. $boxlist_pallet_id .'</td>';
+            
+            
+            $physical_location_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
+            
+            //show physical location ID if it exists in the scan_list table
+            if($physical_location_id != '') {
+                $tbl .= '<td> <a href="#" style="color: #000000 !important;" data-toggle="tooltip" data-placement="left" data-html="true" aria-label="Name" title="" data-original-title="'.$physical_location_id.'">'.$boxlist_physical_location.'</a>
+                <span style="display: none;" aria-label="'.$boxlist_physical_location.'"></span></td>';
+            }
+            else {
+                $tbl .= '<td>'. $boxlist_physical_location .'</td>';
+            }
+            
 			//if (!(in_array($status_id, $status_id_arr)) && ($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
             //Can edit location if box isn't destroyed and is in the correct request status
             if (!(in_array($status_id, $status_id_arr)) && ($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
@@ -465,7 +488,7 @@ if($rescan_count > 0) {
 </thead>
 <tbody>
 <?php
-$rescan_details = $wpdb->get_results("SELECT a.box_id as box_id, c.title as title, c.folderdocinfofile_id as folderdocinfo_id 
+$rescan_details = $wpdb->get_results("SELECT a.box_id as box_id, c.title as title, c.folderdocinfofile_id as folderdocinfo_id , c.id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
@@ -477,7 +500,7 @@ $tbl = '<tr>';
 if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') ) {
 $tbl .= '<td>'.$info->folderdocinfo_id.'</td>';
 }
-$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
+$tbl .= '<td data-order="'.$info->id.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
 $tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a></td>';
 $tbl .= '<td>'.$info->title.'</td>';
 $tbl .= '</tr>';
@@ -507,7 +530,10 @@ echo $tbl;
  jQuery(document).ready(function() {
      	 var rescan = jQuery('#tbl_templates_rescan').DataTable({
 	     "autoWidth": true,
-	     "scrollX" : true,
+	     //"scrollX" : true,
+	     "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  },
          "paging" : true,
          "bDestroy": true,
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
@@ -536,7 +562,10 @@ echo $tbl;
      
 	 var dataTable = jQuery('#tbl_templates_request_details').DataTable({
 	     "autoWidth": true,
-	     "scrollX" : true,
+	     //"scrollX" : true,
+	     "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  },
          "paging" : true,
          "bDestroy": true,
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
@@ -557,7 +586,8 @@ echo $tbl;
             { 'width' : '3%', targets: 3 },
             { 'width' : '3%', targets: 4 },
             { 'width' : '3%', targets: 5 },
-            { 'width' : '3%', targets: 6 }
+            { 'width' : '3%', targets: 6 },
+            { 'width' : '3%', targets: 7 }
       ],
       'select': {	
          'style': 'multi'	
@@ -565,9 +595,6 @@ echo $tbl;
       'order': [[1, 'asc']],
       <?php } ?>
 		});
-		
-		
-		
 		
 	// Code block for toggling edit buttons on/off when checkboxes are set
 	jQuery('#tbl_templates_request_details tbody').on('click', 'input', function () {        
@@ -587,6 +614,7 @@ echo $tbl;
 	});
 	
 	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
+	jQuery('#wppatt_change_pallet_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_undo_rescan_btn').attr('disabled', 'disabled');	
 	
@@ -595,9 +623,11 @@ echo $tbl;
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
+			jQuery('#wppatt_change_pallet_btn').removeAttr('disabled');
 			jQuery('#wppatt_assign_staff_btn').removeAttr('disabled');
 	  	} else {
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');  
+	    	jQuery('#wppatt_change_pallet_btn').attr('disabled', 'disabled');  
 	    	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled');
 	  	}
 	}
@@ -611,6 +641,8 @@ echo $tbl;
 	    	jQuery('#wppatt_undo_rescan_btn').attr('disabled', 'disabled');
 	  	}
 	}
+	
+	jQuery('[data-toggle="tooltip"]').tooltip(); 
 	
 	// Assign Box Status Button Click
 	jQuery('#wppatt_change_status_btn').click( function() {	
@@ -630,6 +662,34 @@ echo $tbl;
 		    action: 'wppatt_change_box_status',
 		    item_ids: arr,
 		    type: 'edit'
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+	// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	});
+	
+	// Assign Pallet Button Click
+	jQuery('#wppatt_change_pallet_btn').click( function() {	
+	
+		let rows_selected = dataTable.column(0).checkboxes.selected();
+	    let arr = [];
+	
+	    // Loop through array
+	    [].forEach.call(rows_selected, function(inst){
+	        console.log('the inst: '+inst);
+	        arr.push(inst);
+	    });
+		
+		wpsc_modal_open('Pallet Assignment');
+		
+		var data = {
+		    action: 'wppatt_set_pallet_assignment',
+		    ticket_id: <?php echo $ticket_id; ?>,
+		    item_ids: arr
 		};
 		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);

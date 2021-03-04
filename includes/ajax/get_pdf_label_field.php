@@ -32,7 +32,19 @@ foreach ( $box_index_result as $box_index )
         array_push($list_array, $box_index->index_level);
     }
         
+
+$pallet_array = array();
         
+$pallet_id_result = $wpdb->get_results( "SELECT DISTINCT pallet_id 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+WHERE pallet_id <> '' AND 
+ticket_id = " . $ticket_id);
+
+foreach ( $pallet_id_result as $pallet_id )
+    {
+        array_push($pallet_array, $pallet_id->pallet_id);
+    }
+    
 ob_start();
 ?>
 
@@ -102,7 +114,25 @@ if ($list_array_count>1) {
 ?>
 
 <h3>Step 4</h3>
+<p>If shipping more than 25 boxes at a time and a pallet is used, follow these instructions.</p>
+
+<ol>
+<li>Use shrink wrap or straps to secure pallet.</li>  
+<li>Securely adhere pallet label to the outside of the pallet.</li>  
+<li>Do not cover the barcode with tape or plastic wrap. Doing so will make your barcode un-scannable.</li>
+</ol>
+
+<?php
+if (count($pallet_array) > 0) {
+    ?>
+    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/pallet_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Pallet Labels</a></strong><br />
+<?php
+}
+?>
+
+<h3>Step 5</h3>
 <p>Print shipping label and ensure that tracking number is properly entered into the Paper Asset Tracking Tool.</p>
+
 
 <h3>Shipping Label Placement</h3>
 
@@ -114,9 +144,10 @@ if ($list_array_count>1) {
 </ol>
 
 
+
 <?php 
 
-//end of steps 1-4
+//end of steps 1-5
 }
 
 $body = ob_get_clean();

@@ -47,6 +47,8 @@ $details_array['in_recall'] = false;
 $details_array['is_folder_search'] = $is_folder_search;
 $details_array['error_message'] = '';
 $db_null = -99999;
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
 
 //Get term_ids for recall status slugs
 $status_recalled_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
@@ -58,6 +60,7 @@ $status_recalled_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
 $status_recall_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );	 // 878
 $status_recall_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' ); //734
 $status_recall_complete_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-complete' ); //733
+
 //Get term_ids for Box status slugs
 $status_box_pending_term_id = Patt_Custom_Func::get_term_by_slug( 'pending' );	// 748
 $status_box_scanning_preparation_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-preparation' );	// 672
@@ -69,8 +72,11 @@ $status_box_validation_term_id = Patt_Custom_Func::get_term_by_slug( 'verificati
 $status_box_rescan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );	// 743	
 $status_box_completed_term_id = Patt_Custom_Func::get_term_by_slug( 'completed' );	// 66	
 $status_box_destruction_approval_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-approval' );	// 68	
-$status_box_dispositioned_term_id = Patt_Custom_Func::get_term_by_slug( 'stored' );	// 67	
-
+$status_box_destruction_of_source_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-of-source' );
+$status_box_dispositioned_term_id = Patt_Custom_Func::get_term_by_slug( 'stored' );	// 67	// dispositioned
+$status_box_comp_disp_term_id = Patt_Custom_Func::get_term_by_slug( 'completed-dispositioned' ); 
+$status_box_waiting_on_rlo_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-on-rlo' ); 
+$status_box_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'cancelled' ); 
 
 
 // Check if item is currently in recall database 
@@ -235,25 +241,48 @@ if( !$is_folder_search ) {
 				//$details_array['error_message'] = 'Recalls are not allowed for Boxes in Validation to Re-Scan statuses.';
 				$details_array['box_status_name'] = 'Re-scan';
 				break;
-// 			case 66: // Box Status: Completed
+// 			case 66: // Box Status: Completed Permanent Records
 			case $status_box_completed_term_id: // Box Status: Completed
 				//$details_array['error'] = '';
 				//$details_array['error_message'] = '';
-				$details_array['box_status_name'] = 'Completed';
+				//$details_array['box_status_name'] = 'Completed';
+				$details_array['box_status_name'] = 'Completed Permanent Records';
 				break;
-// 			case 68: // Box Status: Destruction Approval
+// 			case 68: // Box Status: Destruction Approval // Destruction Approved
 			case $status_box_destruction_approval_term_id: // Box Status: Destruction Approval
 				//$details_array['error'] = 'Box Status Not Recallable';
 				//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
-				$details_array['box_status_name'] = 'Destruction Approval';
+				//$details_array['box_status_name'] = 'Destruction Approval';
+				$details_array['box_status_name'] = 'Destruction Approved';
 				break;
+			case $status_box_destruction_of_source_term_id: // Box Status: Destruction Approval
+				//$details_array['error'] = 'Box Status Not Recallable';
+				//$details_array['error_message'] = 'Recalls are not allowed in the Destruction of Source status.';
+				$details_array['box_status_name'] = 'Destruction of Source';
+				break;	
 // 			case 67: // Box Status: Dispositioned
 			case $status_box_dispositioned_term_id: // Box Status: Dispositioned
-				//$details_array['error'] = 'Box Status Not Recallable';
-				//$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status.';
+				$details_array['error'] = 'Box Status Not Recallable';
+				$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status. (No longer a box status)';
 				$details_array['box_status_name'] = 'Dispositioned';
 				break;
+			case $status_box_comp_disp_term_id: // Box Status: Completed/Dispositioned
+				$details_array['error'] = 'Box Status Not Recallable';
+				//$details_array['error_message'] = 'Recalls are not allowed in the Completed/Dispositioned status.';
+				$details_array['box_status_name'] = 'Completed/Dispositioned';
+				break;
+			case $status_box_waiting_on_rlo_term_id: // Box Status: Waiting on RLO
+				$details_array['error'] = 'Box Status Not Recallable';
+				//$details_array['error_message'] = 'Recalls are not allowed in the Waiting on RLO status.';
+				$details_array['box_status_name'] = 'Waiting on RLO';
+				break;
+			case $status_box_cancelled_term_id: // Box Status: Cancelled
+				$details_array['error'] = 'Box Status Not Recallable';
+				//$details_array['error_message'] = 'Recalls are not allowed in the Cancelled status.';
+				$details_array['box_status_name'] = 'Cancelled';
+				break;			
 			
+
 		}
 		
 		// Check if item is currently in Return 
@@ -353,24 +382,45 @@ if( !$is_folder_search ) {
 			//$details_array['error_message'] = 'Recalls are not allowed for Boxes in Validation to Re-Scan statuses.';
 			$details_array['box_status_name'] = 'Re-scan';
 			break;
-// 		case 66: // Box Status: Completed
+// 		case 66: // Box Status: Completed Permanent Records
 		case $status_box_completed_term_id: // Box Status: Completed
 			//$details_array['error'] = '';
 			//$details_array['error_message'] = '';
-			$details_array['box_status_name'] = 'Completed';
+			$details_array['box_status_name'] = 'Completed Permanent Records';
 			break;
-// 		case 68: // Box Status: Destruction Approval
+// 		case 68: // Box Status: Destruction Approval  // Destruction Approved
 		case $status_box_destruction_approval_term_id: // Box Status: Destruction Approval
 			//$details_array['error'] = 'Containing Box Status Not Recallable';
 			//$details_array['error_message'] = 'Recalls are not allowed in the Destruction approval status.';
-			$details_array['box_status_name'] = 'Destruction Approval';
+			//$details_array['box_status_name'] = 'Destruction Approval';
+			$details_array['box_status_name'] = 'Destruction Approved';
 			break;
+		case $status_box_destruction_of_source_term_id: // Box Status: Destruction Approval
+			//$details_array['error'] = 'Containing Box Status Not Recallable';
+			//$details_array['error_message'] = 'Recalls are not allowed in the Destruction of Source status.';
+			$details_array['box_status_name'] = 'Destruction of Source';
+			break;	
 // 		case 67: // Box Status: Dispositioned
 		case $status_box_dispositioned_term_id: // Box Status: Dispositioned
-			//$details_array['error'] = 'Containing Box Status Not Recallable';
-			//$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status.';
+			$details_array['error'] = 'Containing Box Status Not Recallable';
+			$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status. (No longer a box status)';
 			$details_array['box_status_name'] = 'Dispositioned';
-			break;			
+			break;
+		case $status_box_comp_disp_term_id: // Box Status: Completed/Dispositioned
+			$details_array['error'] = 'Containing Box Status Not Recallable';
+			//$details_array['error_message'] = 'Recalls are not allowed in the Dispositioned status.';
+			$details_array['box_status_name'] = 'Completed/Dispositioned';
+			break;		
+		case $status_box_waiting_on_rlo_term_id: // Box Status: Waiting on RLO
+			$details_array['error'] = 'Containing Box Status Not Recallable';
+			//$details_array['error_message'] = 'Recalls are not allowed in the Waiting on RLO status.';
+			$details_array['box_status_name'] = 'Waiting on RLO';
+			break;
+		case $status_box_cancelled_term_id: // Box Status: Cancelled
+			$details_array['error'] = 'Containing Box Status Not Recallable';
+			//$details_array['error_message'] = 'Recalls are not allowed in the Cancelled status.';
+			$details_array['box_status_name'] = 'Cancelled';
+			break;
 		
 	}
 
@@ -404,18 +454,31 @@ if( $details_array['search_error'] == false ) {
 		$link_str_ff = "<a href='".$subfolder_path."/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=".
 								$details_array['Folderdoc_Info_id']."' target='_blank' >".$details_array['Folderdoc_Info_id']."</a>";
 		$title = $details_array['title'];
+		
+		$file_freeze = Patt_Custom_Func::id_in_freeze( $the_id, 'folderfile' );
+		if( $file_freeze ) {
+			$icons = $freeze_icon;
+		}
+		
 	} else {
 		$the_id = $details_array['box_id'];
 		$link_str_ff = "<a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=".
 								$details_array['box_id']."' target='_blank' >".$details_array['box_id']."</a>";
-		$title = '[Boxes do not have Titles]';						
+		$title = '[Boxes do not have Titles]';	
+		
+		$box_freeze = Patt_Custom_Func::id_in_freeze( $the_id, 'box' );
+		if( $box_freeze ) {
+			$details_array['box_freeze'] = true;
+			$icons = $freeze_icon;
+		}
 	}
 	
 	$num_of_records = count($searchByID);
 	
+	
 	$data2[] = array(
 			"box_id"=>$the_id, 
-			"box_id_flag"=>$link_str_ff,
+			"box_id_flag"=>$link_str_ff . $icons,
 			"title"=>$title,
 			"request_id"=>$details_array['Record_Schedule_Number'], 
 			"program_office"=>$details_array['office_acronym'].': '.$details_array['office_name']

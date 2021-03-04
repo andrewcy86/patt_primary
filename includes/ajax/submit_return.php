@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 // set default filter for agents and customers //not true
-global $current_user, $wpscfunction, $current_user;
+global $current_user, $wpscfunction, $current_user, $wpdb;
 
 if (!$current_user->ID) die();
 
@@ -31,11 +31,13 @@ $item_ids = $_REQUEST['item_ids'];
 //$box_obj = Patt_Custom_Func::get_box_file_details_by_id('0000001-2');
 
 $item_ids_box = array();
+$item_ids_box_status = array();
 $item_ids_folderdoc = array();
 foreach( $item_ids as $id ) {
 	if( substr_count($id, '-') == 1 ) {
 		$box_obj = Patt_Custom_Func::get_box_file_details_by_id($id);
 		$item_ids_box[] = $box_obj->Box_id_FK;
+		$item_ids_box_status[] = $box_obj->box_status;
 // 		$item_ids_box[] = $id;
 	} elseif( substr_count($id, '-') == 3 ) {
 		$folderdoc_obj = Patt_Custom_Func::get_box_file_details_by_id($id);
@@ -47,6 +49,7 @@ foreach( $item_ids as $id ) {
 // Set arrays to null if no contents. 
 if( count($item_ids_box) < 1 ) {
 	$item_ids_box = null;
+	$item_ids_box_status = null;
 }
 if( count($item_ids_folderdoc) < 1 ) {
 	$item_ids_folderdoc = null;
@@ -121,7 +124,7 @@ $data = [
 $data = [
 // 	'return_id' => "$return_id",
 	'box_id' => $item_ids_box, 
-// 	'box_id' => $box_obj, 
+ 	'box_status' => $item_ids_box_status, 
 	'folderdoc_id' => $item_ids_folderdoc,
 	'shipping_tracking_info' => [
     			'tracking_number' => $shipping_tracking, 
@@ -174,6 +177,30 @@ if($return_id == 0) {
 	// Audit Log wpppatt_after_recall_created
 	$where = ['return_id' => $return_id_old ];
 	//$recall_array = Patt_Custom_Func::get_recall_data($where);
+	
+	//
+	// Update Box Status for items to Waiting for RLO
+	//
+	
+	if( !taxonomy_exists('wpsc_box_statuses') ) {
+		$args = array(
+			'public' => false,
+			'rewrite' => false
+		);
+		register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
+	} 
+	
+	$status_waiting_rlo_term_id = get_term_by( 'slug', 'waiting-on-rlo', 'wpsc_box_statuses' );	 
+	$status_waiting_rlo_term_id = $status_waiting_rlo_term_id->term_id;
+	
+	foreach( $item_ids_box as $key => $box_FK ) {
+		
+		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+		$data_where = array( 'id' => $box_FK );
+		$data_update = array( 'box_status' => $status_waiting_rlo_term_id );
+		$wpdb->update( $table_name, $data_update, $data_where );
+		
+	}
 	
 
 
@@ -247,6 +274,8 @@ $output = array(
 	'return_id' => $return_id,
 	'error'  => $error_message,
 	'notifications' => $notifications,
-	'notification data' => $notification_data
+	'notification data' => $notification_data,
+	'item_ids_box' => $item_ids_box,
+	'item_ids_box_status' => $item_ids_box_status
 );
 echo json_encode($output);

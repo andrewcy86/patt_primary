@@ -21,6 +21,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     public function loadScripts(){
         wp_enqueue_script('jquery');
         wp_enqueue_script( 'wppatt-disable-warnings', WPPATT_PLUGIN_URL . 'asset/js/disable-jquery-migrate-warnings.js', array(), time(), true ); // removed 13/15 jquery-migrate warnings from console. 
+        
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-autocomplete', '', array('jquery-ui-widget', 'jquery-ui-position'), '1.8.6');
         wp_enqueue_script('jquery-ui-sortable');
@@ -33,7 +34,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
         wp_enqueue_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
         wp_enqueue_script( 'bootstrap-cdn-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js' );
         //Font-Awesom
-        wp_enqueue_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
+        //wp_enqueue_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
         wp_enqueue_style('wpsc-jquery-ui', WPSC_PLUGIN_URL.'asset/css/jquery-ui.css?version='.WPSC_VERSION );
         //admin scripts
         wp_enqueue_script('wpsc-admin', WPSC_PLUGIN_URL.'asset/js/admin.js?version='.WPSC_VERSION, array('jquery'), null, true);
@@ -86,42 +87,43 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
-		$term = wp_insert_term( 'Waiting/Shelved', 'wpsc_box_statuses' );
-		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 1);
-			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
-			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#843ddb');
-		}
-		
 		$term = wp_insert_term( 'Scanning Preparation', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 2);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 1);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
 		$term = wp_insert_term( 'Scanning/Digitization', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 3);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 2);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
 		$term = wp_insert_term( 'QA/QC', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 4);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 3);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
 		$term = wp_insert_term( 'Digitized - Not Validated', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 5);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 4);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
 		$term = wp_insert_term( 'Ingestion', 'wpsc_box_statuses' );
+		if (!is_wp_error($term) && isset($term['term_id'])) {
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 5);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
+			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
+		}
+		
+		// 		$term = wp_insert_term( 'Completed', 'wpsc_box_statuses' );
+		$term = wp_insert_term( 'Completed Permanent Records', 'wpsc_box_statuses', array( 'slug' => 'completed' ) );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
 			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 6);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
@@ -135,32 +137,40 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
-		$term = wp_insert_term( 'Re-Scan', 'wpsc_box_statuses' );
+		//$term = wp_insert_term( 'Destruction Approval', 'wpsc_box_statuses' );
+		$term = wp_insert_term( 'Destruction Approved', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
 			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 8);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
-		$term = wp_insert_term( 'Completed', 'wpsc_box_statuses' );
+		$term = wp_insert_term( 'Destruction of Source', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 12);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 9);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
-			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
+			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#d16464');
 		}
 		
-		$term = wp_insert_term( 'Destruction Approval', 'wpsc_box_statuses' );
+		$term = wp_insert_term( 'Completed/Dispositioned', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
 			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 10);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
 		}
 		
-		$term = wp_insert_term( 'Dispositioned', 'wpsc_box_statuses' );
+		$term = wp_insert_term( 'Re-Scan', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
 			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 11);
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
+		}
+		
+		$term = wp_insert_term( 'Waiting/Shelved', 'wpsc_box_statuses' );
+		if (!is_wp_error($term) && isset($term['term_id'])) {
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 12);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
+			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#843ddb');
 		}
 		
 		$term = wp_insert_term( 'Waiting on RLO', 'wpsc_box_statuses' );
@@ -169,16 +179,6 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#843ddb');
 		}
-
-		// Uncomment when changing the slugs of all the boxes.
-/*
-		$term = wp_insert_term( 'Completed', 'wpsc_box_statuses' );
-		if (!is_wp_error($term) && isset($term['term_id'])) {
-			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 13);
-			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
-			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#0c0000');
-		}
-*/
 		
 		$term = wp_insert_term( 'Cancelled', 'wpsc_box_statuses' );
 		if (!is_wp_error($term) && isset($term['term_id'])) {
@@ -188,7 +188,23 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		}
 		
 		
-
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*		// Removed
+		$term = wp_insert_term( 'Dispositioned', 'wpsc_box_statuses' );
+		if (!is_wp_error($term) && isset($term['term_id'])) {
+			add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 11);
+			add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
+			add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#dd9933');
+		}
+*/
 		
 		
 		//
@@ -403,6 +419,11 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_box_status_assignment.php';    
     }
     
+    // Added function to pallet buttons
+    public function pallet_btnAfterClone(){
+    include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pallet_assignment.php';    
+    }
+    
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    
@@ -490,7 +511,6 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		    } else {
 		        $delivered_status = '';
 		    }
-		
 			switch ($company_name) {
 			    case "ups":
 			        echo '<li><i class="fab fa-ups fa-lg"></i> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
@@ -759,6 +779,12 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	    include WPPATT_ABSPATH . 'includes/ajax/change_box_status_modal.php';    
 	    die();
     }     
+    
+    // Add Pallet Assignment modal 
+    public function set_pallet_assignment(){
+	    include WPPATT_ABSPATH . 'includes/ajax/set_pallet_assignment_modal.php';    
+	    die();
+    }   
     
     // Create MLD Post from S3 upload data 
     public function create_mld_post(){

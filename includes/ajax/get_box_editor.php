@@ -37,10 +37,10 @@ $patt_box_id_arr = array();
     $record_schedule = $box_record_schedule->record_schedule_number;
     
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(fdif.validation = 1) as validated, COUNT(fdif.validation) as validation_total
-							FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-							INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id 
-							INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
-							WHERE a.id = '" . $box_id . "'");
+	FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id 
+	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
+	WHERE a.id = '" . $box_id . "'");
 							
 /*	OLD: before moving validation to fdi_files table
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(b.validation = 1) as validated, COUNT(b.validation) as validation_total
@@ -95,10 +95,38 @@ echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
 			endforeach;
 			?>
 		</select>
+
 <?php
-// TESTING print_r($box_statuses);
+//List of all of the pallet IDs in the database to choose from
+$box_pallet_array = $wpdb->get_results("SELECT DISTINCT pallet_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE pallet_id <> ''");
+$get_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($patt_box_id, 'box');
+
+if(count($box_pallet_array) > 0) {
 ?>
 
+<br /><br /><strong>Pallet ID: </strong><br />
+<input type="search" list="PalletList" placeholder='Enter pallet ID...' id='pallet_id'/>
+<datalist id = 'PalletList'>
+<?php
+
+foreach ( $box_pallet_array as $pallet ) {
+$pallet_id = $pallet->pallet_id;
+
+/*
+if ($get_pallet_id == $pallet ) {
+    $selected = 'selected'; 
+} else {
+    $selected = '';
+}
+
+echo '<option '.$selected.' value="'.$pallet_id.'">'.$pallet_id.'</option>';
+*/
+echo '<option value="'.$pallet_id.'">'.$pallet_id.'</option>';
+}
+
+}
+?>
+</datalist>
 
 <?php
 $desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses');
@@ -338,6 +366,7 @@ postvarspattboxid: jQuery("#pattboxid").val(),
 postvarsboxid: jQuery("#boxid").val(),
 postvarsdc: jQuery('#dc').val(),
 postvarsbs: jQuery('#box_status').val(),
+postvarspalletid: jQuery('#pallet_id').val(),
 postvarspo: jQuery('#ProgramOfficeList [value="' + po_value + '"]').data('value'),
 postvarsrs: jQuery('#RecordScheduleList [value="' + rs_value + '"]').data('value')
 }, 

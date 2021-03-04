@@ -17,6 +17,10 @@ if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
+// Variables
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+
 ## Read value
 $draw = $_POST['draw'];
 $row = $_POST['start'];
@@ -304,11 +308,25 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 		$tracking_num .= '...';
 	}
 	
-//	$track = $shipping_link_start.$row['tracking_number'].$shipping_link_end;
+	// Add icons
+	//if( $row['box_id'] != null ) {
+	if( $row['folderdoc_id'] == null ) {	
+		$box_freeze = Patt_Custom_Func::id_in_freeze( $row['box_id'], 'box' );
+		if( $box_freeze ) {
+			$icons = $freeze_icon;
+		}
+	} else {
+		$file_freeze = Patt_Custom_Func::id_in_freeze( $row['folderdoc_id'], 'folderfile' );
+		if( $file_freeze ) {
+			$icons = $freeze_icon;
+		}
+	}
+	
+	
 	$track = $shipping_link_start.$tracking_num.$shipping_link_end;
    
    	$data[] = array(
-		"recall_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=recalldetails&id=R-".$row['recall_id']."' >R-".$row['recall_id']."</a>", 		
+		"recall_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=recalldetails&id=R-".$row['recall_id']."' >R-".$row['recall_id']."</a>" . $icons, 		
 		"recall_id_flag"=>$row['recall_id'],
 		"status"=>"<span class='wpsp_admin_label' style='".$status_style."'>".$row['recall_status']."</span>", 
 		"updated_date"=>human_time_diff(strtotime($row['updated_date'])),
@@ -320,6 +338,8 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
  		"tracking_number"=>$track
    );
    
+   // Clear icons
+   $icons = '';
 
 /*
    $data[] = array(
@@ -351,7 +371,8 @@ $response = array(
   "Where" => $where['custom'],
   "Random Data - DC" => $searchByDigitizationCenter,
   "Random Data 2 - PO" => $searchByProgramOffice,
-  "Filtered item query" => $query_3
+  "Filtered item query" => $query_3,
+  "debug" => $recallRecords
 );
 
 

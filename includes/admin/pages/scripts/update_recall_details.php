@@ -422,6 +422,16 @@ if( $type == 'request_date' ) {
 		$data_status = [ 'recall_status_id' => $status_denied_term_id ]; //change status from Recalled to Recall Denied
 		$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
 		
+		//
+		// Restore the saved Box Status
+		//
+		
+		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+		$data_where = array( 'box_id' => $recall_obj->box_id );
+		$data_update = array( 'box_status' => $recall_obj->saved_box_status );
+		$wpdb->update( $table_name, $data_update, $data_where );
+		
+		
 		do_action('wpppatt_after_recall_denied', $ticket_id, 'R-'.$recall_id);
 		
 		//Update the Updated Date

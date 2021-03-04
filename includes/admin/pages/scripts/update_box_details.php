@@ -8,6 +8,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 if(
 !empty($_POST['postvarspo']) ||
 !empty($_POST['postvarsrs']) ||
+!empty($_POST['postvarsbs']) ||
+!empty($_POST['postvarspalletid']) ||
 ($_POST['postvarsdc'] == 0) || ($_POST['postvarsdc'] == 1)
 ){
    //id in box table (e.g. 1)
@@ -18,6 +20,11 @@ if(
    $rs = $_POST['postvarsrs'];
    $dc = $_POST['postvarsdc'];
    $bs = $_POST['postvarsbs'];
+   $pallet_id = $_POST['postvarspalletid'];
+
+Patt_Custom_Func::pallet_cleanup();
+
+$type = 'box';
 
 $get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $ticket_id = $get_ticket_id->ticket_id;
@@ -27,18 +34,79 @@ $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $old_box_dc = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $old_dc = $old_box_dc->box_destroyed;
 
-$old_box_status = $wpdb->get_row("SELECT " . $wpdb->prefix . "terms.name as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND box_id = '" . $pattboxid . "'");
+$old_box_status = $wpdb->get_row("SELECT box_status 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo b
+WHERE b.box_id = '" . $pattboxid . "'");
 $old_bs = $old_box_status->box_status;
 
-$new_box_status = $wpdb->get_row("SELECT DISTINCT " . $wpdb->prefix . "terms.name as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = '" . $bs . "'");
-$new_bs = $new_box_status->box_status;
+$old_box_status_name = $wpdb->get_row("SELECT a.name as box_status 
+FROM wpqa_terms a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.box_status = a.term_id 
+WHERE b.box_id = '" . $pattboxid . "'");
+$old_bs_name = $old_box_status_name->box_status;
+
+$old_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($pattboxid, $type);
+
+$get_scan_list_id = $wpdb->get_row("SELECT a.id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+WHERE a.pallet_id = '" . $pallet_id . "'");
+$scan_list_id = $get_scan_list_id->id;
 
 //updates box status
 if($old_bs != $bs) {
 $data_update = array('box_status' => $bs);
 $data_where = array('id' => $box_id);
 $wpdb->update($table_name , $data_update, $data_where);
-array_push($metadata_array,'Box Status: '.$old_bs.' > '.$new_bs);
+
+$new_box_status = $wpdb->get_row("SELECT a.name as box_status 
+FROM wpqa_terms a
+INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_status = a.term_id
+WHERE b.box_id = '" . $pattboxid . "'");
+$new_bs = $new_box_status->box_status;
+
+array_push($metadata_array,'Box Status: '.$old_bs_name.' > '.$new_bs);
+}
+
+//updates pallet ID
+if($old_pallet_id != $pallet_id) {
+
+$get_old_physical_location = $wpdb->get_row("SELECT b.locations, a.location_status_id, a.pallet_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status b ON b.id = a.location_status_id
+WHERE a.box_id = '" . $pattboxid . "'");
+$old_physical_location = $get_old_physical_location->locations;
+$old_location_status_id = $get_old_physical_location->location_status_id;
+$old_pallet_id = $get_old_physical_location->pallet_id;
+
+$old_physical_location_id = Patt_Custom_Func::id_in_physical_location($pattboxid, $type);
+
+//if pallet ID is reassigned set physical location to Pending
+$physical_location_id = 1;
+
+$data_update = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
+$data_where = array('id' => $box_id);
+$wpdb->update($table_name, $data_update, $data_where);
+
+if(empty($old_pallet_id)) {
+    $old_pallet_id = 'Unassigned';
+}
+
+array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
+
+if($old_location_status_id != $physical_location_id) {
+    $data_update_physical_location = array('location_status_id' => $physical_location_id);
+    $data_where_physical_location = array('id' => $box_id);
+    $wpdb->update($table_name, $data_update_physical_location, $data_where_physical_location);
+    
+    $get_new_physical_location = $wpdb->get_row("SELECT a.locations
+    FROM " . $wpdb->prefix . "wpsc_epa_location_status a
+    WHERE a.id = '" . $physical_location_id . "'");
+    $new_physical_location = $get_new_physical_location->locations;
+    
+    array_push($metadata_array,'Physical Location: ' . $old_physical_location . ' > ' . $new_physical_location);
+}
+
+
 }
 
 //updates destruction completed and adds to request history
@@ -62,8 +130,8 @@ elseif($old_dc == '0') {
     $old_dc_val = 'No';
 }
 
-array_push($metadata_array,'Destruction Completed: '.$old_dc_val.' > '.$dc_val);
 $wpdb->update($table_name, $data_update, $data_where);
+array_push($metadata_array,'Destruction Completed: '.$old_dc_val.' > '.$dc_val);
 
 $get_storage_id = $wpdb->get_row("
 SELECT id, storage_location_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
@@ -161,7 +229,7 @@ array_push($metadata_array,'Record Schedule: '.$rs_old_num.' > '.$rs_new_num);
 
 $metadata = implode (", ", $metadata_array);
 
-if( ($old_bs != $new_bs) || ($dc != $old_dc) || ($po_old_acronym != $po_new_acronym) || ($rs_old_num != $rs_new_num) ) {
+if( ($old_bs != $bs) || ($old_pallet_id != $pallet_id) || ($dc != $old_dc) || ($po_old_acronym != $po_new_acronym) || ($rs_old_num != $rs_new_num) ) {
 do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
 }
 

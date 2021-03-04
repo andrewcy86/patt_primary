@@ -33,7 +33,10 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
         
-        $box_result = $wpdb->get_results( "SELECT * FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666 AND a.ticket_id = " . $GLOBALS['id']);
+        $box_result = $wpdb->get_results( "SELECT * FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id 
+        WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666 AND a.box_destroyed = 0
+        AND a.ticket_id = " . $GLOBALS['id']);
 
         foreach ( $box_result as $box )
             {
@@ -53,7 +56,10 @@ if (isset($_GET['id']))
 
         $array = array();
         
-        $box_result = $wpdb->get_results( "SELECT a.box_id as box_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666");
+        $box_result = $wpdb->get_results( "SELECT a.box_id as box_id 
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+        LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id 
+        WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666 AND a.box_destroyed = 0");
 
         foreach ( $box_result as $box )
             {
@@ -84,6 +90,7 @@ if (isset($_GET['id']))
         " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
+        " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
 
                 foreach ( $box_digitization_center as $location )
@@ -142,11 +149,12 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix .
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
 INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status      
 WHERE 
-aisle <> 0 AND 
-bay <> 0 AND 
-shelf <> 0 AND 
-position <> 0 AND 
-digitization_center <> 666 AND
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
+" . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
 " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
 
         
@@ -162,15 +170,17 @@ digitization_center <> 666 AND
     function fetch_create_date()
     {
         global $wpdb;
-        $request_create_date = $wpdb->get_row( "SELECT a.date_created FROM " . $wpdb->prefix . "wpsc_ticket a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON b.storage_location_id = c.id
+        $request_create_date = $wpdb->get_row( "SELECT a.date_created 
+        FROM " . $wpdb->prefix . "wpsc_ticket a 
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON b.storage_location_id = c.id
         WHERE
         c.aisle <> 0 AND 
         c.bay <> 0 AND 
         c.shelf <> 0 AND 
         c.position <> 0 AND 
         c.digitization_center <> 666 AND
+        b.box_destroyed = 0 AND
         a.id = " . $GLOBALS['id']);
         
         $create_date = $request_create_date->date_created;
@@ -387,7 +397,7 @@ $not_assigned_flag = 1;
                 $x_loc_2d = 155;
                 $y_loc_2d = 12;
                 //Box x of y text coordinates
-                $x_loc_b = 40;
+                $x_loc_b = 35;
                 $y_loc_b = 115;
                 //Box ID Printout coordinates
                 $x_loc_c = 80;
@@ -455,7 +465,7 @@ $not_assigned_flag = 1;
                 $x_loc_2d = 155;
                 $y_loc_2d = 142;
                 //Box x of y text coordinates
-                $x_loc_b = 40;
+                $x_loc_b = 35;
                 $y_loc_b = 245;
                 //Box ID Printout coordinates
                 $x_loc_c = 80;
@@ -525,7 +535,8 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
            $total_box = $box_count_a;
 }
 
-            $obj_pdf->SetFont('helvetica', 'B', 25);
+            $obj_pdf->SetFont('helvetica', 'B', 22);
+            //Box x of y
             $obj_pdf->Text($x_loc_b, $y_loc_b, "Box " . $initial_box . " of " . $total_box);
             $obj_pdf->Line($x_loc_l1, $y_loc_l1, $x_loc_l2, $y_loc_l2, $style_line);
             //RFID Box Location

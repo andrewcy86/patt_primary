@@ -6,7 +6,9 @@ $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
-    
+
+        // JM - 2/26/2021 - Issue a check for pallet_id's
+        $ispallet_id = false;
         $recalls_found = false;
         $returns_found = false;
         $record_updated = false;
@@ -42,17 +44,34 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
         $ticket_id = "";
         $current_box_id = "";
         
+        // An id can be either a box_id or pallet_id, so we must make the 
+        // search key column identifier a variable here, to use in the 
+        // $get_ticketid= procedure below      
+        $search_columnid = "";
+        
         foreach ($box_insert as $key => $value) {
             
-            $get_ticket_id = $wpdb->get_row("
+            // JM - 2/25/2021 - In order to treat the pallet_id the same as the
+            // box_id, we need to get the box_id from the pallet_id in the array
+            // that has been sent from the submit on the scanning.php page
+            
+            //Check if Box ID
+            if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $value)) {
+            $search_column_key = "box_id";
+            }
+            //Check if Pallet ID
+            if (preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $value)) {
+            $search_column_key = "pallet_id";
+            }
+            
+                $get_ticket_id = $wpdb->get_row("
                                         SELECT ticket_id
                                         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
                                         WHERE
-                                        box_id = '" . $key . "'
+                                        $search_key_id = '" . $key . "'
                                         ");
                         
             $ticket_id = $get_ticket_id->ticket_id;         
-            
             
             if($ticket_id == ""){
   
@@ -103,7 +122,9 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                         $GLOBALS[$evaluated] = true;     
                     }
                     
-                    if(preg_match('/^\b(sa-e|sa-w)\b$/i', $value)) {
+                    // JM - 2/25/2021 - Changed preg_match for the staging area to support pallets per Region 3 reqs
+                    //  /^\b(sa-e-\d+|sa-w-\d+)\b$/i   from    /^\b(sa-e|sa-w)\b$/i
+                    if(preg_match('/^\b(sa-e-\d+|sa-w-\d+)\b$/i', $value)) {
                         
                         $column_name = 'stagingarea_id';
         
@@ -117,22 +138,49 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                             $location_statuses_id = $location_statuses->id;
                 			                $location_statuses_locations = $location_statuses->locations;
                                             
-                                            /* Set status value for box id to the returned value from above statement*/
-                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
-                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
-                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
-        
-                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
-                        $wpdb->insert($scan_table_name, array(
-                                        'box_id' => esc_sql($key),
-                                        $column_name => esc_sql(strtoupper($value)),
-                                        'date_modified' => $date,
-                                    ));
+                                            /* Update the pallet_id value in the boxinfo table */
+                                            /* Add if statement to determine if the value is */
+                                            if($ispallet_id = true){
+                                                
+                                                            /* Set status value for pallet_id to the returned value from above statement*/
+                                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                                            $loc_status_boxinfo_data_where = array('pallet_id' => $key);
+                                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                                                                          $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                                                                          $wpdb->insert($scan_table_name, array(
+                                                                          'pallet_id' => esc_sql($key),
+                                                                          $column_name => esc_sql(strtoupper($value)),
+                                                                          'date_modified' => $date,
+                                                                        ));
                                     
-                                            $message = "Updated: Box ID " . $key . " is " . $$location_statuses_locations . " " . strtoupper($value). ".\n\n";
-                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
-                                            echo $message;  
+                                                            $message = "Updated: Pallet ID " . $key . " is " . $$location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                                            echo $message;
+                                                
+                                                
+                                                
+                                            }else{
+                                            
+                                                            /* Set status value for box id to the returned value from above statement*/
+                                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                                                                          $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                                                                          $wpdb->insert($scan_table_name, array(
+                                                                          'box_id' => esc_sql($key),
+                                                                          $column_name => esc_sql(strtoupper($value)),
+                                                                          'date_modified' => $date,
+                                                                        ));
+                                    
+                                                            $message = "Updated: Box ID " . $key . " is " . $$location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                                            echo $message;  
+                                            
+                                            }
                         $GLOBALS[$record_updated] = true;  
                         $GLOBALS[$evaluated] = true;
                     }else{

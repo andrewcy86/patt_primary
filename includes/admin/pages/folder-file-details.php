@@ -34,6 +34,13 @@ echo $slug;
 
 $ticket_string = substr($GLOBALS['id'],0,7);
 $is_active = Patt_Custom_Func::request_status( $ticket_string );
+
+if($is_active == 1) {
+    $type = 'folderfile';
+}
+else {
+    $type = 'folderfile_archive';
+}
 //echo $GLOBALS['id'];
 ?>
 
@@ -59,11 +66,10 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
 	b.title as title,
 	b.date as date,
 	a.author as author,
-	a.record_type as record_type,
+	b.record_type as record_type,
 	a.site_name as site_name,
 	a.siteid as site_id,
 	a.close_date as close_date,
-	a.access_type as access_type,
 	b.source_format as source_format,
 	a.folderdocinfo_id as folderdocinfo_id,
 	a.essential_record as essential_record,
@@ -87,6 +93,7 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
     b.description,
     b.tags,
     b.access_restriction,
+    b.specific_access_restriction,
     b.use_restriction,
     b.specific_use_restriction,
     b.rights_holder,
@@ -106,11 +113,10 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
 	b.title as title,
 	b.date as date,
 	a.author as author,
-	a.record_type as record_type,
+	b.record_type as record_type,
 	a.site_name as site_name,
 	a.siteid as site_id,
 	a.close_date as close_date,
-	a.access_type as access_type,
 	b.source_format as source_format,
 	a.folderdocinfo_id as folderdocinfo_id,
 	a.essential_record as essential_record,
@@ -134,6 +140,7 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
     b.description,
     b.tags,
     b.access_restriction,
+    b.specific_access_restriction,
     b.use_restriction,
     b.specific_use_restriction,
     b.rights_holder,
@@ -159,17 +166,10 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
 	$folderfile_site_name = $folderfile_details->site_name;
 	$folderfile_site_id = $folderfile_details->site_id;
 	$folderfile_close_date = $folderfile_details->close_date;
-	$folderfile_access_type = $folderfile_details->access_type;
 	$folderfile_source_format = $folderfile_details->source_format;
 	
 	$folderfile_sems_reg_id = $folderfile_details->sems_reg_id;
-	//$folderfile_rights = $folderfile_details->rights;
-	//$folderfile_contract_number = $folderfile_details->contract_number;
-	//$folderfile_grant_number = $folderfile_details->grant_number;
-	
-	//$folderfile_file_location = $folderfile_details->file_location;
 	$folderfile_file_object_id = $folderfile_details->file_object_id;
-	//$folderfile_file_name = $folderfile_details->file_name;
 	
 	$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
 	$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;
@@ -186,17 +186,14 @@ $is_active = Patt_Custom_Func::request_status( $ticket_string );
     $folderfile_description = $folderfile_details->description;
     $folderfile_tags = $folderfile_details->tags;
     $folderfile_access_restriction = $folderfile_details->access_restriction;
+    $folderfile_specific_access_restriction = $folderfile_details->specific_access_restriction;
     $folderfile_use_restriction = $folderfile_details->use_restriction;
     $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
     $folderfile_rights_holder = $folderfile_details->rights_holder;
     $folderfile_source_dimensions = $folderfile_details->source_dimensions;
 
     $user = get_user_by( 'id', $folderfile_validation_user);
-    
-    /*$box_details = $wpdb->get_row("SELECT wpqa_terms.name, wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_status, wpqa_wpsc_epa_boxinfo.box_destroyed, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_boxinfo.lan_id
-FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket, wpqa_terms
-WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");*/
-    
+
     $box_details = $wpdb->get_row("SELECT c.name, a.id, a.box_status, a.box_destroyed, b.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, a.lan_id, b.ticket_priority as ticket_priority, 
 (SELECT name as ticket_priority FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_priority) as ticket_priority_name, b.ticket_status as ticket_status, 
 (SELECT name as ticket_status FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as ticket_status_name
@@ -233,36 +230,28 @@ WHERE a.id = '" . $folderfile_boxid . "'");
 	$priority_color = get_term_meta($box_ticket_priority, 'wpsc_priority_color', true);
 	$priority_style = "background-color:".$priority_background.";color:".$priority_color.";";
 	$priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$box_ticket_priority_name."</span>";
-
-	$request_id = substr($box_boxid, 0, 7);
 	
 	$lan_id = $box_details->lan_id;
     
     //record schedule
-    $box_record_schedule = $wpdb->get_row("SELECT b.Record_Schedule_Number as rsnum 
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
-INNER JOIN " . $wpdb->prefix . "epa_record_schedule b ON b.id = a.record_schedule_id
-WHERE a.id = '" . $folderfile_boxid . "'");
-    $box_rs = $box_record_schedule->rsnum;
+    $box_rs = Patt_Custom_Func::get_record_schedule_by_id($folderfile_folderdocinfofile_id, $type);
     
     //program office
-    $box_program_office = $wpdb->get_row("SELECT a.office_acronym as program_office 
-FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
-WHERE b.id = '" . $folderfile_boxid . "'");
-    $box_po = $box_program_office->program_office;
+   $box_po = Patt_Custom_Func::get_program_office_by_id($folderfile_folderdocinfofile_id, $type);
     
     //box location
-    $location = $wpdb->get_row("SELECT c.name as location, b.aisle as aisle, b.bay as bay, b.shelf as shelf, b.position as position
+    $location = $wpdb->get_row("SELECT c.name as location, b.aisle as aisle, b.bay as bay, b.shelf as shelf, b.position as position, d.locations
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON b.id = a.storage_location_id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = b.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status d ON d.id = a.location_status_id
 WHERE a.id ='" . $folderfile_boxid . "'");
     $box_location = $location->location;
 	$box_aisle = $location->aisle;
 	$box_bay = $location->bay;
 	$box_shelf = $location->shelf;
 	$box_position = $location->position;
+	$box_physical_location = $location->locations;
 ?>
 <style>
 div.dataTables_wrapper {
@@ -472,7 +461,6 @@ echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archi
 		  <?php 
 $decline_icon = '';
 $recall_icon = '';
-$type = 'folderfile';
 
 if(Patt_Custom_Func::id_in_return($GLOBALS['id'],$type) == 1){
 $decline_icon = '<span style="color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
@@ -538,22 +526,10 @@ echo $decline_icon.$recall_icon;
 				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
 			}
 	
-			if (!empty($folderfile_access_type)) {
-				echo "<strong>Access Type:</strong> " . $folderfile_access_type . "<br />";
-			}
 			if (!empty($folderfile_source_format)) {
-				echo "<strong>Source Format:</strong> " . stripslashes($folderfile_source_format) . "<br />";
+				echo "<strong>Source Type:</strong> " . stripslashes($folderfile_source_format) . "<br />";
 			}
-			/*if (!empty($folderfile_rights)) {
-				echo "<strong>Rights:</strong> " . $folderfile_rights . "<br />";
-			}
-			if (!empty($folderfile_contract_number)) {
-				echo "<strong>Contract #:</strong> " . $folderfile_contract_number . "<br />";
-			}
-			if (!empty($folderfile_grant_number)) {
-				echo "<strong>Grant #:</strong> " . $folderfile_grant_number . "<br />";
-			}*/
-			
+
 			if(!empty($folderfile_identifier)) {
 			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
 			}
@@ -575,6 +551,10 @@ echo $decline_icon.$recall_icon;
 			
 			if(!empty($folderfile_access_restriction)) {
 			    echo "<strong>Access Restriction:</strong> " . $folderfile_access_restriction . "<br />";
+			}
+			
+			if(!empty($folderfile_specific_access_restriction)) {
+			    echo "<strong>Specfic Access Restriction:</strong> " . $folderfile_specific_access_restriction . "<br />";
 			}
 			
 			if(!empty($folderfile_use_restriction)) {
@@ -782,11 +762,9 @@ if ($folderfile_sems_reg_id != '' || $folderfile_folderdocinfofile_id != '') {
             } else {
 // Table displayed for paper records split files on both folder and files
 
-/*
-$get_all_ecms_attachments = $wpdb->get_results("SELECT *
-FROM wpqa_wpsc_epa_folderdocinfo_files
-WHERE object_key != '' AND file_object_id != '' AND folderdocinfo_id = '" . $GLOBALS['id'] . "'");
-*/
+//$get_all_ecms_attachments = $wpdb->get_results("SELECT *
+//FROM wpqa_wpsc_epa_folderdocinfo_files
+//WHERE object_key != '' AND file_object_id != '' AND folderdocinfo_id = '" . $GLOBALS['id'] . "'");
 
 $get_all_ecms_attachments = $wpdb->get_results("SELECT *
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
@@ -938,10 +916,16 @@ echo $tbl;
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
 
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js?ver=5.6.1' id='bootstrap-cdn-js-js'></script>
+
 <script>
  jQuery(document).ready(function() {
 
-	 var dataTable = jQuery('#tbl_templates_ecms').DataTable({
+//jQuery('[data-toggle="tooltip"]').tooltip(); 
+
+	var dataTable = jQuery('#tbl_templates_ecms').DataTable({
 	     "autoWidth": true,
 	     "paging" : true,
 	     "scrollX" : true,
@@ -986,7 +970,12 @@ echo $tbl;
 	  	}
 	}
 	
-jQuery('[data-toggle="tooltip"]').tooltip(); 
+	
+	
+	jQuery('[data-toggle="tooltip"]').tooltip(); 
+
+
+
 <?php
 // BEGIN ADMIN BUTTONS
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
@@ -1179,6 +1168,8 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 		    jQuery('#wpsc_cat_name').focus();
 		  });  
 		}
+		
+		
 </script>
 
 
@@ -1222,11 +1213,22 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                                }
 	                                } ?>
 	                             </div>
+	                             
 	                            <div class="wpsp_sidebar_labels"><strong>Box Status:</strong> 
 	                            <?php 
 	                                echo $box_status_display;
 	                            ?>
 	                            </div>
+	                            
+	                            <?php 
+	                             if(Patt_Custom_Func::get_pallet_id_by_id($folderfile_folderdocinfofile_id, $type) != false) {
+	                             ?>
+	                                <div class="wpsp_sidebar_labels"><strong>Pallet ID:</strong> 
+	                             <?php 
+	                                echo Patt_Custom_Func::get_pallet_id_by_id($folderfile_folderdocinfofile_id, $type);
+	                             } 
+	                             ?>
+	                            
 	                           <?php 
 	                           if($lan_id != '' && $lan_id != 1) {
 	                           ?>
@@ -1241,8 +1243,16 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                            if(!empty($box_location)) {
 	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>';
 	                            echo $box_location . "<br />";
-	                                //if aisle/bay/shelf/position <= 0, does not display location on front end
-    	                            if(!($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
+	                            if(!empty($box_physical_location) && Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) != '') {
+	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>';
+    							    echo $box_physical_location . '<br /> (' . Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) . ')'.  "<br />";
+	                            }
+	                            else {
+	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>';
+    							    echo $box_physical_location . "<br />";
+	                            }
+	                                //if aisle/bay/shelf/position <= 0 and not 'On Shelf', does not display location on front end
+    	                            if($box_physical_location == 'On Shelf' && !($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
     								{
         								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
         	                            echo $box_aisle . "<br />";

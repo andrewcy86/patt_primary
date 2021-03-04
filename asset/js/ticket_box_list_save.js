@@ -17,7 +17,7 @@ jQuery(document).ready(function(){
                 addRemoveLinks: true,
                 uploadMultiple: false,
                 maxFiles: 1,
-                acceptedFiles: '.xlsx',
+                acceptedFiles: '.xlsx, .xlsm',
                 accept: function (file, done) {
                     jQuery('#file_upload_cr').val(1);
                     wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
@@ -164,7 +164,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     var file_extension = file_name_split[file_name_split.length - 1];
     file_extension = file_extension.toLowerCase(); 
 
-    var allowedExtensionSetting = ["xls", "xlsx"];
+    var allowedExtensionSetting = ["xls", "xlsx", "xlsm"];
     if (!flag && (jQuery.inArray(file_extension, allowedExtensionSetting) <= -1)) {
         flag = true;
         alert('Attached file type not allowed!');
@@ -230,6 +230,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 jQuery('#boxinfodatatable').show();
                 var return_obj = JSON.parse(response);
                 jQuery(attachment).find('.attachment_cancel').show();
+                
+                console.log({response:response});
+                console.log({return_obj:return_obj});
 
                 if (parseInt(return_obj.id) != 0) {
                     jQuery(attachment).append('<input type="hidden" name="' + name + '[]" value="' + return_obj.id + '">');
@@ -261,20 +264,66 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     var arrayOfData = JSON.stringify(result);
                     var parsedData = JSON.parse(arrayOfData);
                     var arrayLength = Object.keys(parsedData).length;
-
+                    
+                    // removes asterisks from upload file headers
+                    parsedData[1].forEach( function( item, i ) {
+	                    parsedData[1][i] = item.replaceAll( '*', '' );
+                    });
+	                
                     if (parsedData[1][0] !== undefined && parsedData[1][18] !== undefined) {
                             let prev_box = '';
                             let prev_epa_contact = '';
                             let prev_program_office = '';
                             let prev_record_schedule = '';
 
-							// Required Field Checks
-                            let arr_fields = ['Box', 'Title', 'Date', 'Close Date', 'Program Office', 'Index Level', 'Essential Records'];
-                             
+							                             
                             
 
                             let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
+							
+							// Required Fields - Checks for blanks
+                            let arr_fields = [ 
+                            	'Box', 
+                            	'Folder Identifier', 
+                            	'Title', 
+                            	'Description of Record',
+                            	'Creation Date', 
+                            	'Creator',
+                            	'Record Type',
+                            	'Disposition Schedule & Item Number',
+                            	'Close Date', 
+                            	'EPA Contact',
+                            	'Access Restrictions',
+                            	'Use Restrictions',
+                            	'Source Type',
+                            	'Source Dimensions',
+                            	'Program Office', 
+                            	'Index Level', 
+                            	'Essential Records'
+                            ];
 
+							let index_box = 0;
+							let index_folder_id = 1;
+							let index_title = 2;
+							let index_desc_record = 3;
+							let index_pcd = 4;
+							let index_creation_date = 5;
+							let index_creator = 6;
+							let index_rec_type = 8;
+							let index_rec_sched = 9;
+							let index_close_date = 12; // 11
+							let index_epa_contact = 13; // 12
+							let index_access_rest = 14;
+							let index_use_rest = 16;
+							let index_source_type = 19;
+							let index_source_dim = 20;
+							let index_prog_office = 21; // 20
+							let index_index_level = 22; //21 
+							let index_ess_rec = 23; // 22
+							let index_tags = 25; 
+							//let index_last_col = 25;
+							
+							
                             /* Loop through data */
                             for (var count = 1; count < arrayLength; count++) {
 
@@ -283,61 +332,94 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 }
 
                                 /* Required fields check. */
-                                //if ( flag != true && count > 1 && ( ( invalid_index = [parsedData[count][0], parsedData[count][2], parsedData[count][3], parsedData[count][10], parsedData[count][14], parsedData[count][15], parsedData[count][16]].indexOf( null ) ) > -1 ) ) {								
+                                //if ( flag != true && count > 1 && ( ( invalid_index = [parsedData[count][0], parsedData[count][2], parsedData[count][3], parsedData[count][10], parsedData[count][14], parsedData[count][15], parsedData[count][16]].indexOf( null ) ) > -1 ) ) {								   
+	                                
 	                            // Required fields
 	                            let invalid_index = [
-	                            	parsedData[count][0], 
-	                            	parsedData[count][2], 
-	                            	parsedData[count][5], 
-	                            	parsedData[count][12],
-	                            	parsedData[count][20], 
-	                            	parsedData[count][21], 
-	                            	parsedData[count][22]
+	                            	parsedData[count][index_box], // Box
+	                            	parsedData[count][index_folder_id], // Folder Identifier
+	                            	parsedData[count][index_title], // Title
+	                            	parsedData[count][index_desc_record], // Description of Record
+	                            	parsedData[count][index_creation_date], // Creation Date
+	                            	parsedData[count][index_creator], // Creator 
+	                            	parsedData[count][index_rec_type], // Record Type 
+	                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+	                            	parsedData[count][index_close_date], // Close Date [old 
+	                            	parsedData[count][index_epa_contact], // EPA Contact 
+	                            	parsedData[count][index_access_rest], // Access Restrictions 
+	                            	parsedData[count][index_use_rest], // Use Restrictions 
+	                            	parsedData[count][index_source_type], // Source Type 
+	                            	parsedData[count][index_source_dim], // Source Dimensions 
+	                            	parsedData[count][index_prog_office], // Program Office
+	                            	parsedData[count][index_index_level], // Index Level
+	                            	parsedData[count][index_ess_rec]  // Essential Records
 	                            ];  
 	                                
 	                            if ( flag != true && count > 1 && ( ( invalid_index.indexOf( null ) ) > -1 ) ) {
-
-                                    alert("Invalid value for column " + arr_fields[invalid_index] + " for record " + (count + 1) + ". This field is required." );
+									let err_index = invalid_index.indexOf( null );
+									// console.log({invalid_index:invalid_index, arr_fields:arr_fields, err_index:err_index});
+                                    alert("Invalid value for column " + arr_fields[err_index] + " on line " + (count + 1) + ". This field is required." );
                                     flag = true;
                                 
                                 }
 								
 								// Validate Creation date
-                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][5] ) == false ) {
+                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][index_creation_date] ) == false ) {
                                     alert("Invalid Creation Date for record " + (count + 1) );
                                     flag = true;
                                 }
 								
                                 // Validate Close Date
-                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][12] ) == false ) {
+                                if( flag != true && count > 1 && date_time_reg.test( parsedData[count][index_close_date] ) == false ) {
                                     alert("Invalid Close Date for record " + (count + 1) );
                                     flag = true;
                                 }
 
 
                                 // Box ID validation
-                                if( flag != true && count > 1 && (parsedData[count][0] == null || parsedData[count][0] === undefined)) {
-                                    alert('Box ID value "'+parsedData[count][0]+'" seems incorrect for the record number '+ (count + 1) );
+                                if( flag != true && count > 1 && (parsedData[count][index_box] == null || parsedData[count][index_box] === undefined)) {
+                                    alert('Box ID value "'+parsedData[count][index_box]+'" seems incorrect for the record number '+ (count + 1) );
                                     flag = true;
                                 }
 
                                  // Index level validation
-                                if(flag != true && count > 1 && (parsedData[count][21].toLowerCase() != 'file' && parsedData[count][21].toLowerCase() != 'folder')){
-                                    alert('Index level value "'+parsedData[count][21]+'" seems incorrect for the record number '+ (count + 1) );
+                                if(flag != true && count > 1 && (parsedData[count][index_index_level].toLowerCase() != 'file' && parsedData[count][index_index_level].toLowerCase() != 'folder')){
+                                    alert('Index level value "'+parsedData[count][index_index_level]+'" seems incorrect for the record number '+ (count + 1) );
                                     flag = true;
                                 }
 
                                 // Epa contact, program office, record no validation
-                                if(flag != true && count > 1 && ( prev_box != '' && prev_box === parsedData[count][0] ) && ( prev_epa_contact !== parsedData[count][13] || prev_program_office !== parsedData[count][20] || prev_record_schedule !== parsedData[count][9] ) ) {
+                                if(flag != true && count > 1 && ( prev_box != '' && prev_box === parsedData[count][index_box] ) && ( prev_epa_contact !== parsedData[count][index_epa_contact] || prev_program_office !== parsedData[count][index_prog_office] || prev_record_schedule !== parsedData[count][index_rec_sched] ) ) {
 
-                                    _column = ( prev_epa_contact !== parsedData[count][13] ? ' EPA Contact ' : ( prev_program_office !== parsedData[count][20] ? ' Program Office ' : ( prev_record_schedule !== parsedData[count][9] ? ' Record Schedule & Item Number ' : '' ) ) );
+                                    _column = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? ' EPA Contact ' : ( prev_program_office !== parsedData[count][index_prog_office] ? ' Program Office ' : ( prev_record_schedule !== parsedData[count][index_rec_sched] ? ' Record Schedule & Item Number ' : '' ) ) );
 
-                                    alert("Invalid value in column " + _column + " for record " + (count + 1) );
+                                    alert("Invalid value in column " + _column + " on line " + (count + 1) );
                                     flag = true;
                                 }
                                 
+                                
+                                // Validate JSON from Tags Column
+                                if( flag != true && parsedData[count][index_tags] != null && parsedData[count][index_tags] != 'Tags' ) {
+									
+									let str = 'x';
+									if( parsedData[count][index_tags].indexOf( '{' ) == 0 ) {
+										str = parsedData[count][index_tags];
+									} else {
+										str = '{ ' + parsedData[count][index_tags] + '}';
+									}
+									
+									//console.log({str:str});
+									
+	                                try {
+								        JSON.parse( str );
+								    } catch ( e ) {
+								        alert("Invalid JSON format in the Tags column on line " + (count + 1) );
+										flag = true;
+								    }
+								}
+                                
                                 // Validate Parent/Child
-                                let pcd = parsedData[count][4];
+                                let pcd = parsedData[count][index_pcd];
                                 //console.log({pcd:pcd});
                                 
                                 //console.log( pcd == null );
@@ -365,10 +447,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 // Add record to datatable if no error
                                 if (parsedData[count] !== undefined && parsedData[count].length > 0 && parsedData[count][0].toString().trim() != "Box") {
 
-                                    prev_box = parsedData[count][0];
-                                    prev_epa_contact = parsedData[count][13];
-                                    prev_program_office = parsedData[count][20];
-                                    prev_record_schedule = parsedData[count][9];
+                                    prev_box = parsedData[count][index_box];
+                                    prev_epa_contact = parsedData[count][index_epa_contact];
+                                    prev_program_office = parsedData[count][index_prog_office];
+                                    prev_record_schedule = parsedData[count][index_rec_sched];
 
                                     datatable.row.add([
                                         parsedData[count][0],
@@ -396,7 +478,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                         parsedData[count][21],
                                         parsedData[count][22],
                                         parsedData[count][23],
-                                        parsedData[count][24]
+                                        parsedData[count][24],
+                                        parsedData[count][25]
                                     ]).draw().node();
                                 }
                             }
@@ -421,6 +504,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 
                 } else {
                     jQuery(attachment).find('.progress-bar').addClass('progress-bar-danger');
+                    //alert('Something went wrong. Please try again.');
                 }
             }
         });
@@ -594,7 +678,7 @@ function wpsc_spreadsheet_new_upload_SEMS(id, name, fileSS) {
                             let prev_program_office = '';
                             let prev_record_schedule = '';
 
-                            let arr_fields = ['Box', 'Title', 'Date', 'Close Date', 'Program Office', 'Index Level', 'Essential Records'];
+                            let arr_fields = ['Box', 'Title', 'Creation Date', 'Close Date', 'Program Office', 'Index Level', 'Essential Records'];
                             let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
 //                             let date_regex = /(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d/;
                             let date_regex = /(0?[1-9]|1[012])[- \/.](0?[1-9]|[12][0-9]|3[01])[- \/.](19|20|21|25)\d\d/;

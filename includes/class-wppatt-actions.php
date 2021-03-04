@@ -53,6 +53,11 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_box_status_agents', array( $this, 'box_status_agents_update' ), 10, 3);             
       add_action( 'wpppatt_after_return_details_shipping', array( $this, 'return_details_shipping' ), 10, 3);        
       
+      add_action( 'wpppatt_after_assign_pallet', array($this,'assign_pallet'), 10, 3 );
+      add_action( 'wpppatt_after_unassign_pallet', array($this,'unassign_pallet'), 10, 3 ); 
+      
+      add_action( 'wpppatt_after_assign_box_location', array($this,'assign_box_location'), 10, 4 );
+      add_action( 'wpppatt_after_assign_pallet_location', array($this,'assign_pallet_location'), 10, 4 ); 
       
     }
     
@@ -603,7 +608,78 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $args = apply_filters( 'wpsc_thread_args', $args );
       $wpscfunction->submit_ticket_thread($args);
     }
+
+    //Box Physical Location Assignment
+    function assign_box_location ( $ticket_id, $location_id, $box_id, $user_name ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s assigned Box ID: %2$s to Location ID: %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($user_name).'</strong>','<strong>'. $box_id .'</strong>', '<strong>'. $location_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID %1$s assigned to Location ID: %2$s','supportcandy'), '<strong>'.$box_id.'</strong>', '<strong>'.$location_id.'</strong>');
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
     
+    //Pallet Physical Location Assignment
+    function assign_pallet_location ( $ticket_id, $location_id, $pallet_id, $user_name ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s assigned Pallet ID: %2$s to Location ID: %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($user_name).'</strong>','<strong>'. $pallet_id .'</strong>', '<strong>'. $location_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Pallet ID %1$s assigned to Location ID: %2$s','supportcandy'), '<strong>'.$pallet_id.'</strong>', '<strong>'.$location_id.'</strong>');
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    //Bulk Pallet Assignment
+    function assign_pallet ( $ticket_id, $box_id, $pallet_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s assigned Box ID: %2$s to Pallet ID: %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>', '<strong>'. $pallet_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID %1$s assigned to Pallet ID: %2$s','supportcandy'), '<strong>'.$box_id.'</strong>', '<strong>'.$pallet_id.'</strong>');
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    //Bulk Pallet Unassignment
+    function unassign_pallet ( $ticket_id, $box_id, $pallet_id){
+      global $wpscfunction, $current_user;
+      
+
+       if($current_user->ID){
+        $log_str = sprintf( __('%1$s unassigned Box ID: %2$s from Pallet ID: %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>', '<strong>'. $pallet_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID %1$s unassigned from Pallet ID: %2$s','supportcandy'), '<strong>'.$box_id.'</strong>', '<strong>'.$pallet_id.'</strong>');
+      }         
+          
+      
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
     
     
 }

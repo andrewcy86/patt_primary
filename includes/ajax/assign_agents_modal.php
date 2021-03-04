@@ -72,7 +72,7 @@ $box_statuses = get_terms([
 ]);
 
 // List of box status that do not need agents assigned.
-$ignore_box_status = ['Pending', 'Waiting/Shelved', 'Ingestion', 'Completed', 'Dispositioned', 'Waiting on RLO', 'Cancelled'];
+$ignore_box_status = ['Pending', 'Waiting/Shelved', 'Ingestion', 'Completed Permanent Records', 'Completed/Dispositioned', 'Waiting on RLO', 'Cancelled'];
 
 $term_id_array = array();
 foreach( $box_statuses as $key=>$box ) {
@@ -513,6 +513,7 @@ jQuery(document).ready(function(){
 					setting_action : 'filter_autocomplete',
 					term : term,
 					field : 'assigned_agent',
+					no_requesters : true,
 				}
 				jQuery.getJSON( wpsc_admin.ajax_url, request, function( data, status, xhr ) {
 					response(data);

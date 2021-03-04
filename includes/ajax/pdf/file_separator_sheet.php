@@ -38,7 +38,8 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
     RIGHT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location s ON a.storage_location_id = s.id
     INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-    WHERE ((c.index_level = 2 AND c.freeze = 1) OR (c.index_level = 2 AND s.aisle <> 0 AND s.bay <> 0 AND s.shelf <> 0 AND s.position <> 0 AND s.digitization_center <> 666)) AND 
+    WHERE ((c.index_level = 2 AND c.freeze = 1) OR 
+    (c.index_level = 2 AND s.aisle <> 0 AND s.bay <> 0 AND s.shelf <> 0 AND s.position <> 0 AND s.digitization_center <> 666 AND a.box_destroyed = 0)) AND 
     a.ticket_id = " .$GLOBALS['id']);
 
 //print_r($box_ids);
@@ -51,7 +52,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = a.id
-WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666) OR 
+WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0) OR 
 (d.index_level = 2 AND d.freeze = 1)) AND
 a.box_id = " .$item->id);
 
@@ -133,7 +134,8 @@ FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id - b.storage_location_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = a.id
-WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666) OR (d.index_level = 2 AND d.freeze = 1)) AND
+WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0) OR 
+(d.index_level = 2 AND d.freeze = 1)) AND
 d.folderdocinfofile_id = '" .$item."'");
 
 $parent = new stdClass;

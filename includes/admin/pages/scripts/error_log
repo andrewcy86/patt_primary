@@ -1,0 +1,13 @@
+[03-Mar-2021 19:52:43 UTC] WordPress database error Unknown column 'COUNT' in 'field list' for query SELECT COUNT id
+        FROM wpqa_wpsc_epa_boxinfo
+        WHERE pallet_id = 'P-E-26449'
+[03-Mar-2021 20:24:31 UTC] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_barcode_assignment.php on line 51
+[03-Mar-2021 20:27:16 UTC] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_barcode_assignment.php on line 51
+[03-Mar-2021 20:27:26 UTC] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_barcode_assignment.php on line 51
+[03-Mar-2021 20:28:57 UTC] PHP Warning:  array_push() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_barcode_assignment.php on line 51
+[03-Mar-2021 20:57:11 UTC] WordPress database error Unknown column 'COUNT' in 'field list' for query SELECT COUNT id
+        FROM wpqa_wpsc_epa_boxinfo
+        WHERE pallet_id = 'P-E-59829'
+[03-Mar-2021 21:41:53 UTC] WordPress database error Unknown column 'COUNT' in 'field list' for query SELECT COUNT id
+        FROM wpqa_wpsc_epa_boxinfo
+        WHERE pallet_id = 'P-E-75360'

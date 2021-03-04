@@ -1,0 +1,282 @@
+.collapsable-source pre {
+    font-size: small;
+}
+
+.input-field {
+    display: flex;
+    align-items: center;
+    width: 260px;
+}
+
+.input-field label {
+    flex: 0 0 auto;
+    padding-right: 0.5rem;
+}
+
+.input-field input {
+    flex: 1 1 auto;
+    height: 20px;
+}
+
+.input-field button {
+    flex: 0 0 auto;
+    height: 28px;
+    font-size: 20px;
+    width: 40px;
+}
+
+.overlay {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.overlay__content {
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-height: 90%;
+}
+
+.overlay__close {
+    position: absolute;
+    right: 0;
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    background-color: white;
+    cursor: pointer;
+    border: 3px solid black;
+    font-size: 1.5rem;
+    margin: -1rem;
+    border-radius: 2rem;
+    z-index: 100;
+    box-sizing: content-box;
+}
+
+.overlay__close_tag {
+    position: relative;
+    right: -77px;
+    top: -36px;
+    width: 1rem;
+    text-align: center;
+    background-color: white;
+    cursor: pointer;
+    border: 3px solid black;
+    font-size: .8rem;
+    margin: -.9rem;
+    border-radius: 2rem;
+    z-index: 100;
+    box-sizing: content-box;
+}
+
+.overlay__content video {
+    width: 100%;
+    height: 100%;
+}
+
+.overlay__content canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+input[type=file] {
+	display: none;
+}
+
+/* line 16, ../sass/_viewport.scss */
+.controls fieldset {
+  border: none;
+}
+/* line 19, ../sass/_viewport.scss */
+.controls .input-group {
+  float: left;
+}
+/* line 21, ../sass/_viewport.scss */
+.controls .input-group input, .controls .input-group button {
+  display: block;
+}
+/* line 25, ../sass/_viewport.scss */
+.controls .reader-config-group {
+  float: right;
+}
+/* line 28, ../sass/_viewport.scss */
+.controls .reader-config-group label {
+  display: block;
+}
+/* line 30, ../sass/_viewport.scss */
+.controls .reader-config-group label span {
+  width: 11rem;
+  display: inline-block;
+  text-align: right;
+}
+/* line 37, ../sass/_viewport.scss */
+.controls:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+/* line 44, ../sass/_viewport.scss */
+#result_strip {
+  margin: 10px 0;
+  border-top: 1px solid #EEE;
+  border-bottom: 1px solid #EEE;
+  padding: 10px 0;
+}
+/* line 50, ../sass/_viewport.scss */
+#result_strip > ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  width: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+/* line 59, ../sass/_viewport.scss */
+#result_strip > ul > li {
+  display: inline-block;
+  vertical-align: middle;
+  width: 160px;
+}
+/* line 63, ../sass/_viewport.scss */
+#result_strip > ul > li .thumbnail {
+  padding: 5px;
+  margin: 4px;
+  border: 1px dashed #CCC;
+}
+/* line 68, ../sass/_viewport.scss */
+#result_strip > ul > li .thumbnail img {
+  max-width: 140px;
+}
+/* line 71, ../sass/_viewport.scss */
+#result_strip > ul > li .thumbnail .caption {
+  white-space: normal;
+}
+/* line 73, ../sass/_viewport.scss */
+#result_strip > ul > li .thumbnail .caption h4 {
+  text-align: center;
+  word-wrap: break-word;
+  height: 40px;
+  margin: 0px;
+}
+/* line 83, ../sass/_viewport.scss */
+#result_strip > ul:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@media (max-width: 603px) {
+ /* line 20, ../sass/phone/_viewport.scss */
+  #result_strip {
+    margin-top: 5px;
+    padding-top: 5px;
+  }
+  /* line 24, ../sass/phone/_viewport.scss */
+  #result_strip ul.thumbnails > li {
+    width: 150px;
+  }
+  /* line 27, ../sass/phone/_viewport.scss */
+  #result_strip ul.thumbnails > li .thumbnail .imgWrapper {
+    width: 130px;
+    height: 130px;
+    overflow: hidden;
+  }
+  /* line 31, ../sass/phone/_viewport.scss */
+  #result_strip ul.thumbnails > li .thumbnail .imgWrapper img {
+    margin-top: -25px;
+    width: 130px;
+    height: 180px;
+  }
+}
+
+html {
+    height: 100%;
+}
+html, body {
+    min-height: 100%;
+}
+
+body {
+  background-color: #FFF;
+  margin: 0px;
+  font-family: Ubuntu, sans-serif;
+  color: #1e1e1e;
+  font-weight: normal;
+  padding-top: 0;
+  box-sizing: border-box;
+  padding-bottom: 96px;
+  position: relative;
+}
+
+/* line 24, ../sass/styles.scss */
+h1, h2, h3, h4 {
+  font-family: "Cabin Condensed", sans-serif;
+}
+
+/* line 28, ../sass/styles.scss */
+header {
+  background: #1C5D8A;
+  padding: 1em;
+}
+/* line 31, ../sass/styles.scss */
+header .headline {
+  max-width: 640px;
+  margin: 0 auto;
+}
+/* line 34, ../sass/styles.scss */
+header .headline h1 {
+  font-size: 3em;
+  margin-bottom: 0;
+  color: #FFF;
+}
+/* line 39, ../sass/styles.scss */
+.headline h2 {
+  margin-top: 0.2em;
+  color: #7aa7c7;
+}
+
+/* line 45, ../sass/styles.scss */
+footer {
+  background: #0A4DB7;
+  color: #6C9CE8;
+  padding: 1em 2em 2em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* line 51, ../sass/styles.scss */
+.container {
+  margin: 20px auto;
+  padding: 10px;
+  max-width: 640px;
+}
+
+#interactive.viewport {
+    position: relative;
+}
+
+#interactive.viewport > canvas, #interactive.viewport > video {
+    max-width: 100%;
+    width: 100%;
+}
+
+canvas.drawing {
+    position: absolute;
+}

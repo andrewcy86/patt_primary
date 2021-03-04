@@ -104,7 +104,7 @@ if($page_id == 'filedetails') {
  
 $get_rescan = $wpdb->get_row("SELECT a.rescan, b.box_id 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.folderdocinfo_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.folderdocinfo_id = b.id
 WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
 $get_rescan_val = $get_rescan->rescan;
 $get_rescan_boxid_val = $get_rescan->box_id;

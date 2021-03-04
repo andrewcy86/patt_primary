@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 // set default filter for agents and customers //not true
-global $current_user, $wpscfunction, $current_user;
+global $wpdb, $current_user, $wpscfunction;
 
 if (!$current_user->ID) die();
 
@@ -66,6 +66,30 @@ foreach( $assigned_agent_ids as $term_id ) {
 	$wp_user_ids[] = $agent_term_id;
 }
 
+//
+// Get box status for save/restore
+//
+
+$box_id_array = Patt_Custom_Func::get_box_id_by_id( $box_fk );
+$box_id = $box_id_array[0];
+$box_obj = Patt_Custom_Func::get_box_file_details_by_id( $box_id );
+$box_status = $box_obj->box_status;
+
+// create function for FK on FDIF ($folderdoc_files_fk)
+
+if( !taxonomy_exists('wpsc_box_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
+} 
+
+$status_waiting_rlo_term_id = get_term_by( 'slug', 'waiting-on-rlo', 'wpsc_box_statuses' );	 
+$status_waiting_rlo_term_id = $status_waiting_rlo_term_id->term_id;
+
+
+
 // Get term_id for recall status slug
 $recall_status_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
 
@@ -87,6 +111,7 @@ $data = [
 	'return_date' => $date_null,
 	'updated_date' => $current_datetime, 
 	'comments' => $recall_comment, 
+	'saved_box_status' => $box_status
 ];
 
 $recall_id = Patt_Custom_Func::insert_recall_data($data);
@@ -131,7 +156,13 @@ if($recall_id == 0) {
 	$recall_obj = $recall_array[$recall_array_key];
 	
 	
-	
+	//
+	// Update Box status to Waiting on RLO
+	//
+	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+	$data_where = array( 'id' => $box_fk );
+	$data_update = array( 'box_status' => $status_waiting_rlo_term_id );
+	$wpdb->update( $table_name, $data_update, $data_where );
 	
 	//
 	// Add Recall Comment to Threaded Comments.
@@ -139,10 +170,13 @@ if($recall_id == 0) {
 	
 	// Prepare arguments
 	
-	if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id == $db_null ) {
+	//if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id == $db_null ) {
+	//if( $recall_obj->folderdoc_id == $db_null ) {	
+	if( $recall_obj->folderdoc_id == null ) {		
 		$recall_type = "Box";
 		$item_id = $recall_obj->box_id;
-	} elseif ($recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== $db_null) {
+// 	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== $db_null ) {
+	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== null ) {
 		$recall_type = "Folder/File";
 		$item_id = $recall_obj->folderdoc_id;
 	} 
@@ -277,8 +311,11 @@ if($recall_id == 0) {
 	} else {
 		$notifications .= "Notification not sent. To Digi Staff.";
 	}
-
+	
+	//
 	// PM Notification to the Requestors
+	//
+	
 	$notification_post = 'email-id-has-been-recalled-requester';
 	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $results_requester, $requestid, $data, $email );
 	
@@ -301,6 +338,7 @@ $output = array(
   'notifications' => $notifications,
   'item_id' => $item_id,
   'ticket_id' => $ticket_id,
-  'args' => $args
+  'args' => $args,
+  'debug' => $recall_obj
 );
 echo json_encode($output);

@@ -245,6 +245,7 @@ $totalRecordwithFilter = $records['allcount'];
 $status_id = 5;
 
 ## Fetch records
+/*
 $boxQuery = "
 SELECT
 a.id as request_id,
@@ -264,6 +265,116 @@ WHEN sum(k.unauthorized_destruction = 1) > 0 THEN CONCAT(' <span style=\"font-si
 ELSE ''
 END
 ) as request_id_flag,
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
+'</span>') as ticket_priority,
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_status),
+'</span>') as ticket_status,
+CASE 
+WHEN a.ticket_priority = 621
+THEN
+1
+WHEN a.ticket_priority = 9
+THEN
+2
+WHEN a.ticket_priority = 8
+THEN
+3
+WHEN a.ticket_priority = 7
+THEN
+4
+ELSE
+999
+END
+ as ticket_priority_order,
+CASE 
+WHEN a.ticket_status = 3
+THEN
+1
+WHEN a.ticket_status = 4
+THEN
+2
+WHEN a.ticket_status = 670
+THEN
+3
+WHEN a.ticket_status = 5
+THEN
+4
+WHEN a.ticket_status = 63
+THEN
+5
+WHEN a.ticket_status = 69
+THEN
+6
+ELSE
+999
+END
+ as ticket_status_order,
+CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
+CONCAT (
+CASE
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+g.user_login
+,'\">',
+(
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
+    END
+)
+,'</a>' )
+ELSE g.user_login
+END
+) as customer_name,
+a.date_updated as date_updated,
+GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo as z ON z.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files k ON k.folderdocinfo_id = z.id
+LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
+LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
+LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = z.id AND h.folderdoc_id <> '-99999')
+   
+   
+LEFT JOIN (   SELECT a.box_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY box_id ) AS i ON i.box_id = b.id
+LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = z.id
+WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999
+group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+
+*/
+
+$boxQuery = "
+SELECT
+a.id as request_id,
+a.request_id as patt_request_id,
+CONCAT(
+'<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
@@ -387,6 +498,9 @@ $seconds = time() - strtotime($row['date_updated']);
 
 $decline_icon = '';
 $recall_icon = '';
+$unauthorized_destruction_icon = '';
+$freeze_icon = '';
+$box_destroyed_icon = '';
 $type = 'request';
 
 if(Patt_Custom_Func::id_in_return($row['patt_request_id'],$type) == 1){
@@ -400,11 +514,22 @@ $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i cl
 }
 $full_name = '<span style="display: none;" aria-label="'.$row['full_name'].'"></span>';
 
+if(Patt_Custom_Func::id_in_unauthorized_destruction($row['patt_request_id'],$type) == 1) {
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_freeze($row['patt_request_id'],$type) == 1) {
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
+    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+}
 
 
    $data[] = array(
      "request_id"=>$row['request_id'],
-     "request_id_flag"=>$row['request_id_flag'].$decline_icon.$recall_icon,
+     "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$row['ticket_priority'],
      "ticket_status"=>$row['ticket_status'],
      "customer_name"=>$row['customer_name'].$full_name,

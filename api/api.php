@@ -3967,7 +3967,7 @@ namespace Tqdev\PhpCrudApi\Column\Reflection {
         {
             $columns = array();
             foreach ($this->fks as $columnName => $referencedTableName) {
-                if ($tableName == $referencedTableName) {
+                if ($tableName == $referencedTableName && !is_null($this->columns[$columnName])) {
                     $columns[] = $this->columns[$columnName];
                 }
             }
@@ -4522,21 +4522,66 @@ namespace Tqdev\PhpCrudApi\Controller {
     use Tqdev\PhpCrudApi\Record\Document\ErrorDocument;
     use Tqdev\PhpCrudApi\Record\ErrorCode;
     use Tqdev\PhpCrudApi\ResponseFactory;
+    use Tqdev\PhpCrudApi\ResponseUtils;
 
     class JsonResponder implements Responder
     {
+        private $debug;
+
+        public function __construct(bool $debug)
+        {
+            $this->debug = $debug;
+        }
+
         public function error(int $error, string $argument, $details = null): ResponseInterface
         {
-            $errorCode = new ErrorCode($error);
-            $status = $errorCode->getStatus();
-            $document = new ErrorDocument($errorCode, $argument, $details);
-            return ResponseFactory::fromObject($status, $document);
+            $document = new ErrorDocument(new ErrorCode($error), $argument, $details);
+            return ResponseFactory::fromObject($document->getStatus(), $document);
         }
 
         public function success($result): ResponseInterface
         {
             return ResponseFactory::fromObject(ResponseFactory::OK, $result);
         }
+
+        public function exception($exception): ResponseInterface
+        {
+            $document = ErrorDocument::fromException($exception);
+            $response = ResponseFactory::fromObject($document->getStatus(), $document);
+            if ($this->debug) {
+                $response = ResponseUtils::addExceptionHeaders($response, $exception);
+            }
+            return $response;
+        }
+
+        public function multi($results): ResponseInterface
+        {
+            $documents = array();
+            $errors = array();
+            $success = true;
+            foreach ($results as $i => $result) {
+                if ($result instanceof \Throwable) {
+                    $documents[$i] = null;
+                    $errors[$i] = ErrorDocument::fromException($result);
+                    $success = false;
+                } else {
+                    $documents[$i] = $result;
+                    $errors[$i] = new ErrorDocument(new ErrorCode(0), '', null);
+                }
+            }
+            $status = $success ? ResponseFactory::OK : ResponseFactory::FAILED_DEPENDENCY;
+            $document = $success ? $documents : $errors;
+            $response = ResponseFactory::fromObject($status, $document);
+            foreach ($results as $i => $result) {
+                if ($result instanceof \Throwable) {
+                    if ($this->debug) {
+                        $response = ResponseUtils::addExceptionHeaders($response, $result);
+                    }
+                }
+            }
+            return $response;
+        }
+
     }
 }
 
@@ -4614,11 +4659,11 @@ namespace Tqdev\PhpCrudApi\Controller {
             $params = RequestUtils::getParams($request);
             if (strpos($id, ',') !== false) {
                 $ids = explode(',', $id);
-                $result = [];
+                $argumentLists = array();
                 for ($i = 0; $i < count($ids); $i++) {
-                    array_push($result, $this->service->read($table, $ids[$i], $params));
+                    $argumentLists[] = array($table, $ids[$i], $params);
                 }
-                return $this->responder->success($result);
+                return $this->responder->multi($this->multiCall([$this->service, 'read'], $argumentLists));
             } else {
                 $response = $this->service->read($table, $id, $params);
                 if ($response === null) {
@@ -4626,6 +4671,27 @@ namespace Tqdev\PhpCrudApi\Controller {
                 }
                 return $this->responder->success($response);
             }
+        }
+
+        private function multiCall(callable $method, array $argumentLists): array
+        {
+            $result = array();
+            $success = true;
+            $this->service->beginTransaction();
+            foreach ($argumentLists as $arguments) {
+                try {
+                    $result[] = call_user_func_array($method, $arguments);
+                } catch (\Throwable $e) {
+                    $success = false;
+                    $result[] = $e;
+                }
+            }
+            if ($success) {
+                $this->service->commitTransaction();
+            } else {
+                $this->service->rollBackTransaction();
+            }
+            return $result;
         }
 
         public function create(ServerRequestInterface $request): ResponseInterface
@@ -4643,11 +4709,11 @@ namespace Tqdev\PhpCrudApi\Controller {
             }
             $params = RequestUtils::getParams($request);
             if (is_array($record)) {
-                $result = array();
+                $argumentLists = array();
                 foreach ($record as $r) {
-                    $result[] = $this->service->create($table, $r, $params);
+                    $argumentLists[] = array($table, $r, $params);
                 }
-                return $this->responder->success($result);
+                return $this->responder->multi($this->multiCall([$this->service, 'create'], $argumentLists));
             } else {
                 return $this->responder->success($this->service->create($table, $record, $params));
             }
@@ -4673,11 +4739,11 @@ namespace Tqdev\PhpCrudApi\Controller {
                 if (count($ids) != count($record)) {
                     return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
                 }
-                $result = array();
+                $argumentLists = array();
                 for ($i = 0; $i < count($ids); $i++) {
-                    $result[] = $this->service->update($table, $ids[$i], $record[$i], $params);
+                    $argumentLists[] = array($table, $ids[$i], $record[$i], $params);
                 }
-                return $this->responder->success($result);
+                return $this->responder->multi($this->multiCall([$this->service, 'update'], $argumentLists));
             } else {
                 if (count($ids) != 1) {
                     return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
@@ -4699,11 +4765,11 @@ namespace Tqdev\PhpCrudApi\Controller {
             $params = RequestUtils::getParams($request);
             $ids = explode(',', $id);
             if (count($ids) > 1) {
-                $result = array();
+                $argumentLists = array();
                 for ($i = 0; $i < count($ids); $i++) {
-                    $result[] = $this->service->delete($table, $ids[$i], $params);
+                    $argumentLists[] = array($table, $ids[$i], $params);
                 }
-                return $this->responder->success($result);
+                return $this->responder->multi($this->multiCall([$this->service, 'delete'], $argumentLists));
             } else {
                 return $this->responder->success($this->service->delete($table, $id, $params));
             }
@@ -4729,11 +4795,11 @@ namespace Tqdev\PhpCrudApi\Controller {
                 if (count($ids) != count($record)) {
                     return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
                 }
-                $result = array();
+                $argumentLists = array();
                 for ($i = 0; $i < count($ids); $i++) {
-                    $result[] = $this->service->increment($table, $ids[$i], $record[$i], $params);
+                    $argumentLists[] = array($table, $ids[$i], $record[$i], $params);
                 }
-                return $this->responder->success($result);
+                return $this->responder->multi($this->multiCall([$this->service, 'increment'], $argumentLists));
             } else {
                 if (count($ids) != 1) {
                     return $this->responder->error(ErrorCode::ARGUMENT_COUNT_MISMATCH, $id);
@@ -5435,6 +5501,21 @@ namespace Tqdev\PhpCrudApi\Database {
             return $this->definition;
         }
 
+        public function beginTransaction() /*: void*/
+        {
+            $this->pdo->beginTransaction();
+        }
+
+        public function commitTransaction() /*: void*/
+        {
+            $this->pdo->commit();
+        }
+
+        public function rollBackTransaction() /*: void*/
+        {
+            $this->pdo->rollBack();
+        }
+
         private function addMiddlewareConditions(string $tableName, Condition $condition): Condition
         {
             $condition1 = VariableStore::get("authorization.conditions.$tableName");
@@ -5609,7 +5690,7 @@ namespace Tqdev\PhpCrudApi\Database {
                 $this->port,
                 $this->database,
                 $this->tables,
-                $this->username
+                $this->username,
             ]));
         }
     }
@@ -6387,7 +6468,7 @@ namespace Tqdev\PhpCrudApi\Database {
             return $this->pdo()->lastInsertId($name);
         }
 
-        public function query(string $statement): \PDOStatement
+        public function query($query, /* ?int */$fetchMode = null, ...$fetchModeArgs): \PDOStatement
         {
             return call_user_func_array(array($this->pdo(), 'query'), func_get_args());
         }
@@ -6979,19 +7060,17 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
         private $responder;
         private $cache;
         private $ttl;
-        private $debug;
         private $registration;
         private $routes;
         private $routeHandlers;
         private $middlewares;
 
-        public function __construct(string $basePath, Responder $responder, Cache $cache, int $ttl, bool $debug)
+        public function __construct(string $basePath, Responder $responder, Cache $cache, int $ttl)
         {
             $this->basePath = rtrim($this->detectBasePath($basePath), '/');
             $this->responder = $responder;
             $this->cache = $cache;
             $this->ttl = $ttl;
-            $this->debug = $debug;
             $this->registration = true;
             $this->routes = $this->loadPathTree();
             $this->routeHandlers = [];
@@ -7065,7 +7144,7 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
             $method = strtoupper($request->getMethod());
             $path = array();
             $segment = $method;
-            for ($i = 1; $segment; $i++) {
+            for ($i = 1; strlen($segment) > 0; $i++) {
                 array_push($path, $segment);
                 $segment = RequestUtils::getPathSegment($request, $i);
             }
@@ -7102,23 +7181,8 @@ namespace Tqdev\PhpCrudApi\Middleware\Router {
             }
             try {
                 $response = call_user_func($this->routeHandlers[$routeNumbers[0]], $request);
-            } catch (\PDOException $e) {
-                if (strpos(strtolower($e->getMessage()), 'duplicate') !== false) {
-                    $response = $this->responder->error(ErrorCode::DUPLICATE_KEY_EXCEPTION, '');
-                } elseif (strpos(strtolower($e->getMessage()), 'unique constraint') !== false) {
-                    $response = $this->responder->error(ErrorCode::DUPLICATE_KEY_EXCEPTION, '');
-                } elseif (strpos(strtolower($e->getMessage()), 'default value') !== false) {
-                    $response = $this->responder->error(ErrorCode::DATA_INTEGRITY_VIOLATION, '');
-                } elseif (strpos(strtolower($e->getMessage()), 'allow nulls') !== false) {
-                    $response = $this->responder->error(ErrorCode::DATA_INTEGRITY_VIOLATION, '');
-                } elseif (strpos(strtolower($e->getMessage()), 'constraint') !== false) {
-                    $response = $this->responder->error(ErrorCode::DATA_INTEGRITY_VIOLATION, '');
-                } else {
-                    $response = $this->responder->error(ErrorCode::ERROR_NOT_FOUND, '');
-                }
-                if ($this->debug) {
-                    $response = ResponseUtils::addExceptionHeaders($response, $e);
-                }
+            } catch (\Throwable $exception) {
+                $response = $this->responder->exception($exception);
             }
             return $response;
         }
@@ -7558,16 +7622,19 @@ namespace Tqdev\PhpCrudApi\Middleware {
             }
             $path = RequestUtils::getPathSegment($request, 1);
             $method = $request->getMethod();
-            if ($method == 'POST' && $path == 'login') {
+            if ($method == 'POST' && in_array($path, ['login', 'register', 'password'])) {
                 $body = $request->getParsedBody();
                 $username = isset($body->username) ? $body->username : '';
                 $password = isset($body->password) ? $body->password : '';
+                $newPassword = isset($body->newPassword) ? $body->newPassword : '';
                 $tableName = $this->getProperty('usersTable', 'users');
                 $table = $this->reflection->getTable($tableName);
                 $usernameColumnName = $this->getProperty('usernameColumn', 'username');
                 $usernameColumn = $table->getColumn($usernameColumnName);
                 $passwordColumnName = $this->getProperty('passwordColumn', 'password');
-                $passwordColumn = $table->getColumn($passwordColumnName);
+                $passwordLength = $this->getProperty('passwordLength', '12');
+                $pkName = $table->getPk()->getName();
+                $registerUser = $this->getProperty('registerUser', '');
                 $condition = new ColumnCondition($usernameColumn, 'eq', $username);
                 $returnedColumns = $this->getProperty('returnedColumns', '');
                 if (!$returnedColumns) {
@@ -7575,20 +7642,68 @@ namespace Tqdev\PhpCrudApi\Middleware {
                 } else {
                     $columnNames = array_map('trim', explode(',', $returnedColumns));
                     $columnNames[] = $passwordColumnName;
+                    $columnNames[] = $pkName;
+                    $columnNames = array_values(array_unique($columnNames));
                 }
                 $columnOrdering = $this->ordering->getDefaultColumnOrdering($table);
-                $users = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, 0, 1);
-                foreach ($users as $user) {
-                    if (password_verify($password, $user[$passwordColumnName]) == 1) {
-                        if (!headers_sent()) {
-                            session_regenerate_id(true);
-                        }
+                if ($path == 'register') {
+                    if (!$registerUser) {
+                        return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
+                    }
+                    if (strlen($password) < $passwordLength) {
+                        return $this->responder->error(ErrorCode::PASSWORD_TOO_SHORT, $passwordLength);
+                    }
+                    $users = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, 0, 1);
+                    if (!empty($users)) {
+                        return $this->responder->error(ErrorCode::USER_ALREADY_EXIST, $username);
+                    }
+                    $data = json_decode($registerUser, true);
+                    $data = is_array($data) ? $data : [];
+                    $data[$usernameColumnName] = $username;
+                    $data[$passwordColumnName] = password_hash($password, PASSWORD_DEFAULT);
+                    $this->db->createSingle($table, $data);
+                    $users = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, 0, 1);
+                    foreach ($users as $user) {
                         unset($user[$passwordColumnName]);
-                        $_SESSION['user'] = $user;
                         return $this->responder->success($user);
                     }
+                    return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
                 }
-                return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
+                if ($path == 'login') {
+                    $users = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, 0, 1);
+                    foreach ($users as $user) {
+                        if (password_verify($password, $user[$passwordColumnName]) == 1) {
+                            if (!headers_sent()) {
+                                session_regenerate_id(true);
+                            }
+                            unset($user[$passwordColumnName]);
+                            $_SESSION['user'] = $user;
+                            return $this->responder->success($user);
+                        }
+                    }
+                    return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
+                }
+                if ($path == 'password') {
+                    if ($username != ($_SESSION['user'][$usernameColumnName] ?? '')) {
+                        return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
+                    }
+                    if (strlen($newPassword) < $passwordLength) {
+                        return $this->responder->error(ErrorCode::PASSWORD_TOO_SHORT, $passwordLength);
+                    }
+                    $users = $this->db->selectAll($table, $columnNames, $condition, $columnOrdering, 0, 1);
+                    foreach ($users as $user) {
+                        if (password_verify($password, $user[$passwordColumnName]) == 1) {
+                            if (!headers_sent()) {
+                                session_regenerate_id(true);
+                            }
+                            $data = [$passwordColumnName => password_hash($newPassword, PASSWORD_DEFAULT)];
+                            $this->db->updateSingle($table, $data, $user[$pkName]);
+                            unset($user[$passwordColumnName]);
+                            return $this->responder->success($user);
+                        }
+                    }
+                    return $this->responder->error(ErrorCode::AUTHENTICATION_FAILED, $username);
+                }
             }
             if ($method == 'POST' && $path == 'logout') {
                 if (isset($_SESSION['user'])) {
@@ -7598,6 +7713,12 @@ namespace Tqdev\PhpCrudApi\Middleware {
                         session_destroy();
                     }
                     return $this->responder->success($user);
+                }
+                return $this->responder->error(ErrorCode::AUTHENTICATION_REQUIRED, '');
+            }
+            if ($method == 'GET' && $path == 'me') {
+                if (isset($_SESSION['user'])) {
+                    return $this->responder->success($_SESSION['user']);
                 }
                 return $this->responder->error(ErrorCode::AUTHENTICATION_REQUIRED, '');
             }
@@ -8689,7 +8810,11 @@ namespace Tqdev\PhpCrudApi\Middleware {
 
         private function xml2json($xml)
         {
-            $a = @dom_import_simplexml(simplexml_load_string($xml));
+            $o = @simplexml_load_string($xml);
+            if ($o===false) {
+                return null;
+            }
+            $a = @dom_import_simplexml($o);
             if (!$a) {
                 return null;
             }
@@ -9729,39 +9854,65 @@ namespace Tqdev\PhpCrudApi\Record\Document {
 
     class ErrorDocument implements \JsonSerializable
     {
-        public $code;
-        public $message;
+        public $errorCode;
+        public $argument;
         public $details;
 
         public function __construct(ErrorCode $errorCode, string $argument, $details)
         {
-            $this->code = $errorCode->getCode();
-            $this->message = $errorCode->getMessage($argument);
+            $this->errorCode = $errorCode;
+            $this->argument = $argument;
             $this->details = $details;
+        }
+
+        public function getStatus(): int
+        {
+            return $this->errorCode->getStatus();
         }
 
         public function getCode(): int
         {
-            return $this->code;
+            return $this->errorCode->getCode();
         }
 
         public function getMessage(): string
         {
-            return $this->message;
+            return $this->errorCode->getMessage($this->argument);
         }
 
         public function serialize()
         {
             return [
-                'code' => $this->code,
-                'message' => $this->message,
+                'code' => $this->getCode(),
+                'message' => $this->getMessage(),
                 'details' => $this->details,
             ];
         }
 
         public function jsonSerialize()
         {
-            return array_filter($this->serialize());
+            return array_filter($this->serialize(), function($v) {return $v!==null;});
+        }
+
+        public static function fromException(\Throwable $exception)
+        {
+            $document = new ErrorDocument(new ErrorCode(ErrorCode::ERROR_NOT_FOUND), $exception->getMessage(), null);
+            if ($exception instanceof \PDOException) {
+                if (strpos(strtolower($exception->getMessage()), 'duplicate') !== false) {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::DUPLICATE_KEY_EXCEPTION), '', null);
+                } elseif (strpos(strtolower($exception->getMessage()), 'unique constraint') !== false) {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::DUPLICATE_KEY_EXCEPTION), '', null);
+                } elseif (strpos(strtolower($exception->getMessage()), 'default value') !== false) {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::DATA_INTEGRITY_VIOLATION), '', null);
+                } elseif (strpos(strtolower($exception->getMessage()), 'allow nulls') !== false) {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::DATA_INTEGRITY_VIOLATION), '', null);
+                } elseif (strpos(strtolower($exception->getMessage()), 'constraint') !== false) {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::DATA_INTEGRITY_VIOLATION), '', null);
+                } else {
+                    $document = new ErrorDocument(new ErrorCode(ErrorCode::ERROR_NOT_FOUND), '', null);
+                }
+            }
+            return $document;
         }
     }
 }
@@ -9912,9 +10063,11 @@ namespace Tqdev\PhpCrudApi\Record {
         const BAD_OR_MISSING_XSRF_TOKEN = 1017;
         const ONLY_AJAX_REQUESTS_ALLOWED = 1018;
         const PAGINATION_FORBIDDEN = 1019;
+        const USER_ALREADY_EXIST = 1020;
+        const PASSWORD_TOO_SHORT = 1021;
 
         private $values = [
-            9999 => ["%s", ResponseFactory::INTERNAL_SERVER_ERROR],
+            0000 => ["Success", ResponseFactory::OK],
             1000 => ["Route '%s' not found", ResponseFactory::NOT_FOUND],
             1001 => ["Table '%s' not found", ResponseFactory::NOT_FOUND],
             1002 => ["Argument count mismatch in '%s'", ResponseFactory::UNPROCESSABLE_ENTITY],
@@ -9935,6 +10088,9 @@ namespace Tqdev\PhpCrudApi\Record {
             1017 => ["Bad or missing XSRF token", ResponseFactory::FORBIDDEN],
             1018 => ["Only AJAX requests allowed for '%s'", ResponseFactory::FORBIDDEN],
             1019 => ["Pagination forbidden", ResponseFactory::FORBIDDEN],
+            1020 => ["User '%s' already exists", ResponseFactory::CONFLICT],
+            1021 => ["Password too short (<%d characters)", ResponseFactory::UNPROCESSABLE_ENTITY],
+            9999 => ["%s", ResponseFactory::INTERNAL_SERVER_ERROR],
         ];
 
         public function __construct(int $code)
@@ -10282,6 +10438,21 @@ namespace Tqdev\PhpCrudApi\Record {
         public function getType(string $table): string
         {
             return $this->reflection->getType($table);
+        }
+
+        public function beginTransaction() /*: void*/
+        {
+            $this->db->beginTransaction();
+        }
+
+        public function commitTransaction() /*: void*/
+        {
+            $this->db->commitTransaction();
+        }
+
+        public function rollBackTransaction() /*: void*/
+        {
+            $this->db->rollBackTransaction();
         }
 
         public function create(string $tableName, /* object */ $record, array $params) /*: ?int*/
@@ -10708,8 +10879,8 @@ namespace Tqdev\PhpCrudApi {
             $prefix = sprintf('phpcrudapi-%s-', substr(md5(__FILE__), 0, 8));
             $cache = CacheFactory::create($config->getCacheType(), $prefix, $config->getCachePath());
             $reflection = new ReflectionService($db, $cache, $config->getCacheTime());
-            $responder = new JsonResponder();
-            $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime(), $config->getDebug());
+            $responder = new JsonResponder($config->getDebug());
+            $router = new SimpleRouter($config->getBasePath(), $responder, $cache, $config->getCacheTime());
             foreach ($config->getMiddlewares() as $middleware => $properties) {
                 switch ($middleware) {
                     case 'sslRedirect':
@@ -11232,6 +11403,7 @@ namespace Tqdev\PhpCrudApi {
         const METHOD_NOT_ALLOWED = 405;
         const CONFLICT = 409;
         const UNPROCESSABLE_ENTITY = 422;
+        const FAILED_DEPENDENCY = 424;
         const INTERNAL_SERVER_ERROR = 500;
 
         public static function fromXml(int $status, string $xml): ResponseInterface
@@ -11334,8 +11506,8 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
 
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
-require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7))); 
+include_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */

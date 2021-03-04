@@ -33,7 +33,6 @@ $columnName = 'box_status_order';
 $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 }
 ## Custom Field value
-$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
 $searchByProgramOffice = $_POST['searchByProgramOffice'];
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByPriority = $_POST['searchByPriority'];
@@ -48,8 +47,36 @@ $is_requester = $_POST['is_requester'];
 
 ## Search 
 $searchQuery = " ";
-if($searchByBoxID != ''){
-   $searchQuery .= " and (a.box_id REGEXP '^(".$searchByBoxID.")$' ) ";
+
+//Add Pallet Support
+//Extract ID and determine if it is Box or Pallet
+//$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
+
+$BoxID_arr = explode(",", $_POST['searchByBoxID']);  
+
+$newBoxID_arr = array();
+$newPalletID_arr = array();
+
+foreach($BoxID_arr as $key => $value) {
+//Check if Box ID
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $value)) {
+array_push($newBoxID_arr,$value);
+}
+//Check if Pallet ID
+if (preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $value)) {
+array_push($newPalletID_arr,$value);
+}
+}
+
+$newBoxID_str = str_replace(",", "|", implode(',', $newBoxID_arr));
+$newPalletID_str = str_replace(",", "|", implode(',', $newPalletID_arr));
+
+if($newBoxID_str != ''){
+   $searchQuery .= " and (a.box_id REGEXP '^(".$newBoxID_str.")$' ) ";
+}
+
+if($newPalletID_str != ''){
+   $searchQuery .= " and (a.pallet_id REGEXP '^(".$newPalletID_str.")$' ) ";
 }
 
 if($searchByProgramOffice != ''){
@@ -227,6 +254,7 @@ if($searchByUser != ''){
 
 if($searchGeneric != ''){
    $searchQuery .= " and (a.box_id like '%".$searchGeneric."%' or 
+      (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
       b.request_id like '%".$searchGeneric."%' or 
       e.name like '%".$searchGeneric."%' or
       c.office_acronym like '%".$searchGeneric."%' or
@@ -234,7 +262,8 @@ if($searchGeneric != ''){
 }
 
 if($searchValue != ''){
-   $searchQuery .= " and (a.box_id like '%".$searchValue."%' or 
+   $searchQuery .= " and (a.box_id like '%".$searchValue."%' or
+      (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
       b.request_id like '%".$searchValue."%' or 
       e.name like '%".$searchValue."%' or
       c.office_acronym like '%".$searchValue."%' or
@@ -288,6 +317,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
+/*
 $boxQuery = "
 SELECT 
 a.box_id, a.id, f.name as box_status, f.term_id as term,
@@ -487,10 +517,146 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
    
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." 
+order by a.id AND ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+*/
 
 //INNER JOIN wpqa_wpsc_epa_boxinfo_userstatus g ON g.box_id = a.id
 //INNER JOIN wpqa_wpsc_epa_boxinfo_userstatus h ON h.box_id = a.id 
+
+$boxQuery = "
+SELECT 
+a.box_id, a.id as dbid, f.name as box_status, f.term_id as term,
+CONCAT(
+
+CASE WHEN 
+(
+SELECT sum(c.freeze = 1) 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id
+) <> 0 AND
+a.box_destroyed > 0 
+
+
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+
+WHEN a.box_destroyed > 0 
+
+
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+
+
+ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
+END) as box_id_flag,
+
+a.pallet_id as pallet_id,
+
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = b.ticket_priority),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = b.ticket_priority),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = b.ticket_priority),
+'</span>') as ticket_priority,
+
+CASE 
+WHEN b.ticket_priority = 621
+THEN
+1
+WHEN b.ticket_priority = 9
+THEN
+2
+WHEN b.ticket_priority = 8
+THEN
+3
+WHEN b.ticket_priority = 7
+THEN
+4
+ELSE
+999
+END
+ as ticket_priority_order,
+
+CASE 
+WHEN a.box_status = 748
+THEN
+1
+WHEN a.box_status = 816
+THEN
+2
+WHEN a.box_status = 672
+THEN
+3
+WHEN a.box_status = 671
+THEN
+4
+WHEN a.box_status = 65
+THEN
+5
+WHEN a.box_status = 6
+THEN
+6
+WHEN a.box_status = 673
+THEN
+7
+WHEN a.box_status = 674
+THEN
+8
+WHEN a.box_status = 743
+THEN
+9
+WHEN a.box_status = 68
+THEN
+10
+WHEN a.box_status = 67
+THEN
+11
+WHEN a.box_status = 66
+THEN
+12
+ELSE
+999
+END
+ as box_status_order,
+
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
+e.name as location, 
+c.office_acronym as acronym,
+CONCAT(
+CASE 
+WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
+THEN
+CONCAT((SELECT sum(c.validation = 1) 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
+WHERE b.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id WHERE fdi.box_id = a.id))
+ELSE '-'
+END
+) as validation
+
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
+
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
+INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY box_id) AS f ON (f.box_id = a.id)
+
+LEFT JOIN (   SELECT a.box_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
+   
+WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." 
+order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
@@ -510,6 +676,8 @@ while ($row = mysqli_fetch_assoc($boxRecords)) {
 
 $decline_icon = '';
 $recall_icon = '';
+$unauthorized_destruction_icon = '';
+$freeze_icon = '';
 $type = 'box';
 
 if(Patt_Custom_Func::id_in_return($row['box_id'],$type) == 1){
@@ -520,10 +688,49 @@ if(Patt_Custom_Func::id_in_recall($row['box_id'],$type) == 1){
 $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
 }
 
+if(Patt_Custom_Func::id_in_unauthorized_destruction($row['box_id'],$type) == 1) {
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_freeze($row['box_id'],$type) == 1) {
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+}
+
+$get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
+FROM wpqa_wpsc_epa_boxinfo a 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE a.box_id = '" .  $row['box_id'] . "'");
+
+$get_validation_count = $wpdb->get_row("SELECT SUM(c.validation) as val_count
+FROM wpqa_wpsc_epa_boxinfo a 
+INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+WHERE a.box_id = '" .  $row['box_id'] . "'");
+
+if(Patt_Custom_Func::id_in_validation($row['box_id'],$type) == 1) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ';
+}
+else if( ($get_validation_count->val_count > 0) && ($get_validation_count->val_count < $get_file_count->total) ) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ';
+}
+else {
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ';
+}
+
+if ($row['pallet_id'] == ''){
+$pallet_id = 'Unassigned';
+} else {
+$pallet_id = $row['pallet_id'];
+}
+
 	$data[] = array(
 		"box_id"=>$row['box_id'],
-		"box_id_flag"=>$row['box_id_flag'].$decline_icon.$recall_icon.$assigned_agents_icon,
+		"box_id_flag"=>$row['box_id_flag'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
+		"dbid"=>$row['dbid'],
+	    //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
 		//"ticket_priority"=>$row['ticket_priority_text'],
+		"pallet_id"=>$pallet_id,
 		"ticket_priority"=>$row['ticket_priority'],
 		"status"=>$box_status,
 		"request_id"=>$row['request_id'],
@@ -531,10 +738,18 @@ $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i cl
 		"acronym"=>$row['acronym'],
 // 		"acronym"=>$searchQuery,
 // 		"acronym"=>$searchByUserAAVal,
-		"validation"=>$row['validation'],
+		"validation"=>$validation_icon . ' ' . $row['validation'],
 	);
 }
 ## Response
+
+$obj = array(
+            'username'=>$lv_username,
+            'address'=>$lv_address,
+            'location'=>array('id'=>$lv_locationId)
+    );
+    
+    
 $response = array(
   "draw" => intval($draw),
   "iTotalRecords" => $totalRecords,

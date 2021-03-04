@@ -25,6 +25,10 @@ $rich_editing = $wpscfunction->rich_editing_status($current_user);
 $wpsc_allow_reply_confirmation = get_option('wpsc_allow_reply_confirmation');
 $ticket_status       = $wpscfunction->get_ticket_status($ticket_id);
 
+// Icons
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
@@ -106,12 +110,24 @@ $cancel_recall_btn_css = $action_default_btn_css;
 				$recall_type = "Box";
 				$title = "[Boxes Do Not Have Titles]";
 				$recall_item_id = $recall_obj->box_id;
-				$recall_item_id_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id='.$recall_item_id.'" >' .$recall_item_id. '</a>';
+				
+				$box_freeze = Patt_Custom_Func::id_in_freeze( $recall_item_id, 'box' );
+				if( $box_freeze ) {
+					$icons = $freeze_icon;
+				}
+				
+				$recall_item_id_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id='.$recall_item_id.'" >' .$recall_item_id. '</a>' . $icons;
 			} elseif ($recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== $db_null ) {
 				$recall_type = "Folder/File";
 				$title = $recall_obj->title;
 				$recall_item_id = $recall_obj->folderdoc_id;
-				$recall_item_id_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=boxsearch&page=filedetails&id='.$recall_item_id.'" >' .$recall_item_id. '</a>';			
+				
+				$file_freeze = Patt_Custom_Func::id_in_freeze( $recall_item_id, 'folderfile' );
+				if( $file_freeze ) {
+					$icons = $freeze_icon;
+				}
+				
+				$recall_item_id_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=boxsearch&page=filedetails&id='.$recall_item_id.'" >' .$recall_item_id. '</a>' . $icons;			
 			} elseif( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id > 0 ) {
 				$recall_type = "Test Data";
 				$title = $recall_obj->title;	
@@ -238,6 +254,9 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
 				}
 			}
+			
+			// Icons
+
 			
 			//echo '<br>Current user is on request: '.$current_user_on_request.'<br>';
 			//echo 'Current user can cancel: '.$user_can_cancel.'<br>';
@@ -1472,6 +1491,10 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 	
 	.wpsc_loading_icon {
 		margin-top: 0px !important;
+	}
+	
+	.fa-snowflake {
+		color: #009ACD;
 	}
 	
 </style>

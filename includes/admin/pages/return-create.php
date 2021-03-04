@@ -395,6 +395,11 @@ margin: 0px 0px 25px 15px;
 	left: 43%;
 	z-index: 100;
 }
+
+.datatable_header {
+	background-color: rgb(66, 73, 73) !important; 
+	color: rgb(255, 255, 255) !important; 
+}
 	
 </style>
 
@@ -1199,6 +1204,7 @@ margin: 0px 0px 25px 15px;
 				console.log(response_str);
 			    
 			    let response = JSON.parse(response_str);
+			    console.log( response );
 			    console.log(response.customer_name);
 			    console.log(response.data);	
 			    console.log(response.date);
@@ -1218,7 +1224,7 @@ margin: 0px 0px 25px 15px;
 					alert(success_str);
 					remove_all_tags();
 // 					location.href='admin.php?page=returncreate&success=true&id='+response.return_id; 
-					location.href='admin.php?page=declinecreate&success=true&id='+response.return_id; 
+					//location.href='admin.php?page=declinecreate&success=true&id='+response.return_id; 
 			    }
 			}); 
 			

@@ -227,6 +227,516 @@ switch (true) {
 }
 
 /**
+ * Determine if pallet ID exists in scan_list, if not remove pallet_id from the boxinfo table
+ */
+public static function pallet_cleanup() {
+global $wpdb;
+
+// Cleanup Pallet Locations from Box Info Table
+$get_box_ids_with_locations = $wpdb->get_results("SELECT box_id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE box_id IS NOT NULL");
+
+//Empty pallet_id column in boxinfo
+foreach ($get_box_ids_with_locations as $data) {
+$box_id_with_location = $data->box_id;
+$table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
+$pallet_boxinfo_update = array('pallet_id' => NULL);
+$pallet_boxinfo_where = array('box_id' => $box_id_with_location);
+$wpdb->update($table_box, $pallet_boxinfo_update, $pallet_boxinfo_where);
+}
+
+$scan_list_table = $wpdb->prefix . "wpsc_epa_scan_list";
+
+//Delete from scan_list table if pallet ID not in boxinfo table
+$scan_list_pallets = $wpdb->get_results("SELECT DISTINCT pallet_id FROM " . $wpdb->prefix . "wpsc_epa_scan_list WHERE pallet_id IS NOT NULL");
+$boxinfo_pallets = $wpdb->get_results("SELECT DISTINCT pallet_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE pallet_id <> '' ");
+$get_boxinfo_array = array();
+$get_scan_list_array = array();
+
+foreach($boxinfo_pallets as $info) {
+    $boxinfo_pallet_id = $info->pallet_id;
+    array_push($get_boxinfo_array, $boxinfo_pallet_id);
+}
+
+foreach($scan_list_pallets as $info) {
+    $scan_list_pallet_id = $info->pallet_id;
+    array_push($get_scan_list_array, $scan_list_pallet_id);
+}
+$result = array_diff($get_scan_list_array, $get_boxinfo_array);
+
+foreach($result as $diff) {
+    $wpdb->delete( $scan_list_table, array( 'pallet_id' => $diff) );
+}
+
+}
+
+/**
+ * Determine scanning_id, cart_id, or stagingarea_id from physical location of a box/pallet
+ */
+public static function id_in_physical_location( $identifier, $type ) {
+    global $wpdb;
+    
+    if($type == 'box' || $type == 'box_archive') {
+        
+        //If $identifier is a box ID
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id
+        FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+        AND b.box_id = '" .  $identifier . "'");
+
+        $scanning_id = $get_physical_location_id->scanning_id;
+        $stagingarea_id = $get_physical_location_id->stagingarea_id;
+        $cart_id = $get_physical_location_id->cart_id;
+        $shelf_location = $get_physical_location_id->shelf_location;
+        $pallet_id = $get_physical_location_id->pallet_id;
+        
+        if(empty($pallet_id)) {
+            $get_physical_location_no_pallet = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
+            FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+            INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.box_id = a.box_id
+            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+            AND b.box_id = '" .  $identifier . "'");
+    
+            $scanning_id = $get_physical_location_no_pallet->scanning_id;
+            $stagingarea_id = $get_physical_location_no_pallet->stagingarea_id;
+            $cart_id = $get_physical_location_no_pallet->cart_id;
+            $shelf_location = $get_physical_location_no_pallet->shelf_location;
+        }
+        
+        if(!empty($scanning_id)) {
+            return $scanning_id;
+        }
+        elseif(!empty($stagingarea_id)) {
+            return $stagingarea_id;
+        }
+        elseif(!empty($cart_id)) {
+            return $cart_id;
+        }
+        elseif(!empty($shelf_location)) {
+            return $shelf_location;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    if($type == 'folderfile') {
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id
+        FROM wpqa_wpsc_epa_scan_list a
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
+        AND d.folderdocinfofile_id = '" .  $identifier . "'");
+
+        $scanning_id = $get_physical_location_id->scanning_id;
+        $stagingarea_id = $get_physical_location_id->stagingarea_id;
+        $cart_id = $get_physical_location_id->cart_id;
+        $shelf_location = $get_physical_location_id->shelf_location;
+        $pallet_id = $get_physical_location_id->pallet_id;
+        
+        if(empty($pallet_id)) {
+            $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
+            FROM wpqa_wpsc_epa_scan_list a
+            INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
+            INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
+            INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
+            AND d.folderdocinfofile_id = '" .  $identifier . "'");
+    
+            $scanning_id = $get_physical_location_id->scanning_id;
+            $stagingarea_id = $get_physical_location_id->stagingarea_id;
+            $cart_id = $get_physical_location_id->cart_id;
+            $shelf_location = $get_physical_location_id->shelf_location;
+        }
+        
+        if(!empty($scanning_id)) {
+            return $scanning_id;
+        }
+        elseif(!empty($stagingarea_id)) {
+            return $stagingarea_id;
+        }
+        elseif(!empty($cart_id)) {
+            return $cart_id;
+        }
+        elseif(!empty($shelf_location)) {
+            return $shelf_location;
+        }
+        else {
+            return false;
+        }
+    }
+    if($type == 'folderfile_archive') {
+    $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
+    FROM wpqa_wpsc_epa_scan_list a
+    INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+    WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
+    AND d.folderdocinfofile_id = '" .  $identifier . "'");
+
+    $scanning_id = $get_physical_location_id->scanning_id;
+    $stagingarea_id = $get_physical_location_id->stagingarea_id;
+    $cart_id = $get_physical_location_id->cart_id;
+    $shelf_location = $get_physical_location_id->shelf_location;
+    $pallet_id = $get_physical_location_id->pallet_id;
+    
+    if(empty($pallet_id)) {
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
+        FROM wpqa_wpsc_epa_scan_list a
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
+        AND d.folderdocinfofile_id = '" .  $identifier . "'");
+
+        $scanning_id = $get_physical_location_id->scanning_id;
+        $stagingarea_id = $get_physical_location_id->stagingarea_id;
+        $cart_id = $get_physical_location_id->cart_id;
+        $shelf_location = $get_physical_location_id->shelf_location;
+    }
+        
+    if(!empty($scanning_id)) {
+        return $scanning_id;
+    }
+    elseif(!empty($stagingarea_id)) {
+        return $stagingarea_id;
+    }
+    elseif(!empty($cart_id)) {
+        return $cart_id;
+    }
+    elseif(!empty($shelf_location)) {
+        return $shelf_location;
+    }
+    else {
+        return false;
+    }
+}
+    
+}
+
+/**
+ * Determine if box is destroyed by type 
+ */
+public static function id_in_box_destroyed( $identifier, $type ) {
+    global $wpdb;
+    
+    if($type == 'request') {
+        $get_box_destroyed_data = $wpdb->get_row("SELECT SUM(b.box_destroyed) as total_box_destroyed
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $box_destroyed_sum = $get_box_destroyed_data->total_box_destroyed;
+	        
+		if ($box_destroyed_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box') {
+        $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        WHERE a.box_id = '" .  $identifier . "'");
+        $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
+	        
+		if ($box_destroyed > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box_archive') {
+        $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        WHERE a.box_id = '" .  $identifier . "'");
+        $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
+	        
+		if ($box_destroyed > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile') {
+        $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE c.folderdocinfofile_id = '" .  $identifier . "'");
+        $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
+	        
+		if ($box_destroyed > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    else if($type == 'folderfile_archive') {
+        $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE c.folderdocinfofile_id = '" .  $identifier . "'");
+        $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
+	        
+		if ($box_destroyed > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
+}
+
+/**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as freeze
+ * @return Boolean
+ */
+ 
+public static function id_in_rescan( $identifier, $type ) {
+    global $wpdb;
+    
+    if($type == 'folderfile') {
+        $get_rescan_data = $wpdb->get_row("SELECT rescan
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $rescan = $get_rescan_data->rescan;
+	        
+		if ($rescan > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    else if($type == 'folderfile_archive') {
+        $get_rescan_data = $wpdb->get_row("SELECT rescan
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $rescan = $get_rescan_data->rescan;
+	        
+		if ($rescan > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
+}
+
+/**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as freeze
+ * @return Boolean
+ */
+ 
+public static function id_in_validation( $identifier, $type ) {
+    global $wpdb;
+    
+    if($type == 'box') {
+        $get_validation_data = $wpdb->get_row("SELECT SUM(c.validation) as total_validation
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $validation_sum = $get_validation_data->total_validation;
+	   
+	   $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $file_count = $get_file_count->total;
+	   
+		if ($validation_sum == $file_count) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box_archive') {
+        $get_validation_data = $wpdb->get_row("SELECT SUM(c.validation) as total_validation
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $validation_sum = $get_validation_data->total_validation;
+	   
+	   $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $file_count = $get_file_count->total;
+	   
+		if ($validation_sum == $file_count) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile') {
+        $get_validation_data = $wpdb->get_row("SELECT validation
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $validation = $get_validation_data->validation;
+	        
+		if ($validation > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile_archive') {
+        $get_validation_data = $wpdb->get_row("SELECT validation
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $validation = $get_validation_data->validation;
+	        
+		if ($validation > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
+}
+
+/**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as freeze
+ * @return Boolean
+ */
+ 
+public static function id_in_freeze( $identifier, $type ) {
+    global $wpdb;
+    
+    if($type == 'request') {
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(d.freeze) as total_freeze
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $freeze_sum = $get_freeze_data->total_freeze;
+	        
+		if ($freeze_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'request_archive') {
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(d.freeze) as total_freeze
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $freeze_sum = $get_freeze_data->total_freeze;
+	        
+		if ($freeze_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box') {
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $freeze_sum = $get_freeze_data->total_freeze;
+	        
+		if ($freeze_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box_archive') {
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $freeze_sum = $get_freeze_data->total_freeze;
+	        
+		if ($freeze_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile') {
+        $get_freeze_data = $wpdb->get_row("SELECT freeze
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $freeze = $get_freeze_data->freeze;
+	        
+		if ($freeze > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile_archive') {
+        $get_freeze_data = $wpdb->get_row("SELECT freeze
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $freeze = $get_freeze_data->freeze;
+	        
+		if ($freeze > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
+}
+
+/**
  * Determine if ID (Request,Box,Folder/File) contains a document marked as unauthorized destruction
  * @return Boolean
  */
@@ -234,58 +744,103 @@ switch (true) {
 public static function id_in_unauthorized_destruction( $identifier, $type ) {
     global $wpdb;
     
-    $unauthorized_destruction_array = array();
-    
     if($type == 'request') {
-        $get_unauthorized_destruction_data = $wpdb->get_results("SELECT DISTINCT a.id as ticket_id
-        FROM wpqa_wpsc_ticket a
-        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
-        WHERE d.unauthorized_destruction = 1");
-        
-        foreach ($get_unauthorized_destruction_data as $key) {
-        	$keys = $key->ticket_id;
-			array_push($unauthorized_destruction_array, $keys);
-        }
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(d.unauthorized_destruction) as total_unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
-		if (in_array($identifier, $unauthorized_destruction_array)) {
-			echo 'Request - unauthorized destruction flag: true' . '<br />';
+		if ($unauthorized_destruction_sum > 0) {
 			return true;
 		}
 		else {
-		    echo 'Request - unauthorized destruction flag: false' .'<br />';
+			return false;
+		}
+    }
+    
+    if($type == 'request_archive') {
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(d.unauthorized_destruction) as total_unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
+	        
+		if ($unauthorized_destruction_sum > 0) {
+			return true;
+		}
+		else {
 			return false;
 		}
     }
     
     else if($type == 'box') {
-        $get_unauthorized_destruction_data = $wpdb->get_results("SELECT DISTINCT a.id as box_id
-        FROM wpqa_wpsc_epa_boxinfo a
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-        WHERE c.unauthorized_destruction = 1");
-        
-        foreach ($get_unauthorized_destruction_data as $key) {
-        	$keys = $key->box_id;
-        	//echo $keys . "<br/>";
-			array_push($unauthorized_destruction_array, $keys);
-        }
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
-		if (in_array($identifier, $unauthorized_destruction_array)) {
-			echo 'Box - unauthorized destruction flag: true' .'<br />';
+		if ($unauthorized_destruction_sum > 0) {
 			return true;
 		}
 		else {
-		    echo 'Box - unauthorized destruction flag: false' .'<br />';
+			return false;
+		}
+    }
+    
+    else if($type == 'box_archive') {
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
+	        
+		if ($unauthorized_destruction_sum > 0) {
+			return true;
+		}
+		else {
 			return false;
 		}
     }
     
     else if($type == 'folderfile') {
-        
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $unauthorized_destruction = $get_unauthorized_destruction_data->unauthorized_destruction;
+	        
+		if ($unauthorized_destruction > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
     }
-
+    
+    else if($type == 'folderfile_archive') {
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT unauthorized_destruction
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $unauthorized_destruction = $get_unauthorized_destruction_data->unauthorized_destruction;
+	        
+		if ($unauthorized_destruction > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
 }
 
 /**
@@ -707,24 +1262,7 @@ public static function id_in_recall( $identifier, $type ) {
 
 		// Gets all Box Statuses
         public function get_all_status( $ignore_box_status = [] ) {
-/*
-            $status = [
-                748 => 'Pending',
-                621 => 'Not Assigned',
-                64  => 'Assigned',
-                672 => 'Scanning Preparation',
-                671 => 'Scanning/Digitization',
-                65  => 'QA/QC',
-                6   => 'Digitized/Not Validated',
-                673 => 'Ingestion',
-                674 => 'Validation',
-                743 => 'Re-Scan',
-                66  => 'Completed',
-                68  => 'Destruction Approval',
-                67  => 'Dispositioned'
-            ];
-            return $status;
-*/
+			global $wpdb;
             
             
             // Register Box Status Taxonomy
@@ -744,6 +1282,18 @@ public static function id_in_recall( $identifier, $type ) {
 				'order'    	 => 'ASC',
 				'meta_query' => array('order_clause' => array('key' => 'wpsc_box_status_load_order')),
 			]);
+			
+			$sql = "SELECT
+					    *
+					FROM
+					    " . $wpdb->prefix . "termmeta
+					LEFT JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "termmeta.term_id
+					WHERE
+					    meta_key = 'wpsc_box_status_load_order'
+					ORDER BY length(meta_value), meta_value ASC ";
+					
+			$box_statuses = $wpdb->get_results( $sql );
+					
 			
 			// List of box status that do not need agents assigned.
 			// $ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
@@ -927,7 +1477,7 @@ public static function id_in_recall( $identifier, $type ) {
                 "{$wpdb->prefix}wpsc_epa_return" => ['id', 'return_id', 'return_date', 'return_receipt_date', 'expiration_date', 'comments', 'return_status_id', 'updated_date'],
                 // "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
-                "{$wpdb->prefix}wpsc_epa_return_items" => ['box_id', 'folderdoc_id'],
+                "{$wpdb->prefix}wpsc_epa_return_items" => ['box_id', 'folderdoc_id', 'saved_box_status'],
                 "{$wpdb->prefix}wpsc_epa_shipping_tracking" => ['company_name as shipping_carrier', 'tracking_number', 'status', 'shipped', 'delivered'],
                 "{$wpdb->prefix}terms" => ['name as reason'],               
                 "{$wpdb->prefix}wpsc_epa_return_users" => ['user_id'],
@@ -1025,10 +1575,138 @@ public static function id_in_recall( $identifier, $type ) {
                         }		
                         $record->folderdoc_id = $the_array;		
                     }
+                    if(!empty($record->saved_box_status)) {		
+                        //$record->box_id = explode(',', $record->box_id );		
+                        		
+                        $temp_box_status = explode(',', $record->saved_box_status );		
+                        $the_array = [];		
+                        foreach( $temp_box_status as $box_status ) {		
+	                    	$the_array[] = $box_status;		
+                        }		
+                        $record->saved_box_status = $the_array;		
+                        		
+                    }
                 }
             }
             
             return $box_details;
+        }
+        
+        //Function to get program office acronym from folderdocinfofile_id or box_id
+        public static function get_record_schedule_by_id($id, $type) {
+            global $wpdb;
+            
+            if($type == 'box' || $type == 'box_archive') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                WHERE b.box_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                
+                return $record_schedule;
+            }
+            else if($type == 'folderfile') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                
+                return $record_schedule;
+            }
+            else if($type == 'folderfile_archive') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                
+                return $record_schedule;
+            }
+            else {
+                return false;
+            }
+        }
+        
+        //Function to get pallet_id from folderdocinfofile_id or box_id
+        public static function get_pallet_id_by_id($id, $type) {
+            global $wpdb;
+            
+            if($type == 'box' || $type == 'box_archive') {
+                $get_pallet_id = $wpdb->get_row("SELECT a.pallet_id
+                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+                WHERE a.box_id = '" . $id . "'");
+                $pallet_id = $get_pallet_id->pallet_id;
+                
+                return $pallet_id;
+            }
+            else if($type == 'folderfile') {
+                $get_pallet_id = $wpdb->get_row("SELECT DISTINCT a.pallet_id
+                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $pallet_id = $get_pallet_id->pallet_id;
+                
+                return $pallet_id;
+            }
+            else if($type == 'folderfile_archive') {
+                $get_pallet_id = $wpdb->get_row("SELECT DISTINCT a.pallet_id
+                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $pallet_id = $get_pallet_id->pallet_id;
+                
+                return $pallet_id;
+            }
+            else {
+                return false;
+            }
+        }
+        
+        //Function to get program office acronym from folderdocinfofile_id or box_id
+        public static function get_program_office_by_id($id, $type) {
+            global $wpdb;
+            
+            if($type == 'box' || $type == 'box_archive') {
+                $get_program_office = $wpdb->get_row("SELECT a.office_acronym
+                FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                WHERE b.box_id = '" . $id . "'");
+                $program_office = $get_program_office->office_acronym;
+                
+                return $program_office;
+            }
+            else if($type == 'folderfile') {
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_acronym
+                FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
+                $program_office = $get_program_office->office_acronym;
+                
+                return $program_office;
+            }
+            else if($type == 'folderfile_archive') {
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_acronym
+                FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
+                $program_office = $get_program_office->office_acronym;
+                
+                return $program_office;
+            }
+            else {
+                return false;
+            }
         }
         
         //Function to get first name, last name and username from the profile display name
@@ -1170,9 +1848,12 @@ public static function id_in_recall( $identifier, $type ) {
             $box_id = isset($data['box_id']) ? $data['box_id'] : -99999;
             unset($data['box_id']);
             
+            $box_status = isset($data['box_status']) ? $data['box_status'] : -99999;
+            unset($data['box_status']);
+            
             // Store tracking info
-             $shipping_tracking_info = $data['shipping_tracking_info'];
-             unset($data['shipping_tracking_info']);
+            $shipping_tracking_info = $data['shipping_tracking_info'];
+            unset($data['shipping_tracking_info']);
             
             // New Test
 /*
@@ -1276,15 +1957,17 @@ public static function id_in_recall( $identifier, $type ) {
             // }
 
             if(is_array($box_id) && count($box_id) > 0){
-                foreach($box_id as $box){
+                foreach($box_id as $key => $box){
                     $item_data = [
                         'box_id' => $box,
                         'folderdoc_id' => -99999,
-                        'return_id' => $return_insert_id
+                        'return_id' => $return_insert_id,
+                        'saved_box_status' => $box_status[$key]
                     ];
                     $wpsc_epa_rec = $wpsc_epa_return_items->insert($item_data);
                 }
-            } else {
+            } else { 
+                // always an array now, this is not used.
                 $item_data = [
                     'box_id' => $box_id,
                     'folderdoc_id' => -99999,
@@ -1295,7 +1978,7 @@ public static function id_in_recall( $identifier, $type ) {
                 }
             }
 
-
+			// always boxes now, no folderdoc decline. This is not used.
             if (is_array($folderdoc_id) && count($folderdoc_id) > 0) {
                 foreach ($folderdoc_id as $folderdoc) {
                     $item_data = [
@@ -1644,6 +2327,7 @@ public static function id_in_recall( $identifier, $type ) {
          * Insert shipping data
          * @return Id
          */
+        /*
         public static function add_shipping_data( $data ){            
             global $wpdb;   
 
@@ -1651,6 +2335,7 @@ public static function id_in_recall( $identifier, $type ) {
             $shipping_insert_id = $add_shipping_data->insert($data);
             return $shipping_insert_id;
         }
+        */
 
         /**
          * Get recall data
@@ -1741,7 +2426,7 @@ public static function id_in_recall( $identifier, $type ) {
             // print_r($args);  
 
             $select_fields = [
-                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id'],
+                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id', 'saved_box_status'],
                 "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                 "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['folderdocinfo_id as folderdoc_id_parent'],
@@ -1950,6 +2635,7 @@ public static function id_in_recall( $identifier, $type ) {
          * Delete shipping record by recall IDs
          * @return recall data
          */
+        /*
         public static function delete_shipping_data_by_recall_id( $where ){            
             global $wpdb;  
             
@@ -1977,6 +2663,7 @@ public static function id_in_recall( $identifier, $type ) {
             return $where;
 
         }
+        */
         
         /**
          * Change request date
@@ -2865,7 +3552,9 @@ public static function id_in_recall( $identifier, $type ) {
 			foreach( $item_ids as $item ) {
 				$box_obj = self::get_box_file_details_by_id($item);
 				$status_agent_array = self::get_user_status_data( ['box_id' => $box_obj->Box_id_FK ] );
-				$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
+				//$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Cancelled', 'Dispositioned', 'Completed/Dispositioned' ];
+				$ignore_box_status = [ 'Pending', 'Ingestion', 'Completed Permanent Records', 'Cancelled', 'Completed/Dispositioned' ];
+				
 				$status_list_assignable = self::get_all_status($ignore_box_status);
 			 	$where = ['box_folder_file_id' => $box_obj->box_id ];
 			 	$ticket_id_obj = self::get_ticket_id_from_box_folder_file( $where );
@@ -2910,15 +3599,31 @@ public static function id_in_recall( $identifier, $type ) {
 					if( !in_array('Re-scan', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Re-scan';
 					} 
-					if( !in_array('Completed', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Completed';
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
 					} 
-					if( !in_array('Destruction Approval', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Destruction Approval';
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
 					} 
 					if( !in_array('Dispositioned', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Dispositioned';
 					} 
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					} 
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
+					} 
+					if( !in_array('Waiting/Shelved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Waiting/Shelved';
+					}
+					if( !in_array('Waiting on RLO', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Waiting on RLO';
+					}
+					if( !in_array('Cancelled', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Cancelled';
+					}
+					
 				}
 				
 				
@@ -3007,14 +3712,17 @@ public static function id_in_recall( $identifier, $type ) {
 				if( !$validated ) {
 					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been Validated. (C2)</p>';
 					
-					if( !in_array('Completed', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Completed';
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
 					} 
 					if( !in_array('Dispositioned', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Dispositioned';
 					}
-					if( !in_array('Destruction Approval', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Destruction Approval';
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					}
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
 					}
 				}
 				
@@ -3027,18 +3735,24 @@ public static function id_in_recall( $identifier, $type ) {
 				if( $box_destruction_approval->destruction_approval ) {
 					
 					// if Destruction Approval has already been restricted AND C1 OR C4 has never come up... 
-					if( in_array('Destruction Approval', $restricted_status_list) && !$condition_c1 && !$condition_c4 ) {
-						$the_key = array_search('Destruction Approval', $restricted_status_list);
+					if( in_array('Destruction Approved', $restricted_status_list) && !$condition_c1 && !$condition_c4 ) {
+						$the_key = array_search('Destruction Approved', $restricted_status_list);
 						unset($restricted_status_list[$the_key]);
 						array_values($restricted_status_list);
 					}
 				} else {
 					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been approved for Destruction. (C3)</p>';
-					if( !in_array('Destruction Approval', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Destruction Approval';
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					}
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
 					}
 					if( !in_array('Dispositioned', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Dispositioned';
+					}
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
 					}
 				}
 				
@@ -3080,14 +3794,20 @@ public static function id_in_recall( $identifier, $type ) {
 					if( !in_array('Re-scan', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Re-scan';
 					} 
-					if( !in_array('Completed', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Completed';
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
 					} 
-					if( !in_array('Destruction Approval', $restricted_status_list) ) {
-						$restricted_status_list[] = 'Destruction Approval';
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					} 
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
 					} 
 					if( !in_array('Dispositioned', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Dispositioned';
+					} 
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
 					} 
 					
 				}
@@ -3108,50 +3828,77 @@ public static function id_in_recall( $identifier, $type ) {
 				if ($role == 'Agent') {
 					$current_status_term = self::get_box_file_details_by_id($item)->box_status;
 					$next_status = '';
+					$next_status_array = array();
 					$all_statuses = self::get_all_status();
 					$current_status = $all_statuses[$current_status_term];
 					
 					// Set $next_status
 					switch($current_status) {
 						case 'Pending':
-							$next_status = 'Scanning Preparation';
+							//$next_status = 'Scanning Preparation';
+							$next_status_array[] = 'Scanning Preparation';
 							break;
 						case 'Scanning Preparation':
-							$next_status = 'Scanning/Digitization';
+							//$next_status = 'Scanning/Digitization';
+							$next_status_array[] = 'Scanning/Digitization';
 							break;
 						case 'Scanning/Digitization':
-							$next_status = 'QA/QC';
+							//$next_status = 'QA/QC';
+							$next_status_array[] = 'QA/QC';
 							break;
 						case 'QA/QC':
-							$next_status = 'Digitized - Not Validated';
+							//$next_status = 'Digitized - Not Validated';
+							$next_status_array[] = 'Digitized - Not Validated';
 							break;
 						case 'Digitized - Not Validated':
-							$next_status = 'Ingestion';
+							//$next_status = 'Ingestion';
+							$next_status_array[] = 'Ingestion';
 							break;
 						case 'Ingestion':
-							$next_status = 'Validation';
+							//$next_status = 'Validation';
+							$next_status_array[] = 'Completed Permanent Records';
+							$next_status_array[] = 'Validation';
 							break;
 						case 'Validation':
-							$next_status = 'Completed';
+							//$next_status = 'Completed Permanent Records'; 
+							//$next_status_array[] = 'Completed Permanent Records';
+							$next_status_array[] = 'Destruction Approved'; 
 							break;
 						case 'Completed':
-							$next_status = '';
+							//$next_status = '';
+							$next_status_array[] = '';
 							break;
-						case 'Destruction Approval':
-							$next_status = '';
+						case 'Destruction Approved':
+							//$next_status = '';
+							$next_status_array[] = 'Destruction of Source';
 							break;
+						case 'Destruction of Source':
+							//$next_status = '';
+							$next_status_array[] = 'Completed/Dispositioned';
+							break;	
 						case 'Dispositioned':
-							$next_status = '';
-							break;						
+							//$next_status = '';
+							$next_status_array[] = '';
+							break;
+						case 'Completed/Dispositioned':
+							//$next_status = '';
+							$next_status_array[] = '';
+							break;	
+													
 								
 							
 					}
 					
 					// remove NEXT status from $all_statuses array
-					if( $next_status != '') {
-						$the_key = array_search($next_status, $all_statuses);
-						unset($all_statuses[$the_key]);
-					
+					if( !empty( $next_status_array ) ) {
+						
+						// $the_key = array_search($next_status, $all_statuses);
+						// unset($all_statuses[$the_key]);
+						
+						foreach( $next_status_array as $key2 => $value2 ) {
+							$the_key = array_search( $value2, $all_statuses );
+							unset( $all_statuses[$the_key] );
+						}
 					
 					
 						//array_values($all_statuses);
@@ -3168,20 +3915,31 @@ public static function id_in_recall( $identifier, $type ) {
 						
 					
 					// When Destruction Approval is selected then Validation is disabled (9)
-					if( $current_status == 'Destruction Approval' ) {
+					if( $current_status == 'Destruction Approved' ) {
 						if( !in_array('Validation', $restricted_status_list) ) {
 							$restricted_status_list[] = 'Validation';
 						} 
 					}
-					// When Dispositioned is selected then disable Destruction Approval (10)
+					// When Dispositioned is selected then disable Destruction Approval (10) // No longer a status
+/*
 					if( $current_status == 'Dispositioned' ) {
-						if( !in_array('Destruction Approval', $restricted_status_list) ) {
-							$restricted_status_list[] = 'Destruction Approval';
+						if( !in_array('Destruction Approved', $restricted_status_list) ) {
+							$restricted_status_list[] = 'Destruction Approved';
 						} 
 					}	
+*/
 					
-					// When Completed is selected then disable all other statuses (11)
-					if( $current_status == 'Completed' ) {
+					// When Completed Permanent Records is selected then disable all other statuses (11)
+					if( $current_status == 'Completed Permanent Records' ) {
+						$restricted_status_list_2 = $all_statuses; 
+						foreach( $restricted_status_list_2 as $key=>$value ) {
+							$restricted_status_list[] = $value;
+						}
+						$restricted_status_list = array_unique($restricted_status_list);
+					}
+					
+					// When Completed/Dispositioned is selected then disable all other statuses (11)
+					if( $current_status == 'Completed/Dispositioned' ) {
 						$restricted_status_list_2 = $all_statuses; 
 						foreach( $restricted_status_list_2 as $key=>$value ) {
 							$restricted_status_list[] = $value;
@@ -3191,16 +3949,24 @@ public static function id_in_recall( $identifier, $type ) {
 				} // End IF $role == 'Agent'		
 				
 				// Waiting/Shelved and Re-scan should always be enabled except when status is Completed, Destruction Approval, or Dispositioned (1)
-// 				if( $current_status != 'Completed' || $current_status != 'Destruction Approval' || $current_status != 'Dispositioned' ) {
-				if( $current_status != 'Completed' && $current_status != 'Destruction Approval' && $current_status != 'Dispositioned' ) {
+				if( $current_status != 'Completed Permanent Records' && $current_status != 'Destruction Approved' && $current_status != 'Dispositioned' && $current_status != 'Completed/Dispositioned' ) {
 					
 					$ws_index = array_search('Waiting/Shelved', $restricted_status_list);
 					$rs_index = array_search('Re-scan', $restricted_status_list);
+					$wrlo_index = array_search('Waiting on RLO', $restricted_status_list);
+					$cnl_index = array_search('Cancelled', $restricted_status_list);
+					
 					if ( $ws_index ) {
 						unset($restricted_status_list[$ws_index]);
 					}
 					if ( $rs_index ) {
 						unset($restricted_status_list[$rs_index]);
+					}
+					if ( $wrlo_index ) {
+						unset($restricted_status_list[$wrlo_index]);
+					}
+					if ( $cnl_index ) {
+						unset($restricted_status_list[$cnl_index]);
 					}
 				}
 				
@@ -3211,7 +3977,7 @@ public static function id_in_recall( $identifier, $type ) {
 				}
 				
 				// Removed Box Status: Cancelled from list always. 
-				$restricted_status_list[] = 'Cancelled';
+				//$restricted_status_list[] = 'Cancelled';
 				
 				
 			}
@@ -3239,7 +4005,7 @@ public static function id_in_recall( $identifier, $type ) {
 			$return_info = [];
 		   	
 			$decline_cancelled_term_id = self::get_term_by_slug( 'decline-cancelled' );	 // 791 aka Decline Cancelled
-			$decline_complet_term_id = self::get_term_by_slug( 'decline-complete' );	 // 754 aka Decline Complete		   	
+			$decline_complete_term_id = self::get_term_by_slug( 'decline-complete' );	 // 754 aka Decline Complete		   	
 		  
 		   	
 			if( $type == 'Box' ) {
@@ -3259,15 +4025,19 @@ public static function id_in_recall( $identifier, $type ) {
 */
 				// Removed "Ret.return_status_id <> 754 AND " on 11.05.2020. 754 is Return Complete which means it is out of circulation, and should not be in involved. 
 				$return_check = $wpdb->get_row(
-												"SELECT
-												    Item.return_id as return_id,
-												    Ret.return_status_id as return_status
-												FROM
-												    ".$wpdb->prefix."wpsc_epa_return_items Item
-												JOIN ".$wpdb->prefix."wpsc_epa_return Ret ON
-												    Ret.id = Item.return_id
-												WHERE
-												    Ret.return_status_id <> " . $decline_cancelled_term_id . " AND Item.box_id = '" .  $box_fk . "'");	
+							"SELECT
+							    Item.return_id as return_id,
+							    Ret.return_status_id as return_status
+							FROM
+							    ".$wpdb->prefix."wpsc_epa_return_items Item
+							JOIN ".$wpdb->prefix."wpsc_epa_return Ret ON
+							    Ret.id = Item.return_id
+							WHERE
+							    Ret.return_status_id <> " . $decline_cancelled_term_id . 
+							" AND 
+								Ret.return_status_id <> " . $decline_complete_term_id . 
+							" AND
+								Item.box_id = '" .  $box_fk . "'");	
 
 				
 				//$return_info = $return_check;
@@ -3370,11 +4140,9 @@ array_push($folderdocinfo_array, $folderdocinfo_id);
 $folderdocinfo_folderdocinfo_id = $folderdocinfo->folderdocinfo_id;
 $folderdocinfo_author = $folderdocinfo->author;
 $folderdocinfo_addressee = $folderdocinfo->addressee;
-$folderdocinfo_record_type = $folderdocinfo->record_type;
 $folderdocinfo_site_name = $folderdocinfo->site_name;
 $folderdocinfo_siteid = $folderdocinfo->siteid;
 $folderdocinfo_close_date = $folderdocinfo->close_date;
-$folderdocinfo_access_type = $folderdocinfo->access_type;
 $folderdocinfo_box_id = $folderdocinfo->box_id;
 $folderdocinfo_essential_record = $folderdocinfo->essential_record;
 $folderdocinfo_folder_identifier= $folderdocinfo->folder_identifier;
@@ -3388,11 +4156,9 @@ $folderdocinfo_date_updated = $folderdocinfo->date_updated;
 						'folderdocinfo_id'   => $folderdocinfo_folderdocinfo_id,
 						'author' => $folderdocinfo_author,
 						'addressee' => $folderdocinfo_addressee,
-						'record_type' => $folderdocinfo_record_type,
 						'site_name' => $folderdocinfo_site_name,
 						'siteid' => $folderdocinfo_siteid,
 						'close_date' => $folderdocinfo_close_date,
-						'access_type' => $folderdocinfo_access_type,
 						'box_id' => $folderdocinfo_box_id,
 						'essential_record' => $folderdocinfo_essential_record,
 						'folder_identifier' => $folderdocinfo_folder_identifier,
@@ -3405,7 +4171,6 @@ foreach ($get_related_folderdocinfo_file as $folderdocinfofile) {
 
 $folderdocinfofile_id = $folderdocinfofile->id;
 array_push($folderdocinfo_file_array, $folderdocinfofile_id);
-$folderdocinfofile_post_id = $folderdocinfofile->post_id;
 $folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
 $folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
 $folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
@@ -3423,7 +4188,9 @@ $folderdocinfofile_description = $folderdocinfofile->description;
 $folderdocinfofile_tags = $folderdocinfofile->tags;
 $folderdocinfofile_relation_part = $folderdocinfofile->relation_part;
 $folderdocinfofile_relation_part_of = $folderdocinfofile->relation_part_of;
+$folderdocinfofile_record_type = $folderdocinfofile->record_type;
 $folderdocinfofile_access_restriction = $folderdocinfofile->access_restriction;
+$folderdocinfofile_specific_access_restriction = $folderdocinfofile->specific_access_restriction;
 $folderdocinfofile_use_restriction = $folderdocinfofile->use_restriction;
 $folderdocinfofile_specific_use_restriction = $folderdocinfofile->specific_use_restriction;
 $folderdocinfofile_rights_holder = $folderdocinfofile->rights_holder;
@@ -3443,7 +4210,6 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 					$wpdb->prefix . 'wpsc_epa_folderdocinfo_files',
 					array(
 'id' => $folderdocinfofile_id,
-'post_id' => $folderdocinfofile_post_id,
 'folderdocinfo_id' => $folderdocinfofile_folderdocinfo_id,
 'folderdocinfofile_id' => $folderdocinfofile_folderdocinfofile_id,
 'DOC_REGID' => $folderdocinfofile_DOC_REGID,
@@ -3461,7 +4227,9 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 'tags' => $folderdocinfofile_tags,
 'relation_part' => $folderdocinfofile_relation_part,
 'relation_part_of' => $folderdocinfofile_relation_part_of,
+'record_type' => $folderdocinfofile_record_type,
 'access_restriction' => $folderdocinfofile_access_restriction,
+'specific_access_restriction' => $folderdocinfofile_specific_access_restriction,
 'use_restriction' => $folderdocinfofile_use_restriction,
 'specific_use_restriction' => $folderdocinfofile_specific_use_restriction,
 'rights_holder' => $folderdocinfofile_rights_holder,
@@ -3528,11 +4296,9 @@ array_push($folderdocinfo_array, $folderdocinfo_id);
 $folderdocinfo_folderdocinfo_id = $folderdocinfo->folderdocinfo_id;
 $folderdocinfo_author = $folderdocinfo->author;
 $folderdocinfo_addressee = $folderdocinfo->addressee;
-$folderdocinfo_record_type = $folderdocinfo->record_type;
 $folderdocinfo_site_name = $folderdocinfo->site_name;
 $folderdocinfo_siteid = $folderdocinfo->siteid;
 $folderdocinfo_close_date = $folderdocinfo->close_date;
-$folderdocinfo_access_type = $folderdocinfo->access_type;
 $folderdocinfo_box_id = $folderdocinfo->box_id;
 $folderdocinfo_essential_record = $folderdocinfo->essential_record;
 $folderdocinfo_folder_identifier= $folderdocinfo->folder_identifier;
@@ -3546,11 +4312,9 @@ $folderdocinfo_date_updated = $folderdocinfo->date_updated;
 						'folderdocinfo_id'   => $folderdocinfo_folderdocinfo_id,
 						'author' => $folderdocinfo_author,
 						'addressee' => $folderdocinfo_addressee,
-						'record_type' => $folderdocinfo_record_type,
 						'site_name' => $folderdocinfo_site_name,
 						'siteid' => $folderdocinfo_siteid,
 						'close_date' => $folderdocinfo_close_date,
-						'access_type' => $folderdocinfo_access_type,
 						'box_id' => $folderdocinfo_box_id,
 						'essential_record' => $folderdocinfo_essential_record,
 						'folder_identifier' => $folderdocinfo_folder_identifier,
@@ -3563,7 +4327,6 @@ foreach ($get_related_folderdocinfo_file as $folderdocinfofile) {
 
 $folderdocinfofile_id = $folderdocinfofile->id;
 array_push($folderdocinfo_file_array, $folderdocinfofile_id);
-$folderdocinfofile_post_id = $folderdocinfofile->post_id;
 $folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
 $folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
 $folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
@@ -3581,7 +4344,9 @@ $folderdocinfofile_description = $folderdocinfofile->description;
 $folderdocinfofile_tags = $folderdocinfofile->tags;
 $folderdocinfofile_relation_part = $folderdocinfofile->relation_part;
 $folderdocinfofile_relation_part_of = $folderdocinfofile->relation_part_of;
+$folderdocinfofile_record_type = $folderdocinfofile->record_type;
 $folderdocinfofile_access_restriction = $folderdocinfofile->access_restriction;
+$folderdocinfofile_specific_access_restriction = $folderdocinfofile->specific_access_restriction;
 $folderdocinfofile_use_restriction = $folderdocinfofile->use_restriction;
 $folderdocinfofile_specific_use_restriction = $folderdocinfofile->specific_use_restriction;
 $folderdocinfofile_rights_holder = $folderdocinfofile->rights_holder;
@@ -3601,7 +4366,6 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 					$wpdb->prefix . 'wpsc_epa_folderdocinfo_files_archive',
 					array(
 'id' => $folderdocinfofile_id,
-'post_id' => $folderdocinfofile_post_id,
 'folderdocinfo_id' => $folderdocinfofile_folderdocinfo_id,
 'folderdocinfofile_id' => $folderdocinfofile_folderdocinfofile_id,
 'DOC_REGID' => $folderdocinfofile_DOC_REGID,
@@ -3619,7 +4383,9 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 'tags' => $folderdocinfofile_tags,
 'relation_part' => $folderdocinfofile_relation_part,
 'relation_part_of' => $folderdocinfofile_relation_part_of,
+'record_type' => $folderdocinfofile_record_type,
 'access_restriction' => $folderdocinfofile_access_restriction,
+'specific_access_restriction' => $folderdocinfofile_specific_access_restriction,
 'use_restriction' => $folderdocinfofile_use_restriction,
 'specific_use_restriction' => $folderdocinfofile_specific_use_restriction,
 'rights_holder' => $folderdocinfofile_rights_holder,
@@ -3642,6 +4408,18 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 }
 
 	}
+	
+foreach ($folderdocinfo_array as $key => $value) {
+
+//Remove from wpsc_epa_folderdocinfo
+$wpdb->delete( $wpdb->prefix . 'wpsc_epa_folderdocinfo', array( 'id' => $value) );
+}
+
+foreach ($folderdocinfo_file_array as $key => $value) {
+
+//Remove from wpsc_epa_folderdocinfo_files
+$wpdb->delete( $wpdb->prefix . 'wpsc_epa_folderdocinfo_files', array( 'id' => $value) );
+}
 return 'true';
 
         }
@@ -4450,7 +5228,7 @@ if($type == 'comment') {
 						case $status_box_destruction_approval_term_id: // Box Status: Destruction Approval
 							//$details_array['error'] = 'Box Status Not Recallable';
 							//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
-							$details_array['box_status_name'] = 'Destruction Approval';
+							$details_array['box_status_name'] = 'Destruction Approved';
 							break;
 //						case 67: // Box Status: Dispositioned
 						case $status_box_dispositioned_term_id: // Box Status: Dispositioned
@@ -4558,7 +5336,7 @@ if($type == 'comment') {
 					case $status_box_destruction_approval_term_id: // Box Status: Destruction Approval
 						//$details_array['error'] = 'Containing Box Status Not Recallable';
 						//$details_array['error_message'] = 'Recalls are not allowed in the Destruction approval status.';
-						$details_array['box_status_name'] = 'Destruction Approval';
+						$details_array['box_status_name'] = 'Destruction Approved';
 						break;
 //			 		case 67: // Box Status: Dispositioned
 					case $status_box_dispositioned_term_id: // Box Status: Dispositioned

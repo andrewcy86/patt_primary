@@ -1,5 +1,6 @@
 <?php
 
+
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -7)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
@@ -16,11 +17,24 @@ if (isset($_GET['id']))
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
     
+    
+class MYPDF extends tcpdf {
+
+    //Page header
+    public function Header() {
+        // Set font
+        $this->SetFont('helvetica', '', 10);
+        // Page number
+        $this->Cell(0, 15, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+}
+    
     //Set styles
       $style_barcode = array('border' => 0,'vpadding' => 'auto','hpadding' => 'auto','fgcolor' => array(0,0,0),'bgcolor' => false,'module_width' => 1,'module_height' => 1);
     
+    
     //Set overall values for PDF
-    $obj_pdf = new TCPDF('L', 'mm', array('216', '356'), true, 'UTF-8', false);
+    $obj_pdf = new MYPDF('L', 'mm', array('216', '356'), true, 'UTF-8', false);
     $obj_pdf->SetCreator(PDF_CREATOR);
     $obj_pdf->SetTitle("Box List Labels - Paper Asset Tracking Tool");
     $obj_pdf->SetHeaderData('', '', PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -28,13 +42,13 @@ if (isset($_GET['id']))
     $obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA,'',PDF_FONT_SIZE_DATA));
     $obj_pdf->SetDefaultMonospacedFont('helvetica');
     $obj_pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-    $obj_pdf->SetMargins(6, '25', 6);
-    $obj_pdf->setPrintHeader(false);
+    $obj_pdf->SetMargins(6, '22', 6);
+    $obj_pdf->setPrintHeader(true);
     $obj_pdf->setPrintFooter(false);
 
 // set auto page breaks
-$obj_pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-    $obj_pdf->SetFont('helvetica', '', 11);
+$obj_pdf->SetAutoPageBreak(TRUE, 2);
+$obj_pdf->SetFont('helvetica', '', 11);
         
         $record_schedules = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum 
 FROM " . $wpdb->prefix . "epa_record_schedule, " . $wpdb->prefix . "wpsc_epa_boxinfo 
@@ -175,7 +189,6 @@ $tbl .= '</table>';
 
 $obj_pdf->AddPage();
 $obj_pdf->writeHTML($tbl, true, false, false, false, '');
-
     }
     
     //Generate PDF

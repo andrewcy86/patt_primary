@@ -531,6 +531,24 @@ foreach ($return_complete_return_status_query as $item) {
 	$current_datetime = date("Y-m-d H:i:s");
 	$data = [ 'received_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
 	Patt_Custom_Func::update_return_data( $data, $where );
+	
+	
+	//
+	// Set Box status back to original status before Recall
+	//  
+	$where = [ 'return_id' => $return_id ]; // format: '0000002'
+	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
+	$decline_obj = $decline_obj_array[0];
+	
+	foreach( $decline_obj->box_id as $key => $box_id ) {
+		
+		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+		$data_where = array( 'box_id' => $box_id );
+		$data_update = array( 'box_status' => $decline_obj->saved_box_status[$key] );
+		$wpdb->update( $table_name, $data_update, $data_where );
+	}
+
+	
 
 	//
 	// PM Notification :: Requester & Digitization Staff - Decline Complete

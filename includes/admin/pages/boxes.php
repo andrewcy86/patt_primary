@@ -66,7 +66,7 @@ array_values($box_statuses);
 
 <div class="bootstrap-iso">
   
-  <h3>Box Search</h3>
+  <h3>Box/Pallet Search</h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
@@ -110,7 +110,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 			<hr class="widget_divider">
 			
 			<div class="wpsp_sidebar_labels">
-				Enter one or more Box IDs:<br />
+				Enter a series of either Box IDs or Pallet IDs:<br />
 				<input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
 				<br />
 				
@@ -260,6 +260,8 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 }
 ?>
                 <th class="datatable_header">Box ID</th>
+                <th class="datatable_header">DB ID</th>
+                <th class="datatable_header">Pallet ID</th>
                 <th class="datatable_header">Priority</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Status</th>                
@@ -344,7 +346,11 @@ jQuery(document).ready(function(){
 		'processing': true,
 		'serverSide': true,
 		'stateSave': true,
-		'scrollX' : true,
+		//'scrollX' : true,
+		
+		"initComplete": function (settings, json) {
+		    jQuery("#tbl_templates_boxes").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		},
 		'paging' : true,
 		'stateSaveParams': function(settings, data) {
 			data.sg = jQuery('#searchGeneric').val();
@@ -419,7 +425,7 @@ jQuery(document).ready(function(){
 		'drawCallback': function (settings) { 
 	        // Here the response
 	        var response = settings.json;
-	        console.log(response);
+	       	        console.log(response);
     	},
 		'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
 		'fixedColumns': true,
@@ -434,11 +440,20 @@ jQuery(document).ready(function(){
 			   'selectRow': true	
 			},
 		},
+		{
+            'targets': [ 1 ],
+            'orderData': [ 2 ]
+        },
+        {
+            'targets': [ 2 ],
+            'visible': false,
+            'searchable': false
+        },
 		{ 'width': '100%', 'targets': 4 },
 		{ 'width': '5%', 'targets': 6 }
 		],
 		'select': {	
-			'style': 'multi'	
+			'style': 'multi'
 		},
 		'order': [[1, 'asc']],
 // 		'order': [[1, 'desc']],
@@ -454,7 +469,10 @@ jQuery(document).ready(function(){
 	<?php
 	}
 	?>
-			{ data: 'box_id_flag' },
+
+			{ data: 'box_id_flag'},
+			{ data: 'dbid', visible: false},
+			{ data: 'pallet_id' },
 			{ data: 'ticket_priority' },
 			{ data: 'request_id' },
 			{ data: 'status' },       
@@ -463,6 +481,7 @@ jQuery(document).ready(function(){
 			{ data: 'validation' },
 		]
 	});
+
 
 	jQuery( window ).unload(function() {
 		dataTable.column(0).checkboxes.deselectAll();
@@ -764,6 +783,7 @@ jQuery(document).ready(function(){
 				setting_action : 'filter_autocomplete',
 				term : term,
 				field : 'assigned_agent',
+				no_requesters : true,
 			}
 			jQuery.getJSON( wpsc_admin.ajax_url, request, function( data, status, xhr ) {
 				response(data);

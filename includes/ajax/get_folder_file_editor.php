@@ -28,11 +28,10 @@ ob_start();
 			b.title as title,
 			b.date as date,
 			a.author as author,
-			a.record_type as record_type,
+			b.record_type as record_type,
 			a.site_name as site_name,
 			a.siteid as site_id,
 			a.close_date as close_date,
-			a.access_type as access_type,
 			b.source_format as source_format,
 			a.folderdocinfo_id as folderdocinfo_id,
 			a.essential_record as essential_record,
@@ -43,6 +42,7 @@ ob_start();
             b.description,
             b.tags,
             b.access_restriction,
+            b.specific_access_restriction,
             b.use_restriction,
             b.specific_use_restriction,
             b.rights_holder,
@@ -59,11 +59,12 @@ ob_start();
 			$folderfile_title = $folderfile_details->title;
 			$folderfile_date = $folderfile_details->date;
 			$folderfile_author = $folderfile_details->author;
-			$folderfile_record_type = $folderfile_details->record_type;
+			$folderfile_addressee = $folderfile_details->addressee;
+			//$folderfile_record_type = $folderfile_details->record_type;
 			$folderfile_site_name = $folderfile_details->site_name;
 			$folderfile_site_id = $folderfile_details->site_id;
 			$folderfile_close_date = $folderfile_details->close_date;
-			$folderfile_access_type = $folderfile_details->access_type;
+			//$folderfile_access_type = $folderfile_details->access_type;
 			$folderfile_source_format = $folderfile_details->source_format;
 			//$folderfile_rights = $folderfile_details->rights;
 			//$folderfile_contract_number = $folderfile_details->contract_number;
@@ -72,7 +73,6 @@ ob_start();
 			$folderfile_file_name = $folderfile_details->file_name;
 			$folderfile_essential_record = $folderfile_details->essential_record;
 			$folderfile_identifier = $folderfile_details->folder_identifier;
-			$folderfile_addressee = $folderfile_details->addressee;
 			
 			$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;
 			$folderdocinfofileid = $folderfile_details->folderdocinfofileid;
@@ -80,6 +80,7 @@ ob_start();
 			$folderfile_description = $folderfile_details->description;
             $folderfile_tags = $folderfile_details->tags;
             $folderfile_access_restriction = $folderfile_details->access_restriction;
+            $folderfile_specific_access_restriction = $folderfile_details->specific_access_restriction;
             $folderfile_use_restriction = $folderfile_details->use_restriction;
             $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
             $folderfile_rights_holder = $folderfile_details->rights_holder;
@@ -125,13 +126,42 @@ else {
     echo "<strong>Addressee:</strong><br /><input type='text' id='addressee' placeholder= 'Enter addressee...'></br></br>";
 }
 
-if(!empty($folderfile_record_type)) {
-echo "<strong>Record Type:</strong><br /><input type='text' id='record_type' placeholder= '$folderfile_record_type'></br></br>";
-}
-else {
-    echo "<strong>Record Type:</strong><br /><input type='text' id='record_type' placeholder= 'Enter record type...'></br></br>";
-}
+?>
+<strong>Record Type:</strong></br>
+<input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type'/>
+    <datalist id = 'RecordTypeList'>
+        <option value='Administrative Record Index'></option>
+        <option value='Agreement'></option>
+        <option value='Analytical Data Document'></option>
+        <option value='Chart / Table'></option>
+        <option value='Contract'></option>
+        <option value='Contract Documentation'></option>
+        <option value='Correspondence'></option>
+        <option value='Document Packet'></option>
+        <option value='Email'></option>
+        <option value='Figure / Map / Drawing'></option>
+        <option value='Financial Documentation'></option>
+        <option value='Form'></option>
+        <option value='Laws / Regulations / Guidance'></option>
+        <option value='Legal Instrument'></option>
+        <option value='Letter'></option>
+        <option value='List / Index'></option>
+        <option value='Meeting Document'></option>
+        <option value='Memo'></option>
+        <option value='Memorandum'></option>
+        <option value='Notes'></option>
+        <option value='Other'></option>
+        <option value='Photograph'></option>        
+        <option value='Publication'></option>        
+        <option value='Record of Communication'></option>        
+        <option value='Report'></option>
+        <option value='Shipping Manifest'></option>
+        <option value='System Documentation'></option>
+        <option value='Work Plan'></option>
+    </datalist>
+</br></br>
 
+<?php
 if(!empty($folderfile_site_name)) {
     echo "<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= '$folderfile_site_name'></br></br>";
 }
@@ -153,48 +183,60 @@ else {
     echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
 }
 
-//use_restriction may be replacing the access_type
-if(!empty($folderfile_access_type)) {
-    echo "<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= '$folderfile_access_type'></br></br>";
-}
-else {
-    echo "<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= 'Enter access type...'></br></br>";
-}
-
-/*if(!empty($folderfile_source_format)) {
-    echo "<strong>Source Format:</strong><br /><input type='text' id='source_format' placeholder= '$folderfile_source_format'></br></br>";
-}
-else {
-    echo "<strong>Source Format:</strong><br /><input type='text' id='source_format' placeholder= 'Enter source format...'></br></br>";
-}
-*/
-
 //source format is now a datalist
 ?>
-<strong>Source Format:</strong></br>
-<input type="search" list="SourceFormatList" placeholder='Enter source format' id='sf'/>
+<strong>Source Type:</strong></br>
+<input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf'/>
     <datalist id = 'SourceFormatList'>
-        <option value='Paper'></option>
+        <option value='4K'></option>
         <option value='Audio'></option>
-        <option value='Thumb Drive'></option>
-        <option value='CD [includes mini CD]'></option>
-        <option value='DVD [includes mini DVD]'></option>
-        <option value='Negatives [includes microfiche]'></option>
-        <option value='Photos'></option>
-        <option value='Mylar'></option>
-        <option value='Oversize'></option>
+        <option value='AVI'></option>
+        <option value='Blu-ray'></option>
         <option value='Bound Book'></option>
+        <option value='CD [includes mini CD]'></option>
+        <option value='CSV'></option>
+        <option value='DOC'></option>
+        <option value='DOCX'></option>
+        <option value='DVD [includes mini DVD]'></option>
         <option value='Electronic File [Audio, visual, zip, etc.]'></option>
         <option value='E-Mail'></option>
-        <option value='Blu-ray'></option>
-        <option value='UHD'></option>
-        <option value='4K'></option>
-        <option value='ZIP Drive'></option>
         <option value='Floppy Disk [3.5" or 5"]'></option>
-        <option value='VHS'></option>
+        <option value='GIF'></option>
         <option value='Hard Drive'></option>
+        <option value='HTM'></option>
+        <option value='HTML'></option>
+        <option value='JPG'></option>
         <option value='LaserDisc'></option>
+        <option value='MDB'></option>
+        <option value='MOV'></option>
+        <option value='MPG'></option>        
+        <option value='Mylar'></option>        
+        <option value='Negatives [includes microfiche]'></option>        
+        <option value='Oversize'></option>
+        <option value='Paper'></option>
+        <option value='PDF'></option>
+        <option value='Photos'></option>
+        <option value='PNG'></option>
+        <option value='PPT'></option>
+        <option value='PPTX'></option>
+        <option value='RTF'></option>
+        <option value='Thumb Drive'></option>
+        <option value='TIF'></option>
+        <option value='TXT'></option>
+        <option value='UHD'></option>        
+        <option value='VHS'></option>        
         <option value='Vinyl record'></option>
+        <option value='VSD'></option>
+        <option value='WAV'></option>
+        <option value='WMV'></option>
+        <option value='WPD'></option>
+        <option value='XLS'></option>
+        <option value='XLSM'></option>
+        <option value='XLSX'></option>
+        <option value='XML'></option>
+        <option value='ZIP'></option>
+        <option value='ZIP Drive'></option>
+        <option value='ZIPX'></option>
     </datalist>
 </br></br>
 <?php
@@ -226,18 +268,34 @@ if(!empty($folderfile_tags)) {
 else {
     echo "<strong>Tags:</strong><br /><input type='text' id='tags' placeholder= 'Enter tags...'><br /><br />";
 }
-
-if(!empty($folderfile_access_restriction)) {
-    echo "<strong>Access Restriction:</strong><br /><input type='text' id='access_restriction' placeholder= '$folderfile_access_restriction'><br />";
-}
-else {
-    echo "<strong>Access Restriction:</strong><br /><input type='text' id='access_restriction' placeholder= 'Enter access restriction...'><br />";
-}
 ?>
+
+<strong>Access Restriction:</strong><br />
+<select id="access_restriction" name="access_restriction">
+  <option value="Yes" <?php if ($folderfile_access_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
+  <option value="No" <?php if ($folderfile_access_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
+</select></br>
+
+<br><strong>Specific Access Restriction:</strong><br />
+<select id="specific_access_restriction" name="specific_access_restriction">
+  <option value="Controlled / Copyright" <?php if ($folderfile_specific_access_restriction == 'Controlled / Copyright') echo 'selected' ; ?>>Controlled / Copyright</option>
+  <option value="Controlled / Critical Infrastructure - Water Assessments" <?php if ($folderfile_specific_access_restriction == 'Controlled / Critical Infrastructure - Water Assessments') echo 'selected' ; ?>>Controlled / Critical Infrastructure - Water Assessments</option>
+  <option value="Controlled / General Law Enforcement" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Law Enforcement') echo 'selected' ; ?>>Controlled / General Law Enforcement</option>
+  <option value="Controlled / Legal-Administrative Proceedings" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Administrative Proceedings') echo 'selected' ; ?>>Controlled / Legal-Administrative Proceedings</option>
+  <option value="Controlled / Legal-Privilege" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Privilege') echo 'selected' ; ?>>Controlled / Legal-Privilege</option>
+  <option value="Controlled / Legal-Protective Order" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Protective Order') echo 'selected' ; ?>>Controlled / Legal-Protective Order</option>
+  <option value="Controlled / General Privacy" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Privacy') echo 'selected' ; ?>>Controlled / General Privacy</option>
+  <option value="Controlled / Privacy-Personnel" <?php if ($folderfile_specific_access_restriction == 'Controlled / Privacy-Personnel') echo 'selected' ; ?>>Controlled / Privacy-Personnel</option>
+  <option value="Controlled / General Proprietary Business Information" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Proprietary Business Information') echo 'selected' ; ?>>Controlled / General Proprietary Business Information</option>
+  <option value="Controlled / Proprietary Business Information-Claimed" <?php if ($folderfile_specific_access_restriction == 'Controlled / Proprietary Business Information-Claimed') echo 'selected' ; ?>>Controlled / Proprietary Business Information-Claimed</option>
+  <option value="Controlled-Undetermined" <?php if ($folderfile_specific_access_restriction == 'Controlled-Undetermined') echo 'selected' ; ?>>Controlled-Undetermined</option>
+  <option value="Uncontrolled" <?php if ($folderfile_specific_access_restriction == 'Uncontrolled') echo 'selected' ; ?>>Uncontrolled</option>
+</select></br>
+
 <br><strong>Use Restriction:</strong><br />
 <select id="use_restriction" name="use_restriction">
-  <option value="Shared" <?php if ($folderfile_use_restriction == 'Shared' || $folderfile_use_restriction == 'shared') echo 'selected' ; ?>>Shared</option>
-  <option value="Private" <?php if ($folderfile_use_restriction == 'Private' || $folderfile_use_restriction == 'private') echo 'selected' ; ?>>Private</option>
+  <option value="Yes" <?php if ($folderfile_use_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
+  <option value="No" <?php if ($folderfile_use_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
 </select></br><br />
 
 <?php
@@ -278,10 +336,8 @@ ob_start();
 <script>
 
 function wpsc_edit_folder_file_details(){
-//var source_format_value = jQuery('#sf').val();
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
-//postvarssf: jQuery('#SourceFormatList [value="' + source_format_value + '"]').data('value'),
 postvarsffid: jQuery("#folderfileid").val(),
 postvarspdid: jQuery("#pattdocid").val(),
 postvarsfdiid: jQuery("#folderdocinfofile_id").val(),
@@ -295,18 +351,14 @@ postvarssn: jQuery("#site_name").val(),
 postvarssid: jQuery("#site_id").val(),
 postvarscd: jQuery("#close_date").val(),
 postvarsce: jQuery("#contact_email").val(),
-postvarsat: jQuery("#access_type").val(),
 postvarssf: jQuery('#sf').val(),
-//postvarssf: jQuery('#SourceFormatList').val(),
-//postvarsrights: jQuery("#rights").val(),
-//postvarscn: jQuery("#contract_number").val(),
-//postvarsgn: jQuery("#grant_number").val(),
 postvarser: jQuery("#er").val(),
 postvarsfi: jQuery("#folder_identifier").val(),
 postvarsaddressee: jQuery("#addressee").val(),
 postvarsdescription: jQuery("#description").val(),
 postvarstags: jQuery("#tags").val(),
-apostvarsaccessrestriction: jQuery("#access_restriction").val(),
+postvarsaccessrestriction: jQuery("#access_restriction").val(),
+postvarsspecificaccessrestriction: jQuery("#specific_access_restriction").val(),
 postvarsuserestriction: jQuery("#use_restriction").val(),
 postvarsspecificuserestriction: jQuery("#specific_use_restriction").val(),
 postvarsrightsholder: jQuery("#rights_holder").val(),

@@ -145,6 +145,15 @@ color: rgb(255, 255, 255) !important;
 #searchByProgramOffice {
 	width: 83%;
 }
+
+.fa-snowflake {
+	color: #009ACD;
+}
+
+.fa-flag {
+	color: #8b0000;
+}
+
 </style>
     
 
@@ -220,7 +229,10 @@ jQuery(document).ready(function(){
 // 	    'order': [[1, 'desc']],
 // 		'ordering': false,
 		'stateSave': true,
-		'scrollX' : true,
+		//'scrollX' : true,
+"initComplete": function (settings, json) {
+    jQuery("#tbl_templates_return").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+},
 		'paging' : true,
 			'stateSaveParams': function(settings, data) {
 			data.sg = jQuery('#searchGeneric').val();

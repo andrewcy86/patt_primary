@@ -29,7 +29,8 @@ FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = a.id
-WHERE ((d.index_level = 1 AND d.freeze = 1) OR (d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666)) AND 
+WHERE ((d.index_level = 1 AND d.freeze = 1) OR 
+(d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
 b.ticket_id = " . $GLOBALS['id']);
         
         foreach($request_folderdocinfo as $folderdocinfo)
@@ -52,7 +53,7 @@ b.ticket_id = " . $GLOBALS['id']);
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = a.id
         WHERE ((d.index_level = 1 AND d.freeze = 1) OR 
-        (d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666)) AND 
+        (d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
         b.ticket_id = " .$GLOBALS['id']);
         
         foreach($request_title as $folder_title)
@@ -119,7 +120,11 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
         //checks to see if folderdocinfo_id is empty, if so won't reprint file labels
         $folderdocinfo_new = $wpdb->get_row("SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id 
         FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_storage_location, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
-        WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id AND ((" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.freeze = 1) OR (" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) 
+        WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
+        " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id AND 
+        " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id AND
+        ((" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.freeze = 1) OR
+        (" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0)) 
         AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '" .$folderdocinfo_array[$i]."'");
             $folderdoc_id = $folderdocinfo_new->folderdocinfofile_id;
         

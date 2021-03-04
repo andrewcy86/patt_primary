@@ -36,8 +36,11 @@
     const reg_boxid = /^\d{7}-\d{1,}$/i;
 
     const reg_cartid = /(\bcid-\d\d-e\b|\bcid-\d\d-w\b)|(\bcid-\d\d-east\scui\b|\bcid-\d\d-west\scui\b)|(\bcid-\d\d-east\b|\bcid-\d\d-west\b)|(\bcid-\d\d-eastcui\b|\bcid-\d\d-westcui\b)/gim;   
-
-    const reg_stagingarea = /^\b(sa-e|sa-w)\b$/i;  
+    
+    // JM - 2/25/2021 - Modify regex to accept the new staging area and pallet_id's that represent grids in the digitization center for Region 3 support
+    //const reg_stagingarea = /^\b(sa-e|sa-w)\b$/i;
+    const reg_palletid = /^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/i;
+    const reg_stagingarea = /^\b(sa-e-\d+|sa-w-\d+)\b$/i;
 
     const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i; 
     
@@ -111,7 +114,28 @@
       		
         		jQuery.each(lines,function(index, last_boxid_val){
     
-                    if (reg_boxid.test(last_boxid_val)){
+    // JM - 2/25/2021 - Added OR logic to accept staging_area_id's to support Region 3 palletized boxes
+    // JM - 2/26/2021 - Added if statement to check if the array has duplicates or is of a invalid format. 
+                    if (reg_boxid.test(last_boxid_val) || reg_palletid.test(last_boxid_val)){
+            			if (jQuery.inArray(last_boxid_val, lines_arr) ==-1){
+            				lines_arr.push(last_boxid_val);
+            				
+            			}else{
+            			    
+                            alert( last_boxid_val + " is a duplicate.");
+            			}
+            		}else{
+
+            		    if (last_boxid_val == ""){
+            		    }else{
+                            alert( last_palletid_val + " is a invalid BoxID.");
+            		    }
+            		}
+                    
+                    
+                    
+                    
+                    if (reg_boxid.test(last_boxid_val) || reg_palletid.test(last_boxid_val)){
             			if (jQuery.inArray(last_boxid_val, lines_arr) ==-1){
             				lines_arr.push(last_boxid_val);
             				
@@ -132,8 +156,6 @@
             jQuery('input#scan-input').donetyping(function(){
                 
                 var text_vals = jQuery(this).val().toLowerCase();
-
-                  //  jQuery.each(text_vals.split(/[\s,]+/).filter(Boolean), function(index, last_scan_val) {
 
                             if (reg_cartid.test(text_vals)){
                                 
@@ -189,12 +211,14 @@
                 var scanid_uniq = jQuery('input#scan-input').val();
                 text = jQuery('textarea#boxid-textarea').val();
         		lines = text.split(/\r|\r\n|\n/);
+ 
+                /* JM - 2/26/2021 - Create a pallet_id array*/
         		boxid_uniq = new Array(); 
         		
         		jQuery.each(lines,function(index, last_boxid_val){
             			if (jQuery.inArray(last_boxid_val, boxid_uniq) ==-1)
             				boxid_uniq.push(last_boxid_val)
-        		});     
+        		            });     
         		
         		/* Remove empty array elements */
                 boxid_uniq = boxid_uniq.filter(item => item);
@@ -548,7 +572,7 @@ echo ' <div class="row" style="background-color:#FFFFFF !important;color:#000000
 			echo ' <div class="row" id="wpsc_status_widget" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3 !important;"> ';
 				echo ' <h4 class="widget_header"><i class="fa fa-archive"></i> Assignment</h4>';
 				echo ' <hr class="widget_divider">';
-				echo ' <div class="wpsp_sidebar_labels">Enter one or more Box IDs:<br>';
+				echo ' <div class="wpsp_sidebar_labels">Enter one or more Box ID&#39s or Pallet ID&#39s:<br>';
 					echo '<div class="column" id="container-boxidinfo-border" style="background-color:#FFFFFF !important;color:#2C3E50 !important;border-color:#C3C3C3 !important;" >';
 						echo '<div class="justified" style="text-align:center">';
 							echo '<div class="dvboxid-layer" style="width: 100%;">';

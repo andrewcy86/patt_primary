@@ -61,21 +61,26 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     public function wppatt_recycle_bin_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/recycle_bin_cron.php';
     }   
-    
+
     public function wppatt_ecms_ingestion_cron_schedule() {
     include WPPATT_ABSPATH . 'includes/admin/ecms_ingestion_cron.php';
     }
     
+    // CRON for SEMS site ID conversion
+    public function wppatt_site_id_conversion_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/site_id_conversion_cron.php';
+    }   
+    
     public function addStyles(){    
         wp_register_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
-        wp_register_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
+        //wp_register_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
         wp_register_style('wpsc-jquery-ui', WPSC_PLUGIN_URL.'asset/css/jquery-ui.css?version='.WPSC_VERSION );
         wp_register_style('wpsc-public-css', WPSC_PLUGIN_URL . 'asset/css/public.css?version='.WPSC_VERSION );
         wp_register_style('wpsc-admin-css', WPSC_PLUGIN_URL . 'asset/css/admin.css?version='.WPSC_VERSION );
         wp_register_style('wpsc-modal-css', WPSC_PLUGIN_URL . 'asset/css/modal.css?version='.WPSC_VERSION );
 
         wp_enqueue_style('wpsc-bootstrap-css');
-        wp_enqueue_style('wpsc-fa-css');
+        //wp_enqueue_style('wpsc-fa-css');
         wp_enqueue_style('wpsc-jquery-ui');
         wp_enqueue_style('wpsc-public-css');
         wp_enqueue_style('wpsc-admin-css');

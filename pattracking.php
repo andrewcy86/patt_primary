@@ -112,7 +112,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON
         add_action( 'wppatt_private_message_cleanup_cron', array($frontend, 'wppatt_private_message_cleanup_cron_schedule'));
-        
+        // SEMS site ID conversion CRON
+        add_action( 'wppatt_site_id_conversion_cron', array($frontend, 'wppatt_site_id_conversion_cron_schedule'));
+                
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           
@@ -124,6 +126,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // PDF Label Add Button
           $backend  = new wppatt_Admin();
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'box_status_assignment_btnAfterClone'));
+          add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pallet_btnAfterClone'));
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
           
@@ -297,6 +300,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		  // Add Change Box Status Modal 
           add_action('wp_ajax_wppatt_change_box_status', array($backend, 'change_box_status'));    
           
+		  // Add Pallet Assignment Modal 
+          add_action('wp_ajax_wppatt_set_pallet_assignment', array($backend, 'set_pallet_assignment'));    
+          
           // Create MLD Post from S3 upload data 
           add_action('wp_ajax_wppatt_create_mld_post', array($backend, 'create_mld_post'));
 		  
@@ -304,7 +310,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		  include WPPATT_ABSPATH . 'includes/admin/pages/scripts/mld_patt_hooks.php';
 		  
           // Set Barcode Scanning Page
-          add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
+          //add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
           
           // Add threaded comment to Recall description comments 
           add_action('wp_ajax_wppatt_recall_threaded_comment_reply', array($backend, 'recall_threaded_comment_reply')); 

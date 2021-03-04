@@ -94,6 +94,7 @@ $row_limit = '';
 $row_limit = " limit ".$row.",".$rowperpage;    
 }
 
+/*
 if($isactive == 1) {
 $boxQuery = "SELECT 
 CONCAT(
@@ -211,15 +212,127 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.fold
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
 WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id." order by ".$columnName." ".$columnSortOrder.$row_limit;
 }
+*/
+//SQL query using functions to generate icons
+if($isactive == 1) {
+$boxQuery = "SELECT 
+CONCAT(
+
+CASE WHEN (
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) > 0 AND
+b.freeze <> 1
+
+THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+ELSE CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',b.folderdocinfofile_id,'</a>')
+END) as folderdocinfo_id_flag,
+b.folderdocinfofile_id as folderdocinfo_id,
+case when length(b.title) > 25 
+then concat(substring(b.title, 1, 25), '...')
+else b.title 
+end 
+as title,
+b.date,
+(SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) as epa_contact_email,
+
+CONCAT(
+CASE 
+WHEN b.validation = 1 THEN CONCAT('[',
+
+CONCAT (
+CASE
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+u.user_login
+,'\">',
+
+(
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))
+    END
+)
+
+,'</a>' )
+ELSE u.user_login
+END
+)
+
+,']')
+ELSE ''
+END) as validation
+
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
+WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id." 
+order by b.id AND ".$columnName." ".$columnSortOrder.$row_limit;
+
+} else {
+$boxQuery = "SELECT 
+CONCAT(
+
+CASE WHEN (
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) > 0 AND b.freeze <> 1
+THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+ELSE CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',b.folderdocinfofile_id,'</a>')
+END) as folderdocinfo_id_flag,
+b.folderdocinfofile_id as folderdocinfo_id,
+case when length(b.title) > 25 
+then concat(substring(b.title, 1, 25), '...')
+else b.title 
+end 
+as title,
+b.date,
+(SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) as epa_contact_email,
+
+CONCAT(
+CASE 
+WHEN b.validation = 1 THEN CONCAT('[',
+
+CONCAT (
+CASE
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+u.user_login
+,'\">',
+
+(
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))
+    END
+)
+
+,'</a>' )
+ELSE u.user_login
+END
+)
+
+,']')
+ELSE ''
+END) as validation
+
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.folderdocinfo_id = a.id
+LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
+WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id." 
+order by b.id AND ".$columnName." ".$columnSortOrder.$row_limit;
+}
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
-    
+
 $decline_icon = '';
 $recall_icon = '';
-$type = 'folderfile';
+$unauthorized_destruction_icon = '';
+$freeze_icon = '';
+
+if($isactive == 1) {
+    $type = 'folderfile';
+}
+else {
+    $type = 'folderfile_archive';
+}
 
 if(Patt_Custom_Func::id_in_return($row['folderdocinfo_id'],$type) == 1){
 $decline_icon = '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
@@ -229,13 +342,32 @@ if(Patt_Custom_Func::id_in_recall($row['folderdocinfo_id'],$type) == 1){
 $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
 }
 
+if(Patt_Custom_Func::id_in_unauthorized_destruction($row['folderdocinfo_id'],$type) == 1) {
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_freeze($row['folderdocinfo_id'],$type) == 1) {
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ';
+}
+else if (Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) != 1 && Patt_Custom_Func::id_in_rescan($row['folderdocinfo_id'],$type) == 1) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> <span style="color: #FF0000;"><strong>[Re-scan]</strong></span>';
+}
+else {
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
+}
+
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
-     "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
+     //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
+     "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon,
      "title"=>$row['title'],
      "date"=>$row['date'],
      "epa_contact_email"=>$row['epa_contact_email'],
-     "validation"=>$row['validation']
+     "validation"=>$validation_icon . ' ' . $row['validation']
    );
 }
 

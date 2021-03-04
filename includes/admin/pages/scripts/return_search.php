@@ -16,7 +16,6 @@ if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
-
 $subfolder_path = site_url( '', 'relative'); 
 
 if($_POST['searchByID']) {
@@ -40,6 +39,12 @@ $status_box_scanprep_term_id = $status_box_scanprep_obj->term_id;
 // Not used. 
 $status_box_scan_digitization_obj = get_term_by( 'slug', 'scanning-digitization', 'wpsc_box_statuses' );
 $status_box_scan_digitization_term_id = $status_box_scan_digitization_obj->term_id;
+
+// Icons
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+$unauth_dest_icon = ' <i class="fas fa-flag" title="Unauthorized Destruction"></i>';
+
 
 //
 // NEW SEARCH & RESPONSE
@@ -128,7 +133,9 @@ foreach( $searchByID as $item ) {
 				$error_array[$item]['return_id'] = $return_id;
 				
 				if( $return_status->return_status_id == $status_decline_cancelled_term_id ) {
-					$error_array[$item]['item_error'] = 'Box '.$box_link.' has been Cancelled and is out of the system. ';
+					//$error_array[$item]['item_error'] = 'Box '.$box_link.' has been Cancelled and is out of the system. ';
+					$error_array[$item]['item_error'] = null;
+					$error_array[$item]['return_id'] = null;
 				}
 				
 			} 
@@ -167,11 +174,20 @@ foreach( $searchByID as $item ) {
 							$details_array['box_id']."' target='_blank' >".$details_array['box_id']."</a>";
 		$link_str_request = "<a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
 								$ticket_id."' target='_blank'>".$ticket_id."</a>";					
-							
+		
+		$box_freeze = Patt_Custom_Func::id_in_freeze( $details_array['box_id'], 'box' );
+		if( $box_freeze ) {
+			$icons = $freeze_icon;
+		}
+		
+		$box_unauth_dest = Patt_Custom_Func::id_in_unauthorized_destruction( $details_array['box_id'], 'box' );
+		if( $box_unauth_dest ) {
+			$icons .= $unauth_dest_icon;
+		}					
 		
 		$data2[] = array(
 		     "box_id"=>$details_array['box_id'], 
-		     "box_id_flag"=>$link_str_box,
+		     "box_id_flag"=>$link_str_box . $icons,
 		     "title"=>'[Boxes do not have titles]',
 		     "request_id"=>$link_str_request,
 		     "program_office"=>$details_array['office_acronym'] . ': ' . $details_array['office_name'],
@@ -191,7 +207,7 @@ foreach( $searchByID as $item ) {
 		
 		$data2[] = array(
 			"box_id"=>$details_array['Folderdoc_Info_id'], 
-			"box_id_flag"=>$link_str_ff,
+			"box_id_flag"=>$link_str_ff ,
 			"title"=>$details_array['title'],
 			"request_id"=>$link_str_request,
 			"program_office"=>$details_array['office_acronym'] . ': ' . $details_array['office_name'],
@@ -199,6 +215,9 @@ foreach( $searchByID as $item ) {
 			"validation"=>$details_array['box_status'], 		      
 		);
 	}
+	
+	// clear icons
+	$icons = '';
 }
 
 

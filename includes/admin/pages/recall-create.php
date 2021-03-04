@@ -421,6 +421,11 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 .testing_only {
 	color: #808080;
 }
+
+.datatable_header {
+	background-color: rgb(66, 73, 73) !important; 
+	color: rgb(255, 255, 255) !important; 
+}
 	
 </style>
 
@@ -1006,6 +1011,8 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			folderdoc_files_fk = db_null;
 			//jQuery('#bff_id').html('Box ID'+required_html); 
 			//jQuery('#alert_status').html('<span class=" alert alert-success">Box <b>'+search_id+'</b> Found</span>'); 
+			
+			console.log({freeze:data.freeze});
 			message = 'Box <b>'+search_id+'</b> Found.';
 			set_alert( 'success', message );
 			item_link = '<b><a href='+ subfolder + '/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id='+the_id+' >' + the_id + '</a></b>'; 
@@ -1019,7 +1026,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			box_id = data.box_id;
 			folderdoc_fk = data.Folderdoc_Info_id_FK;
 			folderdoc_files_fk = data.Folderdoc_Info_Files_id_FK;
-			
+			console.log('folder doc');
 			message = 'Folder/File <b>'+search_id+'</b> Found.';
 			set_alert( 'success', message );
 			item_link = '<b><a href="'+ subfolder + '/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=' + the_id +'">'+the_id+'</a></b>';
@@ -1058,9 +1065,19 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		
 		// If folder/file is frozen no update // Warning
 		if ( data.freeze == 1 ) {
+			console.log('freezing');
 			message = 'Folder/File <b>'+item_link+'</b> Found. ' + icon_freeze;
 			set_alert( 'success', message );
 		}
+		
+		// If Box is frozen // Warning
+		if ( data.box_freeze == 1 ) {
+			console.log('box freezing');
+			message = 'Box <b>'+item_link+'</b> Found. ' + icon_freeze;
+			set_alert( 'success', message );
+		}
+		
+		
 		
 		// If Box Status is not recallable
 		if (data.error == 'Box Status Not Recallable' ) {
@@ -1708,9 +1725,10 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			
 			jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 			    console.log("Submit Post reponse_str: ");
-				console.log(response_str);
+				//console.log(response_str);
 			    
 			    var response = JSON.parse(response_str);
+			    console.log( response );
 			    console.log(response.customer_name);
 			    console.log(response.title);	
 			    console.log(response.date);

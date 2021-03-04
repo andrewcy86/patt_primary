@@ -13,7 +13,6 @@ if (!($current_user->ID && $current_user->has_cap('manage_options'))) {
 //
 
 // Register Box Status Taxonomy
-/*
 if( !taxonomy_exists('wpsc_box_statuses') ) {
 
 	$args = array(
@@ -23,7 +22,13 @@ if( !taxonomy_exists('wpsc_box_statuses') ) {
 	register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
 
 }
-*/
+
+$term = wp_insert_term( 'Destruction of Source', 'wpsc_box_statuses' );
+	if (!is_wp_error($term) && isset($term['term_id'])) {
+		add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 16);
+		add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
+		add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#d16464');
+	}
 
 // Moved to class-wppatt-admin.php
 
@@ -127,6 +132,12 @@ $statuses = get_terms([
 	'meta_query' => array('order_clause' => array('key' => 'wpsc_box_status_load_order')),
 ]);
 
+// D E B U G
+/*
+echo '<pre>';
+print_r($statuses);
+echo '</pre>';
+*/
 
 ?>
 <h4>

@@ -158,3 +158,8 @@
   background: #265a88;
   color: #fff !important;
 }
+
+.datatable_header {
+	background-color: rgb(66, 73, 73) !important; 
+	color: rgb(255, 255, 255) !important; 
+}

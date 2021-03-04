@@ -17,6 +17,11 @@ if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
+// Icons
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+$unauth_dest_icon = ' <i class="fas fa-flag" title="Unauthorized Destruction"></i>';
+
 ## Read value
 $draw = $_POST['draw'];
 $row = $_POST['start'];
@@ -377,9 +382,20 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 	
 //	$track = $shipping_link_start.$row['tracking_number'].$shipping_link_end;
 	$track = $shipping_link_start.$tracking_num.$shipping_link_end;
+	
+	// icons
+	$box_freeze = Patt_Custom_Func::id_in_freeze( $row['display_box_id'], 'box' );
+	if( $box_freeze ) {
+		$icons = $freeze_icon;
+	}
+	
+	$box_unauth_dest = Patt_Custom_Func::id_in_unauthorized_destruction( $row['display_box_id'], 'box' );
+	if( $box_unauth_dest ) {
+		$icons .= $unauth_dest_icon;
+	}	
    
    	$data[] = array(
-		"return_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=declinedetails&id=D-".$row['return_id']."' >D-".$row['return_id']."</a>", 		
+		"return_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=declinedetails&id=D-".$row['return_id']."' >D-".$row['return_id']."</a>" . $icons, 		
 		"return_id_flag"=>$row['return_id'],
 		"status"=>"<span class='wpsp_admin_label' style='".$status_style."'>".$row['return_status_name']."</span>", 
 		"updated_date"=>human_time_diff(strtotime($row['updated_date'])),
@@ -391,7 +407,8 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
  		"tracking_number"=>$track,
    );
    
-
+   $icons = '';
+   
 /*
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],

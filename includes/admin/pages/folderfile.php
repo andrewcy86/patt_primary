@@ -189,6 +189,7 @@ div.dataTables_processing { z-index: 1; }
                 }
                 ?>
                 <th class="datatable_header">Document/File ID</th>
+                <th class="datatable_header">DB ID</th>
                 <th class="datatable_header">Priority</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
@@ -237,7 +238,10 @@ if( agent_permission_label == 'Requester' ) {
     'serverMethod': 'post',
     'stateSave': true,
     'deferRender': true, // new on oct 10-29
-    'scrollX' : true,
+    //'scrollX' : true,
+    "initComplete": function (settings, json) {
+        jQuery("#tbl_templates_folderfile").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+    },
     'autowidth' : true,
     'drawCallback': function( settings ) {
 
@@ -308,7 +312,16 @@ if( agent_permission_label == 'Requester' ) {
             'checkboxes': {	
                'selectRow': true	
             }	
-         }
+         },
+		{
+            'targets': [ 1 ],
+            'orderData': [ 2 ]
+        },
+        {
+            'targets': [ 2 ],
+            'visible': false,
+            'searchable': false
+        }
       ],	
       'select': {	
          'style': 'multi'	
@@ -327,6 +340,7 @@ if( agent_permission_label == 'Requester' ) {
         }
         ?>
        { data: 'folderdocinfo_id_flag' }, 
+	   { data: 'dbid', visible: false},
        { data: 'ticket_priority' },
        { data: 'request_id' },
        { data: 'location' },

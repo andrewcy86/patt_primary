@@ -154,6 +154,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	#searchByProgramOffice {
 		width: 83%;
 	}
+	
+	.fa-snowflake {
+		color: #009ACD;
+	}
+	
 	</style>
     
 
@@ -229,7 +234,10 @@ jQuery('[data-toggle="tooltip"]').tooltip();
 	    'autoWidth': true,
 	    'processing': true,
 		'stateSave': true,
-		'scrollX' : true,
+		//'scrollX' : true,
+		"initComplete": function (settings, json) {     
+		    jQuery("#tbl_templates_recall").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		},
 		'paging' : true,
 			'stateSaveParams': function(settings, data) {
 			data.sg = jQuery('#searchGeneric').val();

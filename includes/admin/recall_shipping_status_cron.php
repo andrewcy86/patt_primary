@@ -393,7 +393,9 @@ $recall_complete_recall_status_query = $wpdb->get_results(
       shipping.recallrequest_id,
       rr.id,
       rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
+      rr.recall_status_id as recall_status,
+      rr.box_id as box_id,
+      rr.saved_box_status as saved_box_status
     FROM 
 	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
@@ -444,6 +446,17 @@ foreach ($recall_complete_recall_status_query as $item) {
 
 	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );
 */
+
+	//
+	// Set Box status back to original status before Recall
+	//  
+	
+	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+	$data_where = array( 'id' => $item->box_id );
+	$data_update = array( 'box_status' => $item->saved_box_status );
+	$wpdb->update( $table_name, $data_update, $data_where );
+	
+
 }
 
 

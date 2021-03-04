@@ -73,6 +73,11 @@
     input.css('width', minWidth);
   };
   
+  function isValidURL(string) {
+  var res = string.match(/admin.php(?=\?).*[?&]id=[^&\s]*(&|$)/gm);
+  return (res !== null)
+};
+
 	$.fn.addTag = function(value,options) {
 			options = jQuery.extend({focus:false,callback:true},options);
 			this.each(function() { 
@@ -83,8 +88,12 @@
 					tagslist = new Array();
 				}
 
-				value = jQuery.trim(value);
-		
+ if (isValidURL(value)) {
+pre_val = value.match(/id=(\d+)/)[1];
+value = jQuery.trim(pre_val);
+ } else {
+value = jQuery.trim(value);
+ }		
 				if (options.unique) {
 					var skipTag = $(this).tagExist(value);
 					if(skipTag == true) {
@@ -302,6 +311,14 @@
             
           			}
 				});
+				
+								// if user types a comma, create a new tag
+				$(data.fake_input).bind('keypress',data,function(event) {
+					if (event.which=='t' ) {
+					    alert('test');
+          			}
+				});
+				
 				//Delete last tag on backspace
 				data.removeWithBackspace && $(data.fake_input).bind('keydown', function(event)
 				{

@@ -15,6 +15,11 @@ if (!$con) {
 
 $subfolder_path = site_url( '', 'relative'); 
 
+// Icons
+$icons = '';
+$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+$unauth_dest_icon = ' <i class="fas fa-flag" title="Unauthorized Destruction"></i>';
+
 ## Read value
 $draw = $_POST['draw'];
 $row = $_POST['start'];
@@ -213,11 +218,21 @@ foreach( $searchByID as $item ) {
 							$details_array['box_id']."' target='_blank' >".$details_array['box_id']."</a>";
 		$link_str_request = "<a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
 								$ticket_id."' target='_blank'>".$ticket_id."</a>";					
-							
+		
+		// icons
+		$box_freeze = Patt_Custom_Func::id_in_freeze( $details_array['box_id'], 'box' );
+		if( $box_freeze ) {
+			$icons = $freeze_icon;
+		}
+		
+		$box_unauth_dest = Patt_Custom_Func::id_in_unauthorized_destruction( $details_array['box_id'], 'box' );
+		if( $box_unauth_dest ) {
+			$icons .= $unauth_dest_icon;
+		}					
 		
 		$data2[] = array(
 		     "box_id"=>$details_array['box_id'], 
-		     "box_id_flag"=>$link_str_box,
+		     "box_id_flag"=>$link_str_box . $icons,
 		     "title"=>'[Boxes do not have titles]',
 		     "request_id"=>$link_str_request,
 		     "program_office"=>$details_array['office_acronym'] . ': ' . $details_array['office_name'],
@@ -236,7 +251,7 @@ foreach( $searchByID as $item ) {
 		
 		$data2[] = array(
 		     "box_id"=>$details_array['Folderdoc_Info_id'], 
-		     "box_id_flag"=>$link_str_ff,
+		     "box_id_flag"=>$link_str_ff ,
 		     "title"=>$details_array['title'],
 		     "request_id"=>$link_str_request,
 		     "program_office"=>$details_array['office_acronym'] . ': ' . $details_array['office_name'],
