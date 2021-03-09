@@ -9,6 +9,7 @@ if (!$current_user->ID) die();
 */
 
 global $current_user, $wpscfunction, $wpdb;
+
 if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 	exit;
 }
@@ -28,10 +29,9 @@ $is_single_item = ($num_of_items == 1) ? true : false;
 <div id='alert_status' class=''></div> 
 <form>
 <input type="radio" id="set" name="set_pallet" value="yes" checked onclick="handleSet(this);">
-<label for="set">Assign Pallet ID</label><br>
+<label for="set">Assign Pallet ID</label><br />
 <input type="radio" id="reset" name="set_pallet" value="no" onclick="handleReset(this);">
-<label for="reset">Reset Pallet ID</label><br>
-
+<label for="reset" style="color:red;">Reset Pallet ID/Unassign Physical Location</label><br>
 </form>
 <?php
 
@@ -104,7 +104,7 @@ function wppatt_set_pallet_assignment(){
 	}, 
     function (response) {
 		//alert('updated: '+response);
-		//alert(response);
+		alert(response);
 		console.log('The Response:');
 		console.log(response);
 		//window.location.reload(); 

@@ -167,7 +167,11 @@ var App = {
 
     // Check if a value exists in the array
     if(barcode_arr.indexOf(result.codeResult.code) !== -1){
-        alert(result.codeResult.code+" has already been scanned.")
+        $('.ui-dialog-title').text('Details');
+        $('.ui-dialog-content').html(result.codeResult.code+" has already been scanned.");
+
+        $('#dialog_warn').dialog('open');
+        //alert(result.codeResult.code+" has already been scanned.")
     } else{
     
     if (result.codeResult.code !== '') {
@@ -187,7 +191,11 @@ var App = {
         results.insertBefore(li, results.firstElementChild.nextSibling);
         //alert(loc_count);
         } else {
-        alert('Only one location can be assigned at a time.');
+        $('.ui-dialog-title').text('Details');
+        $('.ui-dialog-content').html('Only one location can be assigned at a time.');
+
+        $('#dialog_warn').dialog('open');
+        //alert('Only one location can be assigned at a time.');
         }
         
     } else {                 
@@ -245,9 +253,17 @@ var App = {
         var closeButton = document.querySelector('.overlay__close');
         closeButton.addEventListener('click', function closeHandler() {
                     if(loc_count != 1) {
-            alert('Please scan a location.'); 
+        $('.ui-dialog-title').text('Details');
+        $('.ui-dialog-content').html('Please scan a location.');
+
+        $('#dialog_warn').dialog('open');
+            //alert('Please scan a location.'); 
                     } else if (box_pallet_count === 0) { 
-            alert('Please scan a box/pallet.'); 
+        $('.ui-dialog-title').text('Details');
+        $('.ui-dialog-content').html('Please scan a box/pallet.');
+
+        $('#dialog_warn').dialog('open');
+            //alert('Please scan a box/pallet.'); 
                     } else {
             //Site location value
             document.getElementById("location").value = loc_barcode;

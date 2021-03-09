@@ -233,7 +233,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			// Cancel button restriction 
 			// if admin or on request
 			$user_can_cancel = 0;
-			if ( $agent_permissions['label'] == 'Administrator' || $current_user_on_request ) {
+			if ( $agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager' || $agent_permissions['label'] == 'Agent' || $current_user_on_request ) {
 				$user_can_cancel = 1;
 			}
 			
@@ -288,7 +288,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 	if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 	{
 ?>    	
-<!--     	<button type="button" id="wppatt_recall_cancel" onclick="wppatt_cancel_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_recall_btn_css?>"><i class="fa fa-ban"></i> Cancel Recall</button> -->
+    	<button type="button" id="wppatt_recall_cancel" onclick="wppatt_cancel_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_recall_btn_css?>"><i class="fa fa-ban"></i> Cancel Recall</button>
     	
     	
 <?php

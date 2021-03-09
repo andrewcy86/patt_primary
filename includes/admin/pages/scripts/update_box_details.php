@@ -22,14 +22,13 @@ if(
    $bs = $_POST['postvarsbs'];
    $pallet_id = $_POST['postvarspalletid'];
 
-Patt_Custom_Func::pallet_cleanup();
-
 $type = 'box';
 
 $get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $ticket_id = $get_ticket_id->ticket_id;
 $metadata_array = array();
 $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$scan_list_table = $wpdb->prefix . 'wpsc_epa_scan_list';
 
 $old_box_dc = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $old_dc = $old_box_dc->box_destroyed;
@@ -47,10 +46,19 @@ $old_bs_name = $old_box_status_name->box_status;
 
 $old_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($pattboxid, $type);
 
-$get_scan_list_id = $wpdb->get_row("SELECT a.id
-FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
-WHERE a.pallet_id = '" . $pallet_id . "'");
+$get_scan_list_id = $wpdb->get_row("SELECT *
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE pallet_id = '" . $pallet_id . "'");
 $scan_list_id = $get_scan_list_id->id;
+$stagingarea_id = $get_scan_list_id->stagingarea_id;
+
+/*echo "SELECT *
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE pallet_id = '" . $pallet_id . "'";*/
+
+if(empty($scan_list_id)) {
+$scan_list_id = 0;
+}
 
 //updates box status
 if($old_bs != $bs) {
@@ -67,9 +75,6 @@ $new_bs = $new_box_status->box_status;
 array_push($metadata_array,'Box Status: '.$old_bs_name.' > '.$new_bs);
 }
 
-//updates pallet ID
-if($old_pallet_id != $pallet_id) {
-
 $get_old_physical_location = $wpdb->get_row("SELECT b.locations, a.location_status_id, a.pallet_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status b ON b.id = a.location_status_id
@@ -80,34 +85,70 @@ $old_pallet_id = $get_old_physical_location->pallet_id;
 
 $old_physical_location_id = Patt_Custom_Func::id_in_physical_location($pattboxid, $type);
 
-//if pallet ID is reassigned set physical location to Pending
-$physical_location_id = 1;
+//Does pallet exist in scanning table? If not, set location_status_id to 1 (Pending).
+$get_physical_location_exist = $wpdb->get_row("SELECT id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE pallet_id = '" . $pallet_id . "'");
+$physical_location_exist = $get_physical_location_exist->id;
 
+if(empty($physical_location_exist)) {
+$physical_location_id = 1;
+} else {
+$physical_location_id = 3;
+}
+
+//Delete box_ids from scan_list table if pallet assigned already assigned to a staging area
+if(!empty($pallet_id)) {
+    $get_box_from_scan_list = $wpdb->get_row("SELECT * 
+    FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+    WHERE box_id = '" . $pattboxid . "'");
+    $box_from_scan_list = $get_box_from_scan_list->box_id;
+    $dbid_from_scan_list = $get_box_from_scan_list->id;
+    
+    if(!empty($box_from_scan_list)) {
+        $wpdb->delete( $scan_list_table, array( 'id' => $dbid_from_scan_list) );
+    }
+}
+
+//updates pallet ID
+if(!empty($pallet_id) && ($old_pallet_id != $pallet_id) && !empty($old_pallet_id)) {
+
+//if pallet ID is reassigned set physical location to Pending, unless new pallet ID already has a stagingarea_id, then set to In Staging Area
 $data_update = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
 $data_where = array('id' => $box_id);
 $wpdb->update($table_name, $data_update, $data_where);
 
-if(empty($old_pallet_id)) {
-    $old_pallet_id = 'Unassigned';
+array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
+
 }
+
+//updates pallet ID when unassigned
+if(!empty($pallet_id) && empty($old_pallet_id) ) {
+
+$data_update_unassigned = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
+$data_where_unassigned = array('id' => $box_id);
+$wpdb->update($table_name, $data_update_unassigned, $data_where_unassigned);
+
+$old_pallet_id = 'Unassigned';
 
 array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
 
+}
+
 if($old_location_status_id != $physical_location_id) {
-    $data_update_physical_location = array('location_status_id' => $physical_location_id);
-    $data_where_physical_location = array('id' => $box_id);
-    $wpdb->update($table_name, $data_update_physical_location, $data_where_physical_location);
-    
+
     $get_new_physical_location = $wpdb->get_row("SELECT a.locations
     FROM " . $wpdb->prefix . "wpsc_epa_location_status a
     WHERE a.id = '" . $physical_location_id . "'");
     $new_physical_location = $get_new_physical_location->locations;
     
+    $data_update_physical_location = array('location_status_id' => $physical_location_id);
+    $data_where_physical_location = array('id' => $box_id);
+    $wpdb->update($table_name, $data_update_physical_location, $data_where_physical_location);
+    
     array_push($metadata_array,'Physical Location: ' . $old_physical_location . ' > ' . $new_physical_location);
 }
 
-
-}
 
 //updates destruction completed and adds to request history
 if($dc != $old_dc) {
@@ -264,7 +305,7 @@ $data = [];
 $email = 1;
 Patt_Custom_Func::insert_new_notification('email-record-schedule-updated',$pattagentid_array,$pattboxid,$data,$email);
 }
-
+Patt_Custom_Func::pallet_cleanup();
 echo "Box ID #: " . $pattboxid . " has been updated.";
 
 } else {

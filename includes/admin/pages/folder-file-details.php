@@ -42,7 +42,9 @@ else {
     $type = 'folderfile_archive';
 }
 //echo $GLOBALS['id'];
+
 ?>
+
 
 
 <div class="bootstrap-iso">
@@ -485,7 +487,6 @@ echo $decline_icon.$recall_icon;
     </div>
 
 <?php
-//echo "<strong style='color:purple'>doc_id:</strong> " . $folderdocinfofileid . "<br />";
 			if(!empty($box_po)) {
 			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			}
@@ -499,16 +500,24 @@ echo $decline_icon.$recall_icon;
             else {
 			    echo "<strong style='color:red'>Record Schedule: REASSIGN IMMEDIATELY</strong> <br />";
 			}
+			
+			if(!empty($folderfile_identifier)) {
+			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
+			}
   
   			if (!empty($folderfile_title)) {
 				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
 			}
+			
+			if(!empty($folderfile_description)) {
+			    echo "<strong>Description:</strong> " . $folderfile_description . "<br />";
+			}
 
 			if (!empty($folderfile_date)) {
-				echo "<strong>Date:</strong> " . $folderfile_date . "<br />";
+				echo "<strong>Creation Date:</strong> " . $folderfile_date . "<br />";
 			}
 			if (!empty($folderfile_author)) {
-				echo "<strong>Author:</strong> " . $folderfile_author . "<br />";
+				echo "<strong>Creator:</strong> " . $folderfile_author . "<br />";
 			}
 			if(!empty($folderfile_addressee)) {
 			    echo "<strong>Addressee:</strong> " . $folderfile_addressee . "<br />";
@@ -524,29 +533,6 @@ echo $decline_icon.$recall_icon;
 			}
 			if (!empty($folderfile_close_date)) {
 				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
-			}
-	
-			if (!empty($folderfile_source_format)) {
-				echo "<strong>Source Type:</strong> " . stripslashes($folderfile_source_format) . "<br />";
-			}
-
-			if(!empty($folderfile_identifier)) {
-			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
-			}
-			
-			if($folderfile_essential_record == 1) {
-			    echo "<strong>Essential Record:</strong> Yes" . "<br />";
-			}
-			else {
-			    echo "<strong>Essential Record:</strong> No" . "<br />";
-			}
-			
-			if(!empty($folderfile_description)) {
-			    echo "<strong>Description:</strong> " . $folderfile_description . "<br />";
-			}
-			
-			if(!empty($folderfile_tags)) {
-			    echo "<strong>Tags:</strong> " . $folderfile_tags . "<br />";
 			}
 			
 			if(!empty($folderfile_access_restriction)) {
@@ -569,12 +555,27 @@ echo $decline_icon.$recall_icon;
 			    echo "<strong>Rights Holder:</strong> " . $folderfile_rights_holder . "<br />";
 			}
 			
+			if (!empty($folderfile_source_format)) {
+				echo "<strong>Source Type:</strong> " . stripslashes($folderfile_source_format) . "<br />";
+			}
+			
 			if(!empty($folderfile_source_dimensions)) {
-			    echo "<strong>Source Dimensions:</strong> " . stripslashes($folderfile_source_dimensions);
+			    echo "<strong>Source Dimensions:</strong> " . stripslashes($folderfile_source_dimensions) . "<br />";
+			}
+			
+			if($folderfile_essential_record == 1) {
+			    echo "<strong>Essential Record:</strong> Yes" . "<br />";
+			}
+			else {
+			    echo "<strong>Essential Record:</strong> No" . "<br />";
+			}
+			
+			if(!empty($folderfile_tags)) {
+			    echo "<strong>Tags:</strong> " . $folderfile_tags;
 			}
 
 wp_get_current_user();
-echo "<br /><br />";
+//echo "<br /><br />";
 $ticket_details = $wpdb->get_row("SELECT customer_name
 FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE id = '" . $box_ticketid . "'");
@@ -916,9 +917,13 @@ echo $tbl;
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
-
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js?ver=5.6.1' id='bootstrap-cdn-js-js'></script>
+
+<style>
+#wpfooter {
+    margin-left: -20px;
+}
+</style>
 
 <script>
  jQuery(document).ready(function() {
@@ -1181,25 +1186,25 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 					      <h4 class="widget_header"><i class="fa fa-info-circle"></i> Information/Location
 					      </h4>
 								<hr class="widget_divider">
-								<div class="wpsp_sidebar_labels"><strong>Request ID:</strong> 
+								<div class="wpsp_sidebar_labels"><strong>Request ID:</strong><br /> 
 	                            <?php 
 	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
 	                            ?>
 	                            </div>
 	                            
-	                            <div class="wpsp_sidebar_labels"><strong>Request Status:</strong> 
+	                            <div class="wpsp_sidebar_labels"><strong>Request Status:</strong><br />
 	                            <?php 
 	                                echo $request_status;
 	                            ?>
 	                            </div>
 	                            
-	                            <div class="wpsp_sidebar_labels"><strong>Priority:</strong> 
+	                            <div class="wpsp_sidebar_labels"><strong>Priority:</strong><br />
 	                            <?php 
 	                                echo $priority;
 	                            ?>
 	                            </div>
 	                            
-	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong> 
+	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong><br /> 
 	                            <?php
 	                            if (!empty($box_boxid)) {
 	                                if ($GLOBALS['pid'] == 'requestdetails') {
@@ -1214,7 +1219,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                                } ?>
 	                             </div>
 	                             
-	                            <div class="wpsp_sidebar_labels"><strong>Box Status:</strong> 
+	                            <div class="wpsp_sidebar_labels"><strong>Box Status:</strong><br /> 
 	                            <?php 
 	                                echo $box_status_display;
 	                            ?>
@@ -1223,7 +1228,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                            <?php 
 	                             if(Patt_Custom_Func::get_pallet_id_by_id($folderfile_folderdocinfofile_id, $type) != false) {
 	                             ?>
-	                                <div class="wpsp_sidebar_labels"><strong>Pallet ID:</strong> 
+	                                <div class="wpsp_sidebar_labels"><strong>Pallet ID:</strong><br />
 	                             <?php 
 	                                echo Patt_Custom_Func::get_pallet_id_by_id($folderfile_folderdocinfofile_id, $type);
 	                             } 
@@ -1232,24 +1237,24 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                           <?php 
 	                           if($lan_id != '' && $lan_id != 1) {
 	                           ?>
-	                           <div class="wpsp_sidebar_labels"><strong>EPA Contact/Custodian: </strong><?php echo $lan_id?></div>
+	                           <div class="wpsp_sidebar_labels"><strong>EPA Contact/Custodian: </strong><br /><?php echo $lan_id?></div>
 	                           <?php }
 	                           else { ?>
-	                           <div class="wpsp_sidebar_labels" style="color: red;"><strong>EPA Contact/Custodian: Pending update...</strong></div>
+	                           <div class="wpsp_sidebar_labels" style="color: red;"><strong>EPA Contact/Custodian:<br /> Pending update...</strong></div>
 	                           <?php } ?>
 	                           <hr class="widget_divider">
 	                            <?php
 	                            //if digitization_center field is empty, will not display location on front end
 	                            if(!empty($box_location)) {
-	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>';
+	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong><br />';
 	                            echo $box_location . "<br />";
 	                            if(!empty($box_physical_location) && Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) != '') {
-	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>';
-    							    echo $box_physical_location . '<br /> (' . Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) . ')'.  "<br />";
+	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />';
+    							    echo $box_physical_location . ' (' . Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) . ')'.  "<br />";
 	                            }
 	                            else {
-	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong>';
-    							    echo $box_physical_location . "<br />";
+	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />';
+    							    echo $box_physical_location;
 	                            }
 	                                //if aisle/bay/shelf/position <= 0 and not 'On Shelf', does not display location on front end
     	                            if($box_physical_location == 'On Shelf' && !($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))

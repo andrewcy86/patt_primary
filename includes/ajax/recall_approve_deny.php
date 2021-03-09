@@ -13,7 +13,7 @@ $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id'
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 
 $recall_ids = $_REQUEST['recall_ids']; 
-$num_of_recalls = count($recall_ids);
+//$num_of_recalls = count($recall_ids);
 
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 

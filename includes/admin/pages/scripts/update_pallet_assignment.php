@@ -10,6 +10,8 @@ $ticket_id = $_REQUEST['ticket_id'];
 
 $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $table_name_sl = $wpdb->prefix . 'wpsc_epa_scan_list';
+$invalid_response = 0;
+
 	//
 	// Set Pallet per Item
 	//
@@ -71,7 +73,7 @@ if( $type == 'yes' ) {
 		
 		$pallet_id = 'P-'.$dc_acronym.'-'.$num_id;
 		
-		echo $ticket_id;
+//echo $ticket_id;
 	
 	foreach( $item_ids as $id ) {
 
@@ -83,7 +85,7 @@ if( $type == 'yes' ) {
 			
 	$box_id_delete = $get_box_id->id;
 	
-echo $box_id_delete;
+//echo $box_id_delete;
 
         $wpdb->delete( $table_name_sl, array( 'id' => $box_id_delete ) );
 		do_action('wpppatt_after_assign_pallet', $ticket_id, $id, $pallet_id);
@@ -94,6 +96,7 @@ echo $box_id_delete;
 				
 	}
 	
+echo "Pallets have been assigned an ID.";
 
 } elseif( $type == 'no' ) {
 	
@@ -107,18 +110,26 @@ echo $box_id_delete;
 			
 	$previous_pallet_id = $get_pallet_id->pallet_id;
     
-if ($previous_pallet_id != ''){
+if (!empty($previous_pallet_id)){
         //Insert audit log record
 		do_action('wpppatt_after_unassign_pallet', $ticket_id, $id, $previous_pallet_id);
-}
 
-		$data_update = array('pallet_id' => NULL);
+		$data_update = array('pallet_id' => NULL, 'location_status_id' => 1, 'scan_list_id' => 0);
 		$data_where = array('box_id' => $id);
 		$wpdb->update($table_name, $data_update, $data_where);
+} else {
+    $invalid_response++;
+}
 
 	}
-	
+
+if($invalid_response >= 1) {
+    echo "One or more of the selected boxes are not assigned to a pallet.";	
+} else {
+echo "Pallets IDs have been un-assigned.";
+}
+
 } 
 
-
+Patt_Custom_Func::pallet_cleanup();
 ?>

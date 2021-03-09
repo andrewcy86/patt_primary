@@ -241,7 +241,8 @@ WHERE box_id IS NOT NULL");
 foreach ($get_box_ids_with_locations as $data) {
 $box_id_with_location = $data->box_id;
 $table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
-$pallet_boxinfo_update = array('pallet_id' => NULL);
+//$pallet_boxinfo_update = array('pallet_id' => '', 'location_status_id' => 1);
+$pallet_boxinfo_update = array('pallet_id' => '');
 $pallet_boxinfo_where = array('box_id' => $box_id_with_location);
 $wpdb->update($table_box, $pallet_boxinfo_update, $pallet_boxinfo_where);
 }
@@ -3998,7 +3999,7 @@ public static function id_in_recall( $identifier, $type ) {
 	    }
 	    
 	    
-	    public static function item_in_return( $item_id, $type, $subfolder_path) {
+	    public static function item_in_return( $item_id, $type, $subfolder_path ) {
 		   	
 			global $wpdb;
  		   	
@@ -4006,107 +4007,40 @@ public static function id_in_recall( $identifier, $type ) {
 		   	
 			$decline_cancelled_term_id = self::get_term_by_slug( 'decline-cancelled' );	 // 791 aka Decline Cancelled
 			$decline_complete_term_id = self::get_term_by_slug( 'decline-complete' );	 // 754 aka Decline Complete		   	
-		  
-		   	
-			if( $type == 'Box' ) {
-				$box_fk = self::get_id_by_box_id( $item_id );
+			
+			$item_details =  self::get_box_file_details_by_id( $item_id );
+				
+			// CHECK if containing Box is Declined.
+			$box_fk = $item_details->Box_id_FK;
 
-/*
-				$return_check = $wpdb->get_row(
-												"SELECT
-												    Item.return_id as return_id,
-												    Ret.return_status_id as return_status
-												FROM
-												    wpqa_wpsc_epa_return_items Item
-												JOIN wpqa_wpsc_epa_return Ret ON
-												    Ret.id = Item.return_id
-												WHERE
-												    Ret.return_status_id <> 754 AND Ret.return_status_id <> 791 AND Item.box_id = '" .  $box_fk . "'");	
-*/
-				// Removed "Ret.return_status_id <> 754 AND " on 11.05.2020. 754 is Return Complete which means it is out of circulation, and should not be in involved. 
-				$return_check = $wpdb->get_row(
-							"SELECT
-							    Item.return_id as return_id,
-							    Ret.return_status_id as return_status
-							FROM
-							    ".$wpdb->prefix."wpsc_epa_return_items Item
-							JOIN ".$wpdb->prefix."wpsc_epa_return Ret ON
-							    Ret.id = Item.return_id
-							WHERE
-							    Ret.return_status_id <> " . $decline_cancelled_term_id . 
-							" AND 
-								Ret.return_status_id <> " . $decline_complete_term_id . 
-							" AND
-								Item.box_id = '" .  $box_fk . "'");	
+			$return_check = $wpdb->get_row(
+						"SELECT
+						    Item.return_id as return_id,
+						    Ret.return_status_id as return_status
+						FROM
+						    ".$wpdb->prefix."wpsc_epa_return_items Item
+						JOIN ".$wpdb->prefix."wpsc_epa_return Ret ON
+						    Ret.id = Item.return_id
+						WHERE
+						    Ret.return_status_id <> " . $decline_cancelled_term_id . 
+						" AND 
+							Ret.return_status_id <> " . $decline_complete_term_id . 
+						" AND
+							Item.box_id = '" .  $box_fk . "'");	
 
+			
+			if( $return_check->return_id != null ) {
 				
-				//$return_info = $return_check;
+				$num = $return_check->return_id;	
+	            $str_length = 7;	
+	            $return_id = substr("000000{$num}", -$str_length);	
+	            
+	            $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$item_id.'" >'.$item_id.'</a>';
+	            
+				$return_info['item_error'] = 'Box '.$box_link.' already in Return ';
+				$return_info['return_id'] = $return_id;
 				
-				if( $return_check->return_id != null ) {
-					
-					$num = $return_check->return_id;	
-		            $str_length = 7;	
-		            $return_id = substr("000000{$num}", -$str_length);	
-		            
-		            $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$item_id.'" >'.$item_id.'</a>';
-		            
-					$return_info['item_error'] = 'Box '.$box_link.' already in Return ';
-					$return_info['return_id'] = $return_id;
-					
-					return $return_info;
-				}
-				
-				
-				
-			} elseif ($type == 'Folder/Doc') {
-				
-				$folderdoc_fk = self::get_id_by_folderdoc_id($item_id);
-				
-/*
-				$return_check = $wpdb->get_row(
-												"SELECT return_id
-												FROM wpqa_wpsc_epa_return_items
-												WHERE folderdoc_id = '" .  $folderdoc_fk . "'");
-*/
-												
-/*
-				$return_check = $wpdb->get_row(
-												"SELECT
-												    Item.return_id as return_id,
-												    Ret.return_status_id as return_status
-												FROM
-												    wpqa_wpsc_epa_return_items Item
-												JOIN wpqa_wpsc_epa_return Ret ON
-												    Ret.id = Item.return_id
-												WHERE
-												     Ret.return_status_id <> 754 AND Ret.return_status_id <> 791 AND Item.folderdoc_id = '" .  $folderdoc_fk . "'");
-*/
-				// Removed "Ret.return_status_id <> 754 AND " on 11.05.2020 as 754 is Return Complete which means it is out of circulation, and should not be in involved. 
-				$return_check = $wpdb->get_row(
-												"SELECT
-												    Item.return_id as return_id,
-												    Ret.return_status_id as return_status
-												FROM
-												    wpqa_wpsc_epa_return_items Item
-												JOIN wpqa_wpsc_epa_return Ret ON
-												    Ret.id = Item.return_id
-												WHERE
-												    Ret.return_status_id <> 791 AND Item.folderdoc_id = '" .  $folderdoc_fk . "'");
-											
-				if( $return_check->return_id != null ) {
-					
-					$num = $return_check->return_id;	
-		            $str_length = 7;	
-		            $return_id = substr("000000{$num}", -$str_length);
-		            
-		            $folder_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=docsearch&page=filedetails&id='.$item_id.'" >'.$item_id.'</a>';
-		            //$box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a>';
-		            
-					$return_info['item_error'] = 'Containing Box for Folder/File '.$folder_link.' already in Return ';
-					$return_info['return_id'] = $return_id;
-					
-					return $return_info;
-				}	
+				return $return_info;
 			}
 		    
 		    return $return_info;
@@ -5027,6 +4961,16 @@ if($type == 'comment') {
 		    
 	    }
 	    
+	    
+	    // Checks if another folder has been recalled in box, and if so, returns the stored_box_status
+	    // returns false if not.
+	    public static function existing_recall_box_status( $item_id ) {
+		    global $wpdb;
+
+		}
+	    
+	    
+	    
 	    public static function item_in_recall( $item_id ) {
 		    global $wpdb;
 		    //, $type, $subfolder_path
@@ -5042,12 +4986,14 @@ if($type == 'comment') {
 				$details_array['search_error'] = true;
 			} else {
 				$details_array['search_error'] = false;
+				$details_array['searchByID'] = $item_id;
 			}
 			
 			// Set variables for search
 			$is_folder_search = array_key_exists('Folderdoc_Info_id',$details_array);
 			$details_array['in_recall'] = false;
-			$details_array['is_folder_search'] = $is_folder_search;
+			//$details_array['is_folder_search'] = $is_folder_search;
+			$details_array['is_folder_search'] =  ($is_folder_search) ? 'true' : 'false';
 			$details_array['is_folder_search_TEST'] =  ($is_folder_search) ? 'true' : 'false';
 			$details_array['error_message'] = '';
 			$db_null = -99999;
@@ -5067,6 +5013,8 @@ if($type == 'comment') {
 			$status_box_rescan_term_id = self::get_term_by_slug( 're-scan' );	// 743	
 			$status_box_completed_term_id = self::get_term_by_slug( 'completed' );	// 66	
 			$status_box_destruction_approval_term_id = self::get_term_by_slug( 'destruction-approval' );	// 68	
+			$status_box_destruction_of_source_term_id = self::get_term_by_slug( 'destruction-of-source' );
+			$status_box_waiting_on_rlo_term_id = self::get_term_by_slug( 'waiting-on-rlo' );
 			$status_box_dispositioned_term_id = self::get_term_by_slug( 'stored' );	// 67	
 			
 			
@@ -5079,9 +5027,10 @@ if($type == 'comment') {
 				'.$wpdb->prefix.'wpsc_epa_recallrequest.box_id as box_id, 
 				boxinfo.box_id as display_box_id,
 				boxinfo.box_destroyed as box_destroyed,
-			    folderinfo.folderdocinfo_id as dispay_folder_id,
+			    folderinfo.folderdocinfofile_id as dispay_folder_id,
 				'.$wpdb->prefix.'wpsc_epa_recallrequest.folderdoc_id as folderdoc_id,
-				'.$wpdb->prefix.'wpsc_epa_recallrequest.recall_status_id as status_id
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.recall_status_id as status_id,
+				'.$wpdb->prefix.'wpsc_epa_recallrequest.saved_box_status as saved_box_status
 			FROM 
 				'.$wpdb->prefix.'wpsc_epa_recallrequest 
 			INNER JOIN 
@@ -5089,8 +5038,8 @@ if($type == 'comment') {
 				ON (
 			                '.$wpdb->prefix.'wpsc_epa_recallrequest.box_id = boxinfo.id
 				)
-			INNER JOIN 
-					'.$wpdb->prefix.'wpsc_epa_folderdocinfo AS folderinfo 
+			LEFT JOIN 
+					'.$wpdb->prefix.'wpsc_epa_folderdocinfo_files AS folderinfo 
 				ON (
 			                '.$wpdb->prefix.'wpsc_epa_recallrequest.folderdoc_id = folderinfo.id
 				)
@@ -5102,6 +5051,8 @@ if($type == 'comment') {
 			//	AND wpqa_wpsc_epa_recallrequest.recall_status_id <> 734
 			//	AND wpqa_wpsc_epa_recallrequest.recall_status_id <> 1
 			
+			$details_array['recall_rows'] = $recall_rows;
+			
 			// Box Search  
 			if( !$is_folder_search ) {
 				
@@ -5110,18 +5061,28 @@ if($type == 'comment') {
 					$details_array['error_message'] = 'Box Destroyed';
 				} else { // if box not destroyed, check if it's been recalled
 					
+					
 					// Search through all Recalls to determine if box has been recalled.
 					foreach ($recall_rows as $item) {
-					
 						// Is Box Recalled?
-// 						if( $details_array['box_id'] == $item->display_box_id && $item->folderdoc_id == $db_null && ($item->status_id != 733 && $item->status_id != 734 && $item->status_id != 878) ) {
 						if( $details_array['box_id'] == $item->display_box_id && $item->folderdoc_id == $db_null && ($item->status_id != $status_recall_complete_term_id && $item->status_id != $status_recall_cancelled_term_id && $item->status_id != $status_recall_denied_term_id) ) {	
 							$details_array['error'] = 'Found: '.$item->status_id.' - '.$details_array['error'];
 							$details_array['in_recall'] = true;
 							$details_array['in_recall_where'] = $item->recall_id;
 							$details_array['error_message'] = 'Box Already Recalled';
+							
 							break;
 						}
+						
+						// is a folder in the box recalled? //&& $item->folderdoc_id != $db_null
+						if( $details_array['box_id'] == $item->display_box_id && $item->folderdoc_id <> $db_null && ($item->status_id != $status_recall_complete_term_id && $item->status_id != $status_recall_cancelled_term_id && $item->status_id != $status_recall_denied_term_id) ) {	
+							$details_array['error'] = 'Found: '.$item->status_id.' - '.$details_array['error'];
+							$details_array['in_recall'] = true;
+							$details_array['in_recall_where'] = $item->recall_id;
+							$details_array['error_message'] = 'A Folder/File in the Box Already Recalled';
+							break;
+						}
+						
 					}
 					
 			
@@ -5222,7 +5183,7 @@ if($type == 'comment') {
 						case $status_box_completed_term_id: // Box Status: Completed
 							//$details_array['error'] = '';
 							//$details_array['error_message'] = '';
-							$details_array['box_status_name'] = 'Completed';
+							$details_array['box_status_name'] = 'Completed/Dispositioned';
 							break;
 // 						case 68: // Box Status: Destruction Approval
 						case $status_box_destruction_approval_term_id: // Box Status: Destruction Approval
@@ -5230,6 +5191,16 @@ if($type == 'comment') {
 							//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
 							$details_array['box_status_name'] = 'Destruction Approved';
 							break;
+						case $status_box_destruction_of_source_term_id: // Box Status: Destruction Approval
+							//$details_array['error'] = 'Box Status Not Recallable';
+							//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
+							$details_array['box_status_name'] = 'Destruction of Source';
+							break;
+						case $status_box_waiting_on_rlo_term_id: // Box Status: Destruction Approval
+							//$details_array['error'] = 'Box Status Not Recallable';
+							//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
+							$details_array['box_status_name'] = 'Waiting on RLO';
+							break;	
 //						case 67: // Box Status: Dispositioned
 						case $status_box_dispositioned_term_id: // Box Status: Dispositioned
 							//$details_array['error'] = 'Box Status Not Recallable';
@@ -5263,7 +5234,7 @@ if($type == 'comment') {
 					foreach ($recall_rows as $item) {
 						$details_array['Test'] = $item;
 						// Is Box Recalled?
-// 						if( $details_array['Box_id_FK'] == $item->box_id && $item->folderdoc_id == $db_null && ($item->status_id != 733 && $item->status_id != 734 && $item->status_id != 878)) {
+
 						if( $details_array['Box_id_FK'] == $item->box_id && $item->folderdoc_id == $db_null && ($item->status_id != $status_recall_complete_term_id && $item->status_id != $status_recall_cancelled_term_id && $item->status_id != $status_recall_denied_term_id)) {		
 							$details_array['error'] = 'Found: '.$item->status_id.' - '.$details_array['error'];
 							$details_array['in_recall'] = true;
@@ -5338,6 +5309,16 @@ if($type == 'comment') {
 						//$details_array['error_message'] = 'Recalls are not allowed in the Destruction approval status.';
 						$details_array['box_status_name'] = 'Destruction Approved';
 						break;
+					case $status_box_destruction_of_source_term_id: // Box Status: Destruction Approval
+						//$details_array['error'] = 'Box Status Not Recallable';
+						//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
+						$details_array['box_status_name'] = 'Destruction of Source';
+						break;
+					case $status_box_waiting_on_rlo_term_id: // Box Status: Destruction Approval
+						//$details_array['error'] = 'Box Status Not Recallable';
+						//$details_array['error_message'] = 'Recalls are not allowed in the Destruction Approval status.';
+						$details_array['box_status_name'] = 'Waiting on RLO';
+						break;	
 //			 		case 67: // Box Status: Dispositioned
 					case $status_box_dispositioned_term_id: // Box Status: Dispositioned
 						//$details_array['error'] = 'Containing Box Status Not Recallable';

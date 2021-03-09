@@ -997,7 +997,8 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		var icon_box_destroyed = '<i class="fas fa-ban" title="Box Destroyed"></i>';
 		
 		
-		let search_id = data.searchByID[0];
+		//let search_id = data.searchByID[0];
+		let search_id = data.searchByID;
 		let item_link = '';
 		let containing_box_link = '';
 		let message = '';
@@ -1136,6 +1137,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		if (data.error_message == 'Folder/File in Recalled Box') {
 			
 			message = data.type+': '+ item_link +' is inside Recalled Box ' + containing_box_link + '. Recall # <b><a href="'+ subfolder 
+						+'/wp-admin/admin.php?page=recalldetails&id='+'R-'+ data.in_recall_where+'">'+'R-'+ data.in_recall_where+ '</b>';
+			set_alert( 'danger', message );
+			remove_all_tags();	
+		}
+		
+		// If Folder/File is in a Recalled Box // Cannot Recall
+		if (data.error_message == 'A Folder/File in the Box Already Recalled') {
+			
+			message = data.type+': '+ item_link +' already contains a Recall. Recall # <b><a href="'+ subfolder 
 						+'/wp-admin/admin.php?page=recalldetails&id='+'R-'+ data.in_recall_where+'">'+'R-'+ data.in_recall_where+ '</b>';
 			set_alert( 'danger', message );
 			remove_all_tags();	

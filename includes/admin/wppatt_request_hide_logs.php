@@ -219,7 +219,7 @@ ob_start();
 #loadMore {
     float: left;
     padding: 10px;
-    margin-bottom: 20px;
+    margin: 0 0 20px 20px;
     background-color: #33739E;
     color: #fff;
     border-width: 0 1px 1px 0;

@@ -5,8 +5,6 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-Patt_Custom_Func::pallet_cleanup();
-
 //Define tables
 $table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
 $table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
@@ -34,6 +32,16 @@ $boxcrt_update = 0;
 $box_pallet_check_array = array();
 //$pallet_check_array = array();
 
+$invalid_box_decline_check = 0;
+$invalid_box_recall_check = 0;
+$invalid_box_destroyed_check = 0;
+$invalid_box_active_check = 0;
+
+$box_decline_check_array = array();
+$box_recall_check_array = array();
+$box_destroyed_check_array = array();
+$box_active_check_array = array();
+
 ////////
 //Determine if boxes and pallets are all valid
 ////////
@@ -41,14 +49,14 @@ foreach($boxpallet_arr as $box_pallet_check){
     
  if(preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check)){
 $pallet_check = $wpdb->get_row(
-"SELECT count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE pallet_id = '" . $box_pallet_check . "'");
-$pallet_exist = $pallet_check->count;
+$pallet_exist = $pallet_check->id;
 
-if ($pallet_exist >= 1) {
+if ($pallet_exist != '') {
 $pallet_box_exist++;
 } else {
-array_push($pallet_check_array,$box_pallet_check);
+//array_push($pallet_check_array,$box_pallet_check);
 $invalid_box_pallet = 1;
 array_push($box_pallet_check_array,$box_pallet_check);
 //$invalid_pallet_items = implode(",", $pallet_check_array);
@@ -61,11 +69,11 @@ array_push($box_pallet_check_array,$box_pallet_check);
 //Determine if box is valid
  if(preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check)){
 $box_check = $wpdb->get_row(
-"SELECT count(a.id) as count, b.active, a.box_destroyed
+"SELECT a.id, b.active, a.box_destroyed
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
 WHERE a.box_id = '" . $box_pallet_check . "'");
-$box_exist = $box_check->count;
+$box_exist = $box_check->id;
 $box_active = $box_check->active;
 $box_destroyed = $box_check->box_destroyed;
 //echo $box_pallet_check;
@@ -79,28 +87,89 @@ $box_destroyed = $box_check->box_destroyed;
  echo $request_recall_check.'recallc';
  echo $box_active.'bactive';
  echo $box_destroyed.'bdestroy';*/
-if ($box_exist == 1 && $return_check != 1 && $request_recall_check != 1 && $box_active == 1 && $box_destroyed == 0) {
+ 
+if (!empty($box_exist) && $return_check != 1 && $request_recall_check != 1 && $box_active == 1 && $box_destroyed == 0) {
 $pallet_box_exist++;
-} else {
+}
+if($return_check == 1) {
+    array_push($box_decline_check_array, $box_pallet_check);
+    $invalid_box_decline_check = 1;
+}
+if($request_recall_check == 1) {
+    array_push($box_recall_check_array, $box_pallet_check);
+    $invalid_box_recall_check = 1;
+}
+if($box_destroyed == 1) {
+    array_push($box_destroyed_check_array, $box_pallet_check);
+    $invalid_box_destroyed_check = 1;
+}
+if($box_active == 0) {
+    array_push($box_active_check_array, $box_pallet_check);
+    $invalid_box_active_check = 1;
+}
+/*else {
 //push invalid box/pallet to array
 array_push($box_pallet_check_array,$box_pallet_check);
 $invalid_box_pallet = 1;
 }
+*/
  }
 }
 
+/*
 if ($invalid_box_pallet == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
 $invalid_items = implode(",", $box_pallet_check_array);
 echo "Invalid: [".$invalid_items."]";
 exit;
 }
+*/
+
+if($invalid_box_decline_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
+    $invalid_items_decline = implode(",", $box_decline_check_array);
+    if(count($box_decline_check_array) == 1) {
+        echo "<strong>Box in decline status</strong> : [".$invalid_items_decline."] <br /> <br />";
+    }
+    else {
+        echo "<strong>Boxes in decline status</strong> : [".$invalid_items_decline."] <br /> <br />";
+    }
+    exit;
+}
+    
+if($invalid_box_recall_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
+    $invalid_items_recall = implode(",", $box_recall_check_array);
+    if(count($box_recall_check_array) == 1) {
+        echo "<strong>Box in recall status</strong> : [".$invalid_items_recall."] <br /> <br />";
+    }
+    else {
+        echo "<strong>Boxes in recall status</strong> : [".$invalid_items_recall."] <br /> <br />";
+    }
+    exit;
+}
+    
+if($invalid_box_destroyed_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
+    $invalid_items_destroyed = implode(",", $box_destroyed_check_array);
+    if(count($box_destroyed_check_array) == 1) {
+        echo "<strong>Box has been destroyed</strong> : [".$invalid_items_destroyed."] <br /> <br />";
+    }
+    else {
+        echo "<strong>Boxes have been destroyed</strong> : [".$invalid_items_destroyed."] <br /> <br />";
+    }
+    exit;
+}
+    
+if($invalid_box_active_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
+    $invalid_items_active = implode(",", $box_active_check_array);
+    if(count($box_active_check_array) == 1) {
+        echo "<strong>Box has been archived</strong>: [".$invalid_items_active."] <br /> <br />";
+    }
+    else {
+       echo "<strong>Boxes have been archived</strong>: [".$invalid_items_active."] <br /> <br />";
+    }
+    exit;
+}
+
 //Proceed all box/pallets are valid
 if($pallet_box_exist == $total_array_count) {
-
-$get_pallet_id = $wpdb->get_row(
-"SELECT count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
-WHERE pallet_id = '" . $pallet . "'");
-$pallet_id_dbid = $get_pallet_id->id;
 
 ////////
 //Determine if there is a mix of pallets and boxes
@@ -139,12 +208,11 @@ $pallet_ticket_id = $get_pallet_ticket_id->ticket_id;
 //Does location exist in Scan List Table?
 
 $check_pallet_id = $wpdb->get_row(
-"SELECT id, count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE pallet_id = '" . $pallet . "'");
-$pallet_id_count = $check_pallet_id->count;
 $pallet_id_dbid = $check_pallet_id->id;
 
-if ($pallet_id_count == 0) {
+if (empty($pallet_id_dbid)) {
 $wpdb->insert(
 				$table_scan_list,
 				array(
@@ -152,13 +220,14 @@ $wpdb->insert(
 					'stagingarea_id' => $location
 				)
 );
-// Get back DB ID
-$get_pallet_id = $wpdb->get_row(
-"SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+
+$updpate_check_pallet_id = $wpdb->get_row(
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE pallet_id = '" . $pallet . "'");
-$pallet_id_dbid = $get_pallet_id->id;
+$update_pallet_id_dbid = $updpate_check_pallet_id->id;
+
 // Update Box Info Table
-$pallet_boxinfodbid_update = array('scan_list_id' => $pallet_id_dbid);
+$pallet_boxinfodbid_update = array('scan_list_id' => $update_pallet_id_dbid, 'location_status_id' => 3);
 $pallet_boxinfodbid_where = array('pallet_id' => $pallet);
 $wpdb->update($table_box, $pallet_boxinfodbid_update, $pallet_boxinfodbid_where);
 
@@ -221,12 +290,11 @@ $boxsa_ticket_id = $get_boxsa_ticket_id->ticket_id;
 //Does location exist in Scan List Table?
 
 $check_boxsa_id = $wpdb->get_row(
-"SELECT id, count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_sa . "'");
-$boxsa_id_count = $check_boxsa_id->count;
 $boxsa_dbid = $check_boxsa_id->id;
 
-if ($boxsa_id_count == 0) {
+if (empty($boxsa_dbid)) {
 $wpdb->insert(
 				$table_scan_list,
 				array(
@@ -243,6 +311,7 @@ $box_id_dbid = $get_box_id->id;
 $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
 $box_boxinfodbid_where = array('box_id' => $box_sa);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+Patt_Custom_Func::pallet_cleanup();
 
 } else {
 $boxsa_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => $location, 'shelf_location' => NULL,'date_modified' => $date);
@@ -284,12 +353,11 @@ $boxscn_ticket_id = $get_boxscn_ticket_id->ticket_id;
 //Does location exist in Scan List Table?
 
 $check_boxscn_id = $wpdb->get_row(
-"SELECT id, count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_scn . "'");
-$boxscn_id_count = $check_boxscn_id->count;
 $boxscn_dbid = $check_boxscn_id->id;
 
-if ($boxscn_id_count == 0) {
+if (empty($boxscn_dbid )) {
 $wpdb->insert(
 				$table_scan_list,
 				array(
@@ -306,6 +374,8 @@ $box_id_dbid = $get_box_id->id;
 $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
 $box_boxinfodbid_where = array('box_id' => $box_scn);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+Patt_Custom_Func::pallet_cleanup();
+
 } else {
 $boxscn_scanlist_update = array('cart_id' => NULL, 'scanning_id' => $location, 'stagingarea_id' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $boxscn_scanlist_where = array('id' => $boxscn_dbid);
@@ -347,12 +417,12 @@ $boxcrt_ticket_id = $get_boxcrt_ticket_id->ticket_id;
 //Does location exist in Scan List Table?
 
 $check_boxcrt_id = $wpdb->get_row(
-"SELECT id, count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_crt . "'");
-$boxcrt_id_count = $check_boxcrt_id->count;
+//$boxcrt_id_count = $check_boxcrt_id->count;
 $boxcrt_dbid = $check_boxcrt_id->id;
 
-if ($boxcrt_id_count == 0) {
+if (empty($boxcrt_dbid)) {
 $wpdb->insert(
 				$table_scan_list,
 				array(
@@ -369,6 +439,7 @@ $box_id_dbid = $get_box_id->id;
 $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
 $box_boxinfodbid_where = array('box_id' => $box_crt);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+Patt_Custom_Func::pallet_cleanup();
 } else {
 $boxcrt_scanlist_update = array('cart_id' => $location, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $boxcrt_scanlist_where = array('id' => $boxcrt_dbid);
@@ -392,11 +463,11 @@ if($boxcrt_update == 1) {
 //Insert Box Location > Shelf ID Information
 ////////
 //Check if location is for shelf
-                    if(preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+if(preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
 
 foreach($boxpallet_arr as $box_shelf){
     
-echo $box_shelf;
+//echo $box_shelf;
                         /* Restrict physical location scanning assignments to one box */
                         if($total_array_count == 1){
                         
@@ -463,12 +534,11 @@ $boxshelf_ticket_id = $get_boxshelf_ticket_id->ticket_id;
 //Does location exist in Scan List Table?
 
 $check_boxshelf_id = $wpdb->get_row(
-"SELECT id, count(id) as count FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+"SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_shelf . "'");
-$boxshelf_id_count = $check_boxshelf_id->count;
 $boxshelf_dbid = $check_boxshelf_id->id;
 
-if ($boxshelf_id_count == 0) {
+if (empty($boxshelf_dbid)) {
 $wpdb->insert(
 				$table_scan_list,
 				array(
@@ -485,6 +555,7 @@ $box_id_dbid = $get_box_id->id;
 $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
 $box_boxinfodbid_where = array('box_id' => $box_shelf);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+Patt_Custom_Func::pallet_cleanup();
 } else {
 $boxshelf_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'shelf_location' => $location,'date_modified' => $date);
 $boxshelf_scanlist_where = array('id' => $boxshelf_dbid);
@@ -493,26 +564,31 @@ $wpdb->update($table_scan_list , $boxshelf_scanlist_update, $boxshelf_scanlist_w
 
 
                                             /* Notify the user that the box status has been changed from "on cart" to "on shelf" */
-                                            $message = "Updated: Box ID " . $box_shelf . " has been placed on shelf: " . $new_position_id_storage_location .".\n\n";
+                                            $message = "Updated: Box ID " . $box_shelf . " has been placed on shelf: " . $new_position_id_storage_location ."<br />";
                                             do_action('wpppatt_after_shelf_location', $boxshelf_ticket_id, $box_shelf, $message);
                                             echo $message;
                                     } else {
-                            		    
-                            			$message = "Not Updated: The scanned location ". $new_position_id_storage_location . " does not match the assigned shelf location for the box. Please select another location and try again.\n\n";
+                            		    //Works
+                            			$message = "Not Updated: The scanned location ". $new_position_id_storage_location . " does not match the assigned shelf location for the box. Please select another location and try again.<br />";
                                         echo $message;
+                                        exit;
                                     }
                 		   		}else{
                 		   		    
-                   		   		    $message = "Not Updated: The location ". $existing_boxinfo_position_id_storage_location ." is already assigned. Please select another location and try again.\n\n";
+                   		   		    $message = "Not Updated: The location ". $existing_boxinfo_position_id_storage_location ." is already assigned. Please select another location and try again.<br />";
                                     echo $message;
+                                    exit;
                 		   		}
             				}else{
-            				    $message = "Not Updated: The location ". $new_position_id_storage_location . " does not exist in the facility. Please select another location and try again.\n\n";
+            				    //Works
+            				    $message = "Not Updated: The location ". $new_position_id_storage_location . " does not exist in the facility. Please select another location and try again.<br />";
                                 echo $message;
+                                exit;
                 			}	
                         }else{
-                            $message = "Not Updated. The Location Scan cannot be assigned to multiple Box ID's.\n\n";
+                            $message = "Not Updated. The Location Scan cannot be assigned to multiple Box ID's.<br />";
                             echo $message;
+                            exit;
                         }
                     }
                     

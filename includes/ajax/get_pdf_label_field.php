@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+
 $ticket_id  = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ;
 
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
@@ -67,6 +69,16 @@ if($box_count == 0) {
 else {
 ?>
 
+<?php
+if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))) {
+    ?>
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1em; color: #8b0000;"> <i class="fas fa-tags" title="Pallet Label"></i> <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/pallet_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Print Pallet Labels</a></strong></span>
+</div>
+<?php
+}
+?>
+
 <h3>Step 1</h3>
 <!--<p>Print box label and afix it to the side of the box.</p>-->
 <p>Print box label and attach the label on the inside of the box lid in each box. Box labels should not be placed on the exterior to prevent carrier labels from obscuring barcodes with their shipping labels.</p>
@@ -117,18 +129,8 @@ if ($list_array_count>1) {
 <p>If shipping more than 25 boxes at a time and a pallet is used, follow these instructions.</p>
 
 <ol>
-<li>Use shrink wrap or straps to secure pallet.</li>  
-<li>Securely adhere pallet label to the outside of the pallet.</li>  
-<li>Do not cover the barcode with tape or plastic wrap. Doing so will make your barcode un-scannable.</li>
+<li>Use shrink wrap or straps to secure pallet.</li>
 </ol>
-
-<?php
-if (count($pallet_array) > 0) {
-    ?>
-    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/pallet_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Pallet Labels</a></strong><br />
-<?php
-}
-?>
 
 <h3>Step 5</h3>
 <p>Print shipping label and ensure that tracking number is properly entered into the Paper Asset Tracking Tool.</p>

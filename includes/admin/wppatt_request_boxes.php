@@ -528,6 +528,11 @@ echo $tbl;
 
 <script>
  jQuery(document).ready(function() {
+
+<?php 
+//DISPAY IF NOT ARCHIVED
+if($rescan_count > 0 && $is_active == 1) {
+?>
      	 var rescan = jQuery('#tbl_templates_rescan').DataTable({
 	     "autoWidth": true,
 	     //"scrollX" : true,
@@ -559,7 +564,10 @@ echo $tbl;
       'order': [[1, 'asc']],
       <?php } ?>
 		});
-     
+<?php 
+//END DISPAY IF NOT ARCHIVED
+}
+?>     
 	 var dataTable = jQuery('#tbl_templates_request_details').DataTable({
 	     "autoWidth": true,
 	     //"scrollX" : true,
@@ -601,16 +609,31 @@ echo $tbl;
 	// 	console.log('checked');
 		setTimeout(toggle_button_display, 1); //delay otherwise 
 	});
-
+<?php 
+//DISPAY IF NOT ARCHIVED
+if($rescan_count > 0 && $is_active == 1) {
+?>
 	jQuery('#tbl_templates_rescan tbody').on('click', 'input', function () {        
 	// 	console.log('checked');
 		setTimeout(toggle_rescan_button_display, 1); //delay otherwise 
 	});
 	
+<?php 
+//END DISPAY IF NOT ARCHIVED
+}
+?>  
 	jQuery('.dt-checkboxes-select-all').on('click', 'input', function () {        
 	 	console.log('checked');
 		setTimeout(toggle_button_display, 1); //delay otherwise 
+<?php 
+//DISPAY IF NOT ARCHIVED
+if($rescan_count > 0 && $is_active == 1) {
+?>
 		setTimeout(toggle_rescan_button_display, 1); //delay otherwise 
+<?php 
+//END DISPAY IF NOT ARCHIVED
+}
+?> 
 	});
 	
 	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
@@ -631,7 +654,11 @@ echo $tbl;
 	    	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled');
 	  	}
 	}
-	
+
+<?php 
+//DISPAY IF NOT ARCHIVED
+if($is_active == 1 && $rescan_count > 0){
+?>	
 	function toggle_rescan_button_display() {
 	//	var form = this;
 		var rows_selected = rescan.column(0).checkboxes.selected();
@@ -641,7 +668,10 @@ echo $tbl;
 	    	jQuery('#wppatt_undo_rescan_btn').attr('disabled', 'disabled');
 	  	}
 	}
-	
+<?php 
+//END DISPAY IF NOT ARCHIVED
+}
+?>  	
 	jQuery('[data-toggle="tooltip"]').tooltip(); 
 	
 	// Assign Box Status Button Click

@@ -342,9 +342,13 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 
           function main_menu_items() {
             add_submenu_page( '', '', '', 'wpsc_agent', 'request_delete', 'request_delete_page' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'request-delete-init', 'request_delete_init_page' );
+            add_submenu_page( '', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes-init', 'boxes_init_page' );
             add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
+            add_submenu_page( '', 'Folder/File Dashboard', 'Folder/File Dashboard', 'wpsc_agent', 'folderfile-init', 'folderfile_init_page' );
             add_submenu_page( 'wpsc-tickets', 'Folder/File Dashboard', 'Folder/File Dashboard', 'wpsc_agent', 'folderfile', 'folderfile_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails', 'box_details' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails-init', 'boxdetails_init_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             add_submenu_page( 'wpsc-tickets', 'Recall Dashboard', 'Recall Dashboard', 'wpsc_agent', 'recall', 'recall_page' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'recalldetails', 'recall_details' ); 
@@ -356,6 +360,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 //             add_submenu_page( '', '', '', 'wpsc_agent', 'returncreate', 'return_create' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'declinecreate', 'return_create' ); 
             add_submenu_page( 'wpsc-tickets', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping', 'shipping_page' ); 
+            add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             }
             
@@ -371,9 +376,19 @@ function custom_menu_item_redirect_external_link() {
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/shipping.php'
             );
             }
+
+            function shipping_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/shipping_init.php'
+            );
+            }
             
             function request_delete_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/request_delete.php'
+            );
+            }
+            
+            function request_delete_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/request-delete-init.php'
             );
             }
             
@@ -382,8 +397,18 @@ function custom_menu_item_redirect_external_link() {
             );
             }
             
+            function boxes_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/boxes-init.php'
+            );
+            }
+            
             function folderfile_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/folderfile.php'
+            );
+            }
+
+            function folderfile_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/folderfile-init.php'
             );
             }
             
@@ -394,6 +419,11 @@ function custom_menu_item_redirect_external_link() {
             
             function box_details(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/box-details.php'
+            );
+            }
+            
+            function boxdetails_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/box-details-init.php'
             );
             }
             

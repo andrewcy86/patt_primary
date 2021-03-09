@@ -12,7 +12,7 @@ $recall_id = isset($_POST['recall_id']) ? sanitize_text_field($_POST['recall_id'
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 
 $recall_ids = $_REQUEST['recall_ids']; 
-$num_of_recalls = count($recall_ids);
+//$num_of_recalls = count($recall_ids);
 
 
 ob_start();
@@ -89,8 +89,8 @@ ob_start();
 		    type: 'cancel',
 		}, 
 	    function (response) {
-			//alert('Recall Id: R-'+recall_id+' Cancelled '+response);
-			alert(response);
+			alert('Recall ID: R-'+recall_id+' Cancelled ');
+			//alert(response);
 			window.location.reload();
 	
 	    });

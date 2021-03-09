@@ -289,9 +289,20 @@ $data_update = array('access_restriction' => $access_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Access Restriction: '.$old_access_restriction.' > '.$access_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+
+//If user selects No then clear specific_access_restriction
+$get_access_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
+$access_restriction_no = $get_access_restriction_no->access_restriction;
+
+if($access_restriction_no == 'No') {
+    $data_update_no = array('specific_access_restriction' => '');
+    $data_where_no = array('id' => $folderdocinfofileid);
+    $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
 }
 
-if( (!empty($specific_access_restriction)) && ($specific_access_restriction != $old_specific_access_restriction) ) {
+}
+
+if( strtolower(str_contains('Please select...', $specific_access_restriction )) == false && (!empty($specific_access_restriction)) && ($specific_access_restriction != $old_specific_access_restriction) ) {
 $data_update = array('specific_access_restriction' => $specific_access_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Specific Access Restriction: '.$old_specific_access_restriction.' > '.$specific_access_restriction);
@@ -303,9 +314,19 @@ $data_update = array('use_restriction' => $use_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Use Restriction: ' . $old_use_restriction . ' > ' . $use_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+
+//If user selects No then clear specific_access_restriction
+$get_use_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
+$use_restriction_no = $get_use_restriction_no->access_restriction;
+
+if($use_restriction_no == 'No') {
+    $data_update_no = array('specific_use_restriction' => '');
+    $data_where_no = array('id' => $folderdocinfofileid);
+    $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
+}
 }
 
-if( (!empty($specific_use_restriction)) && ($specific_use_restriction != $old_specific_use_restriction)) {
+if( strtolower(str_contains('Please select...', $specific_use_restriction )) == false && (!empty($specific_use_restriction)) && ($specific_use_restriction != $old_specific_use_restriction)) {
 $data_update = array('specific_use_restriction' => $specific_use_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Specific Use Restriction: '.$old_specific_use_restriction.' > '.$specific_use_restriction);

@@ -24,7 +24,26 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
     <link rel="stylesheet" type="text/css" href="./css/styles.css" />
     <link rel="stylesheet" type="text/css" href="./styles.css" />
     <link rel="stylesheet" type="text/css" href="./css/prism.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+  integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+  crossorigin="anonymous"></script>
+  <style>
+.ui-widget-overlay
+{
+  opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
+  filter: Alpha(Opacity=50) !important;
+
+  background: rgb(50, 50, 50) !important; /* This will make it darker */
+}
+#dialog
+{
+        	max-height: 271px;
+        	overflow-y: auto;
+}
+  </style>
 </head>
 
 <body>
@@ -56,36 +75,6 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
                 <input type="hidden" value="code_128_reader" />
 
-
-                
-                <!--<label>
-                    <span>EAN-13</span>
-                    <input type="checkbox" checked name="ean_reader" />
-                </label>
-                <label>
-                    <span>EAN-8</span>
-                    <input type="checkbox" name="ean_8_reader" />
-                </label>
-                <label>
-                    <span>UPC-E</span>
-                    <input type="checkbox" name="upc_e_reader" />
-                </label>
-                <label>
-                    <span>Code 39</span>
-                    <input type="checkbox" checked name="code_39_reader" />
-                </label>
-                <label>
-                    <span>Codabar</span>
-                    <input type="checkbox" name="codabar_reader" />
-                </label>
-                <label>
-                    <span>Code 128</span>
-                    <input type="checkbox" checked name="code_128_reader" />
-                </label>
-                <label>
-                    <span>Interleaved 2 of 5</span>
-                    <input type="checkbox" name="i2of5_reader" />
-                </label>-->
             </div>
             <span id="box_pallet_count"></span>
         </div>
@@ -115,7 +104,45 @@ Please login to access this application. <br />
 <?php
 }
 ?>
+<!-- ui-dialog --> 
+<div id="dialog" title=" "> 
+</div>
+<!-- ui-dialog --> 
+<div id="dialog_warn" title=" "> 
+</div>
 <script>
+
+$(document).ready(function() {
+
+$('#dialog').dialog({
+       autoOpen: false,
+        height: "auto",
+        width: 350,
+        modal: true,
+        position: {
+            my: "center",
+            at: "center",
+            of: window
+        },
+          close: function(event, ui) {
+          location.reload();
+     }
+});
+
+$('#dialog_warn').dialog({
+       autoOpen: false,
+        height: "auto",
+        width: 350,
+        modal: true,
+        position: {
+            my: "center",
+            at: "center",
+            of: window
+        }
+});
+
+});
+
 function wppatt_barcode_assignment_update(){		
 		   $.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_barcode_assignment.php',{
@@ -124,7 +151,20 @@ postvarsboxpallet: $("#box_pallet_array").val(),
 postvarsuser: $("#user").val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
+
+$('.ui-dialog-title').text('Details');
+$('.ui-dialog-content').html(response);
+
+$('#dialog').dialog('open');
+
+//if(!alert(response)){window.location.reload();}
+//$('.ui-dialog-title').text('Details');
+//$('.ui-dialog-content').html(response);
+
+//$('#dialog').dialog('open');
+
+//alert(response);
+//window.location.reload();
    });
 }
 </script>

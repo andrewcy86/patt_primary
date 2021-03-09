@@ -295,6 +295,15 @@ if( $type == 'request_date' ) {
 		do_action('wpppatt_after_recall_cancelled', $ticket_id, 'R-'.$recall_id);
 	}
 	
+	//
+	// Restore the saved Box Status
+	//	
+	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+	$data_where = array( 'box_id' => $recall_obj->box_id );
+	$data_update = array( 'box_status' => $recall_obj->saved_box_status );
+	$wpdb->update( $table_name, $data_update, $data_where );
+
+	
 	
 	//Update the Updated Date
 	$current_datetime = date("Y-m-d H:i:s");

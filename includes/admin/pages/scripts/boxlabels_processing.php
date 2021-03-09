@@ -39,7 +39,7 @@ if ($destroy_status == 0 && ($aisle != 0 && $bay != 0 && $shelf != 0 && $positio
 array_push($boxidarray, $box_id);
 }
 
-if ($destroy_status == 1 || ($aisle == 0 || $bay == 0 || $shelf == 0 || $position == 0 || $digitization_center == 666)) {
+if ($destroy_status == 1 || ($aisle <= 0 || $bay <= 0 || $shelf <= 0 || $position <= 0 || $digitization_center == 666)) {
 $count++;
 }
 

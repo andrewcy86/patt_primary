@@ -87,8 +87,48 @@ ob_start();
             $folderfile_source_dimensions = $folderfile_details->source_dimensions;
 ?>
 
+<!-- All inputs/dropdowns/datalists should be the same width -->
+
+<style>
+
+select {
+    width: 400px;
+    height: 33px;
+}
+
+input {
+    width: 400px;
+    height: 33px;
+}
+
+.bootstrap-select {
+  width: 400px !important;
+}
+
+/*
+Changes button styling for multiselect dropdown
+*/
+.bootstrap-select .btn {
+  
+  font-weight: 200;
+  padding: 12px 12px;
+  /*margin-bottom: 10px;*/
+}
+
+/*
+Hides specific_access_restriction and specific_use_restriction when option == 'No'
+*/
+#hidden_div {
+    display: none;
+}
+
+#hidden_div_2 {
+    display: none;
+}
+</style>
+
 <form>
-<strong>Index Level:</strong><br />
+<strong>Index Level</strong><br />
 <select id="il" name="il">
   <option value="1" <?php if ($folderfile_il == 1 ) echo 'selected' ; ?>>Folder</option>
   <option value="2" <?php if ($folderfile_il == 2 ) echo 'selected' ; ?>>File</option>
@@ -98,36 +138,50 @@ ob_start();
 //}
 //placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
 
-if(!empty($folderfile_title)) {
-    echo "<strong>Title:</strong><br /><input type='text' id='title' placeholder= '$folderfile_title'></br></br>";
+if(!empty($folderfile_identifier)) {
+    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' placeholder= '$folderfile_identifier'><br /><br />";
 }
 else {
-    echo "<strong>Title:</strong><br /><input type='text' id='title' placeholder= 'Enter title...'></br></br>";
+    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' placeholder= 'Enter folder identifier...'><br /><br />";
+}
+
+if(!empty($folderfile_title)) {
+    echo "<strong>Title</strong><br /><input type='text' id='title' placeholder= '$folderfile_title'></br></br>";
+}
+else {
+    echo "<strong>Title</strong><br /><input type='text' id='title' placeholder= 'Enter title...'></br></br>";
+}
+
+if(!empty($folderfile_description)) {
+    echo "<strong>Description</strong><br /><input type='text' id='description' placeholder= '$folderfile_description'><br /><br />";
+}
+else {
+    echo "<strong>Description</strong><br /><input type='text' id='description' placeholder= 'Enter description...'><br /><br />";
 }
 
 if(!empty($folderfile_date)) {
-    echo "<strong>Date:</strong><br /><input type='date' id='date' placeholder= '$folderfile_date'></br></br>";
+    echo "<strong>Creation Date</strong><br /><input type='date' id='date' placeholder= '$folderfile_date'></br></br>";
 }
 else {
-    echo "<strong>Date:</strong><br /><input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>";
+    echo "<strong>Creation Date</strong><br /><input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>";
 }
-
-if(!empty($folderfile_author)) {
-    echo "<strong>Author:</strong><br /><input type='text' id='author' placeholder= '$folderfile_author'></br></br>";
-}
-else {
-    echo "<strong>Author:</strong><br /><input type='text' id='author' placeholder= 'Enter author...'></br></br>";
-}
-
-if(!empty($folderfile_addressee)) {
-    echo "<strong>Addressee:</strong><br /><input type='text' id='addressee' placeholder= '$folderfile_addressee'></br></br>";
-}
-else {
-    echo "<strong>Addressee:</strong><br /><input type='text' id='addressee' placeholder= 'Enter addressee...'></br></br>";
-}
-
 ?>
-<strong>Record Type:</strong></br>
+
+<strong>Creator</strong><br />
+<input type='text' name='author' value='' id='author' class='tags'>
+</br>
+
+<?php
+if(empty($folderfile_addressee)) {
+    $folderfile_addressee = 'Enter addressee...';
+}
+?>
+
+<strong>Addressee</strong><br />
+<input type='text' name='addressee' value="" id='addressee' class='tags'>
+</br></br>
+
+<strong>Record Type</strong></br>
 <input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type'/>
     <datalist id = 'RecordTypeList'>
         <option value='Administrative Record Index'></option>
@@ -163,29 +217,90 @@ else {
 
 <?php
 if(!empty($folderfile_site_name)) {
-    echo "<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= '$folderfile_site_name'></br></br>";
+    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' placeholder= '$folderfile_site_name'></br></br>";
 }
 else {
-    echo "<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>";
+    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>";
 }
 
 if(!empty($folderfile_site_id)) {
-    echo "<strong>Site ID:</strong><br /><input type='text' id='site_id' placeholder= '$folderfile_site_id'></br></br>";
+    echo "<strong>Site ID</strong><br /><input type='text' id='site_id' placeholder= '$folderfile_site_id'></br></br>";
 }
 else {
-    echo "<strong>Site ID:</strong><br /><input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>";
+    echo "<strong>Site ID</strong><br /><input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>";
 }
 
 if(!empty($folderfile_close_date)) {
-    echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= '$folderfile_close_date'></br></br>";
+    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' placeholder= '$folderfile_close_date'></br></br>";
 }
 else {
-    echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
+    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
 }
 
 //source format is now a datalist
 ?>
-<strong>Source Type:</strong></br>
+
+<strong>Access Restriction</strong><br />
+<select id="access_restriction" name="access_restriction" onclick="showDiv('hidden_div', this)">
+  <option value="Yes" <?php if ($folderfile_access_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
+  <option value="No" <?php if ($folderfile_access_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
+</select></br>
+
+<div id="hidden_div">
+<br><strong>Specific Access Restriction</strong><br />
+<select id="specific_access_restriction" class="selectpicker" multiple data-live-search="true" data-none-selected-text>
+  <option value="Controlled / Copyright">Controlled / Copyright</option>
+  <option value="Controlled / Critical Infrastructure - Water Assessments">Controlled / Critical Infrastructure - Water Assessments</option>
+  <option value="Controlled / General Law Enforcement">Controlled / General Law Enforcement</option>
+  <option value="Controlled / Legal-Administrative Proceedings">Controlled / Legal-Administrative Proceedings</option>
+  <option value="Controlled / Legal-Privilege">Controlled / Legal-Privilege</option>
+  <option value="Controlled / Legal-Protective Order">Controlled / Legal-Protective Order</option>
+  <option value="Controlled / General Privacy">Controlled / General Privacy</option>
+  <option value="Controlled / Privacy-Personnel">Controlled / Privacy-Personnel</option>
+  <option value="Controlled / General Proprietary Business Information">Controlled / General Proprietary Business Information</option>
+  <option value="Controlled / Proprietary Business Information-Claimed">Controlled / Proprietary Business Information-Claimed</option>
+  <option value="Controlled-Undetermined">Controlled-Undetermined</option>
+  <option value="Uncontrolled">Uncontrolled</option>
+</select></br>
+</div>
+
+<br><strong>Use Restriction</strong><br />
+<select id="use_restriction" name="use_restriction" onclick="showDiv('hidden_div_2', this)">
+  <option value="Yes" <?php if ($folderfile_use_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
+  <option value="No" <?php if ($folderfile_use_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
+</select></br>
+
+<div id="hidden_div_2">
+<br><strong>Specific Use Restriction</strong><br />
+<select id="specific_use_restriction" class="selectpicker" multiple data-live-search="true" data-none-selected-text>
+  <option value="Controlled / Copyright">Controlled / Copyright</option>
+  <option value="Controlled / Critical Infrastructure - Water Assessments">Controlled / Critical Infrastructure - Water Assessments</option>
+  <option value="Controlled / General Law Enforcement">Controlled / General Law Enforcement</option>
+  <option value="Controlled / Legal-Administrative Proceedings">Controlled / Legal-Administrative Proceedings</option>
+  <option value="Controlled / Legal-Privilege">Controlled / Legal-Privilege</option>
+  <option value="Controlled / Legal-Protective Order">Controlled / Legal-Protective Order</option>
+  <option value="Controlled / General Privacy">Controlled / General Privacy</option>
+  <option value="Controlled / Privacy-Personnel">Controlled / Privacy-Personnel</option>
+  <option value="Controlled / General Proprietary Business Information">Controlled / General Proprietary Business Information</option>
+  <option value="Controlled / Proprietary Business Information-Claimed">Controlled / Proprietary Business Information-Claimed</option>
+  <option value="Controlled-Undetermined">Controlled-Undetermined</option>
+  <option value="Uncontrolled">Uncontrolled</option>
+</select></br>
+</div>
+</br>
+
+<?php
+if(empty($folderfile_rights_holder)) {
+    $folderfile_rights_holder = 'Enter rights holder...';
+}
+?>
+
+<strong>Rights Holder</strong><br />
+<input type='text' name='rights_holder[]' value="" id='rights_holder' placeholder= '<?php echo $folderfile_rights_holder?>'>
+<button id="rights_holder_button" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Add</button>
+</br></br>
+
+<strong>Source Type</strong></br>
 <input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf'/>
     <datalist id = 'SourceFormatList'>
         <option value='4K'></option>
@@ -240,86 +355,30 @@ else {
     </datalist>
 </br></br>
 <?php
-if(!empty($folderfile_identifier)) {
-    echo "<strong>Folder Identifier:</strong><br /><input type='text' id='folder_identifier' placeholder= '$folderfile_identifier'><br />";
+
+if(!empty($folderfile_source_dimensions)) {
+    echo "<strong>Source Dimensions</strong><br /><input type='text' id='source_dimensions' placeholder= '$folderfile_source_dimensions'><br />";
 }
 else {
-    echo "<strong>Folder Identifier:</strong><br /><input type='text' id='folder_identifier' placeholder= 'Enter folder identifier...'><br />";
+    echo "<strong>Source Dimensions</strong><br /><input type='text' id='source_dimensions' placeholder= 'Enter source dimensions...'><br />";
 }
-
 ?>
-<br><strong>Essential Record:</strong><br />
+<br><strong>Essential Record</strong><br />
 <select id="er" name="er">
   <option value="1" <?php if ($folderfile_essential_record == 1 ) echo 'selected' ; ?>>Yes</option>
   <option value="0" <?php if ($folderfile_essential_record == 0) echo 'selected' ; ?>>No</option>
 </select></br></br>
 
 <?php 
-if(!empty($folderfile_description)) {
-    echo "<strong>Description:</strong><br /><input type='text' id='description' placeholder= '$folderfile_description'><br /><br />";
-}
-else {
-    echo "<strong>Description:</strong><br /><input type='text' id='description' placeholder= 'Enter description...'><br /><br />";
-}
-
-if(!empty($folderfile_tags)) {
-    echo "<strong>Tags:</strong><br /><input type='text' id='tags' placeholder= '$folderfile_tags'><br /><br />";
-}
-else {
-    echo "<strong>Tags:</strong><br /><input type='text' id='tags' placeholder= 'Enter tags...'><br /><br />";
+if(empty($folderfile_tags)) {
+   $folderfile_tags = 'Enter tags...'; 
 }
 ?>
 
-<strong>Access Restriction:</strong><br />
-<select id="access_restriction" name="access_restriction">
-  <option value="Yes" <?php if ($folderfile_access_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
-  <option value="No" <?php if ($folderfile_access_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
-</select></br>
-
-<br><strong>Specific Access Restriction:</strong><br />
-<select id="specific_access_restriction" name="specific_access_restriction">
-  <option value="Controlled / Copyright" <?php if ($folderfile_specific_access_restriction == 'Controlled / Copyright') echo 'selected' ; ?>>Controlled / Copyright</option>
-  <option value="Controlled / Critical Infrastructure - Water Assessments" <?php if ($folderfile_specific_access_restriction == 'Controlled / Critical Infrastructure - Water Assessments') echo 'selected' ; ?>>Controlled / Critical Infrastructure - Water Assessments</option>
-  <option value="Controlled / General Law Enforcement" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Law Enforcement') echo 'selected' ; ?>>Controlled / General Law Enforcement</option>
-  <option value="Controlled / Legal-Administrative Proceedings" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Administrative Proceedings') echo 'selected' ; ?>>Controlled / Legal-Administrative Proceedings</option>
-  <option value="Controlled / Legal-Privilege" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Privilege') echo 'selected' ; ?>>Controlled / Legal-Privilege</option>
-  <option value="Controlled / Legal-Protective Order" <?php if ($folderfile_specific_access_restriction == 'Controlled / Legal-Protective Order') echo 'selected' ; ?>>Controlled / Legal-Protective Order</option>
-  <option value="Controlled / General Privacy" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Privacy') echo 'selected' ; ?>>Controlled / General Privacy</option>
-  <option value="Controlled / Privacy-Personnel" <?php if ($folderfile_specific_access_restriction == 'Controlled / Privacy-Personnel') echo 'selected' ; ?>>Controlled / Privacy-Personnel</option>
-  <option value="Controlled / General Proprietary Business Information" <?php if ($folderfile_specific_access_restriction == 'Controlled / General Proprietary Business Information') echo 'selected' ; ?>>Controlled / General Proprietary Business Information</option>
-  <option value="Controlled / Proprietary Business Information-Claimed" <?php if ($folderfile_specific_access_restriction == 'Controlled / Proprietary Business Information-Claimed') echo 'selected' ; ?>>Controlled / Proprietary Business Information-Claimed</option>
-  <option value="Controlled-Undetermined" <?php if ($folderfile_specific_access_restriction == 'Controlled-Undetermined') echo 'selected' ; ?>>Controlled-Undetermined</option>
-  <option value="Uncontrolled" <?php if ($folderfile_specific_access_restriction == 'Uncontrolled') echo 'selected' ; ?>>Uncontrolled</option>
-</select></br>
-
-<br><strong>Use Restriction:</strong><br />
-<select id="use_restriction" name="use_restriction">
-  <option value="Yes" <?php if ($folderfile_use_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
-  <option value="No" <?php if ($folderfile_use_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
-</select></br><br />
-
-<?php
-if(!empty($folderfile_specific_use_restriction)) {
-    echo "<strong>Specific Use Restriction:</strong><br /><input type='text' id='specific_use_restriction' placeholder= '$folderfile_specific_use_restriction'><br /><br />";
-}
-else {
-    echo "<strong>Specific Use Restriction:</strong><br /><input type='text' id='specific_use_restriction' placeholder= 'Enter specific use restriction...'><br /><br />";
-}
-
-if(!empty($folderfile_rights_holder)) {
-    echo "<strong>Rights Holder:</strong><br /><input type='text' id='rights_holder' placeholder= '$folderfile_rights_holder'><br /><br />";
-}
-else {
-    echo "<strong>Rights Holder:</strong><br /><input type='text' id='rights_holder' placeholder= 'Enter rights holder...'><br /><br />";
-}
-
-if(!empty($folderfile_source_dimensions)) {
-    echo "<strong>Source Dimensions:</strong><br /><input type='text' id='source_dimensions' placeholder= '$folderfile_source_dimensions'><br />";
-}
-else {
-    echo "<strong>Source Dimensions:</strong><br /><input type='text' id='source_dimensions' placeholder= 'Enter source dimensions...'><br />";
-}
-?>
+<strong>Tags</strong><br />
+<input type='text' name='tags[]' value="" id='tags' placeholder= '<?php echo $folderfile_tags?>'>
+<button id="tags_button" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Add</button>
+</br>
 
 <input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_folderdocinfoid; ?>">
@@ -334,6 +393,70 @@ ob_start();
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_edit_folder_file_details();"><?php _e('Save','supportcandy');?></button>
 
 <script>
+
+//Setting placeholder text for multiselect dropdown
+jQuery('.selectpicker').selectpicker({
+        noneSelectedText : 'Please select...' // by this default 'Nothing selected' -->will change to Please Select...
+    });
+
+
+//Hides specific access restriction and specific use destriction on default, unless choice of 'Yes' is chosen
+function showDiv(divId, element)
+{
+    document.getElementById(divId).style.display = element.value == 'Yes' ? 'block' : 'none';
+}
+
+jQuery('.tags').tagsInput({
+   'height':'33px',
+   'width':'400px',
+   'interactive':true,
+   'defaultText':'',
+   'delimiter': ';',   // Or a string with a single delimiter. Ex: ';'
+   'removeWithBackspace' : true,
+   'minChars' : 0,
+   'maxChars' : 0, // if not provided there is no limit
+   'placeholderColor' : '#666666'
+});
+
+//Buttons add either a semicolon or comma to create a list of strings and then brings focus back to fields
+
+jQuery("#addressee_button").on('click', function(e) {
+    e.preventDefault();
+    var elem = jQuery(this).parent().find('input[name=addressee\\[\\]]');
+    elem.val( elem.val() + '; ' );
+    document.getElementById('addressee').focus();
+});
+
+jQuery("#rights_holder_button").on('click', function(e) {
+    e.preventDefault();
+    var elem = jQuery(this).parent().find('input[name=rights_holder\\[\\]]');
+    elem.val( elem.val() + '; ' );
+    document.getElementById('rights_holder').focus();
+});
+
+jQuery("#tags_button").on('click', function(e) {
+    e.preventDefault();
+    var elem = jQuery(this).parent().find('input[name=tags\\[\\]]');
+    elem.val( elem.val() + ', ' );
+    document.getElementById('tags').focus();
+});
+
+
+//Disables buttons until input field is not empty
+jQuery('#addressee_button').prop('disabled',true);
+    jQuery('#addressee').keyup(function(){
+        jQuery('#addressee_button').prop('disabled', this.value == "" ? true : false);     
+});
+
+jQuery('#rights_holder_button').prop('disabled',true);
+    jQuery('#rights_holder').keyup(function(){
+        jQuery('#rights_holder_button').prop('disabled', this.value == "" ? true : false);     
+});
+
+jQuery('#tags_button').prop('disabled',true);
+    jQuery('#tags').keyup(function(){
+        jQuery('#tags_button').prop('disabled', this.value == "" ? true : false);     
+});
 
 function wpsc_edit_folder_file_details(){
 		   jQuery.post(
@@ -358,9 +481,9 @@ postvarsaddressee: jQuery("#addressee").val(),
 postvarsdescription: jQuery("#description").val(),
 postvarstags: jQuery("#tags").val(),
 postvarsaccessrestriction: jQuery("#access_restriction").val(),
-postvarsspecificaccessrestriction: jQuery("#specific_access_restriction").val(),
+postvarsspecificaccessrestriction: jQuery('[data-id="specific_access_restriction"]').attr('title').replace(/,/g, ';'),
 postvarsuserestriction: jQuery("#use_restriction").val(),
-postvarsspecificuserestriction: jQuery("#specific_use_restriction").val(),
+postvarsspecificuserestriction: jQuery('[data-id="specific_use_restriction"]').attr('title').replace(/,/g, ';'),
 postvarsrightsholder: jQuery("#rights_holder").val(),
 postvarssourcedimensions: jQuery("#source_dimensions").val()
 }, 
