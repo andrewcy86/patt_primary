@@ -25,7 +25,7 @@ $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
 //$status_id_arr = array('3','670','69');
 $status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id);
 
- if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
+ if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wppatt_change_pallet_btn" style="<?php echo $action_default_btn_css ?>" ><i class="fas fa-dolly-flatbed"></i> Pallet Assignment</button>
 <?php

@@ -174,8 +174,8 @@ var App = {
         //alert(result.codeResult.code+" has already been scanned.")
     } else{
     
+    //alert (result.codeResult.code)
     if (result.codeResult.code !== '') {
-        
 
     //check to see if barcode is a location, box or pallet
     if (reg_cartid.test(result.codeResult.code) || reg_stagingarea.test(result.codeResult.code) || reg_stagingarea.test(result.codeResult.code) || reg_scanning.test(result.codeResult.code) || reg_physicalLocation.test(result.codeResult.code)){
@@ -293,7 +293,7 @@ var App = {
     configureScanner: function(selector) {
         var scanner = Quagga
             .decoder({readers: this.querySelectedReaders()})
-            .locator({patchSize: 'medium'})
+            .locator({halfSample: false, patchSize: 'small'})
             .fromSource({
                 target: selector,
                 constraints: {

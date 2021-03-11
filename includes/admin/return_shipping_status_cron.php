@@ -534,7 +534,7 @@ foreach ($return_complete_return_status_query as $item) {
 	
 	
 	//
-	// Set Box status back to original status before Recall
+	// Set Box status back to original status before Decline
 	//  
 	$where = [ 'return_id' => $return_id ]; // format: '0000002'
 	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );

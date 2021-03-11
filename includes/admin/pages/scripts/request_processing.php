@@ -501,6 +501,7 @@ $recall_icon = '';
 $unauthorized_destruction_icon = '';
 $freeze_icon = '';
 $box_destroyed_icon = '';
+$damaged_icon = '';
 $type = 'request';
 
 if(Patt_Custom_Func::id_in_return($row['patt_request_id'],$type) == 1){
@@ -518,6 +519,10 @@ if(Patt_Custom_Func::id_in_unauthorized_destruction($row['patt_request_id'],$typ
     $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
 }
 
+if(Patt_Custom_Func::id_in_damaged($row['patt_request_id'],$type) == 1) {
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+}
+
 if(Patt_Custom_Func::id_in_freeze($row['patt_request_id'],$type) == 1) {
     $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
 }
@@ -529,7 +534,7 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
 
    $data[] = array(
      "request_id"=>$row['request_id'],
-     "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon,
+     "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$row['ticket_priority'],
      "ticket_status"=>$row['ticket_status'],
      "customer_name"=>$row['customer_name'].$full_name,

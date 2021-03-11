@@ -76,7 +76,8 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			$db_null = -99999;
 			$db_empty = '';
 			$blank_date = '0000-00-00 00:00:00';
-			$decline_status_pending_cancel = 'Decline Pending Cancel';
+			//$decline_status_pending_cancel = 'Decline Pending Cancel';
+			$decline_status_pending_cancel = 'Received'; 
 			
 			
 			$return_reason = $return_obj->reason;

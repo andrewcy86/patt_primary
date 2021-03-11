@@ -1224,7 +1224,7 @@ margin: 0px 0px 25px 15px;
 					alert(success_str);
 					remove_all_tags();
 // 					location.href='admin.php?page=returncreate&success=true&id='+response.return_id; 
-					//location.href='admin.php?page=declinecreate&success=true&id='+response.return_id; 
+					location.href='admin.php?page=declinecreate&success=true&id='+response.return_id; 
 			    }
 			}); 
 			

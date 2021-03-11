@@ -404,6 +404,19 @@ is flagged as unauthorized destruction.
 }
 ?>
 
+<!--only appears if document is marked as damaged-->
+<?php
+if(Patt_Custom_Func::id_in_damaged($folderfile_folderdocinfofile_id, $type) == 1){
+?>
+<div class="alert alert-warning" role="alert">
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> This 
+<?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
+is marked as damaged.
+</div>
+<?php
+}
+?>
+
 <!--only appears if document is marked as frozen-->
 <?php
 if($folderfile_freeze > 0){
@@ -516,11 +529,25 @@ echo $decline_icon.$recall_icon;
 			if (!empty($folderfile_date)) {
 				echo "<strong>Creation Date:</strong> " . $folderfile_date . "<br />";
 			}
-			if (!empty($folderfile_author)) {
-				echo "<strong>Creator:</strong> " . $folderfile_author . "<br />";
+			
+			$folderfile_author_array = array();
+			$folderfile_author_explode = explode(';', $folderfile_author);
+            foreach ($folderfile_author_explode as $creator) {
+                array_push($folderfile_author_array, $creator);
+            }
+			
+			if(!empty($folderfile_author)) {
+			    echo "<strong>Creator:</strong> " . implode("; ", $folderfile_author_array) . "<br />";
 			}
+			
+			$folderfile_addressee_array = array();
+			$folderfile_addressee_explode = explode(';', $folderfile_addressee);
+			foreach ($folderfile_addressee_explode as $addressee) {
+                array_push($folderfile_addressee_array, $addressee);
+            }
+			
 			if(!empty($folderfile_addressee)) {
-			    echo "<strong>Addressee:</strong> " . $folderfile_addressee . "<br />";
+			    echo "<strong>Addressee:</strong> " . implode("; ", $folderfile_addressee_array) . "<br />";
 			}
 			if (!empty($folderfile_record_type)) {
 				echo "<strong>Record Type:</strong> " . $folderfile_record_type . "<br />";
@@ -539,20 +566,39 @@ echo $decline_icon.$recall_icon;
 			    echo "<strong>Access Restriction:</strong> " . $folderfile_access_restriction . "<br />";
 			}
 			
+			$folderfile_specific_access_restrictions_array = array();
+			$folderfile_specific_access_restrictions_explode = explode(';', $folderfile_specific_access_restriction);
+			foreach ($folderfile_specific_access_restrictions_explode as $specific_access_restriction) {
+                array_push($folderfile_specific_access_restrictions_array, $specific_access_restriction);
+            }
+
 			if(!empty($folderfile_specific_access_restriction)) {
-			    echo "<strong>Specfic Access Restriction:</strong> " . $folderfile_specific_access_restriction . "<br />";
+			    echo "<strong>Specfic Access Restriction:</strong> " . implode("; ", $folderfile_specific_access_restrictions_array) . "<br />";
 			}
+			
 			
 			if(!empty($folderfile_use_restriction)) {
 			    echo "<strong>Use Restriction:</strong> " . $folderfile_use_restriction . "<br />";
 			}
 			
+			$folderfile_specific_use_restrictions_array = array();
+			$folderfile_specific_use_restrictions_explode = explode(';', $folderfile_specific_use_restriction);
+			foreach ($folderfile_specific_use_restrictions_explode as $specific_use_restriction) {
+                array_push($folderfile_specific_use_restrictions_array, $specific_use_restriction);
+            }
+			
 			if(!empty($folderfile_specific_use_restriction)) {
-			    echo "<strong>Specific Use Restriction:</strong> " . $folderfile_specific_use_restriction . "<br />";
+			    echo "<strong>Specific Use Restriction:</strong> " . implode("; ", $folderfile_specific_use_restrictions_array) . "<br />";
 			}
 			
+			$folderfile_rights_holder_array = array();
+			$folderfile_rights_holder_explode = explode(';', $folderfile_rights_holder);
+			foreach ($folderfile_rights_holder_explode as $rights_holder) {
+                array_push($folderfile_rights_holder_array, $rights_holder);
+            }
+
 			if(!empty($folderfile_rights_holder)) {
-			    echo "<strong>Rights Holder:</strong> " . $folderfile_rights_holder . "<br />";
+			    echo "<strong>Rights Holder:</strong> " . implode("; ", $folderfile_rights_holder_array) . "<br />";
 			}
 			
 			if (!empty($folderfile_source_format)) {
@@ -570,8 +616,14 @@ echo $decline_icon.$recall_icon;
 			    echo "<strong>Essential Record:</strong> No" . "<br />";
 			}
 			
+			$folderfile_tags_array = array();
+			$folderfile_tags_explode = explode(',', $folderfile_tags);
+			foreach ($folderfile_tags_explode as $tag) {
+                array_push($folderfile_tags_array, $tag);
+            }
+			
 			if(!empty($folderfile_tags)) {
-			    echo "<strong>Tags:</strong> " . $folderfile_tags;
+			    echo "<strong>Tags:</strong> " . implode(", ", $folderfile_tags_array) . "<br />";
 			}
 
 wp_get_current_user();

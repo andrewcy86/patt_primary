@@ -7,10 +7,14 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 $type = $_REQUEST['pallet_action'];
 $ticket_id = $_REQUEST['ticket_id'];
+$pallet_id = $_REQUEST['pallet_id'];
 
 $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $table_name_sl = $wpdb->prefix . 'wpsc_epa_scan_list';
 $invalid_response = 0;
+$pallet_set_count = 0;
+
+$metadata_array = array();
 
 	//
 	// Set Pallet per Item
@@ -129,7 +133,123 @@ if($invalid_response >= 1) {
 echo "Pallets IDs have been un-assigned.";
 }
 
-} 
+} elseif ( $type == 'reassign' ) {
+
+//echo 'PALLET : ' . $pallet_id;
+$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$scan_list_table = $wpdb->prefix . 'wpsc_epa_scan_list';
+
+$get_scan_list_id = $wpdb->get_row("SELECT *
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE pallet_id = '" . $pallet_id . "'");
+$scan_list_id = $get_scan_list_id->id;
+
+if(empty($scan_list_id)) {
+$scan_list_id = 0;
+}
+
+//Does pallet exist in scanning table? If not, set location_status_id to 1 (Pending).
+$get_physical_location_exist = $wpdb->get_row("SELECT id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+WHERE pallet_id = '" . $pallet_id . "'");
+$physical_location_exist = $get_physical_location_exist->id;
+
+if(empty($physical_location_exist)) {
+$physical_location_id = 1;
+} else {
+$physical_location_id = 3;
+}
+
+//echo 'PHYSICAL LOCATION : ' . $physical_location_id;
+
+foreach( $item_ids as $id ) {
+
+$get_old_physical_location = $wpdb->get_row("SELECT b.locations, a.location_status_id, a.pallet_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status b ON b.id = a.location_status_id
+WHERE a.box_id = '" . $id . "'");
+$old_physical_location = $get_old_physical_location->locations;
+$old_location_status_id = $get_old_physical_location->location_status_id;
+$old_pallet_id = $get_old_physical_location->pallet_id;
+
+//echo 'PALLET ID : ' . $pallet_id;
+
+//Delete box_ids from scan_list table if pallet assigned already assigned to a staging area
+if(!empty($pallet_id)) {
+    $get_box_from_scan_list = $wpdb->get_row("SELECT * 
+    FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+    WHERE box_id = '" . $id . "'");
+    $box_from_scan_list = $get_box_from_scan_list->box_id;
+    $dbid_from_scan_list = $get_box_from_scan_list->id;
+    //echo $box_from_scan_list;
+    if(!empty($box_from_scan_list)) {
+        $wpdb->delete( $scan_list_table, array( 'id' => $dbid_from_scan_list) );
+    }
+}
+
+//updates pallet ID
+
+if(!empty($pallet_id) && ($old_pallet_id != $pallet_id) && !empty($old_pallet_id)) {
+
+//if pallet ID is reassigned set physical location to Pending, unless new pallet ID already has a stagingarea_id, then set to In Staging Area
+//echo $scan_list_id;
+
+$data_update = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
+$data_where = array('box_id' => $id);
+$wpdb->update($table_name, $data_update, $data_where);
+
+array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
+
+}
+
+//updates pallet ID when unassigned
+if(!empty($pallet_id) && empty($old_pallet_id) ) {
+
+$data_update_unassigned = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
+$data_where_unassigned = array('box_id' => $id);
+$wpdb->update($table_name, $data_update_unassigned, $data_where_unassigned);
+
+$old_pallet_id = 'Unassigned';
+
+array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
+
+}
+
+if($old_location_status_id != $physical_location_id) {
+
+    $get_new_physical_location = $wpdb->get_row("SELECT a.locations
+    FROM " . $wpdb->prefix . "wpsc_epa_location_status a
+    WHERE a.id = '" . $physical_location_id . "'");
+    $new_physical_location = $get_new_physical_location->locations;
+    
+    $data_update_physical_location = array('location_status_id' => $physical_location_id);
+    $data_where_physical_location = array('box_id' => $id);
+    $wpdb->update($table_name, $data_update_physical_location, $data_where_physical_location);
+    
+    array_push($metadata_array,'Physical Location: ' . $old_physical_location . ' > ' . $new_physical_location);
+}
+
+if (empty($metadata_array)) {
+$pallet_set_count = 99999;
+} else {
+$metadata = implode (", ", array_unique($metadata_array));
+
+do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $id);
+
+$pallet_set_count++;    
+}
+
+
+}
+
+if($pallet_set_count >= 1 && $pallet_set_count != 99999) {
+echo "Successfully updated Pallet ID.";
+}
+if($pallet_set_count == 99999) {
+echo "No Pallet IDs to update.";
+}
+
+}
 
 Patt_Custom_Func::pallet_cleanup();
 ?>

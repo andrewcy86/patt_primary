@@ -97,38 +97,6 @@ echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
 		</select>
 
 <?php
-//List of all of the pallet IDs in the database to choose from
-$box_pallet_array = $wpdb->get_results("SELECT DISTINCT pallet_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE pallet_id <> ''");
-$get_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($patt_box_id, 'box');
-
-if(count($box_pallet_array) > 0) {
-?>
-
-<br /><br /><strong>Pallet ID: </strong><br />
-<input type="search" list="PalletList" placeholder='Enter pallet ID...' id='pallet_id'/>
-<datalist id = 'PalletList'>
-<?php
-
-foreach ( $box_pallet_array as $pallet ) {
-$pallet_id = $pallet->pallet_id;
-
-/*
-if ($get_pallet_id == $pallet ) {
-    $selected = 'selected'; 
-} else {
-    $selected = '';
-}
-
-echo '<option '.$selected.' value="'.$pallet_id.'">'.$pallet_id.'</option>';
-*/
-echo '<option value="'.$pallet_id.'">'.$pallet_id.'</option>';
-}
-
-}
-?>
-</datalist>
-
-<?php
 $desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses');
 $desruction_approval_term_id = $desruction_approval_tag->term_id;
 
@@ -204,7 +172,7 @@ WHERE Ten_Year = 1 AND Record_Schedule_Number = '" . $value . "'");
 }
 ?>
  
- 
+
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
 <input type="hidden" id="pattboxid" name="pattboxid" value="<?php echo $patt_box_id; ?>">
 </form>
@@ -272,6 +240,12 @@ ob_start();
     display:none;
     padding:20px;
 }
+
+
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
+
 </style>
 
 
@@ -366,7 +340,6 @@ postvarspattboxid: jQuery("#pattboxid").val(),
 postvarsboxid: jQuery("#boxid").val(),
 postvarsdc: jQuery('#dc').val(),
 postvarsbs: jQuery('#box_status').val(),
-postvarspalletid: jQuery('#pallet_id').val(),
 postvarspo: jQuery('#ProgramOfficeList [value="' + po_value + '"]').data('value'),
 postvarsrs: jQuery('#RecordScheduleList [value="' + rs_value + '"]').data('value')
 }, 

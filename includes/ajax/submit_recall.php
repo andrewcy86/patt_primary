@@ -70,10 +70,19 @@ foreach( $assigned_agent_ids as $term_id ) {
 // Get box status for save/restore
 //
 
+// Get current box status
 $box_id_array = Patt_Custom_Func::get_box_id_by_id( $box_fk );
 $box_id = $box_id_array[0];
 $box_obj = Patt_Custom_Func::get_box_file_details_by_id( $box_id );
 $box_status = $box_obj->box_status;
+
+// Check existing Recalls to determine if that Box id already has a Recall in it, 
+// if so, change restore box status, to the stored saved_box_status from Box. 
+$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $box_fk );
+if( $saved_box_status['num'] ) {
+	$box_status = $saved_box_status['saved_box_status'];
+}
+
 
 // create function for FK on FDIF ($folderdoc_files_fk)
 

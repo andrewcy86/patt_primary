@@ -417,6 +417,23 @@ $recall_complete_recall_status_query = $wpdb->get_results(
 // For Recall Status to change from Shipped Back [732] to Recall Complete [733]
 foreach ($recall_complete_recall_status_query as $item) {
 	
+	
+	
+	//
+	// Restore the saved Box Status
+	//	
+	$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $item->box_id );
+	// if only 1 recalled file, restore status
+	if( $saved_box_status['num'] == 1)  {
+		$box_status = $item->saved_box_status;
+		
+		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+		$data_where = array( 'id' => $item->box_id );
+		$data_update = array( 'box_status' => $box_status );
+		$wpdb->update( $table_name, $data_update, $data_where );
+	} 
+	
+	
 	// update recall status to Recall Complete [733]
 	$recall_id = $item->recall_id;	
 	$where = [ 'id' => $recall_id ];
@@ -451,10 +468,20 @@ foreach ($recall_complete_recall_status_query as $item) {
 	// Set Box status back to original status before Recall
 	//  
 	
+/*
+	$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $item->box_id );
+	if( $saved_box_status['num'] ) {
+		$box_status = $saved_box_status['saved_box_status'];
+	} else {
+		$box_status = $item->saved_box_status;
+	}
+	
 	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 	$data_where = array( 'id' => $item->box_id );
-	$data_update = array( 'box_status' => $item->saved_box_status );
+	//$data_update = array( 'box_status' => $item->saved_box_status );
+	$data_update = array( 'box_status' => $box_status );
 	$wpdb->update( $table_name, $data_update, $data_where );
+*/
 	
 
 }

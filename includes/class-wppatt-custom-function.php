@@ -631,6 +631,112 @@ public static function id_in_validation( $identifier, $type ) {
 }
 
 /**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as damaged
+ * @return Boolean
+ */
+ 
+public static function id_in_damaged( $identifier, $type) {
+    global $wpdb;
+    
+    if($type == 'request') {
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(d.damaged) as total_damaged
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $damaged_sum = $get_damaged_data->total_damaged;
+	        
+		if ($damaged_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'request_archive') {
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(d.damaged) as total_damaged
+        FROM " . $wpdb->prefix . "wpsc_ticket a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+        WHERE a.request_id = '" .  $identifier . "'");
+        $damaged_sum = $get_damaged_data->total_damaged;
+	        
+		if ($damaged_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+     else if($type == 'box') {
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $damaged_sum = $get_damaged_data->total_damaged;
+	        
+		if ($damaged_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'box_archive') {
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE a.box_id = '" .  $identifier . "'");
+        $damaged_sum = $get_damaged_data->total_damaged;
+	        
+		if ($damaged_sum > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    else if($type == 'folderfile') {
+        $get_damaged_data = $wpdb->get_row("SELECT damaged
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $damaged = $get_damaged_data->damaged;
+	        
+		if ($damaged > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else if($type == 'folderfile_archive') {
+        $get_damaged_data = $wpdb->get_row("SELECT damaged
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $damaged = $get_damaged_data->damaged;
+	        
+		if ($damaged > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    else {
+        return false;
+    }
+}
+
+/**
  * Determine if ID (Request,Box,Folder/File) contains a document marked as freeze
  * @return Boolean
  */
@@ -2427,7 +2533,7 @@ public static function id_in_recall( $identifier, $type ) {
             // print_r($args);  
 
             $select_fields = [
-                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id', 'saved_box_status'],
+                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'box_id as recall_box_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id', 'saved_box_status'],
                 "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                 "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['folderdocinfo_id as folderdoc_id_parent'],
@@ -4136,6 +4242,7 @@ $folderdocinfofile_qa_user_id = $folderdocinfofile->qa_user_id;
 $folderdocinfofile_rescan = $folderdocinfofile->rescan;
 $folderdocinfofile_unauthorized_destruction = $folderdocinfofile->unauthorized_destruction;
 $folderdocinfofile_freeze = $folderdocinfofile->freeze;
+$folderdocinfofile_damaged = $folderdocinfofile->damaged;
 $folderdocinfofile_index_level = $folderdocinfofile->index_level;
 $folderdocinfofile_ecms_delete_timestamp = $folderdocinfofile->ecms_delete_timestamp;
 $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment;
@@ -4175,6 +4282,7 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 'rescan' => $folderdocinfofile_rescan,
 'unauthorized_destruction' => $folderdocinfofile_unauthorized_destruction,
 'freeze' => $folderdocinfofile_freeze,
+'damaged' => $folderdocinfofile_damaged,
 'index_level' => $folderdocinfofile_index_level,
 'ecms_delete_timestamp' => $folderdocinfofile_ecms_delete_timestamp,
 'ecms_delete_comment' => $folderdocinfofile_ecms_delete_comment
@@ -4292,6 +4400,7 @@ $folderdocinfofile_qa_user_id = $folderdocinfofile->qa_user_id;
 $folderdocinfofile_rescan = $folderdocinfofile->rescan;
 $folderdocinfofile_unauthorized_destruction = $folderdocinfofile->unauthorized_destruction;
 $folderdocinfofile_freeze = $folderdocinfofile->freeze;
+$folderdocinfofile_damaged = $folderdocinfofile->damaged;
 $folderdocinfofile_index_level = $folderdocinfofile->index_level;
 $folderdocinfofile_ecms_delete_timestamp = $folderdocinfofile->ecms_delete_timestamp;
 $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment;
@@ -4331,6 +4440,7 @@ $folderdocinfofile_ecms_delete_comment = $folderdocinfofile->ecms_delete_comment
 'rescan' => $folderdocinfofile_rescan,
 'unauthorized_destruction' => $folderdocinfofile_unauthorized_destruction,
 'freeze' => $folderdocinfofile_freeze,
+'damaged' => $folderdocinfofile_damaged,
 'index_level' => $folderdocinfofile_index_level,
 'ecms_delete_timestamp' => $folderdocinfofile_ecms_delete_timestamp,
 'ecms_delete_comment' => $folderdocinfofile_ecms_delete_comment
@@ -4962,11 +5072,38 @@ if($type == 'comment') {
 	    }
 	    
 	    
-	    // Checks if another folder has been recalled in box, and if so, returns the stored_box_status
-	    // returns false if not.
-	    public static function existing_recall_box_status( $item_id ) {
+	    // Checks if another folder has been recalled in box, 
+	    // returns Array of the number of recalls with said box, and the saved_box_status (same for all).
+	    // Accepts box_id foriegn key ( '23', '25', etc )
+	    public static function existing_recall_box_status( $box_id ) {
 		    global $wpdb;
-
+		    
+		    //Get term_ids for Recall status slugs
+			$status_recall_denied_term_id = self::get_term_by_slug( 'recall-denied' );	 // 878
+			$status_recall_cancelled_term_id = self::get_term_by_slug( 'recall-cancelled' ); //734
+			$status_recall_complete_term_id = self::get_term_by_slug( 'recall-complete' ); //733
+		    
+		    $recall_saved_box_status = $wpdb->get_results(
+			    "SELECT
+				    saved_box_status 
+				FROM " . $wpdb->prefix . "wpsc_epa_recallrequest
+				WHERE box_id = '" . $box_id . "'
+					AND ( 
+							recall_status_id <> " . $status_recall_denied_term_id . " AND
+							recall_status_id <> " . $status_recall_cancelled_term_id . " AND
+							recall_status_id <> " . $status_recall_complete_term_id . "
+						)"
+			);
+			
+			$ret_arr['num'] = count( $recall_saved_box_status );
+			
+			if( $ret_arr['num'] == 0 ) {
+				$ret_arr['saved_box_status'] = null;
+			} else {
+				$ret_arr['saved_box_status'] = $recall_saved_box_status[0]->saved_box_status;
+			}
+			
+			return $ret_arr;
 		}
 	    
 	    

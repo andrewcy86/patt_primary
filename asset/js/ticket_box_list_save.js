@@ -297,7 +297,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         	'Record Type',
                         	'Disposition Schedule & Item Number',
                         	'Site Name',
-                        	'Close Date', 
                         	'EPA Contact',
                         	'Access Restrictions',
                         	'Use Restrictions',
@@ -357,7 +356,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             	parsedData[count][index_rec_type], // Record Type 
                             	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
                             	parsedData[count][index_site_name], // Site Name
-                            	parsedData[count][index_close_date], // Close Date 
                             	parsedData[count][index_epa_contact], // EPA Contact 
                             	parsedData[count][index_access_rest], // Access Restrictions 
                             	parsedData[count][index_use_rest], // Use Restrictions 
@@ -394,8 +392,14 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             if( flag != true && count > 1 && date_time_reg.test( parsedData[count][index_close_date] ) == false ) {
                                 
                                 if( date_reg.test( parsedData[count][index_close_date] ) == false ) {
-	                                alert("Invalid Close Date for line " + (count + 1) + ". \n\nFormat must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30)." );
-	                                flag = true;
+	                                
+	                                if( parsedData[count][index_close_date] == null ) {
+										// nothing. Blanks is fine.
+	                                } else {
+		                                alert("Invalid Close Date for line " + (count + 1) + ". \n\nFormat must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30)." );
+										flag = true;
+	                                }
+	                                
 	                            } else {
 		                            // If valid date without time, add time to date for insertion
 		                            parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';

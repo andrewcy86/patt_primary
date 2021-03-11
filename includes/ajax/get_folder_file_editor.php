@@ -171,15 +171,9 @@ else {
 <input type='text' name='author' value='' id='author' class='tags'>
 </br>
 
-<?php
-if(empty($folderfile_addressee)) {
-    $folderfile_addressee = 'Enter addressee...';
-}
-?>
-
 <strong>Addressee</strong><br />
 <input type='text' name='addressee' value="" id='addressee' class='tags'>
-</br></br>
+</br>
 
 <strong>Record Type</strong></br>
 <input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type'/>
@@ -236,8 +230,6 @@ if(!empty($folderfile_close_date)) {
 else {
     echo "<strong>Close Date</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
 }
-
-//source format is now a datalist
 ?>
 
 <strong>Access Restriction</strong><br />
@@ -289,16 +281,9 @@ else {
 </div>
 </br>
 
-<?php
-if(empty($folderfile_rights_holder)) {
-    $folderfile_rights_holder = 'Enter rights holder...';
-}
-?>
-
 <strong>Rights Holder</strong><br />
-<input type='text' name='rights_holder[]' value="" id='rights_holder' placeholder= '<?php echo $folderfile_rights_holder?>'>
-<button id="rights_holder_button" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Add</button>
-</br></br>
+<input type='text' name='rights_holder' value="" id='rights_holder' class='tags'>
+</br>
 
 <strong>Source Type</strong></br>
 <input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf'/>
@@ -369,15 +354,8 @@ else {
   <option value="0" <?php if ($folderfile_essential_record == 0) echo 'selected' ; ?>>No</option>
 </select></br></br>
 
-<?php 
-if(empty($folderfile_tags)) {
-   $folderfile_tags = 'Enter tags...'; 
-}
-?>
-
 <strong>Tags</strong><br />
-<input type='text' name='tags[]' value="" id='tags' placeholder= '<?php echo $folderfile_tags?>'>
-<button id="tags_button" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Add</button>
+<input type='text' name='tags' class='tags' value="" id='tags'>
 </br>
 
 <input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
@@ -396,7 +374,8 @@ ob_start();
 
 //Setting placeholder text for multiselect dropdown
 jQuery('.selectpicker').selectpicker({
-        noneSelectedText : 'Please select...' // by this default 'Nothing selected' -->will change to Please Select...
+        noneSelectedText : 'Please select...', // by this default 'Nothing selected' -->will change to Please Select...
+        multipleSeparator: ';'
     });
 
 
@@ -406,7 +385,8 @@ function showDiv(divId, element)
     document.getElementById(divId).style.display = element.value == 'Yes' ? 'block' : 'none';
 }
 
-jQuery('.tags').tagsInput({
+//Setting delimiter semicolon for author, addressee and rights holder
+jQuery("#author,#addressee,#rights_holder").tagsInput({
    'height':'33px',
    'width':'400px',
    'interactive':true,
@@ -418,44 +398,17 @@ jQuery('.tags').tagsInput({
    'placeholderColor' : '#666666'
 });
 
-//Buttons add either a semicolon or comma to create a list of strings and then brings focus back to fields
-
-jQuery("#addressee_button").on('click', function(e) {
-    e.preventDefault();
-    var elem = jQuery(this).parent().find('input[name=addressee\\[\\]]');
-    elem.val( elem.val() + '; ' );
-    document.getElementById('addressee').focus();
-});
-
-jQuery("#rights_holder_button").on('click', function(e) {
-    e.preventDefault();
-    var elem = jQuery(this).parent().find('input[name=rights_holder\\[\\]]');
-    elem.val( elem.val() + '; ' );
-    document.getElementById('rights_holder').focus();
-});
-
-jQuery("#tags_button").on('click', function(e) {
-    e.preventDefault();
-    var elem = jQuery(this).parent().find('input[name=tags\\[\\]]');
-    elem.val( elem.val() + ', ' );
-    document.getElementById('tags').focus();
-});
-
-
-//Disables buttons until input field is not empty
-jQuery('#addressee_button').prop('disabled',true);
-    jQuery('#addressee').keyup(function(){
-        jQuery('#addressee_button').prop('disabled', this.value == "" ? true : false);     
-});
-
-jQuery('#rights_holder_button').prop('disabled',true);
-    jQuery('#rights_holder').keyup(function(){
-        jQuery('#rights_holder_button').prop('disabled', this.value == "" ? true : false);     
-});
-
-jQuery('#tags_button').prop('disabled',true);
-    jQuery('#tags').keyup(function(){
-        jQuery('#tags_button').prop('disabled', this.value == "" ? true : false);     
+//Setting delimiter comma for tags
+jQuery('#tags').tagsInput({
+   'height':'33px',
+   'width':'400px',
+   'interactive':true,
+   'defaultText':'',
+   'delimiter': ',',   // Or a string with a single delimiter. Ex: ';'
+   'removeWithBackspace' : true,
+   'minChars' : 0,
+   'maxChars' : 0, // if not provided there is no limit
+   'placeholderColor' : '#666666'
 });
 
 function wpsc_edit_folder_file_details(){
@@ -481,9 +434,9 @@ postvarsaddressee: jQuery("#addressee").val(),
 postvarsdescription: jQuery("#description").val(),
 postvarstags: jQuery("#tags").val(),
 postvarsaccessrestriction: jQuery("#access_restriction").val(),
-postvarsspecificaccessrestriction: jQuery('[data-id="specific_access_restriction"]').attr('title').replace(/,/g, ';'),
+postvarsspecificaccessrestriction: jQuery('[data-id="specific_access_restriction"]').attr('title'),
 postvarsuserestriction: jQuery("#use_restriction").val(),
-postvarsspecificuserestriction: jQuery('[data-id="specific_use_restriction"]').attr('title').replace(/,/g, ';'),
+postvarsspecificuserestriction: jQuery('[data-id="specific_use_restriction"]').attr('title'),
 postvarsrightsholder: jQuery("#rights_holder").val(),
 postvarssourcedimensions: jQuery("#source_dimensions").val()
 }, 

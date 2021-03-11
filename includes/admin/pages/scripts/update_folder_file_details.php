@@ -210,14 +210,14 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 if( (!empty($date)) && ($date != $old_date) ) {
 $data_update = array('date' => $date);
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Date: '.$old_date.' > '.$date);
+array_push($metadata_array,'Creation Date: '.$old_date.' > '.$date);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($author)) && ($author != $old_author) ) {
 $data_update = array('author' => $author);
 $data_where = array('id' => $folderfileid);
-array_push($metadata_array,'Author: '.$old_author.' > '.$author);
+array_push($metadata_array,'Creator: '.$old_author.' > '.$author);
 $wpdb->update($table_name, $data_update, $data_where);
 }
 
@@ -252,7 +252,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 if( (!empty($source_format)) && ($source_format != $old_source_format) ) {
 $data_update = array('source_format' => stripslashes($source_format));
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Source Format: '.$old_source_format.' > '.$source_format);
+array_push($metadata_array,'Source Type: '.$old_source_format.' > '.$source_format);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
@@ -278,9 +278,22 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($tags)) && ($tags != $old_tags)) {
-$data_update = array('tags' => $tags);
+$quoted_tags_array = array();
+$tags_explode = explode(",", $tags);
+
+//Adds double quotes around key value pair
+foreach($tags_explode as $tag) {
+    $split_tag_beginning = strtok($tag, ':');
+    $split_tag_end = substr($tag, strpos($tag, ':') + 1);
+    $new_tag = '"' . $split_tag_beginning . '"' . ":" . '"' . $split_tag_end . '"';
+    array_push($quoted_tags_array, $new_tag);
+}
+
+$tags_implode = implode(',', $quoted_tags_array);
+
+$data_update = array('tags' => $tags_implode);
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Tags: '.$old_tags.' > '.$tags);
+array_push($metadata_array,'Tags: '.$old_tags.' > '.$tags_implode);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 

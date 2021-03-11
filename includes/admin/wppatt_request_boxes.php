@@ -142,6 +142,14 @@ if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id, $r
 </div>
 <?php
 }
+
+if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1) {
+?>
+<div class="alert alert-warning" role="alert">
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> One or more documents related to this request contains a damaged folder/file.
+</div>
+<?php
+}
 ?>
 
 <?php
@@ -249,7 +257,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
   <tr>';
   
   
-if ( !(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
+if ( !(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
 $tbl .=  '<th class="datatable_header"></th>';
 }     
                     
@@ -315,7 +323,7 @@ $tbl .=  '<th class="datatable_header"></th>';
 			*/
 			$tbl .= '<tr class="wpsc_tl_row_item">';
 
- if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
+ if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
 			$tbl .= '<td>'. $boxlist_id .'</td>';
 }    
             
@@ -339,19 +347,20 @@ $tbl .=  '<th class="datatable_header"></th>';
             $tbl .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
             }
             
-            //if($boxlist_freeze_sum > 0) {
-             if(Patt_Custom_Func::id_in_freeze($boxlist_id, $type) == 1) {
-                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
-            }
-            
             //if($boxlist_unathorized_destruction > 0) {
             if(Patt_Custom_Func::id_in_unauthorized_destruction($boxlist_id, $type) == 1) {
             $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
             
-
-$decline_icon = '';
-$recall_icon = '';
+            //if($boxlist_unathorized_destruction > 0) {
+            if(Patt_Custom_Func::id_in_damaged($boxlist_id, $type) == 1) {
+            $tbl .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+            }
+            
+            //if($boxlist_freeze_sum > 0) {
+             if(Patt_Custom_Func::id_in_freeze($boxlist_id, $type) == 1) {
+                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            }
 
 if(Patt_Custom_Func::id_in_return($boxlist_id,$type) == 1){
 $tbl .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
@@ -578,7 +587,7 @@ if($rescan_count > 0 && $is_active == 1) {
          "bDestroy": true,
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
 		 <?php
-		  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1) {
+		  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
         ?>
         'columnDefs': [	
          {

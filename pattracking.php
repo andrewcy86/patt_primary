@@ -351,10 +351,12 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails-init', 'boxdetails_init_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             add_submenu_page( 'wpsc-tickets', 'Recall Dashboard', 'Recall Dashboard', 'wpsc_agent', 'recall', 'recall_page' ); 
+            add_submenu_page( '', 'Recall Dashboard', 'Recall Dashboard', 'wpsc_agent', 'recall-init', 'recall_init_page' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'recalldetails', 'recall_details' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'recallcreate', 'recall_create' ); 
 //             add_submenu_page( 'wpsc-tickets', 'Decline Dashboard', 'Decline Dashboard', 'wpsc_agent', 'return', 'return_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Decline Dashboard', 'Decline Dashboard', 'wpsc_agent', 'decline', 'return_page' ); 
+            add_submenu_page( '', 'Decline Dashboard', 'Decline Dashboard', 'wpsc_agent', 'decline-init', 'return_init_page' ); 
 //             add_submenu_page( '', '', '', 'wpsc_agent', 'returndetails', 'return_details' ); 
             add_submenu_page( '', '', '', 'wpsc_agent', 'declinedetails', 'return_details' ); 
 //             add_submenu_page( '', '', '', 'wpsc_agent', 'returncreate', 'return_create' ); 
@@ -443,6 +445,11 @@ function custom_menu_item_redirect_external_link() {
             );
             }
             
+            function recall_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/recall-init.php'
+            );
+            }
+            
             function recall_details(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/recall-details.php'
             );
@@ -455,6 +462,11 @@ function custom_menu_item_redirect_external_link() {
             
             function return_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/return.php'
+            );
+            }
+            
+            function return_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/return-init.php'
             );
             }
             

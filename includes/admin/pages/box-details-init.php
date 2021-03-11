@@ -208,7 +208,11 @@ div.dataTables_wrapper {
 </style>
 
 <div class="alert alert-danger" role="alert" id="ud_alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents within this box contains a unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents within this box contains an unauthorized destruction flag.
+</div>
+
+<div class="alert alert-warning" role="alert" id="damaged_alert">
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> One or more documents within this box contains a damaged folder/file.
 </div>
 
 <div class="alert alert-info" role="alert" id="freeze_alert">
@@ -654,10 +658,16 @@ if($unauthorized_destruction_count != 1){
 jQuery('#ud_alert').hide();
 <?php
 }
+
+if(Patt_Custom_Func::id_in_damaged($GLOBALS['id'], $type) != 1) { ?>
+jQuery('#damaged_alert').hide();
+<?php
+}
 ?>
 
 <?php
 //freeze notification
+/*
 $box_freeze = $wpdb->get_row(
 "SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo
@@ -666,7 +676,8 @@ INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wps
 WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.freeze = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
 );
 $freeze_count = $box_freeze->count;
-
+*/
+$freeze_count = Patt_Custom_Func::id_in_freeze($GLOBALS['id'], $type);
 if($freeze_count == 0) {
 ?>
 jQuery('#freeze_alert').hide();

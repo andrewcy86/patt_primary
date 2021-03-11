@@ -285,23 +285,35 @@ if( $type == 'request_date' ) {
 	$status_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' );	
 	
 	
+	
+	
 	// Only cancel if recall is in status: Recalled
-// 	if ( $recall_obj->recall_status_id == 729 ) {
 	if ( $recall_obj->recall_status_id == $status_recalled_term_id ) {	
-// 		$data_status = [ 'recall_status_id' => 734 ]; //change status from Recalled to Cancelled
+		
+		//
+		// Restore the saved Box Status
+		//	
+		$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $recall_obj->recall_box_id );
+		// if more than 1 recalled files, do not restore status
+		if( $saved_box_status['num'] == 1)  {
+			$box_status = $recall_obj->saved_box_status;
+			
+			$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+			$data_where = array( 'box_id' => $recall_obj->box_id );
+			$data_update = array( 'box_status' => $box_status );
+			$wpdb->update( $table_name, $data_update, $data_where );
+		} 
+		
+		// Update Recall Status
 		$data_status = [ 'recall_status_id' => $status_cancelled_term_id ]; //change status from Recalled to Cancelled
 		$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
 		
 		do_action('wpppatt_after_recall_cancelled', $ticket_id, 'R-'.$recall_id);
 	}
 	
-	//
-	// Restore the saved Box Status
-	//	
-	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-	$data_where = array( 'box_id' => $recall_obj->box_id );
-	$data_update = array( 'box_status' => $recall_obj->saved_box_status );
-	$wpdb->update( $table_name, $data_update, $data_where );
+	
+	
+	
 
 	
 	
@@ -425,20 +437,26 @@ if( $type == 'request_date' ) {
 	$status_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );	
 	
 	// Only Deny if recall is in status: Recalled
-// 	if ( $recall_obj->recall_status_id == 729 ) {
+
 	if ( $recall_obj->recall_status_id == $status_recalled_term_id ) {	
-// 		$data_status = [ 'recall_status_id' => 878 ]; //change status from Recalled to Recall Denied
-		$data_status = [ 'recall_status_id' => $status_denied_term_id ]; //change status from Recalled to Recall Denied
-		$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
 		
 		//
 		// Restore the saved Box Status
-		//
+		//	
+		$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $recall_obj->recall_box_id );
+		// if more than 1 recalled files, do not restore status
+		if( $saved_box_status['num'] == 1)  {
+			$box_status = $recall_obj->saved_box_status;
+			
+			$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+			$data_where = array( 'box_id' => $recall_obj->box_id );
+			$data_update = array( 'box_status' => $box_status );
+			$wpdb->update( $table_name, $data_update, $data_where );
+		} 
 		
-		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-		$data_where = array( 'box_id' => $recall_obj->box_id );
-		$data_update = array( 'box_status' => $recall_obj->saved_box_status );
-		$wpdb->update( $table_name, $data_update, $data_where );
+		// Update Recall Status
+		$data_status = [ 'recall_status_id' => $status_denied_term_id ]; //change status from Recalled to Recall Denied
+		$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
 		
 		
 		do_action('wpppatt_after_recall_denied', $ticket_id, 'R-'.$recall_id);

@@ -52,12 +52,26 @@ if( $type == 'cancel' ) {
 	// Only cancel if Return is in status: Return Initiated
 // 	if ( $return_obj->return_status_id == 752 ) {
 	if ( $return_obj->return_status_id == $status_decline_initiated_term_id ) {	
-// 		$data_status = [ 'return_status_id' => 791 ]; //change status to Cancelled old 785, now 791
+		
+		// Update Return status(es)
 		$data_status = [ 'return_status_id' => $status_decline_cancelled_term_id ]; //change status to Cancelled old 785, now 791
 		$obj = Patt_Custom_Func::update_return_data( $data_status, $where );
 		$obj = $obj[0];
 		echo 'THE OBJ: ';
 		print_r($obj);
+		
+		//
+		// Set Box status back to original status before Decline
+		//  
+		
+		foreach( $return_obj->box_id as $key => $box_id ) {
+			
+			$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+			$data_where = array( 'box_id' => $box_id );
+			$data_update = array( 'box_status' => $return_obj->saved_box_status[$key] );
+			$wpdb->update( $table_name, $data_update, $data_where );
+		}
+		
 		
 		// Get array of items to get ticket_id for Audit Log
 		$box_list = ($obj->box_id) ? $obj->box_id : []; 

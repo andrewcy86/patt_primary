@@ -678,6 +678,7 @@ $decline_icon = '';
 $recall_icon = '';
 $unauthorized_destruction_icon = '';
 $freeze_icon = '';
+$damaged_icon = '';
 $type = 'box';
 
 if(Patt_Custom_Func::id_in_return($row['box_id'],$type) == 1){
@@ -690,6 +691,10 @@ $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i cl
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['box_id'],$type) == 1) {
     $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_damaged($row['box_id'],$type) == 1) {
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($row['box_id'],$type) == 1) {
@@ -726,7 +731,7 @@ $pallet_id = $row['pallet_id'];
 
 	$data[] = array(
 		"box_id"=>$row['box_id'],
-		"box_id_flag"=>$row['box_id_flag'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
+		"box_id_flag"=>$row['box_id_flag'].$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
 		"dbid"=>$row['dbid'],
 	    //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
 		//"ticket_priority"=>$row['ticket_priority_text'],

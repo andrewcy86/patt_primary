@@ -70,7 +70,7 @@ else {
 ?>
 
 <?php
-if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))) {
+if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))) {
     ?>
 <div class="alert alert-danger" role="alert">
 <span style="font-size: 1em; color: #8b0000;"> <i class="fas fa-tags" title="Pallet Label"></i> <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/pallet_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Print Pallet Labels</a></strong></span>

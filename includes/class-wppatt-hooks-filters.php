@@ -1134,7 +1134,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				<div class="row">
 		          	<div  data-fieldtype="dropdown" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?> col-sm-4">
 						<label class="wpsc_ct_field_label" for="super_fund_flag">
-						Are these documents part of SEMS? <?php echo $this->required? '<span style="color:red;">*</span>':'';?>
+						Are these documents part of SEMS? <span style="color:red;">*</span>
 						</label>
 						<?php 
 						if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>

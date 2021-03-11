@@ -379,6 +379,7 @@ $decline_icon = '';
 $recall_icon = '';
 $unauthorized_destruction_icon = '';
 $freeze_icon = '';
+$damaged_icon = '';
 $type = 'folderfile';
 
 if(Patt_Custom_Func::id_in_return($row['folderdocinfo_id'],$type) == 1){
@@ -391,6 +392,10 @@ $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i cl
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['folderdocinfo_id'],$type) == 1) {
     $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_damaged($row['folderdocinfo_id'],$type) == 1) {
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($row['folderdocinfo_id'],$type) == 1) {
@@ -411,7 +416,7 @@ else {
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
      "dbid"=>$row['dbid'],
      //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
-	 "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon,
+	 "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$row['ticket_priority'],
 //      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
      "request_id"=>$row['request_id'],

@@ -59,7 +59,7 @@ ob_start();
 ?>
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('No','wpsc-export-ticket');?></button>
 
-<button type="button" id="button_cancel_yes" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_cancel_recall();"><?php _e('Yes','supportcandy');?></button>
+<button type="button" id="button_cancel_yes" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_cancel_recall2();"><?php _e('Yes','supportcandy');?></button>
 
 <script>
 
@@ -73,7 +73,7 @@ ob_start();
 		}
 	})	
 
-	function wppatt_cancel_recall() {
+	function wppatt_cancel_recall2() {
 		console.log('cancelling ');
 		//var recall_id_array = <?php echo json_encode($recall_ids) ?>;
 		var recall_id = '<?php echo $recall_id ?>';
