@@ -173,6 +173,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           	
           // Add Freeze Modal to Box Details	
           add_action('wp_ajax_wpsc_get_freeze_bd', array($backend, 'get_alert_replacement'));	
+
+          // Add Damaged Modal to Box Details	
+          add_action('wp_ajax_wpsc_get_damaged_bd', array($backend, 'get_alert_replacement'));	
           	
           // Add Validate Modal to Box Details	
           add_action('wp_ajax_wpsc_get_validate_bd', array($backend, 'get_alert_replacement'));	
@@ -185,7 +188,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
     	
           // Add Freeze Modal on Folder File Dashboard	
           add_action('wp_ajax_wpsc_get_freeze_ff', array($backend, 'get_alert_replacement'));	
-          	
+
+          // Add Damaged Modal on Folder File Dashboard	
+          add_action('wp_ajax_wpsc_get_damaged_ffd', array($backend, 'get_alert_replacement'));	
+          	          	
           // Add Unauthorized Destruction Modal on Folder File Dashboard	
           add_action('wp_ajax_wpsc_unauthorized_destruction_ff', array($backend, 'get_unauthorized_destruction'));	
           	

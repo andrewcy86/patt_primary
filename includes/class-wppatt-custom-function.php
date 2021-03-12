@@ -3132,12 +3132,16 @@ public static function id_in_recall( $identifier, $type ) {
         }
         
         //gets list of record schedules for the box-details page
+        //No longer have 10 year retention requirement
         public static function fetch_record_schedule_array()
         {
             global $wpdb;
             $array = array();
             
-            $record_schedule = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."epa_record_schedule WHERE Reserved_Flag = 0 AND id <> -99999 AND Ten_Year = 1 ORDER BY Record_Schedule_Number");
+            $record_schedule = $wpdb->get_results("SELECT * 
+            FROM ".$wpdb->prefix."epa_record_schedule 
+            WHERE Reserved_Flag = 0 AND id <> -99999
+            ORDER BY Record_Schedule_Number");
             
             foreach($record_schedule as $rs)
             {
@@ -3499,6 +3503,8 @@ public static function id_in_recall( $identifier, $type ) {
 					$role_num_array[] = 2;
 				} elseif( $role_name == 'Requester' ) {
 					$role_num_array[] = 3;
+				} elseif( $role_name == 'Requester Pallet' ) {
+					$role_num_array[] = 5;
 				}
 			}
 			

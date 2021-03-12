@@ -67,7 +67,7 @@ foreach ( $recalls_expired_today as $recall ) {
 	$recall_obj_array = Patt_Custom_Func::get_recall_data( $where );
 	$requestor_agent_id_array = Patt_Custom_Func::translate_user_id( $recall_obj_array[0]->user_id, 'agent_term_id' ); 
 	
-	$role_array_requester = [  'Requester' ];
+	$role_array_requester = [  'Requester', 'Requester Pallet' ];
 	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $requestor_agent_id_array, $role_array_requester);
 	
 	// Combine Requester on Request with Requesters on Recall

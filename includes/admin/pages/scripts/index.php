@@ -1,6 +1,18 @@
 <?php
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
+/* // D E B U G
+echo 'AWS_S3_KEY: '.AWS_S3_KEY .'<br>';
+echo 'AWS_S3_REGION: '.AWS_S3_REGION .'<br>';
+echo 'AWS_S3_SECRET: '.AWS_S3_SECRET .'<br>';
+echo 'AWS_S3_BUCKET: '.AWS_S3_BUCKET .'<br>';
+*/
+
 header("Access-Control-Allow-Origin: *");
 require_once __DIR__."/vendor/autoload.php";
+
+
 
 // You can call the following to erase all pending multipart uploads. 
 // It's a good idea to set your bucket to do this automatically (via console)
@@ -8,20 +20,24 @@ require_once __DIR__."/vendor/autoload.php";
 // echo abortPendingUploads(bucket());
 
 function aws_key(){
-include WPPATT_UPLOADS.'api_authorization_strings.php';
-    return $s3_key;
+//include WPPATT_UPLOADS.'api_authorization_strings.php';
+//    return $s3_key;
+	return AWS_S3_KEY;
 }
 function aws_secret(){
-include WPPATT_UPLOADS.'api_authorization_strings.php';
-    return $s3_secret;
+//include WPPATT_UPLOADS.'api_authorization_strings.php';
+//    return $s3_secret;
+	return AWS_S3_SECRET;
 }
 function bucket() {
-include WPPATT_UPLOADS.'api_authorization_strings.php';
-    return $s3_bucket;
+//include WPPATT_UPLOADS.'api_authorization_strings.php';
+//    return $s3_bucket;
+	return AWS_S3_BUCKET;
 }
 function region() {
-include WPPATT_UPLOADS.'api_authorization_strings.php';
-    return $s3_region;
+//include WPPATT_UPLOADS.'api_authorization_strings.php';
+//    return $s3_region;
+	return AWS_S3_REGION;
 }
 
 

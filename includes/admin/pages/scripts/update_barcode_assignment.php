@@ -160,10 +160,10 @@ if($invalid_box_destroyed_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,
 if($invalid_box_active_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
     $invalid_items_active = implode(",", $box_active_check_array);
     if(count($box_active_check_array) == 1) {
-        echo "<strong>Box has been archived</strong>: [".$invalid_items_active."] <br /> <br />";
+        echo "<strong>Box has been archived/does not exist</strong>: [".$invalid_items_active."] <br /> <br />";
     }
     else {
-       echo "<strong>Boxes have been archived</strong>: [".$invalid_items_active."] <br /> <br />";
+       echo "<strong>Boxes have been archived/do not exist</strong>: [".$invalid_items_active."] <br /> <br />";
     }
     exit;
 }

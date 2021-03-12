@@ -285,9 +285,10 @@ if( ( $recall_staff_digi_valid == false || $recall_staff_requester_valid == fals
 							response = JSON.parse( response );
 							
 							console.log( response );
-							console.log( response.staff_meets_requirements );
-							console.log( response.staff_digi_vali );
-							console.log( response.staff_requester_valid );
+							console.log( {staff_meets_requirements:response.staff_meets_requirements} );
+							console.log( {staff_digi_vali:response.staff_digi_vali} );
+							console.log( {staff_requester_valid:response.staff_requester_valid} );
+							console.log( {results_requester:response.results_requester} );
 							
 							if( response.staff_meets_requirements == true ) {
 								set_alert( 'success', '<?php echo $recall_staff_meets_requirements_message; ?>' );
@@ -449,7 +450,7 @@ if( ( $recall_staff_digi_valid == false || $recall_staff_requester_valid == fals
 	// Sets the time for dismissing the error notification
 	function alert_dismiss( hash ) {
 		//setTimeout(function(){ jQuery('#alert_status').fadeOut(1000); }, 9000);	
-		setTimeout( function(){ jQuery( '#alert-'+hash ).fadeOut( 1000 ); }, 9000 );	
+		//setTimeout( function(){ jQuery( '#alert-'+hash ).fadeOut( 1000 ); }, 9000 );	
 	}
 	
 	

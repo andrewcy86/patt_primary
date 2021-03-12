@@ -113,7 +113,7 @@ foreach ($shipped_return_status_query as $item) {
 		// Get owner of ticket. 
 		$where = [ 'ticket_id' => $ticket_id ];
 		$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
-		$role_array_requester = [ 'Requester' ];
+		$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 		$agent_id_array = Patt_Custom_Func::return_agent_ids_in_role( $agent_id_array, $role_array_requester);
 		
 		// Get all users on Decline (currently only the person who submitted it, and no way to add others)
@@ -235,7 +235,7 @@ foreach ($return_complete_return_status_query as $item) {
 	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
 	
 	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
-	$role_array_requester = [ 'Requester' ];
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
 	
 	// Combine Requester on Request with Requesters on Decline
@@ -308,7 +308,7 @@ foreach ($return_pending_cancel_2week_status_query as $item) {
 	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
 	
 	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
-	$role_array_requester = [ 'Requester' ];
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
 	
 	// Combine Requester on Request with Requesters on Decline
@@ -411,7 +411,7 @@ foreach ($return_complete_return_status_query as $item) {
 	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
 	
 	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
-	$role_array_requester = [ 'Requester' ];
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
 	
 	// Combine Requester on Request with Requesters on Decline
@@ -567,7 +567,7 @@ foreach ($return_complete_return_status_query as $item) {
 	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
 	
 	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
-	$role_array_requester = [ 'Requester' ];
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
 	
 	// Get digitization staff

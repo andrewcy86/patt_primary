@@ -596,6 +596,8 @@ jQuery(document).ready(function(){
 	
 	function toggle_button_display() {
 	//	var form = this;
+		
+		console.log({checks:dataTable.column(0)});
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
 		    jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');	

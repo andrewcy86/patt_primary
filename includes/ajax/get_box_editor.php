@@ -154,9 +154,10 @@ WHERE office_acronym  = '" . $value . "'");
     <datalist id = 'RecordScheduleList'>
      <?php foreach($rs_array as $key => $value) { 
      
+     //No longer have a 10 year retention requirement
      $record_schedule = $wpdb->get_row("SELECT id, Schedule_Title
 FROM " . $wpdb->prefix . "epa_record_schedule 
-WHERE Ten_Year = 1 AND Record_Schedule_Number = '" . $value . "'");
+WHERE Record_Schedule_Number = '" . $value . "'");
     $record_schedule_id = $record_schedule->id;
     $record_schedule_title = $record_schedule->Schedule_Title;
      ?>

@@ -183,6 +183,7 @@ else {
     $folderfile_destruction = $folderfile_details->unauthorized_destruction;
     $folderfile_identifier = $folderfile_details->folder_identifier;
     $folderfile_freeze = $folderfile_details->freeze;
+    $folderfile_damaged = $folderfile_details->damaged;
     $folderfile_addressee = $folderfile_details->addressee;
     
     $folderfile_description = $folderfile_details->description;
@@ -270,9 +271,11 @@ div.dataTables_wrapper {
     padding: 8px;
 }
 
+/*
 .wpsc_loading_icon {
 	margin-top: 0px !important;
 }
+*/
 
 </style>
 <?php
@@ -345,6 +348,14 @@ div.dataTables_wrapper {
     	else { ?>
     	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag"></i> Undo Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-undo-unauthorized-destruction-button'); ?>" aria-label="Undo Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
     	<?php } ?>
+    	
+    	<?php 
+    	if($folderfile_damaged == 0) { ?>
+    	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt"></i> Damaged</button>
+        <?php }
+        else { ?>
+    	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt"></i> Undo Damaged</button>
+        <?php } ?>
     	
     	<?php 
     	if($folderfile_freeze == 0) { ?>
@@ -764,6 +775,10 @@ echo '</pre>';
 		color: red;
 		font-weight: bold;
 	}
+	
+	.wpsc_loading_icon {
+		margin-top: 0px !important;
+	}
 
 </style>
 <?php
@@ -1147,7 +1162,29 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		    jQuery('#wpsc_cat_name').focus();
 		  });  
 });
-		
+
+jQuery('#wpsc_individual_damaged_btn').on('click', function(e){
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_damaged.php',{
+postvarsfolderdocid : jQuery('#doc_id').val(),
+postvarpage : jQuery('#page').val()
+}, 
+   function (response) {
+      wpsc_modal_open('Damaged');
+		  var data = {
+		    action: 'wpsc_get_damaged_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+   });
+});
+
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{

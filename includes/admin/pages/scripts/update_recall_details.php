@@ -529,7 +529,7 @@ if( $type == 'request_date' ) {
 	$role_array_digi_staff = [ 'Administrator', 'Manager', 'Agent' ];
 	$results_digi = Patt_Custom_Func::return_agent_ids_in_role( $agent_id_array, $role_array_digi_staff );
 	
-	$role_array_requester = [  'Requester' ];
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 	$results_requester = Patt_Custom_Func::return_agent_ids_in_role( $agent_id_array, $role_array_requester );
 	
 	$recall_staff_meets_requirements = false;

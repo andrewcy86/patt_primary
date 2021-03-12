@@ -10,7 +10,10 @@ function S3MultiUpload(file) {
     //Specifies 22 mb chunks convert to bytes
     this.PART_SIZE = 22 * 1024 * 1024;
 //     this.SERVER_LOC = '?'; // Location of the server
-    this.SERVER_LOC = 'https://086.info/wordpress3/wp-content/plugins/pattracking/includes/admin/pages/scripts/index.php'; // Location of the server // working
+    this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  
+//    this.SERVER_LOC = 'https://086.info/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php'; 
+    //this.SERVER_LOC = '/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';     
+    //this.SERVER_LOC = 'https://086.info/wordpress3/wp-content/plugins/pattracking/includes/admin/pages/scripts/index.php'; // Location of the server // working
 //     this.SERVER_LOC = 'https://086.info/wordpress3/wp-content/plugins/pattracking/includes/admin/pages/scripts/s3_upload_wrapper.php'; 
 //    this.SERVER_LOC = '/home/acy3/public_html/wordpress3/wp-content/plugi…tracking/index.php'; // Location of the server    
 	console.log('SETTINGS');
@@ -89,6 +92,7 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
         self.uploadParts();
     }).fail(function(jqXHR, textStatus, errorThrown) {
 	    console.log('FAILED create');
+	    console.log({errorThrown:errorThrown, textStatus:textStatus, jqXHR:jqXHR});
         self.onServerError('create', jqXHR, textStatus, errorThrown);
     });
 };
@@ -626,8 +630,8 @@ function save_file() {
 	
 	let name = jQuery("#mdocs-name-single-file").val();
 	name = name.trim();
-	let tags = jQuery("#mdocs-tags").val();
-	tags = tags.trim();
+	//let tags = jQuery("#mdocs-tags").val();
+	//tags = tags.trim();
 
 	let s3_upload_status = jQuery("#upload-alert").html(); 
 	if( typeof s3_upload_status !== 'undefined' ) {
@@ -644,10 +648,12 @@ function save_file() {
 		set_alert( 'danger', 'Submission Error: Name cannot be blank.' );
 	}
 	
+/*
 	if( tags == '' ) {
 		//validation = false;
 		//set_alert( 'danger', 'Tags cannot be blank.' );
 	}
+*/
 	
 	if( s3_upload_status != 'Upload successful.' ) {
 		validation = false;

@@ -836,7 +836,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		// Disable Exgtra profile information for Requesters
 		$agent_permissions = $wpscfunction->get_current_agent_permissions();
 		
-		if( $agent_permissions['label'] != 'Requester' ) {
+		if( $agent_permissions['label'] != 'Requester' && $agent_permissions['label'] != 'Requester Pallet' ) {
 		
 		?>
 			<h3><?php _e("Extra profile information", "supportcandy"); ?></h3>  
@@ -891,7 +891,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		$agent_permissions = $wpscfunction->get_current_agent_permissions();
 		
 		// If user is not assigned, display wp system notification
-		if( ($user_location == '' || $user_location == 'Not Assigned') && $agent_permissions['label'] != 'Requester' ) {
+		if( ($user_location == '' || $user_location == 'Not Assigned') && $agent_permissions['label'] != 'Requester' && $agent_permissions['label'] != 'Requester Pallet') {
 			$profile_url = get_site_url();
 			?>
 			

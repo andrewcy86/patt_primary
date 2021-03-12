@@ -23,11 +23,16 @@ $destruction_violation = 0;
 $frozen = 0;
 
 foreach($folderdocid_arr as $key) {
-$get_frozen = $wpdb->get_row("SELECT freeze FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_frozen = $wpdb->get_row("SELECT freeze, damaged FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_frozen_val = $get_frozen->freeze;
+$get_damaged_val = $get_frozen->damaged;
 
 if ($get_frozen_val == 1) {
 $frozen++;
+}
+
+if($get_damaged_val == 1) {
+    $get_damaged_val++;
 }
 }
 
@@ -174,7 +179,13 @@ do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $key);
 }
 
 if ($get_destruction_val == 0 && $destruction_violation == 0){
-$data_update = array('unauthorized_destruction' => 1);
+//If file is flagged as unauthorized destruction, unflag as damaged
+if($get_damaged_val > 0) {
+   $data_update = array('unauthorized_destruction' => 1, 'damaged' => 0); 
+}
+else {
+    $data_update = array('unauthorized_destruction' => 1);
+}
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 
@@ -268,7 +279,14 @@ do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $folderdo
 }
 
 if ($get_destruction_val == 0 && $destruction_violation == 0){
-$data_update = array('unauthorized_destruction' => 1);
+//If document flagged as unauthorized destruction, then unflag as damaged    
+if($get_damaged_val > 0) {
+   $data_update = array('unauthorized_destruction' => 1, 'damaged' => 0); 
+}
+else {
+    $data_update = array('unauthorized_destruction' => 1);
+}
+
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 

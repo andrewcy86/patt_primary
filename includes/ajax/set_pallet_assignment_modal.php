@@ -59,11 +59,6 @@ Selecting Assign Pallet ID will reset the physical location of the Pallet and re
 <label for="set"><input type="radio" id="set" name="set_pallet" value="yes">
 Assign Pallet ID</label><br />
 
-
-<label for="reassign"><input type="radio" id="reassign" name="set_pallet" value="reassign">
-Re-Assign to existing Pallet</label>
-
-<span id="pallet_datalist">
 <?php
 //List of all of the pallet IDs in the database to choose from
 $box_pallet_array = $wpdb->get_results("SELECT DISTINCT pallet_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE pallet_id <> ''");
@@ -71,6 +66,10 @@ $get_pallet_id = Patt_Custom_Func::get_pallet_id_by_id($patt_box_id, 'box');
 
 if(count($box_pallet_array) > 0) {
 ?>
+<label for="reassign"><input type="radio" id="reassign" name="set_pallet" value="reassign">
+Re-Assign to existing Pallet</label>
+
+<span id="pallet_datalist">
 <br /><br />
 <input type="search" list="PalletList" placeholder='Enter pallet ID...' id='pallet_id'/>
 <datalist id = 'PalletList'>
@@ -90,18 +89,18 @@ echo '<option '.$selected.' value="'.$pallet_id.'">'.$pallet_id.'</option>';
 */
 echo '<option value="'.$pallet_id.'">'.$pallet_id.'</option>';
 }
-
-}
 ?>
 </datalist>
 <br />
 </span>
-
+<br />
+<?php 
+}
+?>
 <?php 
  if (($agent_permissions['label'] == 'Administrator')  || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent')) {
 ?>
 
-<br />
 <label for="reset" style="color:red;"><input type="radio" id="reset" name="set_pallet" value="no">
 Reset Pallet ID/Unassign Physical Location</label><br />
 

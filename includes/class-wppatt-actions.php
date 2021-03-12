@@ -18,6 +18,8 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       // PATT Log Entry
       add_action( 'wpppatt_after_freeze', array($this,'freeze_document'), 10, 2 );
       add_action( 'wpppatt_after_freeze_unflag', array($this,'unfreeze_document'), 10, 2 );
+      add_action( 'wpppatt_after_damaged', array($this,'damaged_document'), 10, 2 );
+      add_action( 'wpppatt_after_damaged_unflag', array($this,'reverse_damaged_document'), 10, 2 );
       add_action( 'wpppatt_after_box_destruction', array($this,'box_destruction'), 10, 2 );
       add_action( 'wpppatt_after_box_destruction_unflag', array($this,'unflag_box_destruction'), 10, 2 );
            
@@ -85,6 +87,40 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s unflagged Document ID: %2$s for re-scanning','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $doc_id .'</strong>');
       } else {
         $log_str = sprintf( __('Document ID %1$s unflagged for re-scanning','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Damaged document
+    function damaged_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s flagged Document ID: %2$s as damaged','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s flagged as damaged','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // Reverse damaged
+    function reverse_damaged_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s un-flagged Document ID: %2$s as damaged','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s un-flagged as damaged','supportcandy'), '<strong>'.$doc_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

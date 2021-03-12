@@ -218,7 +218,7 @@ jQuery(document).ready(function(){
 
 	var agent_permission_label = '<?php echo $agent_permissions["label"] ?>';
 	var is_requester = false;
-	if( agent_permission_label == 'Requester' ) {
+	if( agent_permission_label == 'Requester' || agent_permission_label == 'Requester Pallet' ) {
 		is_requester = true;
 	}
 
