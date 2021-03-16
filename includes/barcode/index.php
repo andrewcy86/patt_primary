@@ -7,6 +7,10 @@ global $wpdb, $current_user, $wpscfunction;
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
+
+echo WPPATT_ABSPATH;
+
+echo $agent_permissions['label'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
