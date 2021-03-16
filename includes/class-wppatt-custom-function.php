@@ -631,7 +631,7 @@ public static function id_in_validation( $identifier, $type ) {
 }
 
 /**
- * Determine if document has been validated
+ * Determine if document has been validated.
  * @return username of user who validated a folder/file
  */
  
