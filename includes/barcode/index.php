@@ -20,6 +20,11 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
     <title>PATT - Location Assignment Application</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width; initial-scale=1.0" />
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    
     <link rel="stylesheet" type="text/css" href="./css/fonts.css" />
     <link rel="stylesheet" type="text/css" href="./css/styles.css" />
     <link rel="stylesheet" type="text/css" href="./styles.css" />
@@ -31,6 +36,13 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
   integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
   crossorigin="anonymous"></script>
   <style>
+html,body
+{
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    font-size: 16px;
+}
+
 .ui-widget-overlay
 {
   opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
@@ -61,7 +73,9 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
     
     <section id="container" class="container">
         <div class="controls">
-            <strong>Logged in as: </strong> <?php echo $current_user->display_name; ?> | <a href="<?php echo admin_url( 'admin.php?page=wpsc-tickets', 'https' ); ?>">Request Dashboard</a><br />
+            <strong>Logged in as: <i class="fas fa-user"></i></strong> <?php echo $current_user->display_name; ?><br />
+            <i class="fas fa-home"></i> <a href="<?php echo admin_url( 'admin.php?page=wpsc-tickets', 'https' ); ?>">Request Dashboard</a> | <i class="fas fa-map-marker-alt"></i> <a href="index.php"><strong>Location</strong></a> | <i class="fas fa-info-circle"></i> <a href="barcode_info.php">Lookup</a>
+            <hr />
             <p>
                 <strong>Scan a location barcode along with either a series of boxes or pallets.</strong> Only one location barcode can be scanned for each submission.
             </p>

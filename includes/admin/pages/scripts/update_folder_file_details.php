@@ -286,7 +286,12 @@ foreach($tags_explode as $tag) {
     $split_tag_beginning = strtok($tag, ':');
     $split_tag_end = substr($tag, strpos($tag, ':') + 1);
     $new_tag = '"' . $split_tag_beginning . '"' . ":" . '"' . $split_tag_end . '"';
-    array_push($quoted_tags_array, $new_tag);
+    
+    //trim whitespace at beginning and end, trim whitespace around :
+    $tags_trim = trim($new_tag);
+    $tags_trim_colon_whitespace = preg_replace('/(?<=[:]) +| +(?=[:])/', '', $tags_trim);
+    
+    array_push($quoted_tags_array, $tags_trim_colon_whitespace);
 }
 
 $tags_implode = implode(',', $quoted_tags_array);

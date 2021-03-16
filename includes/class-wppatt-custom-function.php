@@ -631,6 +631,28 @@ public static function id_in_validation( $identifier, $type ) {
 }
 
 /**
+ * Determine if document has been validated
+ * @return username of user who validated a folder/file
+ */
+ 
+public static function get_validation_user( $identifier ) {
+    global $wpdb;
+    
+    $get_username_validated = $wpdb->get_row("SELECT b.user_login
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+    INNER JOIN " . $wpdb->prefix . "users b ON b.ID = a.validation_user_id
+    WHERE folderdocinfofile_id = '" .  $identifier . "'");
+    $username_validated = $get_username_validated->user_login;
+        
+	if (!empty($username_validated)) {
+		return $username_validated;
+	}
+	else {
+		return false;
+	}
+}
+
+/**
  * Determine if ID (Request,Box,Folder/File) contains a document marked as damaged
  * @return Boolean
  */

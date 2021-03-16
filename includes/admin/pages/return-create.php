@@ -442,7 +442,7 @@ margin: 0px 0px 25px 15px;
 		// If Requester tries to access page, redirect back to Dashboard
 		let agent_permissions = '<?php echo $agent_permissions['label'] ?>';
 		console.log({agent_permissions:agent_permissions});
-		if( agent_permissions == 'Requester' ) {
+		if( agent_permissions == 'Requester' || agent_permissions == 'Requester Pallet' ) {
 			alert('You do not have access to this page. You will be redirected to the Decline Dashboard');
 			location.href='admin.php?page=decline';
 		}

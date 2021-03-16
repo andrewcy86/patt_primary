@@ -5,22 +5,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-if(isset($_GET['id'])) {
-   $global_id = $_GET['id']; 
+if(isset($_POST['id'])) {
+   $global_id = $_POST['id']; 
 }
 else {
     $global_id = '';
 }
 
-if(isset($_GET['pid'])) {
-   $pid = $_GET['pid'];
+if(isset($_POST['pid'])) {
+   $pid = $_POST['pid'];
 }
 else {
     $pid = '';
 }
 
-if(isset($_GET['page'])) {
-   $page = $_GET['page'];
+if(isset($_POST['page'])) {
+   $page = $_POST['page'];
 }
 else {
     $page = '';
@@ -53,7 +53,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         {
         ?>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
-    		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>-->
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button>
         <?php
@@ -223,7 +223,7 @@ jQuery('[data-toggle="tooltip"]').tooltip();
 
 var agent_permission_label = '<?php echo $agent_permissions["label"] ?>';
 var is_requester = false;
-if( agent_permission_label == 'Requester' ) {
+if( agent_permission_label == 'Requester' || agent_permission_label == 'Requester Pallet' ) {
 	is_requester = true;
 }
 
@@ -546,7 +546,7 @@ postvarpage : jQuery('#page').val()
    });
 });
 
-/*
+
 //damaged button
 jQuery('#wpsc_individual_damaged_btn').on('click', function(e){
      var form = this;
@@ -576,11 +576,12 @@ postvarpage : jQuery('#page').val()
       //}
    });
 });
-*/
+
 //freeze button
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
+
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{
 postvarsfolderdocid : rows_selected.join(","),
@@ -726,7 +727,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
 	});
 	
 	jQuery('#wpsc_individual_destruction_btn').attr('disabled', 'disabled');
-	//jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
+	jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_freeze_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_validation_btn').attr('disabled', 'disabled');
@@ -738,14 +739,14 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
 			jQuery('#wpsc_individual_destruction_btn').removeAttr('disabled');
-			//jQuery('#wpsc_individual_damaged_btn').removeAttr('disabled');
+			jQuery('#wpsc_individual_damaged_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_freeze_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_validation_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_rescan_btn').removeAttr('disabled');
 	  	} else {
 	    	jQuery('#wpsc_individual_destruction_btn').attr('disabled', 'disabled');
-	        //jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
+	        jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
 	    	jQuery('#wpsc_individual_freeze_btn').attr('disabled', 'disabled');
         	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
         	jQuery('#wpsc_individual_validation_btn').attr('disabled', 'disabled');
@@ -763,6 +764,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
 
 
 </div>
+
 <!-- Pop-up snippet start -->
 <div id="wpsc_popup_background" style="display:none;"></div>
 <div id="wpsc_popup_container" style="display:none;">

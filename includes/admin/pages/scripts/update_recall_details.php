@@ -387,7 +387,7 @@ if( $type == 'request_date' ) {
 		$role_array_digi_staff = [ 'Administrator', 'Manager', 'Agent' ];
 		$results_digi = Patt_Custom_Func::return_agent_ids_in_role( $pattagentid_array, $role_array_digi_staff);
 		
-		$role_array_requester = [  'Requester' ];
+		$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 		$results_requester = Patt_Custom_Func::return_agent_ids_in_role( $pattagentid_array, $role_array_requester);
 		
 
@@ -482,7 +482,7 @@ if( $type == 'request_date' ) {
 		$agent_id_array = Patt_Custom_Func::translate_user_id( $recall_data[0]->user_id, 'agent_term_id' );
 		
 		
-		$role_array_requester = [  'Requester' ];
+		$role_array_requester = [ 'Requester', 'Requester Pallet' ];
 		$results_requester = Patt_Custom_Func::return_agent_ids_in_role( $agent_id_array, $role_array_requester);
 		
 		// set pattagentid_array

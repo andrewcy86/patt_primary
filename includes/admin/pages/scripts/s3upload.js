@@ -10,12 +10,12 @@ function S3MultiUpload(file) {
     //Specifies 22 mb chunks convert to bytes
     this.PART_SIZE = 22 * 1024 * 1024;
 //     this.SERVER_LOC = '?'; // Location of the server
-    this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  
-//    this.SERVER_LOC = 'https://086.info/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php'; 
-    //this.SERVER_LOC = '/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';     
-    //this.SERVER_LOC = 'https://086.info/wordpress3/wp-content/plugins/pattracking/includes/admin/pages/scripts/index.php'; // Location of the server // working
-//     this.SERVER_LOC = 'https://086.info/wordpress3/wp-content/plugins/pattracking/includes/admin/pages/scripts/s3_upload_wrapper.php'; 
-//    this.SERVER_LOC = '/home/acy3/public_html/wordpress3/wp-content/plugi…tracking/index.php'; // Location of the server    
+
+this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';
+
+//this.SERVER_LOC = '/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  
+//CHANGE TO this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  IN PRODUCTION
+  
 	console.log('SETTINGS');
 	
 	const url = window.location.pathname;

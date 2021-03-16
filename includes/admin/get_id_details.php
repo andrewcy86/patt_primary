@@ -109,8 +109,8 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
   <tr>
     <th></th>
     <th>ID</th>
-    <th>Digitization Center</th>
-    <th class="desktop">Physical Location</th>
+    <th>Physical Location</th>
+    <th class="desktop">Digitization Center</th>
     <th class="desktop">Shelf Location</th>
     <th class="desktop">Box Status</th>
     <th class="desktop">Program Office</th>
@@ -143,8 +143,8 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
     <tr>
             <td></td>
             <td><a href="'.$subfolder_path.'/index.php/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
-            <td>' . $boxlist_location . '</td>
             <td>' . $boxlist_physical_location . '</td>
+            <td>' . $boxlist_location . '</td>
             <td>' . $boxlist_shelf_location . '</td>
             <td>' . $boxlist_box_status . '</td>
             <td>' . $boxlist_program_office . '</td>

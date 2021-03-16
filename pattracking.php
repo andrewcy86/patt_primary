@@ -190,10 +190,13 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wpsc_get_freeze_ff', array($backend, 'get_alert_replacement'));	
 
           // Add Damaged Modal on Folder File Dashboard	
-          add_action('wp_ajax_wpsc_get_damaged_ffd', array($backend, 'get_alert_replacement'));	
+          add_action('wp_ajax_wpsc_get_damaged_ff', array($backend, 'get_alert_replacement'));	
           	          	
           // Add Unauthorized Destruction Modal on Folder File Dashboard	
           add_action('wp_ajax_wpsc_unauthorized_destruction_ff', array($backend, 'get_unauthorized_destruction'));	
+          
+          // Add Damaged to Folder File Details	
+          add_action('wp_ajax_wpsc_get_damaged_ffd', array($backend, 'get_alert_replacement'));
           	
           // Add Validation Rescan to Folder File Details	
           add_action('wp_ajax_wpsc_get_rescan_ffd', array($backend, 'get_alert_replacement'));

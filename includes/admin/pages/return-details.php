@@ -408,7 +408,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			?>
 			
 			<?php				
-				if( $agent_permissions['label'] == 'Requester' ) 
+				if( $agent_permissions['label'] == 'Requester' || $agent_permissions['label'] == 'Requester Pallet' ) 
 				{
 					if( $decline_status == $decline_status_pending_cancel ) 
 					{

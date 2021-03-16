@@ -62,6 +62,8 @@ $data_update = array('damaged' => 0);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_damaged_unflag', $ticket_id, $key);
+
+echo "<strong>".$key."</strong> : Damaged has been updated. A damaged flag has been reversed.<br />";
 }
 
 if ($get_damaged_val == 0){
@@ -69,6 +71,8 @@ $data_update = array('damaged' => 1);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_damaged', $ticket_id, $key);
+
+echo "<strong>".$key."</strong> : Damaged has been updated.<br />";
 }
 }
 }
@@ -93,6 +97,7 @@ $data_update = array('damaged' => 0);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_damaged_unflag', $ticket_id, $folderdocid_string);
+
 }
 
 if ($get_damaged_val == 0){
@@ -102,11 +107,10 @@ $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_damaged', $ticket_id, $folderdocid_string);
 }
 }
-
-if ($damaged_reversal == 1 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
-echo "Damaged has been updated. A Damaged flag has been reversed.";
+if (($page_id == 'filedetails') && $damaged_reversal == 1 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
+echo "Damaged has been updated. A damaged flag has been reversed.";
 }
-if ($damaged_reversal == 0 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
+if (($page_id == 'filedetails') && $damaged_reversal == 0 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
 echo "Damaged has been updated.";
 }
    

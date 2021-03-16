@@ -1,2 +1,572 @@
 [12-Mar-2021 21:00:35 UTC] PHP Warning:  array_unique() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php on line 4844
 [12-Mar-2021 21:00:35 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php on line 4846
+[12-Mar-2021 21:07:52 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 56
+[12-Mar-2021 21:07:52 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 228
+[12-Mar-2021 21:07:52 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 229
+[12-Mar-2021 21:08:01 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 56
+[12-Mar-2021 21:08:01 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 228
+[12-Mar-2021 21:08:01 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/return_search.php on line 229
+[15-Mar-2021 14:50:48 America/Detroit] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 247
+[15-Mar-2021 14:51:07 America/Detroit] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 247
+[15-Mar-2021 20:06:02 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.ticket_id
+    WHERE b.folderdocinfofile_id = '0000002-1-02-1'
+[15-Mar-2021 20:06:46 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.ticket_id
+    WHERE b.folderdocinfofile_id = '0000005-1-02-1'
+[15-Mar-2021 20:06:51 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.ticket_id
+    WHERE b.folderdocinfofile_id = '0000005-1-02-1'
+[15-Mar-2021 20:07:24 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.ticket_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:07:52 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.ticket_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:08:42 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:08:52 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = b.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:10:14 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = a.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:10:15 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = a.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:11:34 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = a.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 20:12:30 UTC] WordPress database error Unknown column 'c.active' in 'field list' for query SELECT 
+	a.id as id,
+	c.active as active,
+	b.index_level as index_level,
+	a.box_id as box_id,
+	b.title as title,
+	b.date as date,
+	a.author as author,
+	b.record_type as record_type,
+	a.site_name as site_name,
+	a.siteid as site_id,
+	a.close_date as close_date,
+	b.source_format as source_format,
+	a.folderdocinfo_id as folderdocinfo_id,
+	a.essential_record as essential_record,
+	b.validation as validation,
+	b.validation_user_id as validation_user_id,
+	b.rescan as rescan,
+	b.unauthorized_destruction as unauthorized_destruction,
+	a.folder_identifier as folder_identifier,
+	b.freeze as freeze,
+	a.addressee as addressee,
+	b.DOC_REGID as sems_reg_id,
+	b.folderdocinfofile_id as folderdocinfofile_id,
+	b.id as folderfileid,
+	b.attachment,
+	b.file_name,
+	b.object_key,
+	b.object_location,
+	b.source_file_location,
+	b.file_object_id,
+	b.file_size,
+    b.description,
+    b.tags,
+    b.access_restriction,
+    b.specific_access_restriction,
+    b.use_restriction,
+    b.specific_use_restriction,
+    b.rights_holder,
+    b.source_dimensions
+	
+    FROM wpqa_wpsc_epa_folderdocinfo a
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
+    INNER JOIN wpqa_wpsc_epa_boxinfo c ON c.id = a.box_id
+    WHERE b.folderdocinfofile_id = '0000011-1-02-1-a1'
+[15-Mar-2021 17:13:55 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:13:56 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:13:56 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:13:57 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:00 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:01 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:01 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:04 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:04 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:05 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:05 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:16 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:17 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:18 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:18 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:19 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:20 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:21 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:22 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:22 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:23 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:23 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:24 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:24 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:25 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:27 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:28 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:28 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:29 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:29 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:30 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:31 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:31 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:32 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:56 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:14:57 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:03 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:04 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:04 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:05 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:05 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:06 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:07 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:07 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:08 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:09 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:09 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:10 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:10 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:26 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:27 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:27 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:28 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:29 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:29 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:30 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:31 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:32 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:35 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:35 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:36 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:37 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:38 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:39 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:39 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:40 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[15-Mar-2021 17:15:59 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453

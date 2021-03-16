@@ -55,6 +55,19 @@ body > .container {
     margin-right: 0.5rem;
 }
 
+.icon-qrcode.scan {
+    font-size: x-large;
+    padding: 0.9rem;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    width: 70%;
+}
+
+.icon-qrcode.scan:before {
+    margin-right: 0.5rem;
+}
+
 .icon-spinner11 {
     font-size: x-large;
     padding: 0.9rem;

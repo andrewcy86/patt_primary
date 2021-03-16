@@ -291,7 +291,7 @@ if($recall_id == 0) {
 	$role_array_digi_staff = [ 'Administrator', 'Manager', 'Agent' ];
 	$results_digi = Patt_Custom_Func::return_agent_ids_in_role( $pattagentid_array, $role_array_digi_staff);
 	
-	$role_array_requester = [  'Requester' ];
+	$role_array_requester = [  'Requester', 'Requester Pallet' ];
 	$results_requester = Patt_Custom_Func::return_agent_ids_in_role( $pattagentid_array, $role_array_requester);
 	
 	$requestid = $recall_id; 
