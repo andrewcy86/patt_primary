@@ -8,7 +8,7 @@ include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
-echo WPPATT_ABSPATH;
+echo $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php';
 
 echo $agent_permissions['label'];
 ?>
