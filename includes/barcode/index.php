@@ -11,7 +11,7 @@ echo 'WPATT_ABSPATH '.WPPATT_ABSPATH;
 echo 'wp-load.php '.$_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php';
 echo 'agent label '.$agent_permissions['label'];
 echo 'user '.$current_user->display_name;
-
+echo 'test';
 ?>
 <!DOCTYPE html>
 <html lang="en">
