@@ -307,6 +307,11 @@ color: rgb(255, 255, 255) !important;
 	margin-left: 3px;
 	margin-right: 3px;
 }
+
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
+
 </style>
  
 <script>

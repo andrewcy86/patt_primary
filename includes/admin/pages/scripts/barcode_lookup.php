@@ -39,6 +39,7 @@ INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = "
 
 WHERE " . $wpdb->prefix . "wpsc_ticket.request_id = " . $params['id']
 			);
+//Checking to see if requests both 1) exists 2) is not archived
 if(!empty($request_info->id) && $request_info->active == 1) {
 			$request_url = admin_url( 'admin.php?page=wpsc-tickets', 'https' );
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
@@ -135,7 +136,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
     echo 'Request does not exist or is archived.';
 }
 //Determine if string contains a box ID
-    } elseif (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $barcode)){
+    } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $barcode)){
 
 //echo '<strong>Box ID: '.$barcode.'<strong>';
 $box_details = $wpdb->get_row(
@@ -207,22 +208,18 @@ WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_details_id 
 			$type = 'box';
 			$status_icon = '';
 			
-			 //if($boxlist_box_destroyed > 0) {
             if(Patt_Custom_Func::id_in_box_destroyed($barcode, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
             }
             
-            //if($boxlist_unathorized_destruction > 0) {
             if(Patt_Custom_Func::id_in_unauthorized_destruction($barcode, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
             
-            //if($boxlist_unathorized_destruction > 0) {
             if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
             }
             
-            //if($boxlist_freeze_sum > 0) {
              if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
             }
@@ -278,14 +275,6 @@ $status_icon .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i 
 				
 				$boxcontent_validation = $info->validation;
 				
-				/*
-				if($boxcontent_validation == 0) {
-				$boxcontent_validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
-				} else {
-				$boxcontent_validation_icon = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ';
-				}
-				*/
-				
 				if(Patt_Custom_Func::id_in_validation($info->folderdocinfofile_id,'folderfile') == 1) {
 				    $boxcontent_validation_user = Patt_Custom_Func::get_validation_user($info->folderdocinfofile_id);
                     $boxcontent_validation_icon = '<span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ['. $boxcontent_validation_user .'] ';
@@ -320,7 +309,7 @@ $status_icon .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i 
 }
 			
 //Determine if string is a folder/file ID     
-    } elseif (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $barcode)){
+    } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $barcode)){
 
 //echo '<strong>Folder/File ID: '.$barcode.'<strong>';
 
@@ -346,6 +335,7 @@ $folderfile_details = $wpdb->get_row(
 	b.unauthorized_destruction as unauthorized_destruction,
 	a.folder_identifier as folder_identifier,
 	b.freeze as freeze,
+	b.damaged as damaged,
 	a.addressee as addressee,
 	b.DOC_REGID as sems_reg_id,
 	b.folderdocinfofile_id as folderdocinfofile_id,
@@ -418,22 +408,18 @@ $folderfile_details = $wpdb->get_row(
 
 	$status_icon = '';
 	
-	 //if($boxlist_box_destroyed > 0) {
     if(Patt_Custom_Func::id_in_box_destroyed($barcode, $type) == 1) {
     $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
     }
     
-    //if($boxlist_unathorized_destruction > 0) {
     if(Patt_Custom_Func::id_in_unauthorized_destruction($barcode, $type) == 1) {
     $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
     }
     
-    //if($boxlist_unathorized_destruction > 0) {
     if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
     $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
     }
     
-    //if($boxlist_freeze_sum > 0) {
      if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
     $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
     }
@@ -457,19 +443,7 @@ $folderfile_details = $wpdb->get_row(
     else {
         $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
     }
-    
-    /*
-    if(Patt_Custom_Func::id_in_validation($barcode,$type) == 1){
-    $status_icon .= ' <span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
-    } else {
-    $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>'; 
-    }
-    
-    if(Patt_Custom_Func::id_in_rescan($barcode,$type) == 1){
-    $status_icon .= ' <span style="color: red;"> [rescan]</span>';
-    }
-    */
-    
+   
 $folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );
 
         //record schedule
@@ -478,6 +452,7 @@ $folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );
     //program office
    $box_po = Patt_Custom_Func::get_program_office_by_id($folderfile_folderdocinfofile_id, $type);
     
+//Checking to see if folder/file is associated with a request that both 1) exists 2) is not archived
 if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfile_details->ticket_id) == 1) {	
 
             echo "<strong>Folder/File ID:</strong> <a href='".$folderfile_url."&id=" . $folderfile_folderdocinfofile_id . "' target='_blank'>" . $folderfile_folderdocinfofile_id . "</a>" . $status_icon . "<br />";
@@ -486,17 +461,11 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 			if(!empty($box_po)) {
 			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			}
-			else {
-			    echo "<strong style='color:red'>Program Office: REASSIGN IMMEDIATELY</strong> <br />";
-			}
             
             if(!empty($box_rs)) {
                 echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
             }
-            else {
-			    echo "<strong style='color:red'>Record Schedule: REASSIGN IMMEDIATELY</strong> <br />";
-			}
-			
+            
 			if(!empty($folderfile_identifier)) {
 			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
 			}

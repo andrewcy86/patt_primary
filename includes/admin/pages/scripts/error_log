@@ -570,3 +570,9 @@
 [15-Mar-2021 17:15:39 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
 [15-Mar-2021 17:15:40 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
 [15-Mar-2021 17:15:59 America/Detroit] PHP Parse error:  syntax error, unexpected '$status_icon' (T_VARIABLE), expecting ',' or ';' in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/barcode_lookup.php on line 453
+[16-Mar-2021 12:09:40 UTC] WordPress database error Unknown column 'COUNT' in 'field list' for query SELECT COUNT id
+        FROM wpqa_wpsc_epa_boxinfo
+        WHERE pallet_id = 'P-E-15834'
+[16-Mar-2021 15:37:38 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 60
+[16-Mar-2021 15:37:38 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 75
+[16-Mar-2021 15:37:38 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 323

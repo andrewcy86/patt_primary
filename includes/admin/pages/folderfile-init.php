@@ -164,6 +164,9 @@ color: rgb(255, 255, 255) !important;
 }
 div.dataTables_processing { z-index: 1; }
 
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
 
 </style>
 

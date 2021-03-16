@@ -9,7 +9,6 @@ if(
 !empty($_POST['postvarsboxid'])
 ){
 
-
 $boxid_string = $_POST['postvarsboxid'];
 $boxid_arr = explode (",", $boxid_string);  
 $page_id = $_POST['postvarpage'];

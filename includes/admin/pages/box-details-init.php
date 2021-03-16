@@ -19,8 +19,11 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
-$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
+$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id, ".$wpdb->prefix."wpsc_epa_boxinfo.box_id
+FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket 
+WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
 $location_request_id = $request_id->request_id;
+$box_id_error_check = $request_id->box_id;
 
 $is_active = Patt_Custom_Func::request_status( $location_request_id );
 
@@ -64,21 +67,21 @@ $request_status_id = $get_request_status_id->ticket_status;
         ?>
 
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($box_id_error_check)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Request</button>
 <?php
 }
 ?>
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch' && !empty($box_id_error_check)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxes';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Dashboard</button>
 <?php
 }
 ?>
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch' && !empty($box_id_error_check)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></i> Back to Folder/File Dashboard</button>
 <?php
@@ -93,18 +96,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id'])) {
-
-/*$convert_box_id = $wpdb->get_row(
-"SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(b.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, e.name  as priority_name, d.ticket_status as ticket_status, f.name as ticket_status_name
-FROM wpqa_wpsc_epa_boxinfo a
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id
-INNER JOIN wpqa_terms c ON a.box_status = c.term_id
-INNER JOIN wpqa_wpsc_ticket d ON d.id = a.ticket_id
-LEFT JOIN wpqa_terms e ON d.ticket_priority = e.term_id
-LEFT JOIN wpqa_terms f ON d.ticket_status = f.term_id
-WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
-*/
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && !empty($box_id_error_check)) {
 
 if($is_active == 1) {
 $convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
@@ -686,19 +678,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 ?>
 
 <?php
-/*
-$box_details = $wpdb->get_row(
-"SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
-FROM ".$wpdb->prefix."wpsc_epa_boxinfo
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo ON ".$wpdb->prefix."wpsc_epa_boxinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo.box_id
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wpsc_epa_folderdocinfo.folderdocinfo_id = ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.unauthorized_destruction = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
-			);
-$unauthorized_destruction_count = $box_details->count;
-*/
-
 $unauthorized_destruction_count = Patt_Custom_Func::id_in_unauthorized_destruction($GLOBALS['id'], $type);
-//if($unauthorized_destruction_count == 0){
 if($unauthorized_destruction_count != 1){
 ?>
 jQuery('#ud_alert').hide();
@@ -713,16 +693,6 @@ jQuery('#damaged_alert').hide();
 
 <?php
 //freeze notification
-/*
-$box_freeze = $wpdb->get_row(
-"SELECT count(".$wpdb->prefix."wpsc_epa_folderdocinfo_files.id) as count
-FROM ".$wpdb->prefix."wpsc_epa_boxinfo
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo ON ".$wpdb->prefix."wpsc_epa_boxinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo.box_id
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files ON ".$wpdb->prefix."wpsc_epa_folderdocinfo.id = ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE ".$wpdb->prefix."wpsc_epa_folderdocinfo_files.freeze = 1 AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
-);
-$freeze_count = $box_freeze->count;
-*/
 $freeze_count = Patt_Custom_Func::id_in_freeze($GLOBALS['id'], $type);
 if($freeze_count == 0) {
 ?>

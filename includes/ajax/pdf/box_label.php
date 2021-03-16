@@ -291,7 +291,7 @@ WHERE
 //if($box_not_assigned != 'Not Assigned') {
 $not_assigned_flag = 0;
 
-if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
     
         $obj_pdf->AddPage();
 
@@ -315,7 +315,7 @@ $not_assigned_flag = 1;
 }
 
 //Box
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
        $box_array = fetch_box_id_a();
 }
 
@@ -326,7 +326,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         for ($i = 0;$i < count($box_array);$i++)
         {
             
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {           
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {           
 
         $asset_ticket_id = $wpdb->get_row( "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
                 
@@ -531,7 +531,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $total_box = $box_count;
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
            $total_box = $box_count_a;
 }
 
@@ -586,7 +586,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Cell(55, 5, $box_program_office[$i], 1, 0, 'C', 1);
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->Cell(55, 5, $box_program_office_a, 1, 0, 'C', 1);
 }
 
@@ -607,7 +607,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 }
 
 //Bottom half of page containing cell with aisle/bay/shelf/position  
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
             $obj_pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 20);
@@ -665,7 +665,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 $num = fetch_request_id();
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 $num = $asset_id;
 }
 
@@ -678,7 +678,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 $url_id = fetch_request_id();
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 $url_id = $asset_id;
 }
             //$url_key = fetch_request_key();
@@ -700,7 +700,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Cell(40, 10, $box_location[$i], 1, 0, 'C', 1);
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             //Obtain array of box locations
             //$obj_pdf->Text($x_loc_l, $y_loc_l, $box_location_a);
             
@@ -719,7 +719,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Text($x_loc_cd, $y_loc_cd, $box_date); 
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->Text($x_loc_cd, $y_loc_cd, $box_date_a);
 }
 
