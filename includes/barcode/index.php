@@ -1,16 +1,17 @@
 <?php
+global $wpdb, $current_user, $wpscfunction;
+
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
-global $wpdb, $current_user, $wpscfunction;
 
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
+echo 'WPATT_ABSPATH '.WPPATT_ABSPATH;
+echo 'wp-load.php '.$_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php';
+echo 'agent label '.$agent_permissions['label'];
+echo 'user '.$current_user->display_name;
 
-echo $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php';
-
-echo $agent_permissions['label'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,9 +19,9 @@ echo $agent_permissions['label'];
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <title>PATT - Location Assignment Application</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width; initial-scale=1.0" />

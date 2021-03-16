@@ -1,8 +1,8 @@
 <?php
+global $wpdb, $current_user, $wpscfunction;
+
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
-global $wpdb, $current_user, $wpscfunction;
 
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
