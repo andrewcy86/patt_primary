@@ -2,7 +2,7 @@
 global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
-require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+require_once('/public/data/patt/patt.54fc3dee/web/app/mu-plugins/pattracking/wp/wp-load.php');
 
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
