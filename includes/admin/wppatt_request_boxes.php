@@ -363,11 +363,11 @@ $tbl .=  '<th class="datatable_header"></th>';
             }
 
 if(Patt_Custom_Func::id_in_return($boxlist_id,$type) == 1){
-$tbl .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$tbl .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($boxlist_id,$type) == 1){
-$tbl .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$tbl .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
 }
 
             $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''. $boxlist_id .'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span></td>';

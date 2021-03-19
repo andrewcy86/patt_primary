@@ -4,15 +4,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $wpdb, $current_user, $wpscfunction;
-if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
+
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+
+/*if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 		exit;
-}
+}*/
 $ticket_id 	 = isset($_POST['ticket_id']) ? intval($_POST['ticket_id']) : 0 ;
 $raisedby_email = $wpscfunction->get_ticket_fields($ticket_id, 'customer_email');
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 $wpsc_appearance_ticket_list = get_option('wpsc_appearance_ticket_list');
 
-$agent_permissions = $wpscfunction->get_current_agent_permissions();
 $current_agent_id  = $wpscfunction->get_current_user_agent_id();
 
 $request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
@@ -153,7 +155,7 @@ ob_start();
 					update_post_meta($thread->ID, 'user_seen', date("Y-m-d H:i:s"));
 				}
 
-				if ( $thread_type == 'log' && apply_filters('wpsc_thread_log_visibility',$current_user->has_cap('wpsc_agent')) && $wpscfunction->has_permission('view_log',$ticket_id)):
+				if ( $thread_type == 'log' && ($current_user->ID || ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))):
 					?>
 					<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_border_color']?> !important;">
 		          <?php 

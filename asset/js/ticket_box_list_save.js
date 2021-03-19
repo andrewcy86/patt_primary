@@ -1,3 +1,5 @@
+var theFile = {};
+
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     
@@ -10,7 +12,7 @@ jQuery(document).ready(function(){
 		
 //         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
 	if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
-
+			
             var dropzoneOptions = {
                 url: "test.php",
                 autoProcessQueue: false,
@@ -19,6 +21,8 @@ jQuery(document).ready(function(){
                 maxFiles: 1,
                 acceptedFiles: '.xlsx, .xlsm',
                 accept: function (file, done) {
+                    theFile.file = file;
+                    console.log({theFile:theFile});
                     jQuery('#file_upload_cr').val(1);
                     wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
                 },
@@ -36,7 +40,8 @@ jQuery(document).ready(function(){
             var uploader = document.querySelector('#dzBoxUpload');
             var newDropzone = new Dropzone(uploader, dropzoneOptions);      
             
-            // SEMS Dropzone setup
+            // SEMS Dropzone setup // no longer used. Dropzone unified.
+/*
             dropzoneOptions = {
                 url: "test.php",
                 autoProcessQueue: false,
@@ -60,7 +65,8 @@ jQuery(document).ready(function(){
                 }
             };
             var uploader = document.querySelector('#dzBoxUploadSEMS');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);   
+            var newDropzone = new Dropzone(uploader, dropzoneOptions);
+*/   
             
             
                   
@@ -145,6 +151,25 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 */
 		
 	}
+	
+	var form_data = new FormData();
+        form_data.append('file', theFile.file);
+        form_data.append('action', 'move_excel_file');
+        jQuery.ajax({
+            url: wpsc_admin.ajax_url,
+            type: 'post',
+            contentType: false,
+            processData: false,
+            data: form_data,
+            success: function (response) {
+                console.log("Excel uploaded successfully");
+            },  
+            error: function (response) {
+                console.log("Excel did not upload successfully");
+            }
+        });
+	
+	
 });
 
 
@@ -152,6 +177,7 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	
 	console.log('ECMS upload');
+	console.log({the_File:theFile.file});
 	
     jQuery('#attachment_upload').unbind('change');
 
@@ -563,8 +589,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 }
             }
         });
-
+		
+		
+		
         // Upload excel
+/*
         var form_data = new FormData();
         form_data.append('file', fileSS);
         form_data.append('action', 'move_excel_file');
@@ -578,9 +607,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 console.log("Excel uploaded successfully");
             },  
             error: function (response) {
-                console.log("Excel does not uploaded successfully");
+                console.log("Excel did not upload successfully");
             }
         });
+*/
         
         
 

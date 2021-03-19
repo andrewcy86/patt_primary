@@ -41,10 +41,36 @@ WHERE " . $wpdb->prefix . "wpsc_ticket.request_id = " . $params['id']
 			);
 //Checking to see if requests both 1) exists 2) is not archived
 if(!empty($request_info->id) && $request_info->active == 1) {
+            $type = 'request';
+            $status_icon = '';
+            //Status icons
+            if(Patt_Custom_Func::id_in_box_destroyed($params['id'], $type) == 1) {
+            $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+            }
+            
+            if(Patt_Custom_Func::id_in_unauthorized_destruction($params['id'], $type) == 1) {
+            $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+            }
+            
+            if(Patt_Custom_Func::id_in_damaged($params['id'], $type) == 1) {
+            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+            }
+            
+             if(Patt_Custom_Func::id_in_freeze($params['id'], $type) == 1) {
+            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            }
+
+            if(Patt_Custom_Func::id_in_return($params['id'],$type) == 1){
+            $status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+            }
+            
+            if(Patt_Custom_Func::id_in_recall($params['id'],$type) == 1){
+            $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+            }
 			$request_url = admin_url( 'admin.php?page=wpsc-tickets', 'https' );
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
-			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$params['id']."' target='_blank'>" . $params['id'] . "</a><br />";
+			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$params['id']."' target='_blank'>" . $params['id'] . "</a>" . $status_icon . "<br />";
 			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
 			echo "<strong>Requestor Email:</strong> " . $request_info->customer_email . "<br />";
 			echo "<strong>Request Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle'></i></span>
@@ -108,7 +134,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
                 
                 $boxdetails_url = admin_url( 'admin.php?page=boxdetails', 'https' );
                 
-				$tbl .= '<tr>
+			$tbl .= '<tr>
             <td  width="35px" height="50px"></td>
             <td><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" target="_blank">' . $boxlist_id . '</a></td>';
             
@@ -225,11 +251,11 @@ WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_details_id 
             }
 
 if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){
-$status_icon .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($barcode,$type) == 1){
-$status_icon .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
 }
 
 	
@@ -425,11 +451,11 @@ $folderfile_details = $wpdb->get_row(
     }
 
     if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){
-    $status_icon .= ' <span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+    $status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
     }
     
     if(Patt_Custom_Func::id_in_recall($barcode,$type) == 1){
-    $status_icon .= ' <span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+    $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
     }
     
     //Validation check

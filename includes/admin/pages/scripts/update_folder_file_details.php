@@ -283,15 +283,15 @@ $tags_explode = explode(",", $tags);
 
 //Adds double quotes around key value pair
 foreach($tags_explode as $tag) {
-    $split_tag_beginning = strtok($tag, ':');
-    $split_tag_end = substr($tag, strpos($tag, ':') + 1);
-    $new_tag = '"' . $split_tag_beginning . '"' . ":" . '"' . $split_tag_end . '"';
-    
     //trim whitespace at beginning and end, trim whitespace around :
-    $tags_trim = trim($new_tag);
+    $tags_trim = trim($tag);
     $tags_trim_colon_whitespace = preg_replace('/(?<=[:]) +| +(?=[:])/', '', $tags_trim);
     
-    array_push($quoted_tags_array, $tags_trim_colon_whitespace);
+    $split_tag_beginning = strtok($tags_trim_colon_whitespace, ':');
+    $split_tag_end = substr($tags_trim_colon_whitespace, strpos($tags_trim_colon_whitespace, ':') + 1);
+    $new_tag = '"' . $split_tag_beginning . '"' . ":" . '"' . $split_tag_end . '"';
+    
+    array_push($quoted_tags_array, $new_tag);
 }
 
 $tags_implode = implode(',', $quoted_tags_array);
@@ -307,6 +307,7 @@ $data_update = array('access_restriction' => $access_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Access Restriction: '.$old_access_restriction.' > '.$access_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+}
 
 //If user selects No then clear specific_access_restriction
 $get_access_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
@@ -318,9 +319,7 @@ if($access_restriction_no == 'No') {
     $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
 }
 
-}
-
-if( strtolower(str_contains('Please select...', $specific_access_restriction )) == false && (!empty($specific_access_restriction)) && ($specific_access_restriction != $old_specific_access_restriction) ) {
+if( strtolower(str_contains('Please select...', $specific_access_restriction )) == false && $access_restriction_no == 'Yes' && (!empty($specific_access_restriction)) && ($specific_access_restriction != $old_specific_access_restriction) ) {
 $data_update = array('specific_access_restriction' => $specific_access_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Specific Access Restriction: '.$old_specific_access_restriction.' > '.$specific_access_restriction);
@@ -332,6 +331,7 @@ $data_update = array('use_restriction' => $use_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Use Restriction: ' . $old_use_restriction . ' > ' . $use_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+}
 
 //If user selects No then clear specific_access_restriction
 $get_use_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
@@ -342,9 +342,8 @@ if($use_restriction_no == 'No') {
     $data_where_no = array('id' => $folderdocinfofileid);
     $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
 }
-}
 
-if( strtolower(str_contains('Please select...', $specific_use_restriction )) == false && (!empty($specific_use_restriction)) && ($specific_use_restriction != $old_specific_use_restriction)) {
+if( strtolower(str_contains('Please select...', $specific_use_restriction )) == false && $use_restriction_no == 'Yes' && (!empty($specific_use_restriction)) && ($specific_use_restriction != $old_specific_use_restriction)) {
 $data_update = array('specific_use_restriction' => $specific_use_restriction);
 $data_where = array('id' => $folderdocinfofileid);
 array_push($metadata_array,'Specific Use Restriction: '.$old_specific_use_restriction.' > '.$specific_use_restriction);

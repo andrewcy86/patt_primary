@@ -514,7 +514,8 @@ boxid : jQuery('#box_id').val()
       wpsc_modal_open('Damaged');
 		  var data = {
 		    action: 'wpsc_get_damaged_bd',
-		    response_data: response
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);
@@ -552,7 +553,8 @@ boxid : jQuery('#box_id').val()
       wpsc_modal_open('Freeze');
 		  var data = {
 		    action: 'wpsc_get_freeze_bd',
-		    response_data: response
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);
@@ -678,6 +680,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 ?>
 
 <?php
+//unauthorized destruction notification
 $unauthorized_destruction_count = Patt_Custom_Func::id_in_unauthorized_destruction($GLOBALS['id'], $type);
 if($unauthorized_destruction_count != 1){
 ?>
@@ -685,7 +688,9 @@ jQuery('#ud_alert').hide();
 <?php
 }
 
-if(Patt_Custom_Func::id_in_damaged($GLOBALS['id'], $type) != 1) { ?>
+//damaged notification
+$damaged_count = Patt_Custom_Func::id_in_damaged($GLOBALS['id'], $type);
+if($damaged_count != 1) { ?>
 jQuery('#damaged_alert').hide();
 <?php
 }
@@ -694,7 +699,7 @@ jQuery('#damaged_alert').hide();
 <?php
 //freeze notification
 $freeze_count = Patt_Custom_Func::id_in_freeze($GLOBALS['id'], $type);
-if($freeze_count == 0) {
+if($freeze_count != 1) {
 ?>
 jQuery('#freeze_alert').hide();
 <?php

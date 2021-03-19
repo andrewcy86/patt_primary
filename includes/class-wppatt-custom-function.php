@@ -2172,7 +2172,8 @@ public static function id_in_recall( $identifier, $type ) {
             //
             // If result set is empty, search for file/folder
             //
-            if( !is_object($box_details) && count($box_details) < 1 ){
+//             if( !is_object($box_details) && count($box_details) < 1 ){
+            if( !is_object($box_details) ){
 				
 				
 /*				// Before shift of FK in recallrequest to point to FDIF.folderdocinfofile_id instead of FDI.folderdocinfo_id 

@@ -20,6 +20,8 @@ $subfolder_path = site_url( '', 'relative');
 
 if($_POST['searchByID']) {
 	$searchByID = explode(',',$_POST['searchByID']);
+} else {
+	$searchByID = [];
 }
 
 //Get term_ids for Decline status slugs
@@ -235,7 +237,7 @@ $response2 = array(
 	"WP_PATH" => $WP_PATH
 );
 /*
-$data2 = array();
+$data2 = array(); 
 
 $response2 = array(
 	"draw" => intval($draw),

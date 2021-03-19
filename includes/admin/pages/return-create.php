@@ -384,7 +384,8 @@ margin: 0px 0px 25px 15px;
 }
 
 #return_description {
-	margin-left: -35px;
+/* 	margin-left: -35px; */
+	margin-left: -4%;
 }
 
 #wppatt_loading_icon {

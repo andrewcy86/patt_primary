@@ -129,7 +129,7 @@ else {
 	b.unauthorized_destruction as unauthorized_destruction,
 	a.folder_identifier as folder_identifier,
 	b.freeze as freeze,
-	b.damaged as damaged
+	b.damaged as damaged,
 	a.addressee as addressee,
 	b.DOC_REGID as sems_reg_id,
 	b.folderdocinfofile_id as folderdocinfofile_id,
@@ -371,21 +371,21 @@ div.dataTables_wrapper {
         ?>	
 <?php
 // originally /^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($folderfile_folderdocinfofile_id)) {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($folderfile_id)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
 <?php
 }
 ?>
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch' && !empty($folderfile_folderdocinfofile_id)) {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch' && !empty($folderfile_id)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
 <?php
 }
 ?>
 <?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch' && !empty($folderfile_folderdocinfofile_id)) {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch' && !empty($folderfile_id)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></i> Back to Folder/File Dashboard</button>
 <?php
@@ -399,7 +399,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $
 
 <?php
 //BEGIN folder/file ID check
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && !empty($folderfile_folderdocinfofile_id)) {
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && !empty($folderfile_id)) {
 ?>
   <div class="col-sm-8 col-md-9 wpsc_it_body">
     <div class="row wpsc_it_subject_widget">

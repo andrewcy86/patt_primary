@@ -233,12 +233,13 @@ else {
 ?>
 
 <strong>Access Restriction</strong><br />
-<select id="access_restriction" name="access_restriction" onclick="showDiv('hidden_div', this)">
+<!--<select id="access_restriction" name="access_restriction" onclick="showDiv('hidden_div', this)">-->
+  <select id="access_restriction" name="access_restriction">
   <option value="Yes" <?php if ($folderfile_access_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
   <option value="No" <?php if ($folderfile_access_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
 </select></br>
 
-<div id="hidden_div">
+<!--<div id="hidden_div">-->
 <br><strong>Specific Access Restriction</strong><br />
 <select id="specific_access_restriction" class="selectpicker" multiple data-live-search="true" data-none-selected-text>
   <option value="Controlled / Copyright">Controlled / Copyright</option>
@@ -254,15 +255,16 @@ else {
   <option value="Controlled-Undetermined">Controlled-Undetermined</option>
   <option value="Uncontrolled">Uncontrolled</option>
 </select></br>
-</div>
+<!--</div>-->
 
 <br><strong>Use Restriction</strong><br />
-<select id="use_restriction" name="use_restriction" onclick="showDiv('hidden_div_2', this)">
+<!--<select id="use_restriction" name="use_restriction" onclick="showDiv('hidden_div_2', this)">-->
+<select id="use_restriction" name="use_restriction">
   <option value="Yes" <?php if ($folderfile_use_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
   <option value="No" <?php if ($folderfile_use_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
 </select></br>
 
-<div id="hidden_div_2">
+<!--<div id="hidden_div_2">-->
 <br><strong>Specific Use Restriction</strong><br />
 <select id="specific_use_restriction" class="selectpicker" multiple data-live-search="true" data-none-selected-text>
   <option value="Controlled / Copyright">Controlled / Copyright</option>
@@ -278,7 +280,7 @@ else {
   <option value="Controlled-Undetermined">Controlled-Undetermined</option>
   <option value="Uncontrolled">Uncontrolled</option>
 </select></br>
-</div>
+<!--</div>-->
 </br>
 
 <strong>Rights Holder</strong><br />
@@ -377,7 +379,6 @@ jQuery('.selectpicker').selectpicker({
         noneSelectedText : 'Please select...', // by this default 'Nothing selected' -->will change to Please Select...
         multipleSeparator: ';'
     });
-
 
 //Hides specific access restriction and specific use destriction on default, unless choice of 'Yes' is chosen
 function showDiv(divId, element)

@@ -155,7 +155,7 @@ abstract class PATT_DB {
 			$order = "ORDER BY {$args['order'][0]} {$args['order'][1]}";
 		}
 		
-// 		$limits = 'LIMIT 20';
+ 		$limits = 'LIMIT 20';
 		if (isset($args['limit'])) {
 			if(isset($args['limit'][1])){
 				$limits = "LIMIT {$args['limit'][0]}, {$args['limit'][1]}";
