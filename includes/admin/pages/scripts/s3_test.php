@@ -1,6 +1,9 @@
 <?php
 
 require 'vendor/autoload.php';
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 use Aws\S3\S3Client;
