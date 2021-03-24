@@ -19,16 +19,6 @@ require_once __DIR__."/vendor/autoload.php";
 // or set this in a cronjob for every 24-48 hours
 // echo abortPendingUploads(bucket());
 
-function aws_key(){
-//include WPPATT_UPLOADS.'api_authorization_strings.php';
-//    return $s3_key;
-	return AWS_S3_KEY;
-}
-function aws_secret(){
-//include WPPATT_UPLOADS.'api_authorization_strings.php';
-//    return $s3_secret;
-	return AWS_S3_SECRET;
-}
 function bucket() {
 //include WPPATT_UPLOADS.'api_authorization_strings.php';
 //    return $s3_bucket;
@@ -54,11 +44,7 @@ function s3($command=null,$args=null)
 	$s3 = new Aws\S3\S3Client([
 	    'version' => 'latest',
 	    'region'  => region(),
-	    'signature_version' => 'v4',
-	        'credentials' => [
-	        'key'    => aws_key(),
-	        'secret' => aws_secret(),
-	    ]
+	    'signature_version' => 'v4'
 	]);
 	if ($command===null)
 		return $s3;

@@ -51,11 +51,7 @@ else {
 <?php
 	$s3 = new Aws\S3\S3Client([
 		'region'  => $s3_region,
-		'version' => 'latest',
-		'credentials' => [
-			'key'    => $s3_key,
-			'secret' => $s3_secret,
-		]
+		'version' => 'latest'
 	]);	
 
     //switch out SQL statement depending on if the request is archived
