@@ -56,7 +56,10 @@ WHERE a.id = '" . $box_id . "'");
     $box_status = $wpdb->get_row("SELECT " . $wpdb->prefix . "terms.term_id as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
     $status_id = $box_status->box_status;
     
-    $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM " . $wpdb->prefix . "wpsc_ticket, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
+    $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval 
+    FROM " . $wpdb->prefix . "wpsc_ticket, " . $wpdb->prefix . "wpsc_epa_boxinfo 
+    WHERE " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id 
+    AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
     $destruction_approval = $box_destruction_approval->destruction_approval;
 ?>   
 <!--converts program office and record schedules into a datalist-->
@@ -97,10 +100,10 @@ echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
 		</select>
 
 <?php
-$desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses');
+$desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
 $desruction_approval_term_id = $desruction_approval_tag->term_id;
 
-if($validated == $validation_total && $status_id == $desruction_approval_term_id && $destruction_approval == 1) {
+if( ($validated == $validation_total) && ($status_id == $desruction_approval_term_id) && ($destruction_approval == 1) ) {
 ?>
 <br /><br />
 <strong>Destruction Completed:</strong><br />
@@ -140,8 +143,16 @@ FROM " . $wpdb->prefix . "wpsc_epa_program_office
 WHERE office_acronym  = '" . $value . "'");
     $program_office_id = $program_office->office_code;
     $program_office_name = $program_office->office_name;
+    
+    //Remove - if no characters after -
+    $preg_replace_program_office = preg_replace("/\([^)]+\)/","",$value);
+    if(substr($preg_replace_program_office, -1) == '-') {
+        $new_program_office = substr($preg_replace_program_office, 0, -1);
+    } else {
+        $new_program_office = $preg_replace_program_office;
+    }
     ?>
-        <option data-value='<?php echo $program_office_id; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $program_office_name; ?>'></option>
+        <option data-value='<?php echo $program_office_id; ?>' value='<?php echo $new_program_office . ' : ' . $program_office_name; ?>'></option>
      <?php } ?>
      </datalist>
 

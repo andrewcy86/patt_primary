@@ -55,6 +55,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             wp_schedule_event( time(), 'hourly', 'wppatt_attachment_restructure');
           }
         }
+        
     }
     
     function define_constants() {
@@ -96,9 +97,25 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_shipping_cron_recall', array($frontend, 'wppatt_recall_shipping_status_schedule'));
         // Add Recall Reminder Email & PM Notification CRON
         add_action( 'wppatt_recall_reminder_cron', array($frontend, 'wppatt_recall_reminder_email_cron_schedule'));
+        // Add Program Office/ Record Schedule CRON
+        add_action( 'wppatt_po_rs_cron', array($frontend, 'wppatt_po_rs_cron_schedule'));
         
         // Add Decline Reminder Email & PM Notification CRON // No longer used. All actions done in wppatt_return_shipping_status_schedule
         //add_action( 'wppatt_decline_reminder_cron', array($frontend, 'wppatt_decline_reminder_email_cron_schedule'));
+        
+        // add menu item for specialty upload section - BATCH UPLOADER
+        add_action( 'admin_menu', 'wpdocs_register_my_custom_menu_page' );
+		function wpdocs_register_my_custom_menu_page() {
+		    add_menu_page(
+		        __( 'Batch Uploader', 'supportcandy' ),
+		        'Batch Uploader',
+		        'manage_options',
+		        'batch-uploader',
+		        'batch_uploader_page',
+		        'dashicons-images-alt2',
+		        0
+		    );
+		}
         
         // Add Return / Decline Shipping CRON
         add_action( 'wppatt_shipping_cron_return', array($frontend, 'wppatt_return_shipping_status_schedule'));
@@ -345,7 +362,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
             }
-            
+          
+          
+          
           // Set Box and File Dashboard and Details Pages
           add_action( 'wpsc_add_submenu_page', 'main_menu_items');
 
@@ -373,15 +392,17 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping', 'shipping_page' ); 
             add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
-            }
             
-function custom_menu_item_redirect_external_link() {
-        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
-        if($menu_redirect == 'qlik-report' ) {
-            echo '<script>window.location.replace("http://www.google.com");</script>';
-            exit();
-        }
-}
+            
+          }
+            
+			function custom_menu_item_redirect_external_link() {
+		        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
+		        if($menu_redirect == 'qlik-report' ) {
+		            echo '<script>window.location.replace("http://www.google.com");</script>';
+		            exit();
+		        }
+			}
 
             function shipping_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/shipping.php'
@@ -491,7 +512,11 @@ function custom_menu_item_redirect_external_link() {
 
             include_once( WPPATT_ABSPATH . 'includes/class-wppatt-request-approval-widget.php' );
             include_once( WPPATT_ABSPATH . 'includes/class-wppatt-new-request-litigation-letter.php' );
-
+			
+			function batch_uploader_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/batch-uploader.php'
+            );
+            }
     
         }
         if ($this->is_request('frontend')) {
@@ -527,6 +552,8 @@ function custom_menu_item_redirect_external_link() {
         }
         return $schedules;
     }
+    
+    
     
   }
   

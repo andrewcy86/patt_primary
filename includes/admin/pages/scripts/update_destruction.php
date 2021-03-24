@@ -39,7 +39,7 @@ where b.validation = 1 AND a.box_id = '".$box_db_id."'");
 $sum_validation = $get_sum_validation->sum_validation;
 
 $get_status = $wpdb->get_row("select box_status as status from " . $wpdb->prefix . "wpsc_epa_boxinfo where id = '".$box_db_id."'");
-$request_status = $get_status->status;
+$box_status_id = $get_status->status;
 
 $get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da from " . $wpdb->prefix . "wpsc_ticket a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.id = b.ticket_id where b.id = '".$box_db_id."'");
 $destruction_auth_status = $get_destruction_auth_status->da;
@@ -80,8 +80,9 @@ $box_storage_status_occupied = $box_storage_status->occupied;
 $box_storage_status_remaining = $box_storage_status->remaining;
 $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
+$desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
 
-if(($sum_total_val != $sum_validation) || ($request_status != 68) || ($destruction_auth_status == 0)) {
+if(($sum_total_val != $sum_validation) || ($box_status_id != $desruction_approval_tag->term_id) || ($destruction_auth_status == 0)) {
     echo '<strong>'.$key.'</strong> : ';
     echo 'Please ensure all documents are validated, the box status is approved for destruction, and the destruction approval has been recevied before destroying the box.';
 if ($counter > 0) {

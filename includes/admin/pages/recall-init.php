@@ -92,8 +92,16 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
     <?php 
         $program_office = $wpdb->get_row("SELECT office_name FROM " . $wpdb->prefix . "wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
         $office_name = $program_office->office_name;
+        
+        //Remove - if no characters after -
+        $preg_replace_program_office = preg_replace("/\([^)]+\)/","",$value);
+        if(substr($preg_replace_program_office, -1) == '-') {
+            $new_program_office = substr($preg_replace_program_office, 0, -1);
+        } else {
+            $new_program_office = $preg_replace_program_office;
+        }
     ?>
-        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value) . ' : ' . $office_name; ?>'></option>
+        <option data-value='<?php echo $value; ?>' value='<?php echo $new_program_office . ' : ' . $office_name; ?>'></option>
      <?php } ?>
      </datalist>
 				<br><br>

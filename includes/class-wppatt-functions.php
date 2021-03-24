@@ -26,6 +26,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     public function wppatt_recall_reminder_email_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/recall_reminder_email_cron.php';
     }
+
+    // CRON for Program Office and Record Schedule Update
+    public function wppatt_po_rs_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/po_rs_update_cron.php';
+    }
     
 /*
     // No longer used, as all Decline status changes & PM Notifications are done in return_shipping_status_cron.php below. 
