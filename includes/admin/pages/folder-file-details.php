@@ -702,12 +702,22 @@ $cmd = $s3Client->getCommand('GetObject', [
     'Key' => $folderfile_details->object_key
 ]);
 
+$folderfile_details_object_key = "'".$folderfile_details->object_key."'";
+
+$file_exist = $s3Client->doesObjectExist($s3_bucket, $folderfile_details_object_key);
+
+// Success? (Boolean)
+var_dump($file_exist);
+
 $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
 
 // Get the actual presigned-url
 $presignedUrl = (string)$request->getUri();
 
+if($file_exist){
 echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Download File</a></span><br>';
+}
+
 }
 
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
@@ -902,6 +912,7 @@ $attach_ecms_comment = $info->ecms_delete_comment;
 //echo $attach_post_id . '<br />';
 
 // register stream wrapper method
+//Check to see if file exists in s3. If it does not exist  AND not flagged as SEMS display ECMS table.
 /*$s3->registerStreamWrapper();
 // does file exist NEED CHANGE!!!!!
 $keyExists = file_exists("s3://".$s3_bucket."/".$attach_file_key);
