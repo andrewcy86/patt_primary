@@ -690,7 +690,7 @@ echo '<span class="details-name" >File Name: </span><span class="" >' . $file_na
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 
-if ($folderfile_details->object_key != '' || $folderfile_details->file_size == null || $folderfile_details->file_size == '') {
+if ($folderfile_details->object_key != '') {
 $s3Client = new Aws\S3\S3Client([
     'region' => $s3_region,
     'version' => 'latest'
@@ -712,8 +712,9 @@ $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
 // Get the actual presigned-url
 $presignedUrl = (string)$request->getUri();
 
+if($file_exist){
 echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Download File</a></span><br>';
-
+}
 
 }
 
