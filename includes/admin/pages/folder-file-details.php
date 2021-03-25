@@ -5,10 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
-use Aws\S3\S3Client;  
-use Aws\Exception\AwsException;
-
 $subfolder_path = site_url( '', 'relative');
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
@@ -690,7 +686,14 @@ echo '<span class="details-name" >File Name: </span><span class="" >' . $file_na
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 
+echo 'objectkey ' . $folderfile_details->object_key;
+
 if ($folderfile_details->object_key != '') {
+
+require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
+
 $s3Client = new Aws\S3\S3Client([
     'region' => $s3_region,
     'version' => 'latest'
