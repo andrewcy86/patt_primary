@@ -51,15 +51,6 @@ else {
 
 <div class="bootstrap-iso">
 <?php
-	/*$s3 = new Aws\S3\S3Client([
-		'region'  => $s3_region,
-		'version' => 'latest'
-	]);	*/
-	
-$s3Client = new Aws\S3\S3Client([
-    'region' => $s3_region,
-    'version' => 'latest'
-]);
 
     //switch out SQL statement depending on if the request is archived
     if($is_active == 1) {
@@ -699,6 +690,12 @@ echo '<span class="details-name" >File Name: </span><span class="" >' . $file_na
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 
+if ($folderfile_details->file_size == null || $folderfile_details->file_size == '') {
+$s3Client = new Aws\S3\S3Client([
+    'region' => $s3_region,
+    'version' => 'latest'
+]);
+
 //Updated to use Pre-signed URL
 $cmd = $s3Client->getCommand('GetObject', [
     'Bucket' => $s3_bucket,
@@ -711,6 +708,7 @@ $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
 $presignedUrl = (string)$request->getUri();
 
 echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Download File</a></span><br>';
+}
 
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
 echo '</div>';
