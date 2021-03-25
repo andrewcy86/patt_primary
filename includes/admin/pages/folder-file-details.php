@@ -692,7 +692,10 @@ echo '<div id="single-file-uploader-details" >';
 echo '<span class="details-name" >File Name: </span><span class="" >' . $file_name . '</span><br>';
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
+
+//NEED TO CHANGE!!!!
 echo '<span class="details-name" id="file-preview" ><a href="' . $protocol . $folderfile_details->object_location . $host . '/' . $folderfile_details->object_key . '" target="_blank" >Preview File</a></span><br>';
+
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
 echo '</div>';
 
@@ -886,7 +889,7 @@ $attach_ecms_comment = $info->ecms_delete_comment;
 
 // register stream wrapper method
 $s3->registerStreamWrapper();
-// does file exist
+// does file exist NEED CHANGE!!!!!
 $keyExists = file_exists("s3://".$s3_bucket."/".$attach_file_key);
 //echo $keyExists;
 if ($keyExists) {
@@ -1329,6 +1332,19 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                           else { ?>
 	                           <div class="wpsp_sidebar_labels" style="color: red;"><strong>EPA Contact/Custodian:<br /> Pending update...</strong></div>
 	                           <?php } ?>
+	                           
+	                           <?php 
+	                           //Indicator of parent/child document
+	                           $get_parent_child = Patt_Custom_Func::get_parent_or_child($folderfile_folderdocinfofile_id, $type);
+	                           if($get_parent_child == 0) {
+	                               $parent_child = 'Parent';
+	                           }
+	                           else {
+	                               $parent_child = 'Child';
+	                           }
+	                           ?>
+	                           <div class="wpsp_sidebar_labels"><strong>Document: </strong><br /> <?php echo $parent_child; ?></div>
+	                           
 	                           <hr class="widget_divider">
 	                            <?php
 	                            //if digitization_center field is empty, will not display location on front end

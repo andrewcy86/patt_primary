@@ -1,24 +1,20 @@
 <?php
 
 require 'vendor/autoload.php';
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
-require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 
 // Instantiate the client.
 		$s3 = new Aws\S3\S3Client([
-			'region'  => $s3_region,
+			'region'  => 'us-east-1',
 			'version' => 'latest'
 		]);
 
 // Use the high-level iterators (returns ALL of your objects).
 try {
     $results = $s3->getPaginator('ListObjects', [
-        'Bucket' => $s3_bucket
+        'Bucket' => 'digitization-stage'
     ]);
 
     foreach ($results as $result) {

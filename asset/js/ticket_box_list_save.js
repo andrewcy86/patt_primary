@@ -7,7 +7,7 @@ jQuery(document).ready(function(){
 	    
 	    //let superfund = jQuery('#super-fund').val();
 		//console.log( '!superfund: ' + superfund );
-		 
+		console.log({settings:settings});
 		
 		
 //         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
@@ -132,13 +132,13 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 		
 	} else if( superfundx == 'no' ) {
     
-	    if(0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+	    if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
 	        alert('Please upload the Box List excel sheet');
 	        return false;
 	    }
 	} else if( superfundx == 'yes' ) {
 		
-		if(0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+		if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
 	        alert('Please upload the Box List excel sheet');
 	        return false;
 	    }
@@ -176,15 +176,13 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 // Upload boxlist document, and create the data table
 function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	
-	console.log('ECMS upload');
-	console.log({the_File:theFile.file});
-	
     jQuery('#attachment_upload').unbind('change');
 
     jQuery.fn.dataTable.ext.errMode = 'none';
     var flag = false;
     var file = fileSS;
     jQuery('#attachment_upload').val('');
+    
 
     var file_name_split = file.name.split('.');
     var file_extension = file_name_split[file_name_split.length - 1];
@@ -200,6 +198,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     if (current_filesize > attachment_info['max_filesize'] ) {
         flag = true;
         alert('File size exceed allowed limit!');
+    }
+    
+    let superfundx = jQuery('#super-fund').val();
+    if( superfundx == '' ) {
+	    flag = true;
+	    alert( 'Please make a selection for "Are these documents part of SEMS?" before uploading the Box List.' );
     }
 
     //No file
@@ -308,30 +312,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         //
 						
 						// Regex
-                        let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
+                        //let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
+                        let date_time_reg = /^(0?[0-9]|1[012])[\/\-](0?[0-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
+                        //let date_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
                         let date_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
-						
-						// Required Fields - Checking for blanks // Names for Error Reporting
-                        let arr_fields = [ 
-                        	'Box', 
-                        	'Folder Identifier', 
-                        	'Title', 
-                        	'Description of Record',
-                        	'Parent/Child',
-                        	'Creation Date', 
-                        	'Creator',
-                        	'Record Type',
-                        	'Disposition Schedule & Item Number',
-                        	'Site Name',
-                        	'EPA Contact',
-                        	'Access Restrictions',
-                        	'Use Restrictions',
-                        	'Source Type',
-                        	'Source Dimensions',
-                        	'Program Office', 
-                        	'Index Level', 
-                        	'Essential Records'
-                        ];
 						
 						// Column Indexes for Validation checks
 						let index_box = 0;
@@ -344,19 +328,70 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 						let index_rec_type = 8;
 						let index_rec_sched = 9;
 						let index_site_name = 10;
-						let index_close_date = 12; // 11
-						let index_epa_contact = 13; // 12
+						let index_site_id = 11;
+						let index_close_date = 12; 
+						let index_epa_contact = 13; 
 						let index_access_rest = 14;
 						let index_sp_access_rest = 15;
 						let index_use_rest = 16;
 						let index_sp_use_rest = 17;
 						let index_source_type = 19;
 						let index_source_dim = 20;
-						let index_prog_office = 21; // 20
-						let index_index_level = 22; //21 
-						let index_ess_rec = 23; // 22
+						let index_prog_office = 21; 
+						let index_index_level = 22; 
+						let index_ess_rec = 23; 
 						let index_tags = 25; 
 						//let index_last_col = 25;
+						
+						
+						// Required Fields - Checking for blanks // Names for Error Reporting
+						let arr_fields;
+						if( superfundx == 'no' ) {
+	                        // ECMS Required Fields
+	                        arr_fields = [ 
+	                        	'Box', 
+	                        	'Folder Identifier', 
+	                        	'Title', 
+	                        	'Description of Record',
+	                        	'Parent/Child',
+	                        	'Creation Date', 
+	                        	'Creator',
+	                        	'Record Type',
+	                        	'Disposition Schedule & Item Number',
+	                        	'EPA Contact',
+	                        	'Access Restrictions',
+	                        	'Use Restrictions',
+	                        	'Source Type',
+	                        	'Source Dimensions',
+	                        	'Program Office', 
+	                        	'Index Level', 
+	                        	'Essential Records'
+	                        ];
+	                    } else if( superfundx == 'yes' ) {
+		                    // SEMS Required Fields
+		                    arr_fields = [ 
+	                        	'Box', 
+	                        	'Folder Identifier', 
+	                        	'Title', 
+	                        	'Description of Record',
+	                        	'Parent/Child',
+	                        	'Creation Date', 
+	                        	'Creator',
+	                        	'Record Type',
+	                        	'Disposition Schedule & Item Number',
+	                        	'EPA Contact',
+	                        	'Access Restrictions',
+	                        	'Use Restrictions',
+	                        	'Source Type',
+	                        	'Source Dimensions',
+	                        	'Program Office', 
+	                        	'Index Level', 
+	                        	'Essential Records'
+	                        ];
+		                    
+	                    }
+						
+						
 						
 						
                         /* Loop through spreadsheet data */
@@ -371,26 +406,50 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             
                                 
                             // Required fields Validation - Check for blank/null values
-                            let invalid_index = [
-                            	parsedData[count][index_box], // Box
-                            	parsedData[count][index_folder_id], // Folder Identifier
-                            	parsedData[count][index_title], // Title
-                            	parsedData[count][index_desc_record], // Description of Record
-                            	parsedData[count][index_pcd], // Parent / Child
-                            	parsedData[count][index_creation_date], // Creation Date
-                            	parsedData[count][index_creator], // Creator 
-                            	parsedData[count][index_rec_type], // Record Type 
-                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
-                            	parsedData[count][index_site_name], // Site Name
-                            	parsedData[count][index_epa_contact], // EPA Contact 
-                            	parsedData[count][index_access_rest], // Access Restrictions 
-                            	parsedData[count][index_use_rest], // Use Restrictions 
-                            	parsedData[count][index_source_type], // Source Type 
-                            	parsedData[count][index_source_dim], // Source Dimensions 
-                            	parsedData[count][index_prog_office], // Program Office
-                            	parsedData[count][index_index_level], // Index Level
-                            	parsedData[count][index_ess_rec]  // Essential Records
-                            ];  
+                            let invalid_index;
+                            if( superfundx == 'no' ) {
+	                            // ECMS Required Fields
+	                            invalid_index = [
+	                            	parsedData[count][index_box], // Box
+	                            	parsedData[count][index_folder_id], // Folder Identifier
+	                            	parsedData[count][index_title], // Title
+	                            	parsedData[count][index_desc_record], // Description of Record
+	                            	parsedData[count][index_pcd], // Parent / Child
+	                            	parsedData[count][index_creation_date], // Creation Date
+	                            	parsedData[count][index_creator], // Creator 
+	                            	parsedData[count][index_rec_type], // Record Type 
+	                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+	                            	parsedData[count][index_epa_contact], // EPA Contact 
+	                            	parsedData[count][index_access_rest], // Access Restrictions 
+	                            	parsedData[count][index_use_rest], // Use Restrictions 
+	                            	parsedData[count][index_source_type], // Source Type 
+	                            	parsedData[count][index_source_dim], // Source Dimensions 
+	                            	parsedData[count][index_prog_office], // Program Office
+	                            	parsedData[count][index_index_level], // Index Level
+	                            	parsedData[count][index_ess_rec]  // Essential Records
+	                            ];  
+	                        } else if( superfundx == 'yes' ) {
+		                        // SEMS Required Fields
+		                        invalid_index = [
+	                            	parsedData[count][index_box], // Box
+	                            	parsedData[count][index_folder_id], // Folder Identifier
+	                            	parsedData[count][index_title], // Title
+	                            	parsedData[count][index_desc_record], // Description of Record
+	                            	parsedData[count][index_pcd], // Parent / Child
+	                            	parsedData[count][index_creation_date], // Creation Date
+	                            	parsedData[count][index_creator], // Creator 
+	                            	parsedData[count][index_rec_type], // Record Type 
+	                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+	                            	parsedData[count][index_epa_contact], // EPA Contact 
+	                            	parsedData[count][index_access_rest], // Access Restrictions 
+	                            	parsedData[count][index_use_rest], // Use Restrictions 
+	                            	parsedData[count][index_source_type], // Source Type 
+	                            	parsedData[count][index_source_dim], // Source Dimensions 
+	                            	parsedData[count][index_prog_office], // Program Office
+	                            	parsedData[count][index_index_level], // Index Level
+	                            	parsedData[count][index_ess_rec]  // Essential Records
+	                            ];  
+	                        }
                             
                             // Validate - Check for blank/null values
                             if ( flag != true && count > 1 && ( ( invalid_index.indexOf( null ) ) > -1 ) ) {
@@ -413,6 +472,19 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            parsedData[count][index_creation_date] = parsedData[count][index_creation_date] + ' 00:00:01';
 	                            }
                             }
+							
+							// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
+                            if( flag != true && count > 1 && (parsedData[count][index_site_name] != null && parsedData[count][index_site_id] == null )) {
+                                alert(' Discrepancy between Site Name and Site ID. \n\n Site Name has a value of "'+parsedData[count][index_site_name]+'" while Site ID is blank on line '+ (count + 1) + '. \n\n Both Site Name and Site ID must be filled in, or both must be blank.');
+                                flag = true;
+                            }
+                            
+                            // Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
+                            if( flag != true && count > 1 && (parsedData[count][index_site_name] == null && parsedData[count][index_site_id] != null )) {
+                                alert(' Discrepancy between Site Name and Site ID. \n\n Site Name is blank while Site ID has a value of "'+parsedData[count][index_site_id]+'" on line '+ (count + 1) + '. \n\n Both Site Name and Site ID must be filled in, or both must be blank.');
+                                flag = true;
+                            }
+							
 							
                             // Validate Close Date
                             if( flag != true && count > 1 && date_time_reg.test( parsedData[count][index_close_date] ) == false ) {

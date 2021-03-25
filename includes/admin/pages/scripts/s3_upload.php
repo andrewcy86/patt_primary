@@ -4,18 +4,14 @@
 		$temp_file_location = $_FILES['image']['tmp_name']; 
 
 		require 'vendor/autoload.php';
-		$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
-		require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
-		include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 		$s3 = new Aws\S3\S3Client([
-			'region'  => $s3_region,
+			'region'  => 'us-east-1',
 			'version' => 'latest'
 		]);		
 
 		$result = $s3->putObject([
-			'Bucket' => $s3_bucket,
+			'Bucket' => 'digitization-stage',
 			'Key'    => $file_name,
 			'SourceFile' => $temp_file_location			
 		]);

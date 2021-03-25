@@ -1,17 +1,15 @@
 var theFile = {};
 
 jQuery(document).ready(function(){
-    Dropzone.autoDiscover = false;
+    //Dropzone.autoDiscover = false;
+    //Dropzone.autoDiscover = false;
+    console.log('batch uploader js ready');
     
-    jQuery(document).ajaxComplete(function (event, xhr, settings) {
+    //jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	    
-	    //let superfund = jQuery('#super-fund').val();
-		//console.log( '!superfund: ' + superfund );
+	    //console.log({settings:settings});
 		 
-		
-		
-//         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
-	if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
+		//if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
 			
             var dropzoneOptions = {
                 url: "test.php",
@@ -39,39 +37,9 @@ jQuery(document).ready(function(){
             };
             var uploader = document.querySelector('#dzBatchListUpload');
             var newDropzone = new Dropzone(uploader, dropzoneOptions);      
-            
-            // SEMS Dropzone setup // no longer used. Dropzone unified.
-/*
-            dropzoneOptions = {
-                url: "test.php",
-                autoProcessQueue: false,
-                addRemoveLinks: true,
-                uploadMultiple: false,
-                maxFiles: 1,
-                acceptedFiles: '.xlsx',
-                accept: function (file, done) {
-                    jQuery('#file_upload_cr_SEMS').val(1);
-                    wpsc_spreadsheet_new_upload_SEMS('attach_SEMS','spreadsheet_attachment', file);
-                },
-                init: function () {
-                    this.on("maxfilesexceeded", function() {
-                        if (this.files[1]!=null){
-                            this.removeFile(this.files[0]);
-                        }
-                    });
-                    this.on("error", function (file) {
-                        if (!file.accepted) this.removeFile(file);
-                    });
-                }
-            };
-            var uploader = document.querySelector('#dzBoxUploadSEMS');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);
-*/   
-            
-            
                   
-        } 
-    });
+        //} 
+   // });
 });
 
 

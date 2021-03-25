@@ -452,8 +452,14 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				
 				if( $parent_child_single != 'child' ) {
 				// Now: every entry sans child
-					$datetime = new DateTime();
-					$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
+					
+					if( $boxinfo['Close Date'] == '' ) {
+						$new_date = '';
+					} else {
+						$datetime = new DateTime();
+						$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
+						$new_date = $new_date->format( 'Y-m-d H:i:s' );
+					}
 					
 					$folderdocarray = array(
 						'folderdocinfo_id' => $docinfo_id,
@@ -461,7 +467,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						'addressee' => "{$boxinfo['Addressee']}",
 						'site_name' => "{$boxinfo['Site Name']}",
 						'siteid' => "{$boxinfo['Site ID #']}",
-						'close_date' => $new_date->format( 'Y-m-d H:i:s' ),
+						//'close_date' => $new_date->format( 'Y-m-d H:i:s' ),
+						'close_date' => $new_date,
 						'folder_identifier' => "{$boxinfo['Folder Identifier']}",
 						'box_id' => $boxinfo_id,
 						'essential_record' => "{$essential_record}",
@@ -657,15 +664,19 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				
 				// Site Name & Site ID - Validation Check
 				if( $boxinfo['Site Name'] == '' && $validation == true ) {
+					
+/*
 					$validation = false;
 					$val_type = 'single';
 					
 					$col_key = 'Site Name';
 					$col_val = $boxinfo['Site Name'];
 					$err_message_1 = 'Blank value for column <b>' . $col_key .'</b><br>';
-					
+*/
 					
 				} elseif( $boxinfo['Site ID #'] == '' && $validation == true ) {
+					
+/*
 					$validation = false;
 					$val_type = 'single';
 					
@@ -673,6 +684,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$col_val = $boxinfo['Site ID #'];
 					$err_message_1 = 'Blank value for column <b>' . $col_key .'</b><br>';
 					$err_message_2 = ' ';
+*/
 					
 				} elseif( $boxinfo['Site Name'] != '' && $boxinfo['Site ID #'] != '' && $validation == true ) {
 					$validation = true;
@@ -784,7 +796,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$SUR = $boxinfo['Specific Use Restrictions'];
 				}
 				
-				
+				if( is_null( $boxinfo['Rights Holder'] ) ) {
+					$RH = '';
+				} else {
+					$RH = $boxinfo['Rights Holder'];
+				}
 				
 				
 				// 
@@ -820,8 +836,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$time = strtotime( $boxinfo['Creation Date'] );
 					$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
 				
-					//
-					// Save into folderdocinfo_files
+					// 
+					// Save into folderdocinfo_files - Electronic File
 					//
 					
 					// ECMS FDIF data
@@ -844,7 +860,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						'use_restriction' => $boxinfo['Use Restrictions'],
 						//'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
 						'specific_use_restriction' => $SUR,
-						'rights_holder' => $boxinfo['Rights Holder'],
+						'rights_holder' => $RH,
 						'source_dimensions' => $boxinfo['Source Dimensions'],
 						'relation_part' => $x_of,
 						'relation_part_of' => $of_y,
@@ -863,6 +879,40 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					// Remove custom upload directory folder
 					remove_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );  
+					
+/*
+					//
+					// D E B U G - START
+					//
+					ob_start();
+					?>
+					<div class="col-sm-12 ticket-error-msg">
+						<?php esc_html_e( 'Folderdocinfo Files Electronic Debug.', 'pattracking' ); ?>
+						<br><br>
+						<?php 
+							
+							echo 'folderdocfiles_info: <br>';
+							echo '<pre>';
+							print_r( $folderdocfiles_info );
+							echo '</pre>';
+						?>
+						<br>
+						<pre>
+						<?php print_r( $boxarray );  ?>
+						</pre>
+					</div>
+					<?php
+					$ticket_error_message = ob_get_clean();
+
+					$response = array(
+						'redirct_url'    => '',
+						'thank_you_page' => $ticket_error_message,
+					);
+
+					echo json_encode( $response );
+					die();
+					// D E B U G - END
+*/
 					
 				} else {
 					
@@ -895,7 +945,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'use_restriction' => $boxinfo['Use Restrictions'],
 							//'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
 							'specific_use_restriction' => $SUR,
-							'rights_holder' => $boxinfo['Rights Holder'],
+							'rights_holder' => $RH,
 							'source_dimensions' => $boxinfo['Source Dimensions'],
 							'relation_part' => $x_of,
 							'relation_part_of' => $of_y,
@@ -930,7 +980,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'use_restriction' => $boxinfo['Use Restrictions'],
 							//'specific_use_restriction' => $boxinfo['Specific Use Restrictions'],
 							'specific_use_restriction' => $SUR,
-							'rights_holder' => $boxinfo['Rights Holder'],
+							'rights_holder' => $RH,
 							'source_dimensions' => $boxinfo['Source Dimensions'],
 							'relation_part' => $x_of,
 							'relation_part_of' => $of_y
@@ -948,10 +998,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$folderdocfiles_info_id = $wpdb->insert_id;
 					
 					
+/*
 					//
 					// D E B U G - START
 					//
-/*
 					ob_start();
 					?>
 					<div class="col-sm-12 ticket-error-msg">
@@ -1008,8 +1058,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 					echo json_encode( $response );
 					die();
-*/
 					// D E B U G - END
+*/
 					
 				}
 			}
@@ -1216,6 +1266,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					-->
 					<!-- File Upload Validation -->
 					<input type="hidden" id="file_upload_cr" name="file_upload_cr" value="0" />
+					
 				</div>
 				
 				
@@ -1265,6 +1316,32 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					if (typeof superfund !== 'undefined') {
 						let superfund = jQuery('#super-fund').val();
 					}
+
+					// ALERT: doesn't allow a user to change SEMS/ECMS after uploading file due to variations in how validation 
+					// is done for either file type.
+					jQuery('#super-fund').change( function () {
+						let file_upload_cr = jQuery('#file_upload_cr').val();
+						console.log({file_upload_cr:file_upload_cr});
+
+						if( file_upload_cr == '1' ) {
+							alert( 'You are not allowed to change the value of "Are these documents part of SEMS?" after a file is uploaded. This form will automatically "Reset" after closing this alert. \n\n Please select the correct value for "Are these documents part of SEMS?", then upload the file. ' );
+							
+							wpsc_get_create_ticket();
+						}
+					});
+					
+					// Remove file, click is not removing the flag #file_upload_cr, which would make the ingestion page more robust. 
+					// probably a scope issue as the class is being provided by another file. 
+/*
+					jQuery(document).on('click', '.dz-remove', function() {
+					    alert('hello');
+					});
+					
+					jQuery('.dz-remove').click( function () {
+						console.log('file removed');
+						jQuery('#file_upload_cr').val('0');
+					});
+*/
 					
 // 					let superfund_2 = jQuery('#super-fund').val();
 					jQuery('#super-fund').change( function () {

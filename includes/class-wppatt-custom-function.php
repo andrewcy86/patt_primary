@@ -653,6 +653,43 @@ public static function get_validation_user( $identifier ) {
 }
 
 /**
+ * Determine if Folder/File is a Parent or Child
+ * @return Boolean
+ */
+ 
+public static function get_parent_or_child( $identifier, $type) {
+    global $wpdb;
+    
+    if($type == 'folderfile') {
+        $get_parent_child = $wpdb->get_row("SELECT attachment
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $parent_child = $get_parent_child->attachment;
+	        
+		if ($parent_child == 0) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+    }
+    
+    else if($type == 'folderfile_archive') {
+        $get_parent_child = $wpdb->get_row("SELECT attachment
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+        WHERE folderdocinfofile_id = '" .  $identifier . "'");
+        $parent_child = $get_parent_child->attachment;
+	        
+		if ($parent_child == 0) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+    }
+}
+
+/**
  * Determine if ID (Request,Box,Folder/File) contains a document marked as damaged
  * @return Boolean
  */

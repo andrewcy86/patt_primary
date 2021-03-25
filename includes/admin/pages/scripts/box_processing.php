@@ -539,12 +539,12 @@ WHERE b.box_id = a.id
 a.box_destroyed > 0 
 
 
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a>')
 
 WHEN a.box_destroyed > 0 
 
 
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a>')
 
 
 ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
@@ -678,6 +678,7 @@ $decline_icon = '';
 $recall_icon = '';
 $unauthorized_destruction_icon = '';
 $freeze_icon = '';
+$box_destroyed_icon = '';
 $damaged_icon = '';
 $type = 'box';
 
@@ -699,6 +700,10 @@ if(Patt_Custom_Func::id_in_damaged($row['box_id'],$type) == 1) {
 
 if(Patt_Custom_Func::id_in_freeze($row['box_id'],$type) == 1) {
     $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+}
+
+if(Patt_Custom_Func::id_in_box_destroyed($row['box_id'],$type) == 1) {
+    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
 }
 
 $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
@@ -731,7 +736,7 @@ $pallet_id = $row['pallet_id'];
 
 	$data[] = array(
 		"box_id"=>$row['box_id'],
-		"box_id_flag"=>$row['box_id_flag'].$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
+		"box_id_flag"=>$row['box_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
 		"dbid"=>$row['dbid'],
 	    //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
 		//"ticket_priority"=>$row['ticket_priority_text'],
