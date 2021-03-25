@@ -888,7 +888,7 @@ $attach_ecms_comment = $info->ecms_delete_comment;
 //echo $attach_post_id . '<br />';
 
 // register stream wrapper method
-$s3->registerStreamWrapper();
+/*$s3->registerStreamWrapper();
 // does file exist NEED CHANGE!!!!!
 $keyExists = file_exists("s3://".$s3_bucket."/".$attach_file_key);
 //echo $keyExists;
@@ -939,7 +939,7 @@ $tbl .= '</tr>';
 
  }
 
-}
+}*/
 
 }
 $tbl .= '</tbody></table>';
