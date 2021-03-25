@@ -98,7 +98,7 @@ function abortPendingUploads($bucket)
  *
  * This needs to be called exactly once on a bucket before browser uploads.
  * @param string $bucket 
- */
+
 function setCORS($bucket)
 {
     //$res=s3("getBucketCors",["Bucket"=>$bucket]);
@@ -116,6 +116,7 @@ function setCORS($bucket)
             ],
         ]);
 }
+*/
 if (isset($_POST['command']))
 {
 	$command=$_POST['command'];
