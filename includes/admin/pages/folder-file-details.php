@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb, $current_user, $wpscfunction;
 
 require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 $subfolder_path = site_url( '', 'relative');
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
@@ -53,6 +55,11 @@ else {
 		'region'  => $s3_region,
 		'version' => 'latest'
 	]);	*/
+	
+$s3Client = new Aws\S3\S3Client([
+    'region' => $s3_region,
+    'version' => 'latest'
+]);
 
     //switch out SQL statement depending on if the request is archived
     if($is_active == 1) {
@@ -693,8 +700,18 @@ echo '<span class="details-name" >File Name: </span><span class="" >' . $file_na
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 
-//NEED TO CHANGE!!!!
-echo '<span class="details-name" id="file-preview" ><a href="' . $protocol . $folderfile_details->object_location . $host . '/' . $folderfile_details->object_key . '" target="_blank" >Preview File</a></span><br>';
+//Updated to use Pre-signed URL
+$cmd = $s3Client->getCommand('GetObject', [
+    'Bucket' => $s3_bucket,
+    'Key' => $folderfile_details->object_key
+]);
+
+$request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
+
+// Get the actual presigned-url
+$presignedUrl = (string)$request->getUri();
+
+echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Preview File</a></span><br>';
 
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
 echo '</div>';
