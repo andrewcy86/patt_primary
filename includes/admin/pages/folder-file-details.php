@@ -691,8 +691,6 @@ echo '<span class="details-name" >File Name: </span><span class="" >' . $file_na
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
 
-echo 'objectkey ' . $folderfile_details->object_key;
-
 if ($folderfile_details->object_key != '') {
 
 $s3Client = new Aws\S3\S3Client([
