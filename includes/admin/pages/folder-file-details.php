@@ -685,8 +685,7 @@ if( $folderfile_details->source_file_location == null || $folderfile_details->so
 
 // Display Upload File Section
 if($is_active == 1) {
-$protocol = 'https://';
-$host = '.s3.us-gov-west-1.amazonaws.com';
+
 echo '<div id="upload-file-section" >';
 echo '<hr>';
 echo '<h3>Upload File</h3>';
@@ -711,7 +710,7 @@ $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
 // Get the actual presigned-url
 $presignedUrl = (string)$request->getUri();
 
-echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Preview File</a></span><br>';
+echo '<span class="details-name" id="file-preview" ><a href="' . $presignedUrl .'" target="_blank" >Download File</a></span><br>';
 
 //echo '<span class="details-name" id="file-delete" ><a href="" onclick="" >Delete File</a></span><br>';
 echo '</div>';
