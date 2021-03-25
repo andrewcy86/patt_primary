@@ -49,10 +49,10 @@ else {
 
 <div class="bootstrap-iso">
 <?php
-	$s3 = new Aws\S3\S3Client([
+	/*$s3 = new Aws\S3\S3Client([
 		'region'  => $s3_region,
 		'version' => 'latest'
-	]);	
+	]);	*/
 
     //switch out SQL statement depending on if the request is archived
     if($is_active == 1) {
