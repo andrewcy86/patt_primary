@@ -10,6 +10,8 @@ require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
 use Aws\S3\S3Client;  
 use Aws\Exception\AwsException;
 
+$s3_exist = 0;
+
 $subfolder_path = site_url( '', 'relative');
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
@@ -701,9 +703,11 @@ $s3Client = new Aws\S3\S3Client([
 $file_exist = $s3Client->doesObjectExist($s3_bucket, $folderfile_details->object_key);
 
 // Success? (Boolean)
-var_dump($file_exist);
+//var_dump($file_exist);
 
 if($file_exist){
+$s3_exist = 1;
+
 //Updated to use Pre-signed URL
 $cmd = $s3Client->getCommand('GetObject', [
     'Bucket' => $s3_bucket,
@@ -913,38 +917,8 @@ $attach_ecms_comment = $info->ecms_delete_comment;
 
 // register stream wrapper method
 //Check to see if file exists in s3. If it does not exist  AND not flagged as SEMS display ECMS table.
-/*$s3->registerStreamWrapper();
-// does file exist NEED CHANGE!!!!!
-$keyExists = file_exists("s3://".$s3_bucket."/".$attach_file_key);
-//echo $keyExists;
-if ($keyExists) {
 
-//echo $attach_file_key.' File exists!<br />';
-//} else {
-
-// Grab Child Attachment ID
-$post_type ="attachment"; //page, or custom_post_type
-$post_status = "any"; //published, draft, etc
-$num_of_posts = -1; // -1 for all, or amount # to return
-$post_parent = 0; //0 for parents, or and id
- 
-$args = array('post_parent' => $attach_post_id, 'post_type' => $post_type, 'numberposts' => $num_of_posts, 'post_status' => $post_status);
- 
-$parents = get_children($args);
- 
-foreach ($parents as $child) {
-
-$_REQUEST['mdocs-id'] = $child->ID;
-
-//echo $child->ID;
-} 
-
-$_REQUEST['s3-ecms'] = 1;
-
-//Perform the post deletion
-mdocs_delete_file();
-
-//echo $attach_file_key.' File does not exists!<br />';   
+if ($s3_exist == 0) {
 
 $tbl .= '<tr class="wpsc_tl_row_item">';
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) {
@@ -964,7 +938,7 @@ $tbl .= '</tr>';
 
  }
 
-}*/
+}
 
 }
 $tbl .= '</tbody></table>';

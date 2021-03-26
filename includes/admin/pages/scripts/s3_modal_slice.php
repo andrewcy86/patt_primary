@@ -217,7 +217,7 @@ function upload(file) {
 
     s3upload = new S3MultiUpload(file);
     console.log('about to upload');
-    console.log({s3upload:s3upload.fileInfo.size});
+    //console.log({s3upload:s3upload.fileInfo.size});
     
     
     jQuery('#alert-alert').remove();

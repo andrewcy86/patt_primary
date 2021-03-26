@@ -41,9 +41,6 @@ if(
    $close_date = $_POST['postvarscd']; 
    $contact_email = $_POST['postvarsce'];
    $source_format = $_POST['postvarssf'];
-   //$rights = $_POST['postvarsrights']; 
-   //$contract_number = $_POST['postvarscn']; 
-   //$grant_number = $_POST['postvarsgn'];
    $essential_record = $_POST['postvarser'];
    $folder_identifier = $_POST['postvarsfi'];
    $addressee = $_POST['postvarsaddressee'];
@@ -91,7 +88,7 @@ id = '" . $folderdocinfofileid . "'
    if ($get_folderdocinfo_files->title == '' ) { $old_title = 'None'; } else { $old_title = $get_folderdocinfo_files->title; }
    if ($get_folderdocinfo_files->date == '' ) { $old_date = 'None'; } else { $old_date = $get_folderdocinfo_files->date; }
    if ($get_folderdocinfo->author == '' ) { $old_author = 'None'; } else { $old_author = $get_folderdocinfo->author; }
-   if ($get_folderdocinfo_files->record_type == '' ) { $old_record_type = 'None'; } else { $old_record_type = $get_folderdocinfo->record_type; }
+   if ($get_folderdocinfo_files->record_type == '' ) { $old_record_type = 'None'; } else { $old_record_type = $get_folderdocinfo_files->record_type; }
    if ($get_folderdocinfo->site_name == '' ) { $old_site_name = 'None'; } else { $old_site_name = $get_folderdocinfo->site_name; }
    if ($get_folderdocinfo->siteid == '' ) { $old_site_id = 'None'; } else { $old_site_id = $get_folderdocinfo->siteid; }
    if ($get_folderdocinfo->close_date == '' ) { $old_close_date = 'None'; } else { $old_close_date = $get_folderdocinfo->close_date; }
@@ -222,9 +219,10 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 
 if( (!empty($record_type)) && ($record_type != $old_record_type) ) {
-$data_update = array('record_type' => $record_type);
+//Remove asterisk from SEMS values
+$data_update = array('record_type' => ltrim($record_type, '*'));
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Record Type: '.$old_record_type.' > '.$record_type);
+array_push($metadata_array,'Record Type: '. ltrim($old_record_type, '*') .' > '. ltrim($record_type, '*'));
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
@@ -250,9 +248,10 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 
 if( (!empty($source_format)) && ($source_format != $old_source_format) ) {
-$data_update = array('source_format' => stripslashes($source_format));
+//Remove asterisk from all SEMS values
+$data_update = array('source_format' => stripslashes(ltrim($source_format, '*')));
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Source Type: '.$old_source_format.' > '.$source_format);
+array_push($metadata_array,'Source Type: '. ltrim($old_source_format, '*') .' > '. ltrim($source_format, '*'));
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 

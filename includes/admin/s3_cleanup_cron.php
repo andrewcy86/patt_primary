@@ -8,6 +8,10 @@ $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
+
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
+
 include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 global $current_user, $wpscfunction, $wpdb;

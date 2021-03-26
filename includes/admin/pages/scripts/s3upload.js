@@ -19,7 +19,7 @@ this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/inde
 	console.log('SETTINGS');
 	
 	const url = window.location.pathname;
-	console.log({url:url});
+	//console.log({url:url});
     this.completed = false;
     this.file = file;
     this.fileInfo = {
@@ -42,7 +42,7 @@ this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/inde
     
     obj_name = this.file.name;
     
-    console.log({SIZE:this.fileInfo.size});
+    //console.log({SIZE:this.fileInfo.size});
     
     if( this.fileInfo.size == 0 ) {
 	    console.log('zero');
@@ -69,9 +69,9 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
     var unixnow = Math.floor(Date.now() / 1000);
     
     // D E B U G
-    console.log({unixnow:unixnow});
-    console.log({self_fileInfo:self.fileInfo});
-    console.log({SERVER_LOC:self.SERVER_LOC});
+    //console.log({unixnow:unixnow});
+    //console.log({self_fileInfo:self.fileInfo});
+    //console.log({SERVER_LOC:self.SERVER_LOC});
     obj_size = self.fileInfo.size;
     obj_type = self.fileInfo.type;
     
@@ -82,17 +82,17 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
         key: unixnow + '_' + self.file.name.replace(/\s/g, '')
     }).done(function(data) {
         console.log('Done');
-        console.log({data:data});
+        //console.log({data:data});
         self.sendBackData = data;
         document.getElementById("uploadId").value = self.sendBackData.uploadId;
         document.getElementById("objectkey").value = 'Object key: '+self.sendBackData.key;
-        console.log(self.sendBackData.uploadId);
-        console.log(self.sendBackData.key);
+        //console.log(self.sendBackData.uploadId);
+        //console.log(self.sendBackData.key);
         obj_key = self.sendBackData.key;
         self.uploadParts();
     }).fail(function(jqXHR, textStatus, errorThrown) {
 	    console.log('FAILED create');
-	    console.log({errorThrown:errorThrown, textStatus:textStatus, jqXHR:jqXHR});
+	    //console.log({errorThrown:errorThrown, textStatus:textStatus, jqXHR:jqXHR});
         self.onServerError('create', jqXHR, textStatus, errorThrown);
     });
 };
@@ -113,7 +113,7 @@ S3MultiUpload.prototype.resumeMultipartUpload = function(uploadId) {
         
         if (data.parts) {
             var parts = data.parts
-            console.log(parts)
+            //console.log(parts)
         }
 
         for (var i = 0; i < parts.length; i++) {
@@ -167,8 +167,8 @@ S3MultiUpload.prototype.uploadParts = function() {
      .then(this.sendAll.bind(this), this.onServerError)
      .done(this.onPrepareCompleted);
 
-     console.log(this.partsInProgress)
-     console.log(this.partNumbers)
+     //console.log(this.partsInProgress)
+     //console.log(this.partNumbers)
 };
 
 /**
@@ -288,15 +288,15 @@ S3MultiUpload.prototype.completeMultipartUpload = function() {
         
         
         // PATT New Addition - START
-        console.log(data);
-        console.log(data.locationinfo);
+        //console.log(data);
+        //console.log(data.locationinfo);
         console.log('Final');
         obj_s3link = data.locationinfo;
         //console.log({obj_key:obj_key, obj_size:obj_size, obj_type:obj_type, obj_s3link:obj_s3link});
         
         //create_mld_post_from_s3_data( data );
         
-        console.log({obj_key:obj_key});
+        //console.log({obj_key:obj_key});
         
 
         jQuery("#mdocs-name-single-file").val( obj_key );
@@ -362,8 +362,8 @@ function save_s3_data_in_fdi_files() {
 	
 	let folderdocinfo_files_id = jQuery('input[name=folderdocinfo_files_id]').val();
 	
-	console.log('I care about this.');
-	console.log({obj_key:obj_key, obj_size:obj_size, obj_type:obj_type, obj_s3link:obj_s3link, obj_name:obj_name, mduff:mduff, folderdocinfo_files_id:folderdocinfo_files_id});
+	
+	//console.log({obj_key:obj_key, obj_size:obj_size, obj_type:obj_type, obj_s3link:obj_s3link, obj_name:obj_name, mduff:mduff, folderdocinfo_files_id:folderdocinfo_files_id});
 	
 	
 	
@@ -408,16 +408,16 @@ function save_s3_data_in_fdi_files() {
 		mduff: mduff
 	};
 	
-	console.log({data:data});
+	//console.log({data:data});
 	
 	return jQuery.post(wpsc_admin.ajax_url, data).done( function(response) {
 
         console.log('AJAX save_s3_data_in_fdi_files Successful');
-        console.log(response);               
+        //console.log(response);               
 
     }).fail(function( response ) {
         console.log('AJAX Failed save_s3_data_in_fdi_files');
-        console.log(response);
+        //console.log(response);
     });
 	
 }
@@ -557,7 +557,7 @@ jQuery(document).ready(function(){
 		}
 		
 		
-		console.log({name:name, tags:tags, s3_upload_status:s3_upload_status});
+		//console.log({name:name, tags:tags, s3_upload_status:s3_upload_status});
 		
 		// Validation checks
 		if( name == '' ) {
@@ -573,7 +573,7 @@ jQuery(document).ready(function(){
 		if( s3_upload_status != 'Upload successful.' ) {
 			validation = false;
 			console.log( 'validation false' );
-			console.log({s3_upload_status:s3_upload_status});
+			//console.log({s3_upload_status:s3_upload_status});
 			
 			
 			if( s3_upload_status == 'no file uploaded' ) {
@@ -658,7 +658,7 @@ function save_file() {
 	if( s3_upload_status != 'Upload successful.' ) {
 		validation = false;
 		console.log( 'validation false' );
-		console.log({s3_upload_status:s3_upload_status});
+		//console.log({s3_upload_status:s3_upload_status});
 		
 		
 		if( s3_upload_status == 'no file uploaded' ) {
@@ -705,7 +705,7 @@ function set_alert( type, message ) {
 	
 	let alert_style = '';
 	let hash = message.hashCode();
-	console.log({hash:hash});
+	//console.log({hash:hash});
 	
 	switch( type ) {
 		case 'success':

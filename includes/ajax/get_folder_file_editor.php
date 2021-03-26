@@ -178,34 +178,34 @@ else {
 <strong>Record Type</strong></br>
 <input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type'/>
     <datalist id = 'RecordTypeList'>
-        <option value='Administrative Record Index'></option>
-        <option value='Agreement'></option>
-        <option value='Analytical Data Document'></option>
-        <option value='Chart / Table'></option>
+        <option value='*Administrative Record Index'></option>
+        <option value='*Agreement'></option>
+        <option value='*Analytical Data Document'></option>
+        <option value='*Chart / Table'></option>
         <option value='Contract'></option>
-        <option value='Contract Documentation'></option>
-        <option value='Correspondence'></option>
-        <option value='Document Packet'></option>
-        <option value='Email'></option>
-        <option value='Figure / Map / Drawing'></option>
-        <option value='Financial Documentation'></option>
-        <option value='Form'></option>
-        <option value='Laws / Regulations / Guidance'></option>
-        <option value='Legal Instrument'></option>
-        <option value='Letter'></option>
-        <option value='List / Index'></option>
-        <option value='Meeting Document'></option>
+        <option value='*Contract Documentation'></option>
+        <option value='*Correspondence'></option>
+        <option value='*Document Packet'></option>
+        <option value='*Email'></option>
+        <option value='*Figure / Map / Drawing'></option>
+        <option value='*Financial Documentation'></option>
+        <option value='*Form'></option>
+        <option value='*Laws / Regulations / Guidance'></option>
+        <option value='*Legal Instrument'></option>
+        <option value='*Letter'></option>
+        <option value='*List / Index'></option>
+        <option value='*Meeting Document'></option>
         <option value='Memo'></option>
-        <option value='Memorandum'></option>
-        <option value='Notes'></option>
-        <option value='Other'></option>
-        <option value='Photograph'></option>        
-        <option value='Publication'></option>        
-        <option value='Record of Communication'></option>        
-        <option value='Report'></option>
-        <option value='Shipping Manifest'></option>
-        <option value='System Documentation'></option>
-        <option value='Work Plan'></option>
+        <option value='*Memorandum'></option>
+        <option value='*Notes'></option>
+        <option value='*Other'></option>
+        <option value='*Photograph'></option>        
+        <option value='*Publication'></option>        
+        <option value='*Record of Communication'></option>        
+        <option value='*Report'></option>
+        <option value='*Shipping Manifest'></option>
+        <option value='*System Documentation'></option>
+        <option value='*Work Plan'></option>
     </datalist>
 </br></br>
 
@@ -292,64 +292,67 @@ else {
     <datalist id = 'SourceFormatList'>
         <option value='4K'></option>
         <option value='Audio'></option>
-        <option value='AVI'></option>
+        <option value='*AVI'></option>
         <option value='Blu-ray'></option>
         <option value='Bound Book'></option>
         <option value='CD [includes mini CD]'></option>
-        <option value='CSV'></option>
-        <option value='DOC'></option>
-        <option value='DOCX'></option>
+        <option value='*CSV'></option>
+        <option value='*DOC'></option>
+        <option value='*DOCX'></option>
         <option value='DVD [includes mini DVD]'></option>
         <option value='Electronic File [Audio, visual, zip, etc.]'></option>
         <option value='E-Mail'></option>
         <option value='Floppy Disk [3.5" or 5"]'></option>
-        <option value='GIF'></option>
+        <option value='*GIF'></option>
         <option value='Hard Drive'></option>
-        <option value='HTM'></option>
-        <option value='HTML'></option>
-        <option value='JPG'></option>
+        <option value='*HTM'></option>
+        <option value='*HTML'></option>
+        <option value='*JPG'></option>
         <option value='LaserDisc'></option>
-        <option value='MDB'></option>
-        <option value='MOV'></option>
-        <option value='MPG'></option>        
+        <option value='*MDB'></option>
+        <option value='*MOV'></option>
+        <option value='*MPG'></option>        
         <option value='Mylar'></option>        
         <option value='Negatives [includes microfiche]'></option>        
         <option value='Oversize'></option>
         <option value='Paper'></option>
-        <option value='PDF'></option>
+        <option value='*PDF'></option>
         <option value='Photos'></option>
-        <option value='PNG'></option>
-        <option value='PPT'></option>
-        <option value='PPTX'></option>
-        <option value='RTF'></option>
+        <option value='*PNG'></option>
+        <option value='*PPT'></option>
+        <option value='*PPTX'></option>
+        <option value='*RTF'></option>
         <option value='Thumb Drive'></option>
-        <option value='TIF'></option>
-        <option value='TXT'></option>
+        <option value='*TIF'></option>
+        <option value='*TXT'></option>
         <option value='UHD'></option>        
         <option value='VHS'></option>        
         <option value='Vinyl record'></option>
-        <option value='VSD'></option>
-        <option value='WAV'></option>
-        <option value='WMV'></option>
-        <option value='WPD'></option>
-        <option value='XLS'></option>
-        <option value='XLSM'></option>
-        <option value='XLSX'></option>
-        <option value='XML'></option>
-        <option value='ZIP'></option>
+        <option value='*VSD'></option>
+        <option value='*WAV'></option>
+        <option value='*WMV'></option>
+        <option value='*WPD'></option>
+        <option value='*XLS'></option>
+        <option value='*XLSM'></option>
+        <option value='*XLSX'></option>
+        <option value='*XML'></option>
+        <option value='*ZIP'></option>
         <option value='ZIP Drive'></option>
-        <option value='ZIPX'></option>
+        <option value='*ZIPX'></option>
     </datalist>
-</br></br>
-<?php
+</br>
 
-if(!empty($folderfile_source_dimensions)) {
-    echo "<strong>Source Dimensions</strong><br /><input type='text' id='source_dimensions' placeholder= '$folderfile_source_dimensions'><br />";
-}
-else {
-    echo "<strong>Source Dimensions</strong><br /><input type='text' id='source_dimensions' placeholder= 'Enter source dimensions...'><br />";
-}
-?>
+<br><strong>Source Dimensions</strong><br />
+<select id="source_dimensions" name="source_dimensions">
+    <option value='ANSI Fields A' <?php if ($folderfile_source_dimensions == 'ANSI Fields A') echo 'selected' ; ?>>ANSI Fields A</option>
+    <option value='ANSI Fields B' <?php if ($folderfile_source_dimensions == 'ANSI Fields B') echo 'selected' ; ?>>ANSI Fields B</option>
+    <option value='ANSI Fields C' <?php if ($folderfile_source_dimensions == 'ANSI Fields C') echo 'selected' ; ?>>ANSI Fields C</option>
+    <option value='ANSI Fields D' <?php if ($folderfile_source_dimensions == 'ANSI Fields D') echo 'selected' ; ?>>ANSI Fields D</option>
+    <option value='ANSI Fields E' <?php if ($folderfile_source_dimensions == 'ANSI Fields E') echo 'selected' ; ?>>ANSI Fields E</option>
+    <option value='Digital Source' <?php if ($folderfile_source_dimensions == 'Digital Source') echo 'selected' ; ?>>Digital Source</option>
+    <option value='Other' <?php if ($folderfile_source_dimensions == 'Other') echo 'selected' ; ?>>Other</option>
+</select></br>
+
 <br><strong>Essential Record</strong><br />
 <select id="er" name="er">
   <option value="1" <?php if ($folderfile_essential_record == 1 ) echo 'selected' ; ?>>Yes</option>

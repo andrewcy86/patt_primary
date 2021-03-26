@@ -123,7 +123,7 @@ if (isset($_POST['command']))
 
 	if ($command=="create")
 	{
-	    //echo setCORS(bucket());
+	    echo setCORS(bucket());
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],
@@ -160,7 +160,7 @@ if (isset($_POST['command']))
 		]);
 
         // Give it at least 24 hours for large uploads
-		$request=s3("createPresignedRequest",$command,"+48 hours");
+		$request=s3("createPresignedRequest",$command,"+8 hours");
         json_output([
             'url' => (string)$request->getUri(),
         ]);		

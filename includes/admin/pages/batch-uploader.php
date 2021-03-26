@@ -32,6 +32,15 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 			$this->print_listing_form_block_batch_upload();
 			wp_enqueue_script( 'batch-uploader-save-js', WPPATT_PLUGIN_URL . 'asset/js/batch_uploader_save.js', array(), time(), true );
 			
+			wp_localize_script(
+				'batch-uploader-save-js',
+				'attachment_info',
+				array(
+					'max_filesize' => get_option( 'wpsc_attachment_max_filesize' ),
+					'close_image' => WPSC_PLUGIN_URL . 'asset/images/close.png',
+				)
+			);
+			
 			add_action( 'patt_process_boxinfo_records', array( $this, 'patt_process_boxinfo_records' ) );
 
 			// Move uploaded file.
@@ -115,15 +124,7 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 			wp_enqueue_script( 'xlsx-full-js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.5/xlsx.full.min.js', array(), time(), true );
 
 			//wp_enqueue_script( 'save-ticket-boxlist-js', WPPATT_PLUGIN_URL . 'asset/js/ticket_box_list_save.js', array(), time(), true );
-
-			wp_localize_script(
-				'save-ticket-boxlist-js',
-				'attachment_info',
-				array(
-					'max_filesize' => get_option( 'wpsc_attachment_max_filesize' ),
-					'close_image' => WPSC_PLUGIN_URL . 'asset/images/close.png',
-				)
-			);
+			
 		}
 
 		/**
@@ -166,39 +167,40 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 				
 				<div id="alert_status_file_list" class="alert_spacing"></div>
 				<!-- Beginning of new datatable -->
-				<div class="box-body table-responsive" id="boxdisplaydiv"
-					style="width:100%;padding-bottom: 20px;padding-right:20px;padding-left:15px;margin: 0 auto;">
-					<label class="wpsc_ct_field_label">Batch Upload List <span style="color:red;">*</span></label>
-			
-					<!-- DropZone xls File Drop Uploader -->
-					<div id="dzBatchListUpload" class="dropzone">
-						<div class="fallback">
-							<input name="file" type="file" />
-						</div>
-						<div class="dz-default dz-message">
-							<button class="dz-button" type="button">Drop your file here to upload (xlsx files allowed)</button>
-						</div>
-					</div>
-					<div style="margin: 10px 0 10px;" id="batch_list_attachment" class="row spreadsheet_container"></div>
-			
-					<table style="display:none;margin-bottom:0;" id="batchlistdatatable" class="table table-striped table-bordered nowrap">
-						<thead style="margin: 0 auto !important;">
-							<tr>
-								<th>File Name</th>
-								<th>Disposition Schedule & Item Number</th>
-							</tr>
-						</thead>
-					</table>
-					
-					<!-- Batch List File Upload Validation -->
-					<input type="hidden" id="batch_list_upload_cr" name="batch_list_upload_cr" value="0" />
-				</div>
+				<form  >
+					<div class="box-body table-responsive" id="boxdisplaydiv"
+						style="width:100%;padding-bottom: 20px;padding-right:20px;padding-left:15px;margin: 0 auto;">
+						<label class="wpsc_ct_field_label">Batch Upload List <span style="color:red;">*</span></label>
 				
+						<!-- DropZone xls File Drop Uploader -->
+						<div id="dzBatchListUpload" class="dropzone">
+							<div class="fallback">
+								<input name="file" type="file" />
+							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop your file here to upload (xlsx files allowed)</button>
+							</div>
+						</div>
+						<div style="margin: 10px 0 10px;" id="batch_list_attachment" class="row spreadsheet_container"></div>
+				
+						<table style="display:none;margin-bottom:0;" id="batchlistdatatable" class="table table-striped table-bordered nowrap">
+							<thead style="margin: 0 auto !important;">
+								<tr>
+									<th>File Name</th>
+									<th>Disposition Schedule & Item Number</th>
+								</tr>
+							</thead>
+						</table>
+						
+						<!-- Batch List File Upload Validation -->
+						<input type="hidden" id="batch_list_upload_cr" name="batch_list_upload_cr" value="0" />
+					</div>
+				</form>
 				<hr>
 				
 				<div id="alert_status_batch_uploader" class="alert_spacing"></div>
 				
-				<div id="batch-uploader-dropzone" >
+				<div id="batch-uploader-dropzone" style="display: none;" >
 					<?php include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice.php'; ?>
 				</div>
 			

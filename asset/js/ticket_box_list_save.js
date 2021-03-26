@@ -401,7 +401,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             if(count > 1 && parsedData[count][0] == null && parsedData[count][15] == null) {
                                 continue;
                             }
-
+							
+							// Clean Record Type. If * remove them. 
+							parsedData[count][index_rec_type] = parsedData[count][index_rec_type].replace( '*', '' );
+							
+							// Clean Source Type. If * remove them. 
+							parsedData[count][index_source_type] = parsedData[count][index_source_type].replace( '*', '' );
                             
                             
                                 
@@ -472,6 +477,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            parsedData[count][index_creation_date] = parsedData[count][index_creation_date] + ' 00:00:01';
 	                            }
                             }
+                            
+
 							
 							// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
                             if( flag != true && count > 1 && (parsedData[count][index_site_name] != null && parsedData[count][index_site_id] == null )) {
