@@ -159,16 +159,16 @@ array_push($metadata_array,'Program Office: '.$po_old_acronym.' > '.$po_new_acro
 }
 
 if(!empty($rs)) {
-$get_old_rs = $wpdb->get_row("SELECT b.Record_Schedule_Number as Record_Schedule_Number FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a LEFT JOIN " . $wpdb->prefix . "epa_record_schedule b ON a.record_schedule_id = b.id WHERE a.box_id = '" . $pattboxid . "'");
-$rs_old_num = $get_old_rs->Record_Schedule_Number;
+$get_old_rs = $wpdb->get_row("SELECT b.Schedule_Item_Number as Schedule_Item_Number FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a LEFT JOIN " . $wpdb->prefix . "epa_record_schedule b ON a.record_schedule_id = b.id WHERE a.box_id = '" . $pattboxid . "'");
+$rs_old_num = $get_old_rs->Schedule_Item_Number;
 
 //update box table with record schedule foreign key
 $data_update = array('record_schedule_id' => $rs);
 $data_where = array('id' => $box_id);
 $wpdb->update($table_name , $data_update, $data_where);
 
-$get_new_rs = $wpdb->get_row("SELECT Record_Schedule_Number FROM " . $wpdb->prefix . "epa_record_schedule WHERE id = '" . $rs . "'");
-$rs_new_num = $get_new_rs->Record_Schedule_Number;
+$get_new_rs = $wpdb->get_row("SELECT Schedule_Item_Number FROM " . $wpdb->prefix . "epa_record_schedule WHERE id = '" . $rs . "'");
+$rs_new_num = $get_new_rs->Schedule_Item_Number;
 if($rs_old_num != $rs_new_num) {
 array_push($metadata_array,'Record Schedule: '.$rs_old_num.' > '.$rs_new_num);
 }

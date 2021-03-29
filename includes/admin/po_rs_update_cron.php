@@ -133,12 +133,12 @@ $rs_query = "query schedulesQuery {
   ) {
     nodes {
       id
-      recordScheduleNumber
+      scheduleItemNumber
       scheduleNumber
       scheduleTitle
-      dispositionNumber
-      dispositionTitle
-      functionNumber
+      itemNumber
+      itemTitle
+      functionCode
       functionTitle
       program
       applicability
@@ -146,10 +146,10 @@ $rs_query = "query schedulesQuery {
       naraDisposalAuthorityItemLevel
       finalDisposition
       cutoffInstructions
-      close
-      description
-      reservedFlag
       dispositionInstructions
+      scheduleDescription
+      reservedFlag
+      dispositionSummary
       guidance
       retention
       tenYear
@@ -160,8 +160,8 @@ $rs_query = "query schedulesQuery {
       custodians
       reasonsForDisposition
       relatedSchedules
-      entry
-      revised
+      entryDate
+      revisedDate
       keywords
       keywordsTitle
       keywordsSubject
@@ -209,12 +209,12 @@ $wpdb->query("SET FOREIGN_KEY_CHECKS = 1");
 //Insert -99999
 $wpdb->insert($rs_table, array(
 'id' => '-99999',
-'Record_Schedule_Number' => '-99999',
+'Schedule_Item_Number' => '-99999',
 'Schedule_Number' => '-99999',
 'Schedule_Title' => '',
-'Disposition_Number' => '',
-'Disposition_Title' => '',
-'Function_Number' => '',
+'Item_Number' => '',
+'Item_Title' => '',
+'Function_Code' => '',
 'Function_Title' => '',
 'Program' => '',
 'Applicability' =>'', 
@@ -222,22 +222,22 @@ $wpdb->insert($rs_table, array(
 'NARA_Disposal_Authority_Item_Level' => '',
 'Final_Disposition' => '',
 'Cutoff_Instructions' => '',
-'Close' => '',
-'Description' => '',  
-'Reserved_Flag' => 0,
 'Disposition_Instructions' => '',
+'Schedule_Description' => '',
+'Reserved_Flag' => 0,
+'Disposition_Summary' => '',  
 'Guidance' => '',
 'Retention' => NULL,
 'Ten_Year' => '-99999',
-'EPA_Approval' => '', 
-'NARA_Approval' => '', 
-'Previous_NARA_Disposal_Authority' => '', 
 'Status' => '',
-'Custodians' => '', 
+'Revised_Date' => '',
 'Reasons_For_Disposition' => '', 
+'Custodians' => '', 
 'Related_Schedules' => '', 
-'Entry' => '', 
-'Revised' => '',
+'Previous_NARA_Disposal_Authority' => '',
+'Entry_Date' => '', 
+'EPA_Approval' => '',
+'NARA_Approval' => '',
 'Keywords' => '',
 'Keywords_Title' => '',
 'Keywords_Subject' => '',
@@ -249,12 +249,12 @@ foreach ($rs_json['data']['recordSchedules']['nodes'] as $rs_item)
 {
 foreach ($rs_item as $key => $value) {
 
-$Record_Schedule_Number = $rs_item['recordScheduleNumber'];
+$Schedule_Item_Number = $rs_item['scheduleItemNumber'];
 $Schedule_Number = $rs_item['scheduleNumber'];
 $Schedule_Title = addcslashes($rs_item['scheduleTitle'], "'");
-$Disposition_Number = $rs_item['dispositionNumber'];
-$Disposition_Title = addcslashes($rs_item['dispositionTitle'], "'");
-$Function_Number = addcslashes($rs_item['functionNumber'], "'");
+$Item_Number = $rs_item['itemNumber'];
+$Item_Title = addcslashes($rs_item['itemTitle'], "'");
+$Function_Code = addcslashes($rs_item['functionCode'], "'");
 $Function_Title = $rs_item['functionTitle'];
 $Program = $rs_item['program'];
 $Applicability = $rs_item['applicability'];
@@ -262,10 +262,10 @@ $NARA_Disposal_Authority_Record_Schedule_Level = addcslashes($rs_item['naraDispo
 $NARA_Disposal_Authority_Item_Level = $rs_item['naraDisposalAuthorityItemLevel'];
 $Final_Disposition = addcslashes($rs_item['finalDisposition'], "'");
 $Cutoff_Instructions = addcslashes($rs_item['cutoffInstructions'], "'");
-$Close = addcslashes($rs_item['close'], "'");
-$Description = addcslashes($rs_item['description'], "'");
-$Reserved_Flag = $rs_item['reservedFlag'];
 $Disposition_Instructions = addcslashes($rs_item['dispositionInstructions'], "'");
+$Schedule_Description = addcslashes($rs_item['scheduleDescription'], "'");
+$Reserved_Flag = $rs_item['reservedFlag'];
+$Disposition_Summary = addcslashes($rs_item['dispositionSummary'], "'");
 $Guidance = addcslashes($rs_item['guidance'], "'");
 $Retention = $rs_item['retention'];
 $Ten_Year = $rs_item['tenYear'];
@@ -276,8 +276,8 @@ $Status = $rs_item['status'];
 $Custodians = addcslashes($rs_item['custodians'], "'");
 $Reasons_For_Disposition = addcslashes($rs_item['reasonsForDisposition'], "'");
 $Related_Schedules = addcslashes($rs_item['relatedSchedules'], "'");
-$Entry = $rs_item['entry'];
-$Revised = $rs_item['revised'];
+$Entry_Date = $rs_item['entryDate'];
+$Revised_Date = $rs_item['revisedDate'];
 $Keywords = addcslashes($rs_item['keywords'], "'");
 $Keywords_Title = addcslashes($rs_item['keywordsTitle'], "'");
 $Keywords_Subject = addcslashes($rs_item['keywordsSubject'], "'");
@@ -288,70 +288,70 @@ $Related_Terms = addcslashes($rs_item['relatedTerms'], "'");
 //INSERT STATEMENT
 
 $wpdb->query("INSERT INTO ".$rs_table." 
-(Record_Schedule_Number,
+(Schedule_Item_Number,
 Schedule_Number,
 Schedule_Title,
-Disposition_Number,
-Disposition_Title,
-Function_Number,
+Item_Number,
+Item_Title,
+Function_Code,
 Function_Title,
 Program,
-Applicability, 
+Applicability,
 NARA_Disposal_Authority_Record_Schedule_Level,
 NARA_Disposal_Authority_Item_Level,
 Final_Disposition,
 Cutoff_Instructions,
-Close,
-Description,  
-Reserved_Flag,
 Disposition_Instructions,
+Schedule_Description,
+Reserved_Flag,
+Disposition_Summary,
 Guidance,
 Retention,
 Ten_Year,
-EPA_Approval, 
-NARA_Approval, 
-Previous_NARA_Disposal_Authority, 
 Status,
-Custodians, 
-Reasons_For_Disposition, 
-Related_Schedules, 
-Entry, 
-Revised,
+Revised_Date,
+Reasons_For_Disposition,
+Custodians,
+Related_Schedules,
+Previous_NARA_Disposal_Authority,
+Entry_Date,
+EPA_Approval,
+NARA_Approval,
 Keywords,
 Keywords_Title,
 Keywords_Subject,
 Keywords_Org,
 Related_Terms) 
 VALUES (
-'$Record_Schedule_Number',
+'$Schedule_Item_Number',
 '$Schedule_Number',
 '$Schedule_Title',
-'$Disposition_Number',
-'$Disposition_Title',
-'$Disposition_Title',
+'$Item_Number',
+'$Item_Title',
+'$Function_Code',
 '$Function_Title',
 '$Program',
-'$Applicability', 
+'$Applicability',
 '$NARA_Disposal_Authority_Record_Schedule_Level',
 '$NARA_Disposal_Authority_Item_Level',
 '$Final_Disposition',
 '$Cutoff_Instructions',
-'$Close',
-'$Description',  
-'$Reserved_Flag',
 '$Disposition_Instructions',
+'$Schedule_Description',
+'$Reserved_Flag',
+'$Disposition_Summary',
 '$Guidance',
 '$Retention',
 '$Ten_Year',
-'$EPA_Approval', 
-'$NARA_Approval', 
-'$Previous_NARA_Disposal_Authority', 
 '$Status',
-'$Custodians', 
-'$Reasons_For_Disposition', 
-'$Related_Schedules', 
-'$Entry', 
-'$Revised',
+'$Revised_Date',
+'$Reasons_For_Disposition',
+'$Custodians',
+'$Related_Schedules',
+'$Previous_NARA_Disposal_Authority',
+'$Entry_Date',
+'$EPA_Approval',
+'$NARA_Approval',
 '$Keywords',
 '$Keywords_Title',
 '$Keywords_Subject',

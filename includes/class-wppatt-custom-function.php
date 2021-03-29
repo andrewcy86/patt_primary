@@ -1763,33 +1763,33 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             
             if($type == 'box' || $type == 'box_archive') {
-                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Item_Number
                 FROM " . $wpdb->prefix . "epa_record_schedule a
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
                 WHERE b.box_id = '" . $id . "'");
-                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                $record_schedule = $get_record_schedule->Schedule_Item_Number;
                 
                 return $record_schedule;
             }
             else if($type == 'folderfile') {
-                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Item_Number
                 FROM " . $wpdb->prefix . "epa_record_schedule a
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
                 WHERE d.folderdocinfofile_id = '" . $id . "'");
-                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                $record_schedule = $get_record_schedule->Schedule_Item_Number;
                 
                 return $record_schedule;
             }
             else if($type == 'folderfile_archive') {
-                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Record_Schedule_Number
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Item_Number
                 FROM " . $wpdb->prefix . "epa_record_schedule a
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
                 WHERE d.folderdocinfofile_id = '" . $id . "'");
-                $record_schedule = $get_record_schedule->Record_Schedule_Number;
+                $record_schedule = $get_record_schedule->Schedule_Item_Number;
                 
                 return $record_schedule;
             }
@@ -2183,7 +2183,7 @@ public static function id_in_recall( $identifier, $type ) {
                 {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
                 {$wpdb->prefix}wpsc_epa_program_office.office_name,
                 {$wpdb->prefix}epa_record_schedule.id as Record_Schedule_id_FK,
-                {$wpdb->prefix}epa_record_schedule.Record_Schedule_Number,
+                {$wpdb->prefix}epa_record_schedule.Schedule_Item_Number,
                 {$wpdb->prefix}epa_record_schedule.Schedule_Title",
                 'join'   => [
                     [
@@ -3201,11 +3201,11 @@ public static function id_in_recall( $identifier, $type ) {
             $record_schedule = $wpdb->get_results("SELECT * 
             FROM ".$wpdb->prefix."epa_record_schedule 
             WHERE Reserved_Flag = 0 AND id <> -99999
-            ORDER BY Record_Schedule_Number");
+            ORDER BY Schedule_Item_Number");
             
             foreach($record_schedule as $rs)
             {
-                array_push($array, $rs->Record_Schedule_Number);
+                array_push($array, $rs->Schedule_Item_Number);
             }
             return $array;
         }

@@ -228,7 +228,7 @@ color: rgb(255, 255, 255) !important;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
 
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
-<!--<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>-->
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
 
 <script>
 
@@ -564,6 +564,7 @@ wpsc_get_delete_permanently_bulk_ticket_1();
 	function toggle_button_display() {
 	//	var form = this;
 		var rows_selected = dataTable.column(0).checkboxes.selected();
+		console.log(rows_selected);
 		if(rows_selected.count() > 0) {
 			jQuery('#btn_restore_tickets').removeAttr('disabled');
 			jQuery('#btn_delete_permanently_bulk_ticket').removeAttr('disabled');

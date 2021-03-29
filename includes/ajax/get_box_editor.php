@@ -168,7 +168,7 @@ WHERE office_acronym  = '" . $value . "'");
      //No longer have a 10 year retention requirement
      $record_schedule = $wpdb->get_row("SELECT id, Schedule_Title
 FROM " . $wpdb->prefix . "epa_record_schedule 
-WHERE Record_Schedule_Number = '" . $value . "'");
+WHERE Schedule_Item_Number = '" . $value . "'");
     $record_schedule_id = $record_schedule->id;
     $record_schedule_title = $record_schedule->Schedule_Title;
      ?>

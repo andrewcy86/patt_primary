@@ -743,8 +743,20 @@ jQuery(document).ready(function(){
 	}, 
 	   function (response) {
 	       //alert(response);
-	       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/pallet_label.php?id="+response, "_blank");
-	      
+	       //window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/pallet_label.php?id="+response, "_blank");
+	       
+	       var palletinfo = response.split('|')[1];
+	       var pallet_substring_false = "false";
+	       var pallet_substring_true = "true";
+	
+	        
+	       if(response.indexOf(pallet_substring_false) >= 0) {
+	       alert('One or more boxes selected does not have a pallet assigned.');
+	       }
+	       
+	       if(response.indexOf(pallet_substring_true) >= 0) {
+	       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/pallet_label.php?id="+palletinfo, "_blank");
+	       }
 	   });
 	
 	});

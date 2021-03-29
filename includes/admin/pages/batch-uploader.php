@@ -200,8 +200,10 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 				
 				<div id="alert_status_batch_uploader" class="alert_spacing"></div>
 				
-				<div id="batch-uploader-dropzone" style="display: none;" >
-					<?php include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice.php'; ?>
+<!-- 				<div id="batch-uploader-dropzone" style="display: none;" > -->
+				<div id="batch-uploader-dropzone"  >
+<!-- 					<?php //include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice.php'; ?> -->
+					<?php include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice_wp6.php'; ?>
 				</div>
 			
 			
