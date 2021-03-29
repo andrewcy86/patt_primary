@@ -124,7 +124,7 @@ if (isset($_POST['command']))
 
 	if ($command=="create")
 	{
-	    echo setCORS(bucket());
+	    //echo setCORS(bucket());
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],

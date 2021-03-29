@@ -53,8 +53,8 @@ $wpdb->insert($error_table, array(
     
 }
 
-echo $http_response_header[0];
-var_dump($http_response_header);
+//echo $http_response_header[0];
+//var_dump($http_response_header);
 //var_dump($result);
 
 $po_json = json_decode($po_result, true);
@@ -248,7 +248,7 @@ $wpdb->insert($rs_table, array(
 foreach ($rs_json['data']['recordSchedules']['nodes'] as $rs_item)
 {
 foreach ($rs_item as $key => $value) {
-
+echo $key.' => '.$value;
 $Schedule_Item_Number = $rs_item['scheduleItemNumber'];
 $Schedule_Number = $rs_item['scheduleNumber'];
 $Schedule_Title = addcslashes($rs_item['scheduleTitle'], "'");
