@@ -32,9 +32,9 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
         wp_enqueue_editor();
         //bootstrap
         wp_enqueue_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
-        wp_enqueue_style('wpsc-bootstrap-select-css', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css');
-        wp_enqueue_script( 'bootstrap-cdn-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js' );
-        wp_enqueue_script( 'bootstrap-multiselect-js', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js' );
+        wp_enqueue_style('wpsc-bootstrap-select-css', WPPATT_PLUGIN_URL . 'asset/css/bootstrap-select.min.css');
+        wp_enqueue_script( 'bootstrap-cdn-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap.min.js' );
+        wp_enqueue_script( 'bootstrap-multiselect-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap-select.min.js' );
         //Font-Awesom
         //wp_enqueue_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
         wp_enqueue_style('wpsc-jquery-ui', WPSC_PLUGIN_URL.'asset/css/jquery-ui.css?version='.WPSC_VERSION );

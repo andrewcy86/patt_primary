@@ -226,17 +226,17 @@ SELECT
     " . $wpdb->prefix . "wpsc_epa_shipping_tracking.status,
     " . $wpdb->prefix . "wpsc_ticket.customer_name,
     CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number,
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
         ': ',
         " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
     ) AS Record_Schedule,
     CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number,
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
         ': ',
         " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
-    ) AS Record_Schedule_Number,
+    ) AS Schedule_Item_Number,
     CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number,
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
         ': ',
         " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
     ) AS Schedule_Title,

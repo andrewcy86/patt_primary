@@ -349,19 +349,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
         // Send excel file to S3
         console.log('before upload');
         
-/*
-        let s3upload = new S3MultiUpload(file);
-	    s3upload.onServerError = function(command, jqXHR, textStatus, errorThrown) {
-	//         $("#result").text("Upload failed with server error.");
-			set_upload_notification( 'danger', 'Upload failed. Server error.');
-	
-	    };
-	    s3upload.onS3UploadError = function(xhr) {
-	//         $("#result").text("Upload to S3 failed.");
-	        set_upload_notification( 'danger', 'Upload to S3 failed.');
-	    };
-*/
-        
+
         
         //upload( fileSS );
         console.log('post upload');

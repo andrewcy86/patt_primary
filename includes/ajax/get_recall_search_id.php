@@ -92,7 +92,8 @@ if( $details_array2['search_error'] == false ) {
 			"box_id"=>$the_id, 
 			"box_id_flag"=>$link_str_ff . $icons,
 			"title"=>$title,
-			"request_id"=>$details_array2['Record_Schedule_Number'], 
+// 			"request_id"=>$details_array2['Record_Schedule_Number'], 
+			"request_id"=>$details_array2['Schedule_Item_Number'], 
 			"program_office"=>$details_array2['office_acronym'].': '.$details_array2['office_name']
 // 			"validation"=>'another thing'	      
 		);		

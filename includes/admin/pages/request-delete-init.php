@@ -201,6 +201,10 @@ color: rgb(255, 255, 255) !important;
 #searchGeneric {
     padding: 0 30px !important;
 }
+
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
 </style>
 
 <div class="table-responsive" style="overflow-x:auto;">

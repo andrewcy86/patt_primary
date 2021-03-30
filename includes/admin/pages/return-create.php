@@ -264,7 +264,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 							if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 							{
 							?>
-							                <th class="datatable_header"></th>
+<!-- 							                <th class="datatable_header"></th> -->
 							<?php
 							}
 							?>
@@ -494,11 +494,13 @@ margin: 0px 0px 25px 15px;
 				}
 			},
 // 			'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
-			'lengthMenu': [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
+// 			'lengthMenu': [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
+			'lengthMenu': [[ 25, 50, 100, 500], [ 25, 50, 100, 500]],
 			<?php		
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 			{
 			?>
+/*
 				    'columnDefs': [	
 			     {	
 			        'targets': 0,
@@ -511,6 +513,7 @@ margin: 0px 0px 25px 15px;
 			     'style': 'multi'	
 			  },
 			  'order': [[1, 'asc']],
+*/
 			<?php
 			}
 			?>
@@ -519,7 +522,7 @@ margin: 0px 0px 25px 15px;
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 			{
 			?>
-			   { data: 'box_id' }, 
+// 			   { data: 'box_id' }, 
 			<?php
 			}
 			?>

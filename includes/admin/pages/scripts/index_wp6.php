@@ -14,10 +14,7 @@ $s3_key = 'AKIAR7FXZINYEYJXDFVK';
 $s3_secret ='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';
 
 // D E B U G
-echo 'AWS_S3_KEY: '.$s3_key .'<br>';
-echo 'AWS_S3_REGION: '.$s3_region .'<br>';
-echo 'AWS_S3_SECRET: '.$s3_secret .'<br>';
-echo 'AWS_S3_BUCKET: '.$s3_bucket .'<br>';
+
 
 // You can call the following to erase all pending multipart uploads. 
 // It's a good idea to set your bucket to do this automatically (via console)
@@ -34,6 +31,14 @@ function region() {
 	//include WPPATT_UPLOADS.'api_authorization_strings.php';
     return $s3_region;
 //	return AWS_S3_REGION;
+}
+
+function s3_key() {
+	return $s3_key;
+}
+
+function s3_secret() {
+	return $s3_secret;
 }
 
 
@@ -53,7 +58,8 @@ function s3($command=null,$args=null)
 	$s3 = new Aws\S3\S3Client([
 	    'version' => 'latest',
 	    'region'  => region(),
-	    'signature_version' => 'v4'
+	    'signature_version' => 'v4',
+	    //'profile' => 'default',
 	]);
 	if ($command===null)
 		return $s3;
@@ -102,11 +108,13 @@ function abortPendingUploads($bucket)
     }
     return $count;
 }
-/**
+/*
+*
  * Enables CORS on bucket
  *
  * This needs to be called exactly once on a bucket before browser uploads.
  * @param string $bucket 
+*/
 
 function setCORS($bucket)
 {
@@ -125,14 +133,14 @@ function setCORS($bucket)
             ],
         ]);
 }
-*/
+
 if (isset($_POST['command']))
 {
 	$command=$_POST['command'];
 
 	if ($command=="create")
 	{
-	    echo setCORS(bucket());
+	    //echo setCORS(bucket());
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],

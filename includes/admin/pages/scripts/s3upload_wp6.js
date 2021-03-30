@@ -71,8 +71,8 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
     
     // D E B U G
     //console.log({unixnow:unixnow});
-    //console.log({self_fileInfo:self.fileInfo});
-    //console.log({SERVER_LOC:self.SERVER_LOC});
+    console.log({self_fileInfo:self.fileInfo});
+    console.log({SERVER_LOC:self.SERVER_LOC});
     obj_size = self.fileInfo.size;
     obj_type = self.fileInfo.type;
     

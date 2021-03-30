@@ -2,13 +2,11 @@
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-/*
 // D E B U G
-echo 'AWS_S3_KEY: '.AWS_S3_KEY .'<br>';
-echo 'AWS_S3_REGION: '.AWS_S3_REGION .'<br>';
-echo 'AWS_S3_SECRET: '.AWS_S3_SECRET .'<br>';
-echo 'AWS_S3_BUCKET: '.AWS_S3_BUCKET .'<br>';
-*/
+//echo 'AWS_S3_KEY: '.AWS_S3_KEY .'<br>';
+//echo 'AWS_S3_REGION: '.AWS_S3_REGION .'<br>';
+//echo 'AWS_S3_SECRET: '.AWS_S3_SECRET .'<br>';
+//echo 'AWS_S3_BUCKET: '.AWS_S3_BUCKET .'<br>';
 
 header("Access-Control-Allow-Origin: *");
 require_once __DIR__."/vendor/autoload.php";

@@ -234,6 +234,8 @@ function upload(file) {
     
     s3upload.onServerError = function(command, jqXHR, textStatus, errorThrown) {
 //         $("#result").text("Upload failed with server error.");
+
+		console.log({command:command, jqXHR:jqXHR, textStatus:textStatus, errorThrown:errorThrown});
 		set_upload_notification( 'danger', 'Upload failed. Server error.');
 
     };

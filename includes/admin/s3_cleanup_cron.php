@@ -28,11 +28,7 @@ function flip_isset_diff($b, $a) {
 
 		$s3 = new Aws\S3\S3Client([
 			'region'  => $s3_region,
-			'version' => 'latest',
-			'credentials' => [
-				'key'    => $s3_key,
-				'secret' => $s3_secret,
-			]
+			'version' => 'latest'
 		]);	
 		
 		 $results = $s3->getPaginator('ListObjects', [

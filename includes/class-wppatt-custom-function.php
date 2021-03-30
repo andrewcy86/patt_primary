@@ -2601,7 +2601,7 @@ public static function id_in_recall( $identifier, $type ) {
                 "{$wpdb->prefix}wpsc_epa_folderdocinfo_files" => ['title', 'folderdocinfofile_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_program_office" => ['office_acronym'],
                 "{$wpdb->prefix}wpsc_epa_shipping_tracking" => ['company_name as shipping_carrier', 'tracking_number', 'status', 'shipped', 'delivered'],
-                "{$wpdb->prefix}epa_record_schedule" => ['Record_Schedule', 'Record_Schedule_Number', 'Schedule_Title'],
+                "{$wpdb->prefix}epa_record_schedule" => ['Record_Schedule', 'Schedule_Item_Number', 'Schedule_Title'],
                 "{$wpdb->prefix}terms" => ['name as recall_status'],
                 "{$wpdb->prefix}wpsc_epa_recallrequest_users" => ['user_id'],
             ];
@@ -2611,7 +2611,7 @@ public static function id_in_recall( $identifier, $type ) {
                     if($key == "{$wpdb->prefix}wpsc_epa_recallrequest_users"){
                         $select[] = "GROUP_CONCAT($key.user_id) as $field";
                     } elseif($key == "{$wpdb->prefix}epa_record_schedule"){
-                        $select[] = "CONCAT($key.Record_Schedule_Number, ': ' , $key.Schedule_Title) as $field";
+                        $select[] = "CONCAT($key.Schedule_Item_Number, ': ' , $key.Schedule_Title) as $field";
                     } else {
                         $select[] = $key . '.' . $field;
                     }

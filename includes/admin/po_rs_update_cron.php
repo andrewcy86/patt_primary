@@ -248,7 +248,7 @@ $wpdb->insert($rs_table, array(
 foreach ($rs_json['data']['recordSchedules']['nodes'] as $rs_item)
 {
 foreach ($rs_item as $key => $value) {
-echo $key.' => '.$value;
+//echo $key.' => '.$value;
 $Schedule_Item_Number = $rs_item['scheduleItemNumber'];
 $Schedule_Number = $rs_item['scheduleNumber'];
 $Schedule_Title = addcslashes($rs_item['scheduleTitle'], "'");
@@ -286,6 +286,77 @@ $Related_Terms = addcslashes($rs_item['relatedTerms'], "'");
 }
 
 //INSERT STATEMENT
+
+echo "INSERT INTO ".$rs_table." 
+(Schedule_Item_Number,
+Schedule_Number,
+Schedule_Title,
+Item_Number,
+Item_Title,
+Function_Code,
+Function_Title,
+Program,
+Applicability,
+NARA_Disposal_Authority_Record_Schedule_Level,
+NARA_Disposal_Authority_Item_Level,
+Final_Disposition,
+Cutoff_Instructions,
+Disposition_Instructions,
+Schedule_Description,
+Reserved_Flag,
+Disposition_Summary,
+Guidance,
+Retention,
+Ten_Year,
+Status,
+Revised_Date,
+Reasons_For_Disposition,
+Custodians,
+Related_Schedules,
+Previous_NARA_Disposal_Authority,
+Entry_Date,
+EPA_Approval,
+NARA_Approval,
+Keywords,
+Keywords_Title,
+Keywords_Subject,
+Keywords_Org,
+Related_Terms) 
+VALUES (
+'$Schedule_Item_Number',
+'$Schedule_Number',
+'$Schedule_Title',
+'$Item_Number',
+'$Item_Title',
+'$Function_Code',
+'$Function_Title',
+'$Program',
+'$Applicability',
+'$NARA_Disposal_Authority_Record_Schedule_Level',
+'$NARA_Disposal_Authority_Item_Level',
+'$Final_Disposition',
+'$Cutoff_Instructions',
+'$Disposition_Instructions',
+'$Schedule_Description',
+'$Reserved_Flag',
+'$Disposition_Summary',
+'$Guidance',
+'$Retention',
+'$Ten_Year',
+'$Status',
+'$Revised_Date',
+'$Reasons_For_Disposition',
+'$Custodians',
+'$Related_Schedules',
+'$Previous_NARA_Disposal_Authority',
+'$Entry_Date',
+'$EPA_Approval',
+'$NARA_Approval',
+'$Keywords',
+'$Keywords_Title',
+'$Keywords_Subject',
+'$Keywords_Org',
+'$Related_Terms'";
 
 $wpdb->query("INSERT INTO ".$rs_table." 
 (Schedule_Item_Number,
