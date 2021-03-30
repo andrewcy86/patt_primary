@@ -2291,7 +2291,7 @@ public static function id_in_recall( $identifier, $type ) {
                     {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
                     {$wpdb->prefix}wpsc_epa_program_office.office_name,
                     {$wpdb->prefix}epa_record_schedule.id as Record_Schedule_id_FK,
-                    {$wpdb->prefix}epa_record_schedule.Record_Schedule_Number,
+                    {$wpdb->prefix}epa_record_schedule.Schedule_Item_Number,
                     {$wpdb->prefix}epa_record_schedule.Schedule_Title,
                     {$wpdb->prefix}wpsc_epa_boxinfo.record_schedule_id",
                     'join'   => [
@@ -3200,7 +3200,7 @@ public static function id_in_recall( $identifier, $type ) {
             
             $record_schedule = $wpdb->get_results("SELECT * 
             FROM ".$wpdb->prefix."epa_record_schedule 
-            WHERE Reserved_Flag = 0 AND id <> -99999
+            WHERE Reserved_Flag = 0 AND id <> '-99999'
             ORDER BY Schedule_Item_Number");
             
             foreach($record_schedule as $rs)
