@@ -26,6 +26,8 @@ function flip_isset_diff($b, $a) {
     return $d;
 }
 
+// Remove credentials
+
 		$s3 = new Aws\S3\S3Client([
 			'region'  => $s3_region,
 			'version' => 'latest'
