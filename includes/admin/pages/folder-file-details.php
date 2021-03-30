@@ -537,7 +537,12 @@ echo $decline_icon.$recall_icon;
 			}
 
 			if (!empty($folderfile_date)) {
-				echo "<strong>Creation Date:</strong> " . $folderfile_date . "<br />";
+			    if($folderfile_date == '0000-00-00') {
+			        echo "<strong>Creation Date:</strong> " . $folderfile_date . "<br />";
+			    }
+			    else {
+				    echo "<strong>Creation Date:</strong> " . date("m/d/Y", strtotime($folderfile_date)) . "<br />";
+			    }
 			}
 			
 			$folderfile_author_array = array();
@@ -569,7 +574,12 @@ echo $decline_icon.$recall_icon;
 				echo "<strong>Site ID #:</strong> " . $folderfile_site_id . "<br />";
 			}
 			if (!empty($folderfile_close_date)) {
-				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
+			    if($folderfile_close_date == '0000-00-00') {
+			        echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
+			    }
+			    else {
+				    echo "<strong>Close Date:</strong> " . date("m/d/Y", strtotime($folderfile_close_date)) . "<br />";
+			    }
 			}
 			
 			if(!empty($folderfile_access_restriction)) {

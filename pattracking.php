@@ -100,6 +100,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add Program Office/ Record Schedule CRON
         add_action( 'wppatt_po_rs_cron', array($frontend, 'wppatt_po_rs_cron_schedule'));
         
+        // Add S3 Cleanup CRON
+        add_action( 'wppatt_s3_cleanup_cron', array($frontend, 'wppatt_s3_cleanup_cron_schedule'));
+        
         // Add Decline Reminder Email & PM Notification CRON // No longer used. All actions done in wppatt_return_shipping_status_schedule
         //add_action( 'wppatt_decline_reminder_cron', array($frontend, 'wppatt_decline_reminder_email_cron_schedule'));
         

@@ -113,6 +113,10 @@ color: rgb(255, 255, 255) !important;
 .edit_shipping_icon {
 	cursor: pointer;
 }
+
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
 </style>
 
 <div class="table-responsive" style="overflow-x:auto;">

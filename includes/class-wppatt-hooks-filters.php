@@ -107,20 +107,20 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			wp_enqueue_style( 'datatable-style', WPSC_PLUGIN_URL . 'asset/lib/DataTables/datatables.min.css', array(), time(), false );
 			wp_enqueue_script( 'datatable-js', WPSC_PLUGIN_URL . 'asset/lib/DataTables/datatables.min.js', array(), time(), true );
 
-			wp_enqueue_style( 'tagsinput-style', WPPATT_PLUGIN_URL . 'asset/css/jquery.tagsinput.css', array(), time(), false );
+			wp_enqueue_style( 'tagsinput-style', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css', array(), time(), false );
 			//508 Corrections wp_enqueue_script( 'tagsinput-js', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js', array(), time(), true );
 	        wp_enqueue_script( 'tagsinput-js', WPPATT_PLUGIN_URL . 'includes/admin/js/jquery.tagsinput.js', array(), time(), true );
 
 			wp_enqueue_style( 'added-global-style', WPPATT_PLUGIN_URL . 'includes/admin/css/global-styles.css', array(), time(), false );
 			
-			wp_enqueue_style( 'datatable-checkbox-style', WPPATT_PLUGIN_URL . 'asset/css/dataTables.checkboxes.css', array(), time(), false );
+			wp_enqueue_style( 'datatable-checkbox-style', '//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css', array(), time(), false );
 			//508 Corrections wp_enqueue_script( 'datatable-checkbox-js', '//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js', array(), time(), true );
 	        wp_enqueue_script( 'datatable-checkbox-js', WPPATT_PLUGIN_URL . 'asset/lib/DataTables/dataTables.checkboxes.min.js', array(), time(), true );
 	        
 			wp_enqueue_style( 'dropzone-style', WPPATT_PLUGIN_URL . 'asset/css/dropzone.min.css', array(), time(), false );
 			wp_enqueue_script( 'dropzone-js', WPPATT_PLUGIN_URL . 'asset/js/dropzone.min.js', array(), time(), true );
 
-			wp_enqueue_script( 'xlsx-full-js', WPPATT_PLUGIN_URL . 'asset/js/xlsx.full.min.js', array(), time(), true );
+			wp_enqueue_script( 'xlsx-full-js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.5/xlsx.full.min.js', array(), time(), true );
 
 			wp_enqueue_script( 'save-ticket-boxlist-js', WPPATT_PLUGIN_URL . 'asset/js/ticket_box_list_save.js', array(), time(), true );
 
@@ -358,19 +358,18 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						?>
 						<div class="col-sm-12 ticket-error-msg">
 							<?php esc_html_e( 'Error entering box information. Ticket not generated.', 'pattracking' ); ?>
+							<?php esc_html_e( 'If this error persists, please copy this error message and the details below, and send them to the development team.', 'pattracking' ); ?>
 							<br><br>
 							<?php 
-								echo 'superfund: ' . $superfund . '<br>';
-								echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
-								echo 'test: ' . $test . '<br>';
-								echo 'Program Office: ' . $boxinfo['Program Office'] . '<br>';
-								//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
+								
 								echo '<pre>';
 								print_r( $boxarray );
 								echo '</pre>';
+/*
 								echo '<pre>';
 								print_r( $boxinfo_array );
 								echo '</pre>';
+*/
 							?>
 							<br>
 							<pre>
@@ -457,8 +456,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$new_date = '';
 					} else {
 						$datetime = new DateTime();
-						$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
-						$new_date = $new_date->format( 'Y-m-d H:i:s' );
+						//$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
+						$new_date = $datetime->createFromFormat( 'm/d/Y', $boxinfo['Close Date']);
+						//$new_date = $new_date->format( 'Y-m-d H:i:s' );
+						$new_date = $new_date->format( 'Y-m-d' );
 					}
 					
 					$folderdocarray = array(
@@ -834,7 +835,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					// Convert Date
 					$time = strtotime( $boxinfo['Creation Date'] );
-					$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
+					//$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
+					$newdatetimeformat = date( 'Y-m-d' ,$time );
 				
 					// 
 					// Save into folderdocinfo_files - Electronic File
@@ -925,7 +927,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 												
 						// Convert Date
 						$time = strtotime( $boxinfo['Creation Date'] );
-						$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time ); 
+						//$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time ); 
+						$newdatetimeformat = date( 'Y-m-d' ,$time ); 
 						
 						// Insert data for folderdocinfo_files :: ECMS
 						// ECMS FDIF data
@@ -960,7 +963,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						
 						// Convert Date
 						$time = strtotime( $boxinfo['Creation Date'] );
-						$newdatetimeformat = date( 'Y-m-d H:i:s', $time );
+						//$newdatetimeformat = date( 'Y-m-d H:i:s', $time );
+						$newdatetimeformat = date( 'Y-m-d', $time );
 						
 						// Insert data for folderdocinfo_files :: SEMS Superfund
 						$folderdocfiles_info = [
@@ -1108,7 +1112,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 		public function get_record_schedule_id( $record_schedule_number ) {
 
 			global $wpdb;
-			$programe_office_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}epa_record_schedule WHERE Record_Schedule_Number = %s ", $record_schedule_number ) );
+// 			$programe_office_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}epa_record_schedule WHERE Record_Schedule_Number = %s ", $record_schedule_number ) );
+	$programe_office_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}epa_record_schedule WHERE Schedule_Item_Number = %s ", $record_schedule_number ) );
 
 			return $programe_office_id;
 		}

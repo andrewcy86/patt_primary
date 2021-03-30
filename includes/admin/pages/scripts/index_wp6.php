@@ -8,10 +8,12 @@ header("Access-Control-Allow-Origin: *");
 require_once __DIR__."/vendor/autoload.php";
 
 // TEMPORARY
+/*
 $s3_bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
 $s3_region ='us-gov-west-1';
 $s3_key = 'AKIAR7FXZINYEYJXDFVK';
 $s3_secret ='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';
+*/
 
 // D E B U G
 
@@ -23,21 +25,25 @@ $s3_secret ='XtiRrMaHA048yG8bKgNbBxHPe9O27WJ4LvYQ7zlk';
 
 function bucket() {
 	//include WPPATT_UPLOADS.'api_authorization_strings.php';
+	$s3_bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
     return $s3_bucket;
 //	return AWS_S3_BUCKET;
 }
 
 function region() {
 	//include WPPATT_UPLOADS.'api_authorization_strings.php';
+	$s3_region ='us-gov-west-1';
     return $s3_region;
 //	return AWS_S3_REGION;
 }
 
 function s3_key() {
+	$s3_key = 'AKIAR7FXZINYEYJXDFVK';
 	return $s3_key;
 }
 
 function s3_secret() {
+	$s3_secret ='XtiRrMaHA048yG8bKgNbBxHPe9O27WJ4LvYQ7zlk';
 	return $s3_secret;
 }
 
@@ -134,6 +140,7 @@ function setCORS($bucket)
         ]);
 }
 
+
 if (isset($_POST['command']))
 {
 	$command=$_POST['command'];
@@ -141,6 +148,7 @@ if (isset($_POST['command']))
 	if ($command=="create")
 	{
 	    //echo setCORS(bucket());
+	    //setCORS(bucket());
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],

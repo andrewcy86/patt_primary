@@ -11,7 +11,8 @@ function S3MultiUpload(file) {
     this.PART_SIZE = 22 * 1024 * 1024;
 //     this.SERVER_LOC = '?'; // Location of the server
 
-this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index_wp6.php';
+//this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index_wp6.php';
+this.SERVER_LOC = '/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index_wp6.php';  
 
 //this.SERVER_LOC = '/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  
 //CHANGE TO this.SERVER_LOC = '/app/mu-plugins/pattracking/includes/admin/pages/scripts/index.php';  IN PRODUCTION
@@ -73,6 +74,7 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
     //console.log({unixnow:unixnow});
     console.log({self_fileInfo:self.fileInfo});
     console.log({SERVER_LOC:self.SERVER_LOC});
+    console.log( 'key name: ' + unixnow + '_' + self.file.name.replace(/\s/g, '') );
     obj_size = self.fileInfo.size;
     obj_type = self.fileInfo.type;
     

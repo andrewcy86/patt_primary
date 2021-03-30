@@ -1,11 +1,11 @@
 <?php
 
-//if ( ! defined( 'ABSPATH' ) ) {
-//	exit; // Exit if accessed directly
-//}
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
-require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+//$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+//require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
 
@@ -25,8 +25,6 @@ function flip_isset_diff($b, $a) {
 
     return $d;
 }
-
-// Remove credentials
 
 		$s3 = new Aws\S3\S3Client([
 			'region'  => $s3_region,

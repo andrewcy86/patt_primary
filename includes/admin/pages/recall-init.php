@@ -664,7 +664,6 @@ function wppatt_return_editor() {
 
 
 
-
 <!-- Pop-up snippet start from RFID.php-->
 <div id="wpsc_popup_background" style="display:none;"></div>
 <div id="wpsc_popup_container" style="display:none;">

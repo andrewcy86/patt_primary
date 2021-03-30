@@ -470,11 +470,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             if( flag != true && count > 1 && date_time_reg.test( parsedData[count][index_creation_date] ) == false ) {
                                 
                                 if( date_reg.test( parsedData[count][index_creation_date] ) == false ) {
-	                                alert("Invalid Creation Date for line " + (count + 1) + ". \n\nFormat must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or MM/DD/YYYY (ex: 1/13/2021)." );
-	                                flag = true;
+	                                if( parsedData[count][index_creation_date] != '00/00/0000' ) {
+		                                alert("Invalid Creation Date for line " + (count + 1) + ". \n\nFormat must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or MM/DD/YYYY (ex: 1/13/2021)." );
+		                                flag = true;
+	                                }
 	                            } else {
 		                            // If valid date without time, add time to date for insertion
-		                            parsedData[count][index_creation_date] = parsedData[count][index_creation_date] + ' 00:00:01';
+		                            //parsedData[count][index_creation_date] = parsedData[count][index_creation_date] + ' 00:00:01';
 	                            }
                             }
                             
@@ -498,7 +500,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 
                                 if( date_reg.test( parsedData[count][index_close_date] ) == false ) {
 	                                
-	                                if( parsedData[count][index_close_date] == null ) {
+	                                if( parsedData[count][index_close_date] == null || parsedData[count][index_close_date] == '00/00/0000' ) {
 										// nothing. Blanks is fine.
 	                                } else {
 		                                alert("Invalid Close Date for line " + (count + 1) + ". \n\nFormat must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30)." );
@@ -507,7 +509,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                                
 	                            } else {
 		                            // If valid date without time, add time to date for insertion
-		                            parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';
+		                            //parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';
 	                            }
                             }
 

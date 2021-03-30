@@ -1,11 +1,11 @@
 <?php
 
-//if ( ! defined( 'ABSPATH' ) ) {
-//	exit; // Exit if accessed directly
-//}
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
-$path = preg_replace('/wp-content.*$/','',__DIR__);
-include($path.'wp-load.php');
+//$path = preg_replace('/wp-content.*$/','',__DIR__);
+//include($path.'wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
