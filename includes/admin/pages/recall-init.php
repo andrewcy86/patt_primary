@@ -37,13 +37,6 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 ?>
 
-
-<div class="bootstrap-iso">
-  
-<!--   <h3>Recall Dashboard</h3> -->
-  
- <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
-
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
@@ -668,8 +661,7 @@ function wppatt_return_editor() {
  
 
 </div>
-</div>
-</div>
+
 
 
 
