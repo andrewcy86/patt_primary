@@ -152,6 +152,9 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
   <div class="col-sm-8 col-md-9 wpsc_it_body">
 
 <style>
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
 
 div.dataTables_wrapper {
         width: 100%;

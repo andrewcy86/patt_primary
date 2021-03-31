@@ -76,6 +76,16 @@ ob_start();
 
 <script>
 
+//Prevent page redirect on pressing enter in input field
+jQuery(document).on('keypress',function(e) {
+		if(e.which == 13) {
+		    //prevents page redirect on enter
+		    e.preventDefault();
+			dataTable.state.save();
+			dataTable.draw();
+		}
+	});
+
 function wpsc_edit_epa_contact(){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_epa_contact.php',{

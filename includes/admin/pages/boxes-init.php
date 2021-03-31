@@ -273,6 +273,9 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <br /><br />
 
 <style>
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
 
 div.dataTables_processing { 
     z-index: 1; 

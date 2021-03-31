@@ -178,7 +178,7 @@ foreach($box_list as $info){
             <td style="border: 1px solid #000000; width: 50px;">'.$boxlist_box.'</td>
             <td style="border: 1px solid #000000; width: 50px;">'.$boxlist_il_val.'</td>
             <td style="border: 1px solid #000000; width: 170px;">'.$boxlist_title.'</td>
-            <td style="border: 1px solid #000000; width: 110px;">'.$boxlist_date.'</td>
+            <td style="border: 1px solid #000000; width: 110px;">'.Patt_Custom_Func::get_converted_date($boxlist_date).'</td>
             <td style="border: 1px solid #000000; width: 60px;">'.$boxlist_contact.'</td>
             <td style="border: 1px solid #000000; width: 110px;">'.stripslashes($boxlist_sf).'</td>
             <td style="border: 1px solid #000000; width: 130px;">'.$boxlist_po.'</td>
