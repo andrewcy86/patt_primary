@@ -370,7 +370,7 @@ else {
      //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "title"=>$row['title'],
-     "date"=>$row['date'],
+     "date"=>Patt_Custom_Func::get_converted_date($row['date']),
      "epa_contact_email"=>$row['epa_contact_email'],
      "validation"=>$validation_icon . ' ' . $row['validation']
    );

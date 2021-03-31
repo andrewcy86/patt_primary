@@ -1,16 +1,3 @@
-[24-Feb-2021 21:24:29 UTC] WordPress database error Unknown column 'P' in 'where clause' for query SELECT DISTINCT pallet_id 
-FROM wpqa_wpsc_epa_boxinfo
-WHERE pallet_id <> '' AND 
-ticket_id = P-E-50974 made by fetch_palletid
-[24-Feb-2021 21:24:29 UTC] PHP Fatal error:  Uncaught Error: Call to a member function Output() on null in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php:45
-Stack trace:
-#0 {main}
-  thrown in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php on line 45
-[24-Feb-2021 21:24:34 UTC] PHP Fatal error:  Uncaught Error: Call to a member function Output() on null in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php:45
-Stack trace:
-#0 {main}
-  thrown in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php on line 45
-[24-Feb-2021 21:24:36 UTC] PHP Fatal error:  Uncaught Error: Call to a member function Output() on null in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php:45
-Stack trace:
-#0 {main}
-  thrown in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/pallet_label.php on line 45
+[31-Mar-2021 13:18:55 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum 
+FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo 
+WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id AND wpqa_wpsc_epa_boxinfo.ticket_id =9

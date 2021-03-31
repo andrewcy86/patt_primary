@@ -50,7 +50,7 @@ class MYPDF extends tcpdf {
 $obj_pdf->SetAutoPageBreak(TRUE, 2);
 $obj_pdf->SetFont('helvetica', '', 11);
         
-        $record_schedules = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, " . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum 
+        $record_schedules = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number as rsnum 
 FROM " . $wpdb->prefix . "epa_record_schedule, " . $wpdb->prefix . "wpsc_epa_boxinfo 
 WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " . $wpdb->prefix . "epa_record_schedule.id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
 //print_r($record_schedules);

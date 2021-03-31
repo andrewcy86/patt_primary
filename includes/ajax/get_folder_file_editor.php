@@ -344,11 +344,12 @@ else {
 
 <br><strong>Source Dimensions</strong><br />
 <select id="source_dimensions" name="source_dimensions">
-    <option value='ANSI Fields A' <?php if ($folderfile_source_dimensions == 'ANSI Fields A') echo 'selected' ; ?>>ANSI Fields A</option>
-    <option value='ANSI Fields B' <?php if ($folderfile_source_dimensions == 'ANSI Fields B') echo 'selected' ; ?>>ANSI Fields B</option>
-    <option value='ANSI Fields C' <?php if ($folderfile_source_dimensions == 'ANSI Fields C') echo 'selected' ; ?>>ANSI Fields C</option>
-    <option value='ANSI Fields D' <?php if ($folderfile_source_dimensions == 'ANSI Fields D') echo 'selected' ; ?>>ANSI Fields D</option>
-    <option value='ANSI Fields E' <?php if ($folderfile_source_dimensions == 'ANSI Fields E') echo 'selected' ; ?>>ANSI Fields E</option>
+    <option value='ANSI A' <?php if ($folderfile_source_dimensions == 'ANSI A') echo 'selected' ; ?>>ANSI A</option>
+    <option value='ANSI B' <?php if ($folderfile_source_dimensions == 'ANSI B') echo 'selected' ; ?>>ANSI B</option>
+    <option value='ANSI C' <?php if ($folderfile_source_dimensions == 'ANSI C') echo 'selected' ; ?>>ANSI C</option>
+    <option value='ANSI D' <?php if ($folderfile_source_dimensions == 'ANSI D') echo 'selected' ; ?>>ANSI D</option>
+    <option value='ANSI E' <?php if ($folderfile_source_dimensions == 'ANSI E') echo 'selected' ; ?>>ANSI E</option>
+    <option value='ANSI F' <?php if ($folderfile_source_dimensions == 'ANSI F') echo 'selected' ; ?>>ANSI F</option>
     <option value='Digital Source' <?php if ($folderfile_source_dimensions == 'Digital Source') echo 'selected' ; ?>>Digital Source</option>
     <option value='Other' <?php if ($folderfile_source_dimensions == 'Other') echo 'selected' ; ?>>Other</option>
 </select></br>

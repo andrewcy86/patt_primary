@@ -694,6 +694,19 @@ public static function get_parent_or_child( $identifier, $type) {
  * @return Boolean
  */
  
+public static function get_converted_date( $identifier ) {
+    global $wpdb;
+
+    $date_explode = explode('-', $identifier);
+    $converted_date = $date_explode[1] . "/" . $date_explode[2] . "/" . $date_explode[0];
+	return $converted_date;
+}
+
+/**
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as damaged
+ * @return Boolean
+ */
+ 
 public static function id_in_damaged( $identifier, $type) {
     global $wpdb;
     

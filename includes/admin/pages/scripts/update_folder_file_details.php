@@ -207,7 +207,8 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 if( (!empty($date)) && ($date != $old_date) ) {
 $data_update = array('date' => $date);
 $data_where = array('id' => $folderdocinfofileid);
-array_push($metadata_array,'Creation Date: '.$old_date.' > '.$date);
+
+array_push($metadata_array,'Creation Date: '. Patt_Custom_Func::get_converted_date($old_date) .' > '. Patt_Custom_Func::get_converted_date($date) );
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
@@ -243,7 +244,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 if( (!empty($close_date)) && ($close_date != $old_close_date) ) {
 $data_update = array('close_date' => $close_date);
 $data_where = array('id' => $folderfileid);
-array_push($metadata_array,'Close Date: '.$old_close_date.' > '.$close_date);
+array_push($metadata_array,'Close Date: '. Patt_Custom_Func::get_converted_date($old_close_date) .' > '. Patt_Custom_Func::get_converted_date($close_date));
 $wpdb->update($table_name, $data_update, $data_where);
 }
 
