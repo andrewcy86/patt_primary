@@ -165,8 +165,11 @@ $deliveryCode = $array['TrackReply']['CompletedTrackDetails']['TrackDetails']['S
 $deliveryStatus = $array['TrackReply']['CompletedTrackDetails']['TrackDetails']['StatusDetail']['Description'].' : '
 .$array['TrackReply']['CompletedTrackDetails']['TrackDetails']['StatusDetail']['CreationTime'];
 
+//New status codes, needs testing
 $status_delivered_array = array('AD', 'AR', 'DL');
-$status_shipped_array = array('PF', 'AA', 'PL', 'AC', 'PM', 'PU', 'AF', 'PX', 'AP', 'AR', 'CH', 'DD', 'DE', 'SE', 'DR', 'SF', 'DY', 'TR', 'EA', 'ED', 'CC', 'EO', 'CD', 'CP', 'IP');
+$status_shipped_array = array('AA','AC','AF','AP','AR','AX','CC','CD','CH','CP','DD','DE','DR','DS','DY','EA','ED','EO','EP','FD','HL','IT','IX','LO','OC','OD','OF','OX','IP','PD','PF','PL','PM','PU','PX','SE','SF','SP','TR');
+//$status_delivered_array = array('AD', 'AR', 'DL');
+//$status_shipped_array = array('PF', 'AA', 'PL', 'AC', 'PM', 'PU', 'AF', 'PX', 'AP', 'AR', 'CH', 'DD', 'DE', 'SE', 'DR', 'SF', 'DY', 'TR', 'EA', 'ED', 'CC', 'EO', 'CD', 'CP', 'IP');
 $table_name = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
 
 if ( preg_match('('.implode('|',$status_shipped_array).')', strtoupper($deliveryCode))){
@@ -394,7 +397,7 @@ $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
 }*/
 
 // IF SHIPPED ONLY AND NOT DELIVERED
-if ((!in_array(0, $shipped_array)) && (in_array(0, $delivered_array))) {
+if ( $status_id != $shipped_tag->term_id && (!in_array(0, $shipped_array)) && (in_array(0, $delivered_array))) {
 $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
 }
 

@@ -37,6 +37,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/po_rs_update_cron.php';
     }
     
+    // CRON for User Cleanup Update
+    public function wppatt_user_cleanup_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/user_cleanup_cron.php';
+    }
+    
 /*
     // No longer used, as all Decline status changes & PM Notifications are done in return_shipping_status_cron.php below. 
     // CRON for Decline Emails and PM Notifications

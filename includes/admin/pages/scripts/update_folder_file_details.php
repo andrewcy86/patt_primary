@@ -335,7 +335,7 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 
 //If user selects No then clear specific_access_restriction
 $get_use_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
-$use_restriction_no = $get_use_restriction_no->access_restriction;
+$use_restriction_no = $get_use_restriction_no->use_restriction;
 
 if($use_restriction_no == 'No') {
     $data_update_no = array('specific_use_restriction' => '');

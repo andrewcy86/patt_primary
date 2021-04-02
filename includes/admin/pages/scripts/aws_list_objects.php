@@ -5,15 +5,15 @@ require 'vendor/autoload.php';
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 
-$bucket = 'cg-93218e1b-b84f-4f89-8749-31d182676000';
+$bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
 
 // Instantiate the client.
 		$s3 = new Aws\S3\S3Client([
 			'region'  => 'us-gov-west-1',
 			'version' => 'latest',
 			'credentials' => [
-				'key'    => "AKIAR7FXZINYJOKVCEU3",
-				'secret' => "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",
+				'key'    => "AKIAR7FXZINYEYJXDFVK",
+				'secret' => "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",
 			]
 		]);
 

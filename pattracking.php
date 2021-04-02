@@ -99,6 +99,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_recall_reminder_cron', array($frontend, 'wppatt_recall_reminder_email_cron_schedule'));
         // Add Program Office/ Record Schedule CRON
         add_action( 'wppatt_po_rs_cron', array($frontend, 'wppatt_po_rs_cron_schedule'));
+        // Add User Cleanup CRON
+        add_action( 'wppatt_user_cleanup_cron', array($frontend, 'wppatt_user_cleanup_schedule'));
         
         // Add S3 Cleanup CRON
         add_action( 'wppatt_s3_cleanup_cron', array($frontend, 'wppatt_s3_cleanup_cron_schedule'));

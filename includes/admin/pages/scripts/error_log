@@ -1,184 +1,122 @@
-[29-Mar-2021 16:28:48 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 276
-[29-Mar-2021 16:28:48 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 293
-[29-Mar-2021 16:29:19 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 276
-[29-Mar-2021 16:29:19 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 293
-[29-Mar-2021 16:29:27 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 276
-[29-Mar-2021 16:29:27 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 293
-[29-Mar-2021 16:30:23 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 276
-[29-Mar-2021 16:30:23 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/recall_processing.php on line 293
-[30-Mar-2021 02:01:15 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT wpqa_wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
-                    wpqa_wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
-                    wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as Folderdoc_Info_id,
-                    wpqa_wpsc_epa_folderdocinfo_files.freeze,
-                    wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
-                    wpqa_wpsc_epa_folderdocinfo_files.title,  
-                    wpqa_wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
-                    wpqa_wpsc_epa_boxinfo.program_office_id,  
-                    box_destroyed,
-                    box_status,
-                    wpqa_wpsc_epa_boxinfo.box_id,
-                    wpqa_wpsc_epa_program_office.id as Program_Office_id_FK, 
-                    wpqa_wpsc_epa_program_office.office_acronym,
-                    wpqa_wpsc_epa_program_office.office_name,
-                    wpqa_epa_record_schedule.id as Record_Schedule_id_FK,
-                    wpqa_epa_record_schedule.Record_Schedule_Number,
-                    wpqa_epa_record_schedule.Schedule_Title,
-                    wpqa_wpsc_epa_boxinfo.record_schedule_id FROM wpqa_wpsc_epa_folderdocinfo_files  INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id  WHERE wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '0000008-5' LIMIT 1; made by Patt_Custom_Func::get_box_file_details_by_id, PATT_DB->get_row
-[30-Mar-2021 02:01:15 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT wpqa_wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
-                    wpqa_wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
-                    wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as Folderdoc_Info_id,
-                    wpqa_wpsc_epa_folderdocinfo_files.freeze,
-                    wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
-                    wpqa_wpsc_epa_folderdocinfo_files.title,  
-                    wpqa_wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
-                    wpqa_wpsc_epa_boxinfo.program_office_id,  
-                    box_destroyed,
-                    box_status,
-                    wpqa_wpsc_epa_boxinfo.box_id,
-                    wpqa_wpsc_epa_program_office.id as Program_Office_id_FK, 
-                    wpqa_wpsc_epa_program_office.office_acronym,
-                    wpqa_wpsc_epa_program_office.office_name,
-                    wpqa_epa_record_schedule.id as Record_Schedule_id_FK,
-                    wpqa_epa_record_schedule.Record_Schedule_Number,
-                    wpqa_epa_record_schedule.Schedule_Title,
-                    wpqa_wpsc_epa_boxinfo.record_schedule_id FROM wpqa_wpsc_epa_folderdocinfo_files  INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id  WHERE wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '0000008-5' LIMIT 1; made by Patt_Custom_Func::item_in_recall, Patt_Custom_Func::get_box_file_details_by_id, PATT_DB->get_row
-[30-Mar-2021 02:02:06 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT wpqa_wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
-                    wpqa_wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
-                    wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as Folderdoc_Info_id,
-                    wpqa_wpsc_epa_folderdocinfo_files.freeze,
-                    wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
-                    wpqa_wpsc_epa_folderdocinfo_files.title,  
-                    wpqa_wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
-                    wpqa_wpsc_epa_boxinfo.program_office_id,  
-                    box_destroyed,
-                    box_status,
-                    wpqa_wpsc_epa_boxinfo.box_id,
-                    wpqa_wpsc_epa_program_office.id as Program_Office_id_FK, 
-                    wpqa_wpsc_epa_program_office.office_acronym,
-                    wpqa_wpsc_epa_program_office.office_name,
-                    wpqa_epa_record_schedule.id as Record_Schedule_id_FK,
-                    wpqa_epa_record_schedule.Record_Schedule_Number,
-                    wpqa_epa_record_schedule.Schedule_Title,
-                    wpqa_wpsc_epa_boxinfo.record_schedule_id FROM wpqa_wpsc_epa_folderdocinfo_files  INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id  WHERE wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '0000037' LIMIT 1; made by Patt_Custom_Func::get_box_file_details_by_id, PATT_DB->get_row
-[30-Mar-2021 02:02:06 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT wpqa_wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
-                    wpqa_wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
-                    wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id as Folderdoc_Info_id,
-                    wpqa_wpsc_epa_folderdocinfo_files.freeze,
-                    wpqa_wpsc_epa_folderdocinfo_files.unauthorized_destruction, 
-                    wpqa_wpsc_epa_folderdocinfo_files.title,  
-                    wpqa_wpsc_epa_folderdocinfo_files.id as Folderdoc_Info_Files_id_FK,  
-                    wpqa_wpsc_epa_boxinfo.program_office_id,  
-                    box_destroyed,
-                    box_status,
-                    wpqa_wpsc_epa_boxinfo.box_id,
-                    wpqa_wpsc_epa_program_office.id as Program_Office_id_FK, 
-                    wpqa_wpsc_epa_program_office.office_acronym,
-                    wpqa_wpsc_epa_program_office.office_name,
-                    wpqa_epa_record_schedule.id as Record_Schedule_id_FK,
-                    wpqa_epa_record_schedule.Record_Schedule_Number,
-                    wpqa_epa_record_schedule.Schedule_Title,
-                    wpqa_wpsc_epa_boxinfo.record_schedule_id FROM wpqa_wpsc_epa_folderdocinfo_files  INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_folderdocinfo_files.folderdocinfo_id INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id  WHERE wpqa_wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '0000037' LIMIT 1; made by Patt_Custom_Func::item_in_recall, Patt_Custom_Func::get_box_file_details_by_id, PATT_DB->get_row
-[30-Mar-2021 17:38:47 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
+[02-Apr-2021 13:20:49 UTC] WordPress database error Unknown column 'COUNT' in 'field list' for query SELECT COUNT id
+        FROM wpqa_wpsc_epa_boxinfo
+        WHERE pallet_id = 'P-E-30621'
+[02-Apr-2021 14:12:49 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query 
+SELECT 
+wpqa_wpsc_epa_boxinfo.id as pk, 
+wpqa_wpsc_epa_boxinfo.id as box_data_id, 
+wpqa_wpsc_epa_boxinfo.box_status as box_status_id, 
+wpqa_wpsc_ticket.request_id as ticket,
+wpqa_wpsc_epa_boxinfo.box_id as active,
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_wpsc_epa_program_office.office_acronym as program_office,
+(SELECT wpqa_terms.name as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as box_status
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 
-region: (string)
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000134-3'
+[02-Apr-2021 14:12:53 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query 
+SELECT 
+wpqa_wpsc_epa_boxinfo.id as pk, 
+wpqa_wpsc_epa_boxinfo.id as box_data_id, 
+wpqa_wpsc_epa_boxinfo.box_status as box_status_id, 
+wpqa_wpsc_ticket.request_id as ticket,
+wpqa_wpsc_epa_boxinfo.box_id as active,
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_wpsc_epa_program_office.office_acronym as program_office,
+(SELECT wpqa_terms.name as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as box_status
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:40:16 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000134-3'
+[02-Apr-2021 14:13:23 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query 
+SELECT 
+wpqa_wpsc_epa_boxinfo.id as pk, 
+wpqa_wpsc_epa_boxinfo.id as box_data_id, 
+wpqa_wpsc_epa_boxinfo.box_status as box_status_id, 
+wpqa_wpsc_ticket.request_id as ticket,
+wpqa_wpsc_epa_boxinfo.box_id as active,
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_wpsc_epa_program_office.office_acronym as program_office,
+(SELECT wpqa_terms.name as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as box_status
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 
-region: (string)
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000135-1'
+[02-Apr-2021 14:13:44 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query 
+SELECT 
+wpqa_wpsc_epa_boxinfo.id as pk, 
+wpqa_wpsc_epa_boxinfo.id as box_data_id, 
+wpqa_wpsc_epa_boxinfo.box_status as box_status_id, 
+wpqa_wpsc_ticket.request_id as ticket,
+wpqa_wpsc_epa_boxinfo.box_id as active,
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_wpsc_epa_program_office.office_acronym as program_office,
+(SELECT wpqa_terms.name as box_status FROM wpqa_terms, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as box_status
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:42:27 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '0000001-1'
+[02-Apr-2021 14:14:27 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query 
+SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.id as box_data_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, 
+wpqa_terms.name as digitization_center,
+wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location,
+(SELECT wpqa_terms.name FROM wpqa_wpsc_epa_boxinfo, wpqa_terms WHERE wpqa_wpsc_epa_boxinfo.box_status = wpqa_terms.term_id AND wpqa_wpsc_epa_boxinfo.id = box_data_id) as status,
+wpqa_wpsc_epa_program_office.office_acronym as program_office,
+wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id
 
-region: (string)
-
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:43:00 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
-
-region: (string)
-
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:43:41 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
-
-region: (string)
-
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:44:57 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Missing required client configuration options: 
-
-region: (string)
-
-  A "region" configuration value is required for the "s3" service
-  (e.g., "us-west-2"). A list of available public regions and endpoints can be
-  found at http://docs.aws.amazon.com/general/latest/gr/rande.html. in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php:406
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php(302): Aws\ClientResolver->throwRequired(Array)
-#1 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/AwsClient.php(199): Aws\ClientResolver->resolve(Array, Object(Aws\HandlerList))
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/S3/S3Client.php(334): Aws\AwsCl in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/ClientResolver.php on line 406
-[30-Mar-2021 17:47:23 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[30-Mar-2021 17:47:49 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[30-Mar-2021 17:48:59 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[30-Mar-2021 17:49:30 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[30-Mar-2021 17:51:17 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1000 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[30-Mar-2021 18:32:17 UTC] PHP Fatal error:  Uncaught Aws\Exception\CredentialsException: Error retrieving credentials from the instance profile metadata service. (cURL error 28: Connection timed out after 1000 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://169.254.169.254/latest/meta-data/iam/security-credentials/) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php:242
-Stack trace:
-#0 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php(134): Aws\Credentials\InstanceProfileProvider->handleRetryableException(Object(GuzzleHttp\Exception\ConnectException), Array, 'Error retrievin...')
-#1 [internal function]: Aws\Credentials\InstanceProfileProvider->Aws\Credentials\{closure}()
-#2 /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/guzzlehttp/promises/src/Cor in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/vendor/aws/aws-sdk-php/src/Credentials/InstanceProfileProvider.php on line 242
-[31-Mar-2021 11:21:37 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_converted_date() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_folder_file_details.php:211
-Stack trace:
-#0 {main}
-  thrown in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_folder_file_details.php on line 211
-[31-Mar-2021 11:21:40 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_converted_date() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_folder_file_details.php:211
-Stack trace:
-#0 {main}
-  thrown in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/update_folder_file_details.php on line 211
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = 135

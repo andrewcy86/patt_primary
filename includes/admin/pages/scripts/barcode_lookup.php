@@ -85,7 +85,7 @@ SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, " . $wpdb->prefix . "wpsc
 " . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, " . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
 (SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
 " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office,
-" . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as record_schedule
+" . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number as record_schedule
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
@@ -179,7 +179,7 @@ SELECT
 " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
 " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, 
 " . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
-" . $wpdb->prefix . "epa_record_schedule.Record_Schedule_Number as rsnum,
+" . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number as rsnum,
 " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office,
 (SELECT " . $wpdb->prefix . "terms.name as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as box_status
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
@@ -505,7 +505,7 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 			}
 
 			if (!empty($folderfile_date)) {
-				echo "<strong>Creation Date:</strong> " . $folderfile_date . "<br />";
+				echo "<strong>Creation Date:</strong> " . Patt_Custom_Func::get_converted_date($folderfile_date) . "<br />";
 			}
 			
 			$folderfile_author_array = array();
@@ -537,7 +537,7 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 				echo "<strong>Site ID #:</strong> " . $folderfile_site_id . "<br />";
 			}
 			if (!empty($folderfile_close_date)) {
-				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
+				echo "<strong>Close Date:</strong> " . Patt_Custom_Func::get_converted_date($folderfile_close_date) . "<br />";
 			}
 			
 			if(!empty($folderfile_access_restriction)) {

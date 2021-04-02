@@ -90,7 +90,9 @@ ob_start();
 <!-- All inputs/dropdowns/datalists should be the same width -->
 
 <style>
-
+.datalist::-webkit-calendar-picker-indicator {
+  display: none;
+}
 select {
     width: 400px;
     height: 33px;
@@ -176,7 +178,7 @@ else {
 </br>
 
 <strong>Record Type</strong></br>
-<input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type'/>
+<input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type' class='datalist'/>
     <datalist id = 'RecordTypeList'>
         <option value='*Administrative Record Index'></option>
         <option value='*Agreement'></option>
@@ -288,7 +290,7 @@ else {
 </br>
 
 <strong>Source Type</strong></br>
-<input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf'/>
+<input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf' class='datalist'/>
     <datalist id = 'SourceFormatList'>
         <option value='4K'></option>
         <option value='Audio'></option>
