@@ -82,7 +82,7 @@ foreach ($get_all_users as $item)
         {
 
 			// Only proceed if user is determined to be inactive
-            if ($agent_id != '' && $active != 1)
+            if ($agent_id != '' && $active != 1 && $results >= 1)
             {
 				
                 // Remove the user from PATT
@@ -107,7 +107,7 @@ foreach ($get_all_users as $item)
                 $u->set_role('');
 
                 // Insert into log and print modified user information
-				//echo $user_id.', '.$agent_id.', '.$user_login.'<br />';
+				echo $active.', '.$user_id.', '.$agent_id.', '.$user_login.'<br />';
                 //print_r($user);
                 $lan_log_table = $wpdb->prefix . 'wpsc_epa_lan_log';
                 $wpdb->insert($lan_log_table, array(
