@@ -327,9 +327,10 @@ public static function id_in_physical_location( $identifier, $type ) {
         $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id
         FROM wpqa_wpsc_epa_scan_list a
         INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
         WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
-        AND c.folderdocinfofile_id = '" .  $identifier . "'");
+        AND d.folderdocinfofile_id = '" .  $identifier . "'");
 
         $scanning_id = $get_physical_location_id->scanning_id;
         $stagingarea_id = $get_physical_location_id->stagingarea_id;
@@ -341,9 +342,10 @@ public static function id_in_physical_location( $identifier, $type ) {
             $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
             FROM wpqa_wpsc_epa_scan_list a
             INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
-            INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+            INNER JOIN wpqa_wpsc_epa_folderdocinfo c ON c.box_id = b.id
+            INNER JOIN wpqa_wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
             WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
-            AND c.folderdocinfofile_id = '" .  $identifier . "'");
+            AND d.folderdocinfofile_id = '" .  $identifier . "'");
     
             $scanning_id = $get_physical_location_id->scanning_id;
             $stagingarea_id = $get_physical_location_id->stagingarea_id;
@@ -371,9 +373,10 @@ public static function id_in_physical_location( $identifier, $type ) {
     $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
     FROM wpqa_wpsc_epa_scan_list a
     INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
-    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
     WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
-    AND c.folderdocinfofile_id = '" .  $identifier . "'");
+    AND d.folderdocinfofile_id = '" .  $identifier . "'");
 
     $scanning_id = $get_physical_location_id->scanning_id;
     $stagingarea_id = $get_physical_location_id->stagingarea_id;
@@ -385,9 +388,10 @@ public static function id_in_physical_location( $identifier, $type ) {
         $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location
         FROM wpqa_wpsc_epa_scan_list a
         INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
-        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
         WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL) 
-        AND c.folderdocinfofile_id = '" .  $identifier . "'");
+        AND d.folderdocinfofile_id = '" .  $identifier . "'");
 
         $scanning_id = $get_physical_location_id->scanning_id;
         $stagingarea_id = $get_physical_location_id->stagingarea_id;
@@ -466,8 +470,9 @@ public static function id_in_box_destroyed( $identifier, $type ) {
     else if($type == 'folderfile') {
         $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
-        WHERE b.folderdocinfofile_id = '" .  $identifier . "'");
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+        WHERE c.folderdocinfofile_id = '" .  $identifier . "'");
         $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
 	        
 		if ($box_destroyed > 0) {
@@ -480,8 +485,9 @@ public static function id_in_box_destroyed( $identifier, $type ) {
     else if($type == 'folderfile_archive') {
         $get_box_destroyed_data = $wpdb->get_row("SELECT a.box_destroyed as total_box_destroyed
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
-        WHERE b.folderdocinfofile_id = '" .  $identifier . "'");
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+        WHERE c.folderdocinfofile_id = '" .  $identifier . "'");
         $box_destroyed = $get_box_destroyed_data->total_box_destroyed;
 	        
 		if ($box_destroyed > 0) {
@@ -538,7 +544,7 @@ public static function id_in_rescan( $identifier, $type ) {
 }
 
 /**
- * Determine if ID (Request,Box,Folder/File) contains a document that has been validated
+ * Determine if ID (Request,Box,Folder/File) contains a document marked as freeze
  * @return Boolean
  */
  
@@ -546,15 +552,17 @@ public static function id_in_validation( $identifier, $type ) {
     global $wpdb;
     
     if($type == 'box') {
-        $get_validation_data = $wpdb->get_row("SELECT SUM(b.validation) as total_validation
+        $get_validation_data = $wpdb->get_row("SELECT SUM(c.validation) as total_validation
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $validation_sum = $get_validation_data->total_validation;
 	   
-	   $get_file_count = $wpdb->get_row("SELECT COUNT(b.id) as total
+	   $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $file_count = $get_file_count->total;
 	   
@@ -567,15 +575,17 @@ public static function id_in_validation( $identifier, $type ) {
     }
     
     else if($type == 'box_archive') {
-        $get_validation_data = $wpdb->get_row("SELECT SUM(b.validation) as total_validation
+        $get_validation_data = $wpdb->get_row("SELECT SUM(c.validation) as total_validation
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $validation_sum = $get_validation_data->total_validation;
 	   
-	   $get_file_count = $wpdb->get_row("SELECT COUNT(b.id) as total
+	   $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $file_count = $get_file_count->total;
 	   
@@ -631,7 +641,7 @@ public static function get_validation_user( $identifier ) {
     $get_username_validated = $wpdb->get_row("SELECT b.user_login
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
     INNER JOIN " . $wpdb->prefix . "users b ON b.ID = a.validation_user_id
-    WHERE a.folderdocinfofile_id = '" .  $identifier . "'");
+    WHERE folderdocinfofile_id = '" .  $identifier . "'");
     $username_validated = $get_username_validated->user_login;
         
 	if (!empty($username_validated)) {
@@ -701,10 +711,11 @@ public static function id_in_damaged( $identifier, $type) {
     global $wpdb;
     
     if($type == 'request') {
-        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(d.damaged) as total_damaged
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $damaged_sum = $get_damaged_data->total_damaged;
 	        
@@ -717,10 +728,11 @@ public static function id_in_damaged( $identifier, $type) {
     }
     
     else if($type == 'request_archive') {
-        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(d.damaged) as total_damaged
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $damaged_sum = $get_damaged_data->total_damaged;
 	        
@@ -733,9 +745,10 @@ public static function id_in_damaged( $identifier, $type) {
     }
     
      else if($type == 'box') {
-        $get_damaged_data = $wpdb->get_row("SELECT SUM(b.damaged) as total_damaged
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $damaged_sum = $get_damaged_data->total_damaged;
 	        
@@ -748,9 +761,10 @@ public static function id_in_damaged( $identifier, $type) {
     }
     
     else if($type == 'box_archive') {
-        $get_damaged_data = $wpdb->get_row("SELECT SUM(b.damaged) as total_damaged
+        $get_damaged_data = $wpdb->get_row("SELECT SUM(c.damaged) as total_damaged
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $damaged_sum = $get_damaged_data->total_damaged;
 	        
@@ -803,10 +817,11 @@ public static function id_in_freeze( $identifier, $type ) {
     global $wpdb;
     
     if($type == 'request') {
-        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(d.freeze) as total_freeze
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $freeze_sum = $get_freeze_data->total_freeze;
 	        
@@ -819,10 +834,11 @@ public static function id_in_freeze( $identifier, $type ) {
     }
     
     else if($type == 'request_archive') {
-        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(d.freeze) as total_freeze
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $freeze_sum = $get_freeze_data->total_freeze;
 	        
@@ -835,9 +851,10 @@ public static function id_in_freeze( $identifier, $type ) {
     }
     
     else if($type == 'box') {
-        $get_freeze_data = $wpdb->get_row("SELECT SUM(b.freeze) as total_freeze
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $freeze_sum = $get_freeze_data->total_freeze;
 	        
@@ -850,9 +867,10 @@ public static function id_in_freeze( $identifier, $type ) {
     }
     
     else if($type == 'box_archive') {
-        $get_freeze_data = $wpdb->get_row("SELECT SUM(b.freeze) as total_freeze
+        $get_freeze_data = $wpdb->get_row("SELECT SUM(c.freeze) as total_freeze
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $freeze_sum = $get_freeze_data->total_freeze;
 	        
@@ -906,10 +924,11 @@ public static function id_in_unauthorized_destruction( $identifier, $type ) {
     global $wpdb;
     
     if($type == 'request') {
-        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(d.unauthorized_destruction) as total_unauthorized_destruction
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
@@ -922,10 +941,11 @@ public static function id_in_unauthorized_destruction( $identifier, $type ) {
     }
     
     if($type == 'request_archive') {
-        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(d.unauthorized_destruction) as total_unauthorized_destruction
         FROM " . $wpdb->prefix . "wpsc_ticket a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
         WHERE a.request_id = '" .  $identifier . "'");
         $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
@@ -938,9 +958,10 @@ public static function id_in_unauthorized_destruction( $identifier, $type ) {
     }
     
     else if($type == 'box') {
-        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(b.unauthorized_destruction) as total_unauthorized_destruction
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
@@ -953,9 +974,10 @@ public static function id_in_unauthorized_destruction( $identifier, $type ) {
     }
     
     else if($type == 'box_archive') {
-        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(b.unauthorized_destruction) as total_unauthorized_destruction
+        $get_unauthorized_destruction_data = $wpdb->get_row("SELECT SUM(c.unauthorized_destruction) as total_unauthorized_destruction
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = b.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
         WHERE a.box_id = '" .  $identifier . "'");
         $unauthorized_destruction_sum = $get_unauthorized_destruction_data->total_unauthorized_destruction;
 	        
@@ -1766,8 +1788,9 @@ public static function id_in_recall( $identifier, $type ) {
                 $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Item_Number
                 FROM " . $wpdb->prefix . "epa_record_schedule a
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
-                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
                 $record_schedule = $get_record_schedule->Schedule_Item_Number;
                 
                 return $record_schedule;
@@ -1776,8 +1799,9 @@ public static function id_in_recall( $identifier, $type ) {
                 $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Item_Number
                 FROM " . $wpdb->prefix . "epa_record_schedule a
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
-                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
                 $record_schedule = $get_record_schedule->Schedule_Item_Number;
                 
                 return $record_schedule;
@@ -1802,17 +1826,19 @@ public static function id_in_recall( $identifier, $type ) {
             else if($type == 'folderfile') {
                 $get_pallet_id = $wpdb->get_row("SELECT DISTINCT a.pallet_id
                 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
-                WHERE b.folderdocinfofile_id = '" . $id . "'");
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.box_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
                 $pallet_id = $get_pallet_id->pallet_id;
                 
                 return $pallet_id;
             }
             else if($type == 'folderfile_archive') {
                 $get_pallet_id = $wpdb->get_row("SELECT DISTINCT a.pallet_id
-                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.box_id = a.id
-                WHERE b.folderdocinfofile_id = '" . $id . "'");
+                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive b ON b.box_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.folderdocinfo_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
                 $pallet_id = $get_pallet_id->pallet_id;
                 
                 return $pallet_id;
@@ -1839,8 +1865,9 @@ public static function id_in_recall( $identifier, $type ) {
                 $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_acronym
                 FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
-                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
                 $program_office = $get_program_office->office_acronym;
                 
                 return $program_office;
@@ -1849,8 +1876,9 @@ public static function id_in_recall( $identifier, $type ) {
                 $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_acronym
                 FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
-                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive c ON c.box_id = b.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive d ON d.folderdocinfo_id = c.id
+                WHERE d.folderdocinfofile_id = '" . $id . "'");
                 $program_office = $get_program_office->office_acronym;
                 
                 return $program_office;
@@ -3256,7 +3284,7 @@ public static function id_in_recall( $identifier, $type ) {
         }
         
         //Function to obtain box ID, title, date and contact 
-        /*
+        
         public static function fetch_box_content($id)
         {
             global $wpdb; 
@@ -3283,7 +3311,7 @@ public static function id_in_recall( $identifier, $type ) {
             }
             return $array;
         }
-        */
+        
         //Function to obtain box ID, location, shelf, bay and index from ticket 
         /*
         public static function fetch_box_details($id)
