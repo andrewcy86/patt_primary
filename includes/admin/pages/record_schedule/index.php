@@ -2,8 +2,8 @@
  include 'db_connection.php';
  $conn = OpenCon();
 
- $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Number, Program, Applicability, Revised 
- FROM wpqa_epa_record_schedule
+ $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, Revised_Date
+ FROM " . $wpdb->prefix . "epa_record_schedule
  WHERE Reserved_Flag = 0 and id != '-99999'
  ORDER BY Schedule_Number ASC";  
  $result = mysqli_query($conn, $query);  
@@ -26,7 +26,7 @@
                 <h3 align="center">Record Schedule</h3>  
                 <br />  
                 <div class="table-responsive">  
-                     <table id="rschedule" class="table table-striped table-bordered">  
+                     <table id="rschedule" class="table table-striped table-bordered stripe">  
                           <thead>  
                                <tr>  
                                 <th>No.</th>
@@ -44,10 +44,10 @@
                                <tr>  
                                     <td><a href="details.php?rs='.$row["Schedule_Number"].'">'.$row["Schedule_Number"].'</a></td>  
                                     <td>'.$row["Schedule_Title"].'</td>  
-                                    <td>'.$row["Function_Number"].'</td>  
+                                    <td>'.$row["Function_Code"].'</td>  
                                     <td>'.$row["Program"].'</td>  
                                     <td>'.$row["Applicability"].'</td>
-                                    <td>'.$row["Revised"].'</td>
+                                    <td>'.Patt_Custom_Func::get_converted_date($row["Revised_Date"]).'</td>
                                </tr>  
                                ';  
                           }  

@@ -97,16 +97,6 @@ $officeCode = $po_item['officeCode'];
 $officeAcronym = $po_item['officeAcronym'];
 $officeName = $po_item['officeName'];
 $parentOfficeCode = $po_item['parentOfficeCode'];
-
-/*
-//Remove - if no characters after -
-$preg_replace_program_office = preg_replace("/\([^)]+\)/","",$officeAcronym);
-if(substr($preg_replace_program_office, -1) == '-') {
-    $office_acronym = substr($preg_replace_program_office, 0, -1);
-} else {
-    $office_acronym = $preg_replace_program_office;
-}
-*/
 }
 
 //INSERT STATEMENT
@@ -254,7 +244,7 @@ $Schedule_Number = $rs_item['scheduleNumber'];
 $Schedule_Title = addcslashes($rs_item['scheduleTitle'], "'");
 $Item_Number = $rs_item['itemNumber'];
 $Item_Title = addcslashes($rs_item['itemTitle'], "'");
-$Function_Code = addcslashes($rs_item['functionCode'], "'");
+$Function_Code = addcslashes(intval($rs_item['functionCode']), "'");
 $Function_Title = $rs_item['functionTitle'];
 $Program = $rs_item['program'];
 $Applicability = $rs_item['applicability'];

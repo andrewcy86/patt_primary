@@ -87,7 +87,7 @@ foreach($get_log as $info){
     
     $tbl .= '<tr>
             <td style="border: 1px solid #000000; width: 45px;">'.$log_id.'</td>
-            <td style="border: 1px solid #000000; width: 153px;">'.$date->format('m-d-Y h:i:s a').' EST</td>
+            <td style="border: 1px solid #000000; width: 153px;">'.$date->format('m/d/Y h:i:s a').' EST</td>
             <td style="border: 1px solid #000000; width: 365px;">'.$log_content.'</td>
             </tr>';
     

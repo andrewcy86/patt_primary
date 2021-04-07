@@ -862,7 +862,7 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
             }
             
             if(!empty($location_program_office)) {
-                
+                /*
                 //Remove - if no characters after -
                 $preg_replace_program_office = preg_replace("/\([^)]+\)/","",$location_program_office);
                 if(substr($preg_replace_program_office, -1) == '-') {
@@ -870,8 +870,8 @@ if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || 
                 } else {
                     $new_program_office = $preg_replace_program_office;
                 }
-                
-                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong><br />' . $new_program_office . '</div>';
+                */
+                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong><br />' . $location_program_office . '</div>';
             }
             else {
                 echo '<div class="wpsp_sidebar_labels"><strong style="color:red">Program Office:<br /> REASSIGN IMMEDIATELY</strong> </div>';

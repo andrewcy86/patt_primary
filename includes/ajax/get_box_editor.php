@@ -143,7 +143,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_program_office
 WHERE office_acronym  = '" . $value . "'");
     $program_office_id = $program_office->office_code;
     $program_office_name = $program_office->office_name;
-    
+/*
     //Remove - if no characters after -
     $preg_replace_program_office = preg_replace("/\([^)]+\)/","",$value);
     if(substr($preg_replace_program_office, -1) == '-') {
@@ -151,8 +151,9 @@ WHERE office_acronym  = '" . $value . "'");
     } else {
         $new_program_office = $preg_replace_program_office;
     }
+*/
     ?>
-        <option data-value='<?php echo $program_office_id; ?>' value='<?php echo $new_program_office . ' : ' . $program_office_name; ?>'></option>
+        <option data-value='<?php echo $program_office_id; ?>' value='<?php echo $value . ' : ' . $program_office_name; ?>'></option>
      <?php } ?>
      </datalist>
 

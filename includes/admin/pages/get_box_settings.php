@@ -23,12 +23,14 @@ if( !taxonomy_exists('wpsc_box_statuses') ) {
 
 }
 
+/*
 $term = wp_insert_term( 'Destruction of Source', 'wpsc_box_statuses' );
 	if (!is_wp_error($term) && isset($term['term_id'])) {
 		add_term_meta ($term['term_id'], 'wpsc_box_status_load_order', 16);
 		add_term_meta ($term['term_id'], 'wpsc_box_status_color', '#ffffff');
 		add_term_meta ($term['term_id'], 'wpsc_box_status_background_color', '#d16464');
 	}
+*/
 
 // Moved to class-wppatt-admin.php
 

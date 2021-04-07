@@ -1,76 +1,9 @@
 <?php	
 	$new_path = WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/s3upload_wp6.js';
+	
 	ob_start();
 	
-/*
-	require 'vendor/autoload.php';
 
-	use Aws\S3\S3Client;
-	use Aws\Exception\AwsException;
-	use Aws\S3\MultipartUploader;
-	use Aws\Exception\MultipartUploadException;
-	
-	
-	function bucket() {
-		//include WPPATT_UPLOADS.'api_authorization_strings.php';
-		$s3_bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
-	    return $s3_bucket;
-	//	return AWS_S3_BUCKET;
-	}
-	
-	function region() {
-		//include WPPATT_UPLOADS.'api_authorization_strings.php';
-		$s3_region ='us-gov-west-1';
-	    return $s3_region;
-	//	return AWS_S3_REGION;
-	}
-	
-	function s3_key() {
-		$s3_key = 'AKIAR7FXZINYEYJXDFVK';
-		return $s3_key;
-	}
-	
-	function s3_secret() {
-		$s3_secret ='XtiRrMaHA048yG8bKgNbBxHPe9O27WJ4LvYQ7zlk';
-		return $s3_secret;
-	}
-
-	
-	//$s3Client = new S3Client([
-	//    'profile' => 'default',
-	//    'region' => 'us-west-2',
-	//    'version' => '2006-03-01'
-	//]);
-	
-	$s3Client = new S3Client([
-	    'version' => 'latest',
-	    'region'  => region(),
-	    'signature_version' => 'v4',
-	    //'profile' => 'default',
-	]);
-	
-	// Use multipart upload
-	$source = WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/page.htm';
-	$uploader = new MultipartUploader($s3Client, $source, [
-	    'bucket' => bucket(),
-	    'key' => 'test_page.htm',
-	]);
-*/
-	
-/*
-	try {
-	    $result = $uploader->upload();
-	    echo "Upload complete: {$result['ObjectURL']}\n";
-	} catch (MultipartUploadException $e) {
-	    echo $e->getMessage() . "\n";
-	    echo 'fail<br>';
-	}
-*/
- 
-	echo '<br>post try<br>';
-	
-	
-	
 	
 	
 ?>
@@ -221,7 +154,7 @@ canvas {
 	<div class="form-group form-group-lg">
 <!-- 		<p>Upload digitized files for transfer to ECMS here.</p> -->
 		
-		<label class="col-sm-2 control-label">Upload File<span style="color:red;">*</span> </label>
+		<label class="col-sm-2 control-label">Upload Single File<span style="color:red;">*</span> </label>
 		<div class="col-sm-10">
 			<fieldset id='uploadForm' >
 			<form>

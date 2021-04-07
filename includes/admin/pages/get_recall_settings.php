@@ -33,6 +33,10 @@ if( !taxonomy_exists('wppatt_recall_statuses') ) {
         'slug'        => 'recalled'
     )
 */
+
+// Moved to class-wppatt-admin.php
+
+/*
 	$term = wp_insert_term( 'Recalled', 'wppatt_recall_statuses' );
 	if (!is_wp_error($term) && isset($term['term_id'])) {
 	  //$load_order = $wpdb->get_var("select max(meta_value) as load_order from {$wpdb->prefix}termmeta WHERE meta_key='wpsc_status_load_order'");
@@ -103,6 +107,7 @@ if( !taxonomy_exists('wppatt_recall_statuses') ) {
 	  add_term_meta ($term['term_id'], 'wppatt_recall_status_color', '#ffffff');
 	  add_term_meta ($term['term_id'], 'wppatt_recall_status_background_color', '#000000');
 	}
+*/
 
 //
 // END register taxonomy 

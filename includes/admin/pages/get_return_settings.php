@@ -27,7 +27,10 @@ if( !taxonomy_exists('wppatt_return_statuses') ) {
 }
 */
 
+// Moved to class-wppatt-admin.php
+
 // $term = wp_insert_term( 'Return Initiated', 'wppatt_return_statuses' );
+/*
 $term = wp_insert_term( 'Decline Initiated', 'wppatt_return_statuses' );
 if (!is_wp_error($term) && isset($term['term_id'])) {
   add_term_meta ($term['term_id'], 'wppatt_return_status_load_order', 0);
@@ -61,6 +64,7 @@ if (!is_wp_error($term) && isset($term['term_id'])) {
   add_term_meta ($term['term_id'], 'wppatt_return_status_color', '#ffffff');
   add_term_meta ($term['term_id'], 'wppatt_return_status_background_color', '#000000');
 }
+*/
 
 
 // Register Return Reason Taxonomy

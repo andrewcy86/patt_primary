@@ -30,6 +30,8 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 			//include WPPATT_ABSPATH . 'asset/js/batch_uploader_save.php';
 			
 			$this->print_listing_form_block_batch_upload();
+			//$this->print_listing_form_block_batch_upload_files();
+			
 			wp_enqueue_script( 'batch-uploader-save-js', WPPATT_PLUGIN_URL . 'asset/js/batch_uploader_save.js', array(), time(), true );
 			
 			wp_localize_script(
@@ -168,7 +170,7 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 				<div id="alert_status_file_list" class="alert_spacing"></div>
 				<!-- Beginning of new datatable -->
 				<form  >
-					<div class="box-body table-responsive" id="boxdisplaydiv"
+					<div class="box-body table-responsive" id="boxdisplaydiv_files"
 						style="width:100%;padding-bottom: 20px;padding-right:20px;padding-left:15px;margin: 0 auto;">
 						<label class="wpsc_ct_field_label">Batch Upload List <span style="color:red;">*</span></label>
 				
@@ -205,13 +207,42 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 <!-- 					<?php //include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice.php'; ?> -->
 					<?php include WPPATT_ABSPATH . 'includes/admin/pages/scripts/s3_modal_slice_wp6.php'; ?>
 				</div>
-			
+				
+				
+				<div id="batch-uploader-dropzone-files" >
+					<form >
+						<div class="box-body table-responsive" id="boxdisplaydiv_files"
+							style="width:100%;padding-bottom: 20px;padding-right:20px;padding-left:15px;margin: 0 auto;">
+							<label class="wpsc_ct_field_label">Batch Upload Files <span style="color:red;">*</span></label>
+					
+							<!-- DropZone xls File Drop Uploader -->
+							<div id="dzBatchUpload_files" class="dropzone">
+								<div class="fallback">
+									<input name="file" type="file" />
+								</div>
+								<div class="dz-default dz-message">
+									<button class="dz-button" type="button">Drop your files here to upload (what is not allowed?)</button>
+								</div>
+							</div>
+							<div style="margin: 10px 0 10px;" id="batch_list_attachment" class="row spreadsheet_container"></div>
+					
+							
+							
+							<!-- Batch List File Upload Validation -->
+							<input type="hidden" id="batch_list_upload_files" name="batch_list_upload_cr" value="0" />
+						</div>
+					</form>
+					
+				</div>
 			
 			</div>
 			
 			
 			<?php 
 		}
+		
+		
+		
 	
 	}
 

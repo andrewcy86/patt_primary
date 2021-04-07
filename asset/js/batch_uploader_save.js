@@ -1,4 +1,7 @@
 var theFile = {};
+var batchFiles = {
+	file_list: []
+};
 
 jQuery(document).ready(function(){
     //Dropzone.autoDiscover = false;
@@ -37,9 +40,60 @@ jQuery(document).ready(function(){
                     });
                 }
             };
-            var uploader = document.querySelector('#dzBatchListUpload');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
-                  
+            var uploader = document.querySelector('#dzBatchListUpload');            
+            var newDropzone = new Dropzone(uploader, dropzoneOptions);
+            
+            
+            
+            var dropzoneOptions_multi_files = {
+                url: "test2.php",
+                autoProcessQueue: false,
+                addRemoveLinks: true,
+                uploadMultiple: true,
+                parallelUploads:10,
+                maxFiles: 100,
+                acceptedFiles: '.xlsx, .xlsm, .pdf',
+                accept: function (file, done) {
+                    console.log({file:file, done:done});
+                    
+                    if( batchFiles.file_list.indexOf( file.name ) >= 0 ) {
+	                    
+	                    console.log('Error: duplicate file name');
+	                    
+	                    file._removeLink.click();
+	                    
+                    } else {
+	                    
+	                    batchFiles.file_list.push( file.name );
+	                    
+	                    console.log( '--- before S3 upload ---' );
+	                    upload( file );
+	                    
+	                    
+                    }
+                    
+                    
+                    //batchFiles.file = file;	
+                    console.log({batchFiles:batchFiles});
+                    //jQuery('#batch_list_upload_files').val(1);
+                    console.log('Batch the upload.');
+                    //batch_spreadsheet_new_upload('batch_list_attachment','spreadsheet_attachment', file);
+                    
+                },
+                init: function () {
+                    this.on("maxfilesexceeded", function() {
+                        if (this.files[1]!=null){
+                            this.removeFile(this.files[0]);
+                        }
+                    });
+                    this.on("error", function (file) {
+                        if (!file.accepted) this.removeFile(file);
+                    });
+                }
+            };
+            var uploader_files = document.querySelector('#dzBatchUpload_files');
+            var newDropzone_files = new Dropzone(uploader_files, dropzoneOptions_multi_files);      
+
         //} 
    // });
 });

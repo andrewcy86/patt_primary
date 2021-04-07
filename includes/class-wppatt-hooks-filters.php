@@ -181,6 +181,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$folder_file_sub_counter = 1;
 			$box_id_legacy = $request_id . '-1'; 
 			$epa_contact_legacy = '';
+			$is_parent = true;
 			
 			
 			// DEBUG START
@@ -222,6 +223,17 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 */
 			// DEBUG END
 			
+			// Loop Details
+			// If new Box in Request
+			// Insert folder doc info - OLD changed up
+			// PREP DATA for Folder Doc Info Files
+			// Validation
+			//   If !validation --> delete ticket
+			// ELECTRONIC FILE - Folder Doc Info File
+			// PAPER FILE - Folder Doc Info File
+			//   !superfund
+			//   & superfun
+			
 			
 
 			// Loop through box data
@@ -230,6 +242,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// Set Box ID and box number
 				$box_id = $request_id . '-' . $boxinfo['Box'];
 				$box_num = $boxinfo['Box'];
+				
+				$boxinfo['Parent/Child'] = trim(strtoupper($boxinfo['Parent/Child']));
 				
 				if( $boxinfo['Parent/Child'] == 'P' ) {
 					$parent_child_single = 'parent';
@@ -428,7 +442,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 */
 					}
 					
-				}
+				} // end new box
 				
 				
 				// EPA Contact for Lan ID and Lan ID Details
@@ -445,23 +459,30 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 				}
 				
+				
+				// Prep Close date
+				if( $boxinfo['Close Date'] == '' ) {
+					$new_date = '';
+				} else {
+					$datetime = new DateTime();
+					//$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
+					$new_date = $datetime->createFromFormat( 'm/d/Y', $boxinfo['Close Date']);
+					//$new_date = $new_date->format( 'Y-m-d H:i:s' );
+					$new_date = $new_date->format( 'Y-m-d' );
+				}
+				
 				//
 				// Insert folder doc info 
 				//
 				
-				if( $parent_child_single != 'child' ) {
+				
+// 				if( $parent_child_single != 'child' || ( $box !== $box_num ) ) {
+				//if( $parent_child_single != 'child' ) {
 				// Now: every entry sans child
 					
-					if( $boxinfo['Close Date'] == '' ) {
-						$new_date = '';
-					} else {
-						$datetime = new DateTime();
-						//$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
-						$new_date = $datetime->createFromFormat( 'm/d/Y', $boxinfo['Close Date']);
-						//$new_date = $new_date->format( 'Y-m-d H:i:s' );
-						$new_date = $new_date->format( 'Y-m-d' );
-					}
 					
+					
+/*
 					$folderdocarray = array(
 						'folderdocinfo_id' => $docinfo_id,
 						'author' => "{$boxinfo['Creator']}",
@@ -476,6 +497,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						'date_created' => gmdate( 'Y-m-d H:i:s' ),
 						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 					);
+*/
 					
 					//
 					// D E B U G
@@ -518,8 +540,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					
 					// Save into Folder Doc Info
-					$folderdocinfo_id = $this->create_new_folderdocinfo( $folderdocarray );
-					$row_counter++;
+					//$folderdocinfo_id = $this->create_new_folderdocinfo( $folderdocarray );
+					//$row_counter++;
 					
 
 					
@@ -565,7 +587,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					// DEBUG - END
 
 					
-				} // Remove when removing $boxinfo['Folder/Filename'] check. Allows parent to be electronic // ADDED new if !child
+				//} // Remove when removing $boxinfo['Folder/Filename'] check. Allows parent to be electronic // ADDED new if !child
 				
 				
 				//
@@ -573,21 +595,32 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// Add data to folderdocinfo_files
 				//
 				
+				// for naming convention
+				$row_counter++;
+				
 				// Get & Set folderdocinfofile_id
 				if( $parent_child_single == 'parent' ) {
 					$folder_file_counter++;
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_counter = 1; //Reset for new file folder
 					$folder_file_sub_id = $folder_file_id;
+					
+					$is_parent = true;
+					
 				} elseif( $parent_child_single == 'child') {
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
 					$folder_file_sub_counter++; //Increment it for next file.
-				} elseif( $parent_child_single == 'single' ) {
+					
+					$is_parent = false;
+					
+				} elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$folder_file_counter++;
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_counter = 1; //Reset for new file folder
 					$folder_file_sub_id = $folder_file_id;
+					
+					$is_parent = false;
 				}
 				
 				// Get & Set relation_part & relation_part_of
@@ -784,6 +817,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				}
 				
 				
+				// Prep more Data
+				
 				// Fix issue
 				if( is_null( $boxinfo['Specific Access Restrictions'] ) ) {
 					$SAR = '';
@@ -802,6 +837,19 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				} else {
 					$RH = $boxinfo['Rights Holder'];
 				}
+				
+				if( $is_parent ) {
+					// temp parent_id
+					$parent_id = 1;
+				} else {
+					// use previous $parent_id
+				}
+				
+				$folderdocfiles_id_FAKE = 1;
+				
+				// Convert Date
+				$time = strtotime( $boxinfo['Creation Date'] );
+				$newdatetimeformat = date( 'Y-m-d' ,$time );
 				
 				
 				// 
@@ -833,18 +881,42 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						fclose( $file );
 					}
 					
+/*
 					// Convert Date
 					$time = strtotime( $boxinfo['Creation Date'] );
 					//$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time );
 					$newdatetimeformat = date( 'Y-m-d' ,$time );
+*/
 				
 					// 
 					// Save into folderdocinfo_files - Electronic File
 					//
 					
+					// NEW
+					
+/*
+					$folderdocarray = array(
+						'folderdocinfo_id' => $docinfo_id,
+						'author' => "{$boxinfo['Creator']}",
+						'addressee' => "{$boxinfo['Addressee']}",
+						'site_name' => "{$boxinfo['Site Name']}",
+						'siteid' => "{$boxinfo['Site ID #']}",
+						'close_date' => $new_date,
+						'folder_identifier' => "{$boxinfo['Folder Identifier']}",
+						'box_id' => $boxinfo_id,
+						'essential_record' => "{$essential_record}",
+						'date_created' => gmdate( 'Y-m-d H:i:s' ),
+						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+					);
+*/
+					
+					
+					
 					// ECMS FDIF data
 					$folderdocfiles_info = [
-						'folderdocinfo_id'  => $folderdocinfo_id, 
+						'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+						'parent_id' => $parent_id,
+						'box_id' => $boxinfo_id,
 						'folderdocinfofile_id'   => $folder_file_sub_id,
 						'doc_regid' => $region_id,
 						'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
@@ -867,6 +939,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						'relation_part' => $x_of,
 						'relation_part_of' => $of_y,
 						'record_type' => $boxinfo['Record Type'],
+						'author' => "{$boxinfo['Creator']}",
+						'addressee' => "{$boxinfo['Addressee']}",
+						'site_name' => "{$boxinfo['Site Name']}",
+						'siteid' => "{$boxinfo['Site ID #']}",
+						'close_date' => $new_date,
+						'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
+						'essential_record' => "{$essential_record}",
+						'date_created' => gmdate( 'Y-m-d H:i:s' ),
+						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 					];
 					
 					// If Box is used for Litigation, Congressional, or FOIA 
@@ -878,6 +959,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
  					$table_name = $wpdb->prefix.'wpsc_epa_folderdocinfo_files';
 					$diditwork = $wpdb->insert( $table_name, $folderdocfiles_info ); 
 					$folderdocfiles_info_id = $wpdb->insert_id;
+					
+					
 					
 					// Remove custom upload directory folder
 					remove_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );  
@@ -926,12 +1009,18 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					if( !$superfund ) {
 												
 						// Convert Date
+/*
 						$time = strtotime( $boxinfo['Creation Date'] );
 						//$newdatetimeformat = date( 'Y-m-d H:i:s' ,$time ); 
 						$newdatetimeformat = date( 'Y-m-d' ,$time ); 
+*/
+						
+						
+						
 						
 						// Insert data for folderdocinfo_files :: ECMS
 						// ECMS FDIF data
+/*
 						$folderdocfiles_info = [
 							'folderdocinfo_id'  => $folderdocinfo_id, 
 							'folderdocinfofile_id'   => $folder_file_sub_id,
@@ -954,6 +1043,42 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'relation_part_of' => $of_y,
 							'record_type' => $boxinfo['Record Type'],
 						];
+*/
+						
+						$folderdocfiles_info = [
+							'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+							'parent_id' => $parent_id,
+							'box_id' => $boxinfo_id,
+							'folderdocinfofile_id'   => $folder_file_sub_id,
+							'doc_regid' => $region_id,
+							'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
+							'file_name'  => $file_name,
+							'source_file_location' => $boxinfo['Folder/Filename'],
+							'title'  => $boxinfo['Title'],
+							'date' => $newdatetimeformat,
+							'tags' => $boxinfo['Tags'],
+							'source_format' => $source_format,
+							'index_level' => $index_level,
+							'description' => $boxinfo['Description of Record'],
+							'access_restriction' => $boxinfo['Access Restrictions'],
+							'specific_access_restriction' => $SAR,
+							'use_restriction' => $boxinfo['Use Restrictions'],
+							'specific_use_restriction' => $SUR,
+							'rights_holder' => $RH,
+							'source_dimensions' => $boxinfo['Source Dimensions'],
+							'relation_part' => $x_of,
+							'relation_part_of' => $of_y,
+							'record_type' => $boxinfo['Record Type'],
+							'author' => "{$boxinfo['Creator']}",
+							'addressee' => "{$boxinfo['Addressee']}",
+							'site_name' => "{$boxinfo['Site Name']}",
+							'siteid' => "{$boxinfo['Site ID #']}",
+							'close_date' => $new_date,
+							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
+							'essential_record' => "{$essential_record}",
+							'date_created' => gmdate( 'Y-m-d H:i:s' ),
+							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+						];
 
 					} else {
 						// Prep FDIF data for SEMS - SUPERFUND
@@ -967,6 +1092,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$newdatetimeformat = date( 'Y-m-d', $time );
 						
 						// Insert data for folderdocinfo_files :: SEMS Superfund
+/*
 						$folderdocfiles_info = [
 							'folderdocinfo_id'  => $folderdocinfo_id, 
 							'folderdocinfofile_id'   => $folder_file_sub_id,
@@ -988,6 +1114,42 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'source_dimensions' => $boxinfo['Source Dimensions'],
 							'relation_part' => $x_of,
 							'relation_part_of' => $of_y
+						];
+*/
+						
+						$folderdocfiles_info = [
+							'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+							'parent_id' => $parent_id,
+							'box_id' => $boxinfo_id,
+							'folderdocinfofile_id'   => $folder_file_sub_id,
+							'doc_regid' => $region_id,
+							'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
+							'file_name'  => $file_name,
+							'source_file_location' => $boxinfo['Folder/Filename'],
+							'title'  => $boxinfo['Title'],
+							'date' => $newdatetimeformat,
+							'tags' => $boxinfo['Tags'],
+							'source_format' => $source_format,
+							'index_level' => $index_level,
+							'description' => $boxinfo['Description of Record'],
+							'access_restriction' => $boxinfo['Access Restrictions'],
+							'specific_access_restriction' => $SAR,
+							'use_restriction' => $boxinfo['Use Restrictions'],
+							'specific_use_restriction' => $SUR,
+							'rights_holder' => $RH,
+							'source_dimensions' => $boxinfo['Source Dimensions'],
+							'relation_part' => $x_of,
+							'relation_part_of' => $of_y,
+							'record_type' => $boxinfo['Record Type'],
+							'author' => "{$boxinfo['Creator']}",
+							'addressee' => "{$boxinfo['Addressee']}",
+							'site_name' => "{$boxinfo['Site Name']}",
+							'siteid' => "{$boxinfo['Site ID #']}",
+							'close_date' => $new_date,
+							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
+							'essential_record' => "{$essential_record}",
+							'date_created' => gmdate( 'Y-m-d H:i:s' ),
+							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 						];
 					}
 					
@@ -1065,7 +1227,16 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					// D E B U G - END
 */
 					
+				} // End - FDIF Electronic or Paper
+				
+				
+				// if parent, set parent_id to self id, store $parent_id for children
+				if( $is_parent ) { 
+					
+					$parent_id = $folderdocfiles_info_id;
+					$wpdb->update( $table_name, array( 'parent_id' => $parent_id ), array( 'id' => $parent_id ) );
 				}
+				
 			}
 			// End of New BoxInfo Code.
 		}

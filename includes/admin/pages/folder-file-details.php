@@ -54,7 +54,6 @@ else {
 
 <div class="bootstrap-iso">
 <?php
-
     //switch out SQL statement depending on if the request is archived
     if($is_active == 1) {
 	$folderfile_details = $wpdb->get_row(
@@ -643,6 +642,7 @@ FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE id = '" . $box_ticketid . "'");
 
 $ticket_user = $ticket_details->customer_name;
+
 ?>
 
 <?php

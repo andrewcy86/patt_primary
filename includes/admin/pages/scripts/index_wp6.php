@@ -6,50 +6,24 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 header("Access-Control-Allow-Origin: *");
 require_once __DIR__."/vendor/autoload.php";
-
-// TEMPORARY
-/*
-$s3_bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
-$s3_region ='us-gov-west-1';
-$s3_key = 'AKIAR7FXZINYEYJXDFVK';
-$s3_secret ='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';
-*/
-
-// D E B U G
-
-
 // You can call the following to erase all pending multipart uploads. 
 // It's a good idea to set your bucket to do this automatically (via console)
 // or set this in a cronjob for every 24-48 hours
 // echo abortPendingUploads(bucket());
 
+
+function aws_key(){
+    return 'AKIAR7FXZINYEYJXDFVK';
+}
+function aws_secret(){
+    return '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';
+}
 function bucket() {
-	//include WPPATT_UPLOADS.'api_authorization_strings.php';
-	$s3_bucket = 'cg-be8a2cea-5528-4e0a-a887-5f0ce918f009';
-    return $s3_bucket;
-//	return AWS_S3_BUCKET;
+    return "cg-be8a2cea-5528-4e0a-a887-5f0ce918f009";
 }
-
 function region() {
-	//include WPPATT_UPLOADS.'api_authorization_strings.php';
-	$s3_region ='us-gov-west-1';
-    return $s3_region;
-//	return AWS_S3_REGION;
+    return "us-gov-west-1";
 }
-
-function s3_key() {
-	$s3_key = 'AKIAR7FXZINYEYJXDFVK';
-	return $s3_key;
-}
-
-function s3_secret() {
-	$s3_secret ='XtiRrMaHA048yG8bKgNbBxHPe9O27WJ4LvYQ7zlk';
-	return $s3_secret;
-}
-
-
-
-
 
 /**
  * Easy wrapper around S3 API
@@ -65,7 +39,10 @@ function s3($command=null,$args=null)
 	    'version' => 'latest',
 	    'region'  => region(),
 	    'signature_version' => 'v4',
-	    //'profile' => 'default',
+	        'credentials' => [
+	        'key'    => aws_key(),
+	        'secret' => aws_secret(),
+	    ]
 	]);
 	if ($command===null)
 		return $s3;
@@ -114,14 +91,12 @@ function abortPendingUploads($bucket)
     }
     return $count;
 }
-/*
-*
+/**
  * Enables CORS on bucket
  *
  * This needs to be called exactly once on a bucket before browser uploads.
  * @param string $bucket 
-*/
-
+ */
 function setCORS($bucket)
 {
     //$res=s3("getBucketCors",["Bucket"=>$bucket]);
@@ -139,16 +114,12 @@ function setCORS($bucket)
             ],
         ]);
 }
-
-
 if (isset($_POST['command']))
 {
 	$command=$_POST['command'];
-
 	if ($command=="create")
 	{
-	    //echo setCORS(bucket());
-	    //setCORS(bucket());
+	    echo setCORS(bucket());
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],
@@ -185,7 +156,7 @@ if (isset($_POST['command']))
 		]);
 
         // Give it at least 24 hours for large uploads
-		$request=s3("createPresignedRequest",$command,"+8 hours");
+		$request=s3("createPresignedRequest",$command,"+48 hours");
         json_output([
             'url' => (string)$request->getUri(),
         ]);		
@@ -239,7 +210,5 @@ if (isset($_POST['command']))
 	exit(0);
 }
 
-//include( WPPATT_ABSPATH.'includes/admin/pages/scripts/page.htm' );
-// include( WPPATT_ABSPATH .'includes/admin/pages/scripts/page2.php' );
-//include( WPPATT_ABSPATH .'includes/admin/pages/scripts/s3_modal_slice.php' ); // removed Jan 2021 Podbelski
-//include "page.htm";
+
+include "page.htm";
