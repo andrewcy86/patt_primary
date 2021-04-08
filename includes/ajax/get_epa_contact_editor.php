@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+
 $subfolder_path = site_url( '', 'relative'); 
 
 if (!isset($_SESSION)) {
@@ -19,16 +21,20 @@ $box_patt_id = $wpdb->get_row("SELECT box_id, lan_id FROM " . $wpdb->prefix . "w
 $patt_box_id = $box_patt_id->box_id;
 $user_id = $box_patt_id->lan_id;
 
-$pattdocid = $wpdb->get_row("SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id as folderfileid 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo
-WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_id . "'");
+
+$pattdocid = $wpdb->get_row("SELECT id as folderfileid 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
+WHERE a.box_id = '" . $box_id . "'");
+
 $folderfile_id = $pattdocid->folderfileid;
 
-/*$curl = curl_init();
+
+$curl = curl_init();
 $url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$box_lan_id;
 $headers = [
     'Cache-Control: no-cache',
-	'Authorization: Basic c3ZjX3NjaW1fZWNtczpwakNSNjRUSDJkbng='
+	$eidw_authorization
 ];
         curl_setopt($curl,CURLOPT_URL, $url);
         curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
@@ -48,7 +54,7 @@ if ($err) {
 } else {
 
 $json = json_decode($response, true);
-$results = $json['totalResults'];*/
+$results = $json['totalResults'];
 ?>
 
 <form>
