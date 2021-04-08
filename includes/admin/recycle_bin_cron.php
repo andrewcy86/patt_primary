@@ -49,16 +49,16 @@ foreach($get_total_request_count as $item) {
 	
 	//check if all boxes in a request are the same status
 	if( count(array_unique($get_box_status_array)) == 1 ) {
-        if( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) ) {
+        if( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && $ticket_status != $completed_dispositioned_term_id) {
             $wpscfunction->change_status($ticket_id, $completed_dispositioned_term_id);
         }
-        if( in_array($box_cancelled_tag->term_id, $get_box_status_array) ) {
+        if( in_array($box_cancelled_tag->term_id, $get_box_status_array) && $ticket_status != $cancelled_term_id) {
             $wpscfunction->change_status($ticket_id, $cancelled_term_id);
         }
     }
-    
+   
     //check if there are a mix of completed/dispositioned and cancelled boxes in a request
-    if( count(array_unique($get_box_status_array)) == 2 && (in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && in_array($box_cancelled_tag->term_id, $get_box_status_array)) ) {
+    if( count(array_unique($get_box_status_array)) == 2 && (in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && in_array($box_cancelled_tag->term_id, $get_box_status_array)) && $ticket_status != $completed_dispositioned_term_id) {
         $wpscfunction->change_status($ticket_id, $completed_dispositioned_term_id);
     }
     
