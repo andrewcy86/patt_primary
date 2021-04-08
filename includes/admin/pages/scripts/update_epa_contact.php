@@ -56,7 +56,7 @@ $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 $old_lanid = $old_box_lanid->lan_id;
 
-$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
+//$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
 
 //updates the epa contact by entering a LANID
 if(!empty($lanid)) {
@@ -66,10 +66,10 @@ array_push($metadata_array,'EPA Contact: '.$old_lanid.' > '.$lanid);
 $wpdb->update($table_name, $data_update, $data_where);
 
 //updates all associated documents with new epa contact LANID
-$data_update = array('epa_contact_email' => $lanid);
+/*$data_update = array('epa_contact_email' => $lanid);
 $data_where = array('box_id' => $box_id);
 $wpdb->update($folderfile_table, $data_update, $data_where);
-}
+}*/
 
 $metadata = implode (", ", $metadata_array);
 
@@ -96,7 +96,7 @@ echo "Box ID #: " . $pattboxid . " has been updated.";
 echo 'LAN ID is not valid';
 }
 }
-
+}
 } else {
     echo $pattboxid;
    echo "Please make an edit.";

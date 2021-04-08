@@ -28,33 +28,6 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
 WHERE a.box_id = '" . $box_id . "'");
 
 $folderfile_id = $pattdocid->folderfileid;
-
-
-$curl = curl_init();
-$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$box_lan_id;
-$headers = [
-    'Cache-Control: no-cache',
-	$eidw_authorization
-];
-        curl_setopt($curl,CURLOPT_URL, $url);
-        curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
-        curl_setopt($curl,CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
-        curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-		//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-$response = curl_exec($curl);
-$err = curl_error($curl);
-curl_close($curl);
-
-if ($err) {
-  echo "cURL Error #:" . $err;
-} else {
-
-$json = json_decode($response, true);
-$results = $json['totalResults'];
 ?>
 
 <form>
