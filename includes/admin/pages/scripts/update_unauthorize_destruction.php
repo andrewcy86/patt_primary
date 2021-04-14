@@ -86,10 +86,10 @@ $get_request_id = substr($key, 0, 7);
 $get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
+//AY UPDATE JOIN
 $get_box_id = $wpdb->get_row("
-SELECT a.box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo  a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE b.folderdocinfofile_id = '" . $key . "'
+SELECT box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;
 
@@ -130,22 +130,22 @@ $box_storage_status_occupied = $box_storage_status->occupied;
 $box_storage_status_remaining = $box_storage_status->remaining;
 $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
+//AY UPDATE JOIN
 $folder_file_count = $wpdb->get_row(
 "SELECT 
-count(b.id) as sum
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE a.box_id = '" . $box_id . "'"
+count(id) as sum
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE box_id = '" . $box_id . "'"
 			);
 
 $folder_file_count_sum = $folder_file_count->sum;
 
+//AY UPDATE JOIN
 $destruction_count = $wpdb->get_row(
 "SELECT 
-count(b.id) as sum
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE b.unauthorized_destruction = 1 AND a.box_id = '" . $box_id . "'"
+count(id) as sum
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 			);
 
 $destruction_count_sum = $destruction_count->sum;
@@ -189,12 +189,12 @@ else {
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 
+//AY UPDATE JOIN
 $destruction_count = $wpdb->get_row(
 "SELECT 
-count(b.id) as sum
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE b.unauthorized_destruction = 1 AND a.box_id = '" . $box_id . "'"
+count(id) as sum
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 			);
 
 $destruction_count_sum = $destruction_count->sum;
@@ -243,10 +243,10 @@ echo "A frozen folder/file has been selected and cannot be flagged as unauthoriz
 
 if($page_id == 'filedetails') {
 
+//AY UPDATE JOIN
 $get_box_id = $wpdb->get_row("
-SELECT a.box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo  a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE b.folderdocinfofile_id = '" . $key . "'
+SELECT box_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE folderdocinfofile_id = '" . $key . "'
 ");
 $box_id = $get_box_id->box_id;
 
@@ -258,12 +258,12 @@ $get_request_id = substr($folderdocid_string, 0, 7);
 $get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
+//AY UPDATE JOIN
 $folder_file_count = $wpdb->get_row(
 "SELECT 
-count(b.id) as sum
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE a.box_id = '" . $box_id . "'"
+count(id) as sum
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE box_id = '" . $box_id . "'"
 			);
 
 $folder_file_count_sum = $folder_file_count->sum;
@@ -290,12 +290,12 @@ else {
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 
+//AY UPDATE JOIN
 $destruction_count = $wpdb->get_row(
 "SELECT 
-count(b.id) as sum
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id
-WHERE b.unauthorized_destruction = 1 AND a.box_id ='" . $box_id . "'"
+count(id) as sum
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE unauthorized_destruction = 1 AND box_id ='" . $box_id . "'"
 			);
 
 $destruction_count_sum = $destruction_count->sum;
@@ -338,7 +338,8 @@ do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 }
 }
 
-$get_destruction_sum = $wpdb->get_row("SELECT sum(b.unauthorized_destruction) as sum FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.folderdocinfo_id = b.folderdocinfo_id  WHERE a.box_id = '".$box_id."'");
+//AY UPDATE JOIN
+$get_destruction_sum = $wpdb->get_row("SELECT sum(unauthorized_destruction) as sum FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = '".$box_id."'");
 
 $get_destruction_sum_val = $get_destruction_sum->sum;
 

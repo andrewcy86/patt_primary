@@ -15,7 +15,7 @@ global $current_user, $wpscfunction, $wpdb;
 $lanid_query = $wpdb->get_results(
 "
 SELECT 
-DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, b.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_boxinfo a INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.ticket_id = b.id WHERE a.lan_id <> ''
+DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, c.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id <> ''
 "
 );
 
@@ -81,7 +81,7 @@ $wpdb->update($boxinfo_table, $data_lan_update, $data_lan_where);
 
 if ($results >= 1) {
 
-$id_query = $wpdb->get_results("SELECT DISTINCT id from " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE lan_id = '" . $lan_id_val . "'");
+$id_query = $wpdb->get_results("SELECT DISTINCT id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE lan_id = '" . $lan_id_val . "'");
 
 
 
@@ -109,11 +109,11 @@ $lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username
 // Detects update to contact info, if yes then update table
 if ($lan_id_details != $lan_id_details_val && $lan_id_details != 'Error')
 {
-$boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
 $data_update = array('lan_id_details' => $json);
 $data_where = array('id' => $db_lan_id);
-$wpdb->update($boxinfo_table, $data_update, $data_where);
+$wpdb->update($folderdocinfo_files_table, $data_update, $data_where);
 }
 
 }

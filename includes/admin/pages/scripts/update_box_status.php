@@ -92,7 +92,8 @@ if( $type == 'box_status' ) {
 // 	$update_status_by_id = Patt_Custom_Func::update_status_by_id($data2);
 	
 	//Update the Updated Date
-	$current_datetime = date("yy-m-d H:i:s");
+// 	$current_datetime = date("yy-m-d H:i:s");
+	$current_datetime = date("Y-m-d H:i:s");
 	$update = [	'updated_date' => $current_datetime ];
 	$where = [ 'id' => $recall_id ];
 	//Patt_Custom_Func::update_recall_dates($update, $where);

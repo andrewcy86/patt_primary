@@ -27,19 +27,20 @@ $patt_box_id_arr = array();
     array_push($patt_box_id_arr,$patt_box_id);
     
     $box_program_office = $wpdb->get_row("SELECT b.office_acronym as acronym 
-    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as b ON a.program_office_id = b.office_code
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a 
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as b ON a.program_office_id = b.office_code
     WHERE box_id = '" . $box_id . "'");
     $program_office = $box_program_office->acronym;
     
     $box_record_schedule = $wpdb->get_row("SELECT c.Record_Schedule_Number as record_schedule_number 
-    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a INNER JOIN " . $wpdb->prefix . "epa_record_schedule as c ON record_schedule_id = c.id
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a 
+    INNER JOIN " . $wpdb->prefix . "epa_record_schedule as c ON record_schedule_id = c.id
     WHERE box_id = '" . $box_id . "'");
     $record_schedule = $box_record_schedule->record_schedule_number;
     
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(fdif.validation = 1) as validated, COUNT(fdif.validation) as validation_total
 	FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id 
-	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.folderdocinfo_id = b.id 
+	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.box_id = a.id 
 	WHERE a.id = '" . $box_id . "'");
 							
 /*	OLD: before moving validation to fdi_files table
@@ -53,7 +54,10 @@ WHERE a.id = '" . $box_id . "'");
     $validated = $box_dc->validated;
     $validation_total = $box_dc->validation_total;
     
-    $box_status = $wpdb->get_row("SELECT " . $wpdb->prefix . "terms.term_id as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
+    $box_status = $wpdb->get_row("SELECT " . $wpdb->prefix . "terms.term_id as box_status 
+    FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo 
+    WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status 
+    AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = '" . $box_id . "'");
     $status_id = $box_status->box_status;
     
     $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval 

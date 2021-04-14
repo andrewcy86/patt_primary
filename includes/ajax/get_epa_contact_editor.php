@@ -13,21 +13,14 @@ if (!isset($_SESSION)) {
     session_start();    
 }
 
-$box_id = $_POST["box_id"];
+$folderfile_id = $_POST["folderdocinfofile_id"];
         
 ob_start();
 
-$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
-$patt_box_id = $box_patt_id->box_id;
+$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderfile_id . "'");
+$box_id = $box_patt_id->box_id;
 $user_id = $box_patt_id->lan_id;
 
-
-$pattdocid = $wpdb->get_row("SELECT id as folderfileid 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
-WHERE a.box_id = '" . $box_id . "'");
-
-$folderfile_id = $pattdocid->folderfileid;
 ?>
 
 <form>
@@ -42,7 +35,6 @@ else {
 }
 ?>
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
-<input type="hidden" id="pattboxid" name="pattboxid" value="<?php echo $patt_box_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_id; ?>">
 </form>
 <?php 
@@ -68,14 +60,13 @@ jQuery(document).on('keypress',function(e) {
 function wpsc_edit_epa_contact(){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_epa_contact.php',{
-postvarspattboxid: jQuery("#pattboxid").val(),
 postvarsboxid: jQuery("#boxid").val(),
 postvarslanid: jQuery("#lanid").val(),
 postvarspattdocid: jQuery("#pattdocid").val()
 }, 
 function (response) {
       if(!alert(response)){window.location.reload();}
-       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id=<?php echo $patt_box_id; ?>");
+       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=requestdetails&page=filedetails&id=<?php echo $folderfile_id; ?>");
    });
    
 }

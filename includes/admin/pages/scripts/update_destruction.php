@@ -26,22 +26,27 @@ $counter++;
 $get_box_db_id = $wpdb->get_row("select id from " . $wpdb->prefix . "wpsc_epa_boxinfo where box_id = '".$key."'");
 $box_db_id = $get_box_db_id->id;
 
+//REVIEW
 $get_sum_total = $wpdb->get_row("select count(b.id) as sum_total_count 
-from " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
-inner join " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
-where a.box_id = '".$box_db_id."'");
+from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
+where b.box_id = '".$box_db_id."'");
 $sum_total_val = $get_sum_total->sum_total_count;
 
+//REVIEW
 $get_sum_validation = $wpdb->get_row("select sum(b.validation) as sum_validation 
-from " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
-inner join " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
-where b.validation = 1 AND a.box_id = '".$box_db_id."'");
+from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
+where b.validation = 1 AND b.box_id = '".$box_db_id."'");
 $sum_validation = $get_sum_validation->sum_validation;
 
-$get_status = $wpdb->get_row("select box_status as status from " . $wpdb->prefix . "wpsc_epa_boxinfo where id = '".$box_db_id."'");
+$get_status = $wpdb->get_row("select box_status as status
+from " . $wpdb->prefix . "wpsc_epa_boxinfo
+where id = '".$box_db_id."'");
 $box_status_id = $get_status->status;
 
-$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da from " . $wpdb->prefix . "wpsc_ticket a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.id = b.ticket_id where b.id = '".$box_db_id."'");
+$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da
+from " . $wpdb->prefix . "wpsc_ticket a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.id = b.ticket_id
+where b.id = '".$box_db_id."'");
 $destruction_auth_status = $get_destruction_auth_status->da;
 
 $get_storage_id = $wpdb->get_row("
@@ -91,11 +96,15 @@ echo '<br />';
 }
 
 } else {
-$get_destruction = $wpdb->get_row("SELECT box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '".$key."'");
+$get_destruction = $wpdb->get_row("SELECT box_destroyed 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
+WHERE box_id = '".$key."'");
 $get_destruction_val = $get_destruction->box_destroyed;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id 
+FROM " . $wpdb->prefix . "wpsc_ticket 
+WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_destruction_val == 1){

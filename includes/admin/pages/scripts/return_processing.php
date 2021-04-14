@@ -162,90 +162,9 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 
-## OLD: working before moving Title and Date from folderdocinfo to folderdocinfo_files
+## OLD: working before dropping folderdocinfo table
 /*
-## Base Query for Records  // UPDATED: using digitzation_center from epa_storage_location
-$baseQuery = "
-SELECT
-        " . $wpdb->prefix . "wpsc_epa_return.id,
-        " . $wpdb->prefix . "wpsc_epa_return.return_id,
-        " . $wpdb->prefix . "wpsc_epa_return.return_date,
-        " . $wpdb->prefix . "wpsc_epa_return.return_receipt_date,
-        " . $wpdb->prefix . "wpsc_epa_return.received_date,        
-        " . $wpdb->prefix . "wpsc_epa_return.comments,
-        " . $wpdb->prefix . "wpsc_epa_return.return_status_id,
-        GROUP_CONCAT(
-            DISTINCT " . $wpdb->prefix . "wpsc_ticket.customer_name
-        ) AS customer_name,
-        GROUP_CONCAT(
-            DISTINCT " . $wpdb->prefix . "wpsc_ticket.customer_email
-        ) AS customer_email,       
-        T4.name AS return_status_name,
-        " . $wpdb->prefix . "wpsc_epa_return.updated_date,
-        GROUP_CONCAT(
-            DISTINCT " . $wpdb->prefix . "wpsc_epa_return_items.box_id
-        ) AS box_id,
-        GROUP_CONCAT(
-            DISTINCT " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
-        ) AS folderdoc_id,
-        " . $wpdb->prefix . "wpsc_epa_shipping_tracking.company_name AS shipping_carrier,
-        " . $wpdb->prefix . "wpsc_epa_shipping_tracking.tracking_number,
-        " . $wpdb->prefix . "wpsc_epa_shipping_tracking.status,
-        " . $wpdb->prefix . "terms.name AS reason,
-        GROUP_CONCAT(
-            DISTINCT " . $wpdb->prefix . "wpsc_epa_return_users.user_id
-        ) AS user_id,
-        GROUP_CONCAT(
-            DISTINCT NULLIF(
-                " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym,
-                -99999
-            )
-        ) AS office_acronym_combo_box,
-        GROUP_CONCAT(
-            DISTINCT NULLIF(PO2.office_acronym, -99999)
-        ) AS office_acronym_combo_folderdoc,
-        GROUP_CONCAT(DISTINCT T2.name) AS digitization_center_box,
-        GROUP_CONCAT(DISTINCT T3.name) AS digitization_center_folderdoc,
-        GROUP_CONCAT(DISTINCT FDI1.title) AS all_titles_folderdoc,
-        GROUP_CONCAT(DISTINCT FDI2.title) AS all_titles_box,
-        GROUP_CONCAT(DISTINCT " . $wpdb->prefix . "wpsc_epa_folderdocinfo.folderdocinfo_id) AS display_folderdoc_id,
-        GROUP_CONCAT(DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id) AS display_box_id
-    FROM
-        " . $wpdb->prefix . "wpsc_epa_return
-    LEFT JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_return.return_reason_id
-    INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_items ON " . $wpdb->prefix . "wpsc_epa_return_items.return_id = " . $wpdb->prefix . "wpsc_epa_return.id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_return_users ON " . $wpdb->prefix . "wpsc_epa_return_users.return_id = " . $wpdb->prefix . "wpsc_epa_return.id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking ON " . $wpdb->prefix . "wpsc_epa_shipping_tracking.id = " . $wpdb->prefix . "wpsc_epa_return.shipping_tracking_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_return_items.box_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.office_code = " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id = " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo B2 ON
-        B2.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office PO2 ON
-        PO2.office_code = B2.program_office_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id
-    LEFT JOIN " . $wpdb->prefix . "terms T2 ON
-        T2.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
-        AND (NULLIF(" . $wpdb->prefix . "wpsc_epa_storage_location.id, -99999))
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location Loc2 ON
-        Loc2.id = B2.storage_location_id
-    LEFT JOIN " . $wpdb->prefix . "terms T3 ON
-        T3.term_id = Loc2.digitization_center
-        AND (NULLIF(Loc2.id, -99999))
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo FDI1 ON
-        FDI1.id = " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo B3 ON
-        B3.id = " . $wpdb->prefix . "wpsc_epa_return_items.box_id
-    LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo FDI2 ON
-        FDI2.box_id = B3.id
-    LEFT JOIN " . $wpdb->prefix . "terms T4 ON
-        T4.term_id = " . $wpdb->prefix . "wpsc_epa_return.return_status_id
-    WHERE
-        " . $wpdb->prefix . "wpsc_epa_return.id > 0";    
-*/
 
-## Base Query for Records  // UPDATED: for Title and Date moved from folderdocinfo to folderdocinfo_files
 $baseQuery = "
 SELECT
     " . $wpdb->prefix . "wpsc_epa_return.id,
@@ -335,6 +254,94 @@ LEFT JOIN " . $wpdb->prefix . "terms T4 ON
     T4.term_id = " . $wpdb->prefix . "wpsc_epa_return.return_status_id
 WHERE
     " . $wpdb->prefix . "wpsc_epa_return.id > 0";    
+*/
+
+## Base Query for Records  // UPDATED: for Title and Date moved from folderdocinfo to folderdocinfo_files
+$baseQuery = "
+SELECT
+    " . $wpdb->prefix . "wpsc_epa_return.id,
+    " . $wpdb->prefix . "wpsc_epa_return.return_id,
+    " . $wpdb->prefix . "wpsc_epa_return.return_date,
+    " . $wpdb->prefix . "wpsc_epa_return.return_receipt_date,
+    " . $wpdb->prefix . "wpsc_epa_return.received_date,
+    " . $wpdb->prefix . "wpsc_epa_return.comments,
+    " . $wpdb->prefix . "wpsc_epa_return.return_status_id,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_ticket.customer_name
+    ) AS customer_name,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_ticket.customer_email
+    ) AS customer_email,
+    T4.name AS return_status_name,
+    " . $wpdb->prefix . "wpsc_epa_return.updated_date,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_epa_return_items.box_id
+    ) AS box_id,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
+    ) AS folderdoc_id,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.company_name AS shipping_carrier,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.tracking_number,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.status,
+    " . $wpdb->prefix . "terms.name AS reason,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_epa_return_users.user_id
+    ) AS user_id,
+    GROUP_CONCAT(
+        DISTINCT NULLIF(
+            " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym,
+            -99999
+        )
+    ) AS office_acronym_combo_box,
+    GROUP_CONCAT(
+        DISTINCT NULLIF(PO2.office_acronym, -99999)
+    ) AS office_acronym_combo_folderdoc,
+    GROUP_CONCAT(DISTINCT T2.name) AS digitization_center_box,
+    GROUP_CONCAT(DISTINCT T3.name) AS digitization_center_folderdoc,
+    GROUP_CONCAT(DISTINCT FDIF.title) AS all_titles_folderdoc,
+    GROUP_CONCAT(DISTINCT FDIF2.title) AS all_titles_box,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id
+    ) AS display_folderdoc_id,
+    GROUP_CONCAT(
+        DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id
+    ) AS display_box_id
+FROM
+    " . $wpdb->prefix . "wpsc_epa_return
+LEFT JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_return.return_reason_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_items ON " . $wpdb->prefix . "wpsc_epa_return_items.return_id = " . $wpdb->prefix . "wpsc_epa_return.id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_return_users ON " . $wpdb->prefix . "wpsc_epa_return_users.return_id = " . $wpdb->prefix . "wpsc_epa_return.id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking ON " . $wpdb->prefix . "wpsc_epa_shipping_tracking.id = " . $wpdb->prefix . "wpsc_epa_return.shipping_tracking_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_return_items.box_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.office_code = " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.id = " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo B2 ON
+    B2.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office PO2 ON
+    PO2.office_code = B2.program_office_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id
+LEFT JOIN " . $wpdb->prefix . "terms T2 ON
+    T2.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center AND(
+        NULLIF(
+            " . $wpdb->prefix . "wpsc_epa_storage_location.id,
+            -99999
+        )
+    )
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location Loc2 ON
+    Loc2.id = B2.storage_location_id
+LEFT JOIN " . $wpdb->prefix . "terms T3 ON
+    T3.term_id = Loc2.digitization_center AND(NULLIF(Loc2.id, -99999))
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF ON
+    FDIF.id = " . $wpdb->prefix . "wpsc_epa_return_items.folderdoc_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo B3 ON
+    B3.id = " . $wpdb->prefix . "wpsc_epa_return_items.box_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON
+    FDIF2.box_id = B3.id
+LEFT JOIN " . $wpdb->prefix . "terms T4 ON
+    T4.term_id = " . $wpdb->prefix . "wpsc_epa_return.return_status_id
+WHERE
+    " . $wpdb->prefix . "wpsc_epa_return.id > 0";    
 
 
 ## Total number of records with filtering
@@ -360,6 +367,7 @@ $returnRecords = mysqli_query($con, $returnQuery);
 ## Row Data 
 
 $data = array();
+$test = array();
 
 while ($row = mysqli_fetch_assoc($returnRecords)) {
 
@@ -408,6 +416,7 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
    );
    
    $icons = '';
+   $test[] = $row['updated_date'];
    
 /*
    $data[] = array(
@@ -439,7 +448,8 @@ $response = array(
   "Where" => 'unused',
   "Random Data - DC" => $searchByDigitizationCenter,
   "Random Data 2 - PO" => $searchByProgramOffice,
-  "Filtered item query" => $query_3
+  "Filtered item query" => $query_3,
+  "test" => $test,
 );
 
 

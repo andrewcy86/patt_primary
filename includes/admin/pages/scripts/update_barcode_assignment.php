@@ -41,12 +41,31 @@ $box_decline_check_array = array();
 $box_recall_check_array = array();
 $box_destroyed_check_array = array();
 $box_active_check_array = array();
+$invalid_pallet_id_array = array();
+
+////////
+//Determine if location entered is valid
+////////
+ if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location)){
+
+////////
+//Determine if box/pallet entered is valid
+////////
+foreach($boxpallet_arr as $box_pallet_pre_check){
+ if(preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_pre_check) || preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_pre_check)){
+$box_pallet_check = 0;
+ } else {
+$box_pallet_check++;
+ }
+}
+
+if($box_pallet_check == 0) {
 
 ////////
 //Determine if boxes and pallets are all valid
 ////////
 foreach($boxpallet_arr as $box_pallet_check){
-    
+
  if(preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check)){
 $pallet_check = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
@@ -58,9 +77,9 @@ $pallet_box_exist++;
 } else {
 //array_push($pallet_check_array,$box_pallet_check);
 $invalid_box_pallet = 1;
-array_push($box_pallet_check_array,$box_pallet_check);
-//$invalid_pallet_items = implode(",", $pallet_check_array);
-//echo "Invalid: [".$invalid_pallet_items."]";
+
+array_push($invalid_pallet_id_array,$box_pallet_check);
+$invalid_pallet_items = implode(",", $invalid_pallet_id_array);
 //exit;
 }
 
@@ -91,6 +110,7 @@ $box_destroyed = $box_check->box_destroyed;
 if (!empty($box_exist) && $return_check != 1 && $request_recall_check != 1 && $box_active == 1 && $box_destroyed == 0) {
 $pallet_box_exist++;
 }
+
 if($return_check == 1) {
     array_push($box_decline_check_array, $box_pallet_check);
     $invalid_box_decline_check = 1;
@@ -107,6 +127,7 @@ if($box_active == 0) {
     array_push($box_active_check_array, $box_pallet_check);
     $invalid_box_active_check = 1;
 }
+
 /*else {
 //push invalid box/pallet to array
 array_push($box_pallet_check_array,$box_pallet_check);
@@ -123,6 +144,9 @@ echo "Invalid: [".$invalid_items."]";
 exit;
 }
 */
+if($invalid_box_pallet == 1) {
+echo "The following pallets do not exist in PATT: [".$invalid_pallet_items."]";
+}
 
 if($invalid_box_decline_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
     $invalid_items_decline = implode(",", $box_decline_check_array);
@@ -188,6 +212,7 @@ if ($pallet_count >= 1) {
 
 if ($total_array_count != $pallet_count) {
 echo "All scanned barcodes must be either boxes or pallets.";
+
 } else {
 //Check if location is a staging area
 if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location)) {
@@ -593,7 +618,12 @@ $wpdb->update($table_scan_list , $boxshelf_scanlist_update, $boxshelf_scanlist_w
                     }
                     
                     } //end loop
-
+} else {
+   echo "Please ensure all box/pallet IDs are valid.";
+}
+ } else {
+   echo "Please enter a valid location.";
+}
 } else {
    echo "Update not successful.";
 }

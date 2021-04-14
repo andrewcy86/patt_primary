@@ -235,20 +235,20 @@ if($return_id == 0) {
 		$pattagentid_array = $ticket_owner_id_array;
 		$requestid = $return_id; 
 		
-		$data = [
+		$data4 = [
 	        'item_id' => $item_ids,
 	        'decline_reason' => $return_reason,
 	        'action_initiated_by' => $current_user->display_name
 	    ];
 		$email = 1;
 		
-		$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+		$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data4, $email );
 		
 		$notification_data = [
 			'notification_post' => $notification_post,
 			'pattagentid_array' => $pattagentid_array,
 			'requestid' => $requestid,
-			'data' => $data,
+			'data' => $data4,
 			'email' => $email,
 			'new_notification' => $new_notification
 		];

@@ -23,11 +23,12 @@ $freeze_reversal = 0;
 $freeze_approval = 0;
 
 foreach($folderdocid_arr as $key) {
+    
+// AY FIX JOIN
 $get_destroyed = $wpdb->get_row("SELECT b.box_destroyed as box_destroyed 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a 
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = a.id
-WHERE c.freeze = 0 AND c.folderdocinfofile_id = '".$key."'");
+WHERE a.freeze = 0 AND a.folderdocinfofile_id = '".$key."'");
 $get_destroyed_val = $get_destroyed->box_destroyed;
 
 if ($get_destroyed_val == 1) {
@@ -47,10 +48,11 @@ $unathorized_destroy++;
 
 
 foreach($folderdocid_arr as $key) {
+
+// AY FIX JOIN
 $get_freeze_approval = $wpdb->get_row("SELECT c.freeze_approval as freeze_approval 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo d ON d.id = a.folderdocinfo_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON d.box_id = b.id 
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id 
 LEFT JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id
 WHERE a.folderdocinfofile_id = '".$key."'");
 $freeze_approval_val = $get_freeze_approval->freeze_approval;

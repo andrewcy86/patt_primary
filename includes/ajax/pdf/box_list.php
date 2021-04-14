@@ -57,21 +57,21 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " . $wpdb->pref
 
 foreach($record_schedules as $rs_num)
     {
-//fixed where source_format is pointing to, may need to fix it for index_level as well
-$box_list = $wpdb->get_results("SELECT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level as index_level, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, SUBSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, INSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, '-') + 1) as box, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_folderdocinfo.site_name as site, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.source_format as source_format 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+//REVIEW
+$box_list = $wpdb->get_results("SELECT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level as index_level, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, SUBSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, INSTR(" . $wpdb->prefix . "wpsc_epa_boxinfo.box_id, '-') + 1) as box, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.site_name as site, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.source_format as source_format 
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE
-" . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id ." AND
-" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id AND
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND
 " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']
 );
-        
-$box_list_get_count = $wpdb->get_row("SELECT count(distinct " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id) as box_count
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "epa_record_schedule
+
+//REVIEW
+$box_list_get_count = $wpdb->get_row("SELECT count(distinct " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id) as box_count
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "epa_record_schedule
 WHERE 
-" . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
+" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id . " AND
 " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']);
 //print_r($box_list_get_count);
@@ -83,7 +83,8 @@ $program_office_array_id = array();
         
 $boxlist_get_po = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office
-WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code 
+AND " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
 //print_r($boxlist_get_po);
 
 foreach ($boxlist_get_po as $item) {

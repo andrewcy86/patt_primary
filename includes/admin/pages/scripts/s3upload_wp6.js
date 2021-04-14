@@ -293,7 +293,14 @@ S3MultiUpload.prototype.completeMultipartUpload = function() {
         // PATT New Addition - START
         //console.log(data);
         //console.log(data.locationinfo);
-        console.log('Final');
+        let file_array = data.locationinfo.split( '/' );
+        let s3_file_name = file_array.pop();
+        let base_file_array = s3_file_name.split( '_' );
+        let base_file_name = base_file_array.pop();
+        
+        console.log('Upload Complete: ' + s3_file_name + ' - ' + base_file_name );
+        console.log({data:data});
+        
         obj_s3link = data.locationinfo;
         //console.log({obj_key:obj_key, obj_size:obj_size, obj_type:obj_type, obj_s3link:obj_s3link});
         
@@ -302,9 +309,12 @@ S3MultiUpload.prototype.completeMultipartUpload = function() {
         //console.log({obj_key:obj_key});
         
 
-        jQuery("#mdocs-name-single-file").val( obj_key );
-        // After upload finishes, start the save file process.
-        save_file();
+        //jQuery("#mdocs-name-single-file").val( obj_key );
+        // After upload finishes, save data in DB
+        
+        
+        
+        //save_file();
         
         // PATT New Addition - END
         

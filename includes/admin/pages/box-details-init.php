@@ -97,25 +97,23 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && !empty($box_id_error_check)) {
-
+//START REVIEW
 if($is_active == 1) {
 $convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
-LEFT JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo b ON a.id = b.box_id
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files e ON e.folderdocinfo_id = b.id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files e ON e.box_id = a.id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
 } else {
 $convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
-LEFT JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_archive b ON a.id = b.box_id
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
-INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files_archive e ON e.folderdocinfo_id = b.id
+INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files_archive e ON e.box_id = a.id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");  
 }
-
+//END REVIEW
 $the_real_box_id = $convert_box_id->box_id;
 $box_id = $convert_box_id->id;
 $box_lan_id = $convert_box_id->lan_id;
@@ -233,9 +231,10 @@ div.dataTables_wrapper {
                     }
                     ?>
     	  			<th class="datatable_header">ID</th>
+                    <th class="datatable_header">DB ID</th>
     	  			<th class="datatable_header">Title</th>
     	  			<th class="datatable_header">Date</th>
-    	  			<th class="datatable_header">Contact</th>
+    	  			<th class="datatable_header">EPA Contact</th>
     	  			<th class="datatable_header">Validation</th>
             </tr>
         </thead>
@@ -310,11 +309,20 @@ jQuery(document).ready(function(){
 			   'selectRow': true	
 			},
 		},
+			{
+            'targets': [ 1 ],
+            'orderData': [ 2 ]
+        },
+        {
+            'targets': [ 2 ],
+            'visible': false,
+            'searchable': false
+        },
       { width: '25%', targets: 1 },
-      { width: '25%', targets: 2 },
       { width: '25%', targets: 3 },
-      { width: '20%', targets: 4 },
-      { width: '5%', targets: 5 }
+      { width: '25%', targets: 4 },
+      { width: '20%', targets: 5 },
+      { width: '5%', targets: 6 }
       ],
       'select': {
          'style': 'multi'
@@ -333,6 +341,7 @@ jQuery(document).ready(function(){
         }
         ?>
        { data: 'folderdocinfo_id_flag' },
+       { data: 'dbid', visible: false},
        { data: 'title' }, 
        { data: 'date' },
        { data: 'epa_contact_email' },
@@ -770,57 +779,43 @@ jQuery('#freeze_alert').hide();
  ?>
  
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
+<?php
+$lan_id = $wpdb->get_row("SELECT DISTINCT count(lan_id) as count FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files WHERE lan_id != '' AND box_id = '" . $box_id . "'");
+$lan_id_count = $lan_id->count;
+
+if ($lan_id_count >=1) {
+?>
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-user"></i> EPA Contact
-      <!--only admins/agents have the ability to edit epa contact-->
-	<?php
-	    $agent_permissions = $wpscfunction->get_current_agent_permissions();
-        $agent_permissions['label'];
-        if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
-        {
-          echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor('.$box_id.');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
-        } 
-	?>
-	</h4>
+      <h4 class="widget_header"><i class="fa fa-user"></i> EPA Contact(s)</h4>
 			<hr class="widget_divider">
 <?php
-$lan_id = $wpdb->get_row("SELECT lan_id, lan_id_details FROM ".$wpdb->prefix."wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
-$lan_id_details = $lan_id->lan_id_details;
-$lan_id_username = $lan_id->lan_id;
+$lan_id = $wpdb->get_results("SELECT DISTINCT lan_id, lan_id_details FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files WHERE lan_id != '' AND box_id = '" . $box_id . "'");
+$details_count = 0;
+$contact_details = '';
+foreach ($lan_id as $info) {
+$lan_id_details = $info->lan_id_details;
+
+if($lan_id_details == '') {
+$details_count++;
+}
 
 $obj = json_decode($lan_id_details);
+$lan_id_username = $info->lan_id;
+$contact_details .= '<li>'.$obj->{'name'}. ' ('.$lan_id_username.')</li>';
+} 
 
-$program_office = $wpdb->get_row("SELECT office_acronym 
-FROM ".$wpdb->prefix."wpsc_epa_program_office
-WHERE office_code = '" . $obj->{'org'} . "'");
-$program_office_code = $program_office->office_acronym;
-
-if(!empty($lan_id_details) && ($lan_id_details != 'Error') && ($lan_id_username != 'LAN ID cannot be assigned') && (strtoupper($lan_id_username) == strtoupper($obj->{'lan_id'})) ) {
-echo '<div class="wpsp_sidebar_labels"><strong>Name: </strong> '.$obj->{'name'}. '</div>';
-echo '<div class="wpsp_sidebar_labels"><strong>Email: </strong> '.$obj->{'email'}. '</div>';
-echo '<div class="wpsp_sidebar_labels"><strong>Office Phone Number: </strong> '.$obj->{'phone'}. '</div>';
-echo '<div class="wpsp_sidebar_labels"><strong>Organization: </strong> '.$program_office_code. '</div>';
-}
-else {
+if($details_count == 0) {
+echo '<ul style="list-style-type: disc !important; padding-left: 15px;">';
+echo $contact_details;
+echo '</ul>';
+} else {
 echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending update...</strong></div>';
-
-/*
-if($lan_id_username == 'LAN ID cannot be assigned' || $lan_id_username == '' || $lan_id_username == 1) {
-    //send a notification/email message when there is malformed data for the epa contact
-    $agent_admin_group_name = 'Administrator';
-    $pattagentid_admin_array = Patt_Custom_Func::agent_from_group($agent_admin_group_name);
-    $agent_manager_group_name = 'Manager';
-    $pattagentid_manager_array = Patt_Custom_Func::agent_from_group($agent_manager_group_name);
-    $pattagentid_array = array_merge($pattagentid_admin_array,$pattagentid_manager_array);
-    $data = [];
-    
-    $email = 1;
-    Patt_Custom_Func::insert_new_notification('email-malformed-data-for-epa-contact',$pattagentid_array,$the_real_box_id,$data,$email);
-    }
-*/
 }
 ?>
 	</div>
+<?php
+}
+?>
 <!-- 	</div> -->
 	
 <!-- 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget"> -->
@@ -995,20 +990,6 @@ echo '<span style="padding-left: 10px">Please pass a valid Box ID</span>';
 jQuery(document).ready(function(){
   jQuery('[data-toggle="tooltip"]').tooltip();
 });
-
-function wpsc_get_epa_contact_editor(box_id) {
-    wpsc_modal_open('Edit EPA Contact');
-	var data = {
-		action: 'wpsc_get_epa_contact_editor',
-		box_id: box_id
-	};
-	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		var response = JSON.parse(response_str);
-		jQuery('#wpsc_popup_body').html(response.body);
-		jQuery('#wpsc_popup_footer').html(response.footer);
-		jQuery('#wpsc_cat_name').focus();
-	});  
-}
 
 function wpsc_get_box_editor(box_id){
 

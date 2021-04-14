@@ -44,7 +44,7 @@ jQuery(document).ready(function(){
             var newDropzone = new Dropzone(uploader, dropzoneOptions);
             
             
-            
+            // Batch File Upload Area
             var dropzoneOptions_multi_files = {
                 url: "test2.php",
                 autoProcessQueue: false,
@@ -55,6 +55,8 @@ jQuery(document).ready(function(){
                 acceptedFiles: '.xlsx, .xlsm, .pdf',
                 accept: function (file, done) {
                     console.log({file:file, done:done});
+                    
+                    
                     
                     if( batchFiles.file_list.indexOf( file.name ) >= 0 ) {
 	                    
@@ -97,6 +99,45 @@ jQuery(document).ready(function(){
         //} 
    // });
 });
+
+//
+// checks file to ensure that it isn't a duplicate and if not, adds
+//
+
+function addToBatchList( file ) {
+	
+	
+	if( batchFiles.file_list.indexOf( file.name ) >= 0 ) {
+
+        console.log('Error: duplicate file name');        
+        file._removeLink.click();
+        
+    } else {
+        
+        //batchFiles.file_list.push( file.name );
+        batchFiles.file_list.push( file );
+        
+        console.log( '--- before S3 upload ---' );
+        //upload( file );
+        
+    }
+
+
+}
+
+// returns an array of all the file names in the batchFiles object
+function getArrayOfFileNames() {
+	
+	
+	
+}
+
+// Starts the upload process for files in batchFiles
+function startS3Upload() {
+	
+	
+}
+
 
 
 /* Removes data from the box datatable if there is any error */

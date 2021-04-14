@@ -349,7 +349,8 @@ if($method == 'PUT') {
 			$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );
 			
 			//Update the Updated Date
-			$current_datetime = date("yy-m-d H:i:s");
+			//$current_datetime = date("yy-m-d H:i:s");
+			$current_datetime = date("Y-m-d H:i:s");
 			$update = [	'updated_date' => $current_datetime ];
 			$where = [ 'id' => $item_id ];
 			Patt_Custom_Func::update_recall_dates($update, $where);
@@ -433,7 +434,8 @@ if($method == 'PUT') {
 			$return_array = Patt_Custom_Func::update_return_shipping( $data, $where );
 			
 			//Update the Updated Date
-			$current_datetime = date("yy-m-d H:i:s");
+			//$current_datetime = date("yy-m-d H:i:s");
+			$current_datetime = date("Y-m-d H:i:s");
 			$update = [	'updated_date' => $current_datetime ];
 			$where = [ 'id' => $item_id ];
 			Patt_Custom_Func::update_return_dates($update, $where);
@@ -646,7 +648,8 @@ if($method == 'PUT') {
 					$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );
 					
 					//Update the Updated Date
-					$current_datetime = date("yy-m-d H:i:s");
+					//$current_datetime = date("yy-m-d H:i:s");
+					$current_datetime = date("Y-m-d H:i:s");
 					$update = [	'updated_date' => $current_datetime ];
 					$where = [ 'id' => $item_id ];
 					Patt_Custom_Func::update_recall_dates($update, $where);

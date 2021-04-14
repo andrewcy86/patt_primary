@@ -13,13 +13,16 @@ if(isset($_POST['postvarsbarcode'])){
    $barcode = $_POST['postvarsbarcode'];
 
 //Determine if string is URL
-    if(filter_var($barcode, FILTER_VALIDATE_URL))
+    if(filter_var($barcode, FILTER_VALIDATE_URL) || preg_match("/^([0-9]{7})(?:,\s*(?1))*$/", $barcode))
     {
+        
+if(preg_match("/^([0-9]{7})(?:,\s*(?1))*$/", $barcode)) {
+$requestid = $barcode;
+} else {
 parse_str(parse_url($barcode)['query'], $params);
+$requestid = $params['id'];
+}
 
-//echo $params['id'];
-
-//echo '<strong>Request ID: '.$params['id'].'</strong>';
 
 $request_info = $wpdb->get_row(
 				"SELECT " . $wpdb->prefix . "wpsc_ticket.id as id, " . $wpdb->prefix . "wpsc_ticket.active as active, " . $wpdb->prefix . "wpsc_ticket.customer_name as customer_name, " . $wpdb->prefix . "wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, " . $wpdb->prefix . "terms.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, " . $wpdb->prefix . "wpsc_ticket.date_created as date_created
@@ -37,40 +40,40 @@ INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = "
         " . $wpdb->prefix . "wpsc_ticket.ticket_priority = priority.term_id
     )  
 
-WHERE " . $wpdb->prefix . "wpsc_ticket.request_id = " . $params['id']
+WHERE " . $wpdb->prefix . "wpsc_ticket.request_id = " . $requestid
 			);
 //Checking to see if requests both 1) exists 2) is not archived
 if(!empty($request_info->id) && $request_info->active == 1) {
             $type = 'request';
             $status_icon = '';
             //Status icons
-            if(Patt_Custom_Func::id_in_box_destroyed($params['id'], $type) == 1) {
+            if(Patt_Custom_Func::id_in_box_destroyed($requestid, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
             }
             
-            if(Patt_Custom_Func::id_in_unauthorized_destruction($params['id'], $type) == 1) {
+            if(Patt_Custom_Func::id_in_unauthorized_destruction($requestid, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
             
-            if(Patt_Custom_Func::id_in_damaged($params['id'], $type) == 1) {
+            if(Patt_Custom_Func::id_in_damaged($requestid, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
             }
             
-             if(Patt_Custom_Func::id_in_freeze($params['id'], $type) == 1) {
+             if(Patt_Custom_Func::id_in_freeze($requestid, $type) == 1) {
             $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
             }
 
-            if(Patt_Custom_Func::id_in_return($params['id'],$type) == 1){
+            if(Patt_Custom_Func::id_in_return($requestid,$type) == 1){
             $status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
             }
             
-            if(Patt_Custom_Func::id_in_recall($params['id'],$type) == 1){
+            if(Patt_Custom_Func::id_in_recall($requestid,$type) == 1){
             $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
             }
 			$request_url = admin_url( 'admin.php?page=wpsc-tickets', 'https' );
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
-			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$params['id']."' target='_blank'>" . $params['id'] . "</a>" . $status_icon . "<br />";
+			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$requestid."' target='_blank'>" . $requestid . "</a>" . $status_icon . "<br />";
 			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
 			echo "<strong>Requestor Email:</strong> " . $request_info->customer_email . "<br />";
 			echo "<strong>Request Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle'></i></span>
@@ -165,6 +168,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
     } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $barcode)){
 
 //echo '<strong>Box ID: '.$barcode.'<strong>';
+//REVIEW
 $box_details = $wpdb->get_row(
 				"
 SELECT 
@@ -183,7 +187,7 @@ SELECT
 " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office,
 (SELECT " . $wpdb->prefix . "terms.name as box_status FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as box_status
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $wpdb->prefix . "wpsc_ticket.id 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
@@ -204,13 +208,12 @@ $is_active = Patt_Custom_Func::request_status( $location_request_id );
 
 
 if (!empty($box_details_id) && $is_active == 1) {
-
+//REVIEW
 			$box_content = $wpdb->get_results(
-				"SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo.folderdocinfo_id as id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.validation as validation
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo.id = " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfo_id
-WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
+				"SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.validation as validation
+                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
+                WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = '" . $box_details_id . "'"
 			);
 
 
@@ -338,41 +341,23 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
     } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $barcode)){
 
 //echo '<strong>Folder/File ID: '.$barcode.'<strong>';
-
+//REVIEW
 $folderfile_details = $wpdb->get_row(
 		"SELECT 
-	a.id as id,
+	b.id as id,
 	c.ticket_id as ticket_id,
-	b.index_level as index_level,
-	a.box_id as box_id,
 	b.title as title,
 	b.date as date,
-	a.author as author,
+	b.author as author,
 	b.record_type as record_type,
-	a.site_name as site_name,
-	a.siteid as site_id,
-	a.close_date as close_date,
+	b.site_name as site_name,
+	b.siteid as site_id,
+	b.close_date as close_date,
 	b.source_format as source_format,
-	a.folderdocinfo_id as folderdocinfo_id,
-	a.essential_record as essential_record,
-	b.validation as validation,
-	b.validation_user_id as validation_user_id,
-	b.rescan as rescan,
-	b.unauthorized_destruction as unauthorized_destruction,
-	a.folder_identifier as folder_identifier,
-	b.freeze as freeze,
-	b.damaged as damaged,
-	a.addressee as addressee,
-	b.DOC_REGID as sems_reg_id,
+	b.essential_record as essential_record,
+	b.folder_identifier as folder_identifier,
+	b.addressee as addressee,
 	b.folderdocinfofile_id as folderdocinfofile_id,
-	b.id as folderfileid,
-	b.attachment,
-	b.file_name,
-	b.object_key,
-	b.object_location,
-	b.source_file_location,
-	b.file_object_id,
-	b.file_size,
     b.description,
     b.tags,
     b.access_restriction,
@@ -382,20 +367,11 @@ $folderfile_details = $wpdb->get_row(
     b.rights_holder,
     b.source_dimensions
 	
-    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-    INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON a.id = b.folderdocinfo_id
-    INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON c.id = a.box_id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON c.id = b.box_id
     WHERE b.folderdocinfofile_id = '" . $barcode . "'"
 	);
 
-//folderdocinfo table id
-    $folderfile_id = $folderfile_details->id;
-    
-    //folderdocinfofiles table id
-    $folderdocinfofileid = $folderfile_details->folderfileid;
-    
-    $folderfile_index_level = $folderfile_details->index_level;
-	$folderfile_boxid = $folderfile_details->box_id;
 	$folderfile_title = $folderfile_details->title;
 	$folderfile_date = $folderfile_details->date;
 	$folderfile_author = $folderfile_details->author;
@@ -404,23 +380,10 @@ $folderfile_details = $wpdb->get_row(
 	$folderfile_site_id = $folderfile_details->site_id;
 	$folderfile_close_date = $folderfile_details->close_date;
 	$folderfile_source_format = $folderfile_details->source_format;
-	
-	$folderfile_sems_reg_id = $folderfile_details->sems_reg_id;
-	$folderfile_file_object_id = $folderfile_details->file_object_id;
-	
-	$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
 	$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;
-	
 	$folderfile_essential_record = $folderfile_details->essential_record;
-	$folderfile_validation = $folderfile_details->validation;
-	$folderfile_validation_user = $folderfile_details->validation_user_id;	
-	$folderfile_rescan = $folderfile_details->rescan;
-    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
     $folderfile_identifier = $folderfile_details->folder_identifier;
-    $folderfile_freeze = $folderfile_details->freeze;
-    $folderfile_damaged = $folderfile_details->damaged;
     $folderfile_addressee = $folderfile_details->addressee;
-    
     $folderfile_description = $folderfile_details->description;
     $folderfile_tags = $folderfile_details->tags;
     $folderfile_access_restriction = $folderfile_details->access_restriction;
@@ -611,7 +574,7 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 //FAIL for all other barcodes       
 } else {
 
-echo 'Please scan a valid barcode.';
+echo 'Please enter a valid barcode.';
 
 }
 

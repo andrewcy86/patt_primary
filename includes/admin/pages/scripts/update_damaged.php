@@ -20,10 +20,10 @@ $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'w
 $unauthorized_destruction = 0;
 
 foreach($folderdocid_arr as $key) {
+//REVIEW
 $get_completed_dispositioned = $wpdb->get_row("SELECT a.box_status
-FROM wpqa_wpsc_epa_boxinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+FROM wpqa_wpsc_epa_boxinfo a
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
 WHERE c.damaged = 0 AND c.folderdocinfofile_id = '".$key."'");
 $get_completed_dispositioned_val = $get_completed_dispositioned->box_status;
 
@@ -35,7 +35,8 @@ if($get_completed_dispositioned_val == $completed_dispositioned_tag->term_id) {
 
 foreach($folderdocid_arr as $key) {
 $get_unauthorized_destruction = $wpdb->get_row("SELECT unauthorized_destruction 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
+WHERE folderdocinfofile_id = '".$key."'");
 $get_unauthorized_destruction_val = $get_unauthorized_destruction->unauthorized_destruction;
 
 //Documents cannot be marked as Damaged if they are already marked as Unauthorized Destruction
@@ -49,11 +50,15 @@ $unauthorized_destruction++;
 if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
 foreach($folderdocid_arr as $key) {
 
-$get_damaged = $wpdb->get_row("SELECT damaged FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
+$get_damaged = $wpdb->get_row("SELECT damaged 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
+WHERE folderdocinfofile_id = '".$key."'");
 $get_damaged_val = $get_damaged->damaged;
 
 $get_request_id = substr($key, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id 
+FROM " . $wpdb->prefix . "wpsc_ticket 
+WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_damaged_val == 1){
@@ -84,11 +89,15 @@ echo "A folder/file is in the box status of Completed/Dispositioned and cannot b
 }
 
 if( ($page_id == 'filedetails') && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
-$get_damaged = $wpdb->get_row("SELECT damaged FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$folderdocid_string."'");
+$get_damaged = $wpdb->get_row("SELECT damaged 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
+WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 $get_damaged_val = $get_damaged->damaged;
 
 $get_request_id = substr($folderdocid_string, 0, 7);
-$get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$get_ticket_id = $wpdb->get_row("SELECT id 
+FROM " . $wpdb->prefix . "wpsc_ticket 
+WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
 if ($get_damaged_val == 1){

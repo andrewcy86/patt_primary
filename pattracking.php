@@ -90,7 +90,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         include_once( WPPATT_ABSPATH . 'includes/admin/tickets/ticket_list/filter_get_ticket_list.php' ); 
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
-        add_shortcode('wppattquery', array($frontend, 'get_id_details'));
+        //add_shortcode('wppattquery', array($frontend, 'get_id_details'));
         // Add Shipping CRON
         add_action( 'wppatt_shipping_cron', array($frontend, 'wppatt_shipping_cron_schedule'));
         // Add Recall Shipping CRON
@@ -124,8 +124,6 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         
         // Add Return / Decline Shipping CRON
         add_action( 'wppatt_shipping_cron_return', array($frontend, 'wppatt_return_shipping_status_schedule'));
-        // Add ECMS CRON
-        //add_action( 'wppatt_ecms_cron', array($frontend, 'wppatt_ecms_cron_schedule')); 
         // Add EIDW CRON
         add_action( 'wppatt_eidw_cron', array($frontend, 'wppatt_eidw_cron_schedule')); 
         // Add Recycle Bin Cron
@@ -134,9 +132,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON
         add_action( 'wppatt_private_message_cleanup_cron', array($frontend, 'wppatt_private_message_cleanup_cron_schedule'));
-        // SEMS site ID conversion CRON
-        add_action( 'wppatt_site_id_conversion_cron', array($frontend, 'wppatt_site_id_conversion_cron_schedule'));
-                
+      
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           
@@ -162,6 +158,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
           
+          // Add Document Relationship Modal on Folder File Details page
+          add_action('wp_ajax_wpsc_get_doc_relationship', array($backend, 'get_doc_relationship'));	
+          
           // Add Inventory Modal
           add_action('wp_ajax_wpsc_get_inventory_editor', array($backend, 'get_inventory_editor'));
 
@@ -170,10 +169,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 
           // Add Folder/File Editor Modal
           add_action('wp_ajax_wpsc_get_folderfile_editor', array($backend, 'get_folder_file_editor'));
-          
-          // Add Upload Temp Attachments to ECMS Modal
-          add_action('wp_ajax_wpsc_get_temp_attachments', array($backend, 'get_temp_attachments'));
-          
+
           // Add Box Editor Modal
           add_action('wp_ajax_wpsc_get_box_editor', array($backend, 'get_box_editor'));
           

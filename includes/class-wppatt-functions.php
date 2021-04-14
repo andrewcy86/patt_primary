@@ -8,9 +8,9 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
   final class wppatt_Functions {
       
     // Shortcode Query Component
-    public function get_id_details(){    
+    /*public function get_id_details(){    
     include WPPATT_ABSPATH . 'includes/admin/get_id_details.php';
-    }
+    }*/
     
     // CRON for s3 Cleanup
     public function wppatt_s3_cleanup_cron_schedule(){    
@@ -55,11 +55,6 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     // CRON for Return (Decline) Status Change from Shipping status
     public function wppatt_return_shipping_status_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/return_shipping_status_cron.php';
-    }   
-    
-    // CRON for ecms
-    public function wppatt_ecms_cron_schedule(){    
-    include WPPATT_ABSPATH . 'includes/admin/ecms_cron.php';
     }
 
     // CRON for eidw
@@ -76,15 +71,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     public function wppatt_recycle_bin_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/recycle_bin_cron.php';
     }   
-
+    
+    // Review with Aaron
     public function wppatt_ecms_ingestion_cron_schedule() {
     include WPPATT_ABSPATH . 'includes/admin/ecms_ingestion_cron.php';
     }
-    
-    // CRON for SEMS site ID conversion
-    public function wppatt_site_id_conversion_cron_schedule(){    
-    include WPPATT_ABSPATH . 'includes/admin/site_id_conversion_cron.php';
-    }   
     
     public function addStyles(){    
         wp_register_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );

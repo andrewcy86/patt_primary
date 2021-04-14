@@ -32,46 +32,53 @@ $isactive = $_POST['isactive'];
 ## Search 
 $searchQuery = " ";
 if($searchGeneric != ''){
+    //REVIEW
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchGeneric."%' or 
       b.title like '%".$searchGeneric."%' or 
       b.date like '%".$searchGeneric."%' or
-      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) like '%".$searchGeneric."%') ";
+      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) like '%".$searchGeneric."%') ";
 }
 
 if($searchValue != ''){
+    //REVIEW
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchValue."%' or 
       b.title  like '%".$searchValue."%' or 
       b.date like '%".$searchValue."%' or
-      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) like '%".$searchValue."%') ";
+      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) like '%".$searchValue."%') ";
 }
 
 ## Total number of records without filtering
+//START REVIEW
 if($isactive == 1) {
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+$sel = mysqli_query($con,"select count(*) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE a.box_id = ".$box_id);
+WHERE b.box_id = ".$box_id);
 } else {
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.folderdocinfo_id = a.id
+$sel = mysqli_query($con,"select count(*) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE a.box_id = ".$box_id);
+WHERE b.box_id = ".$box_id);
 }
+//END REVIEW
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
+//START REVIEW
 if($isactive == 1) {
-$sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+$sel = mysqli_query($con,"select count(*) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id);
+WHERE 1 ".$searchQuery." AND b.box_id = ".$box_id);
 } else {
-$sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.folderdocinfo_id = a.id
+$sel = mysqli_query($con,"select count(*) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id);
+WHERE 1 ".$searchQuery." AND b.box_id = ".$box_id);
 }
+//END REVIEW
+
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
@@ -95,12 +102,14 @@ $row_limit = " limit ".$row.",".$rowperpage;
 }
 
 //SQL query using functions to generate icons
+//START REVIEW
 if($isactive == 1) {
 $boxQuery = "SELECT 
+b.id as dbid,
 CONCAT(
 
 CASE WHEN (
-SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) > 0 AND
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) > 0 AND
 b.freeze <> 1
 
 THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a>')
@@ -113,7 +122,7 @@ else b.title
 end 
 as title,
 b.date,
-(SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) as epa_contact_email,
+b.lan_id as epa_contact_email,
 
 CONCAT(
 CASE 
@@ -141,14 +150,14 @@ END
 ELSE ''
 END) as validation
 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.folderdocinfo_id = a.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id." 
-order by b.id AND ".$columnName." ".$columnSortOrder.$row_limit;
+WHERE 1 ".$searchQuery." AND b.box_id = ".$box_id." 
+order by ".$columnName." ".$columnSortOrder.$row_limit;
 
 } else {
 $boxQuery = "SELECT 
+b.id as dbid,
 CONCAT(
 
 CASE WHEN (
@@ -163,7 +172,7 @@ else b.title
 end 
 as title,
 b.date,
-(SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) as epa_contact_email,
+b.lan_id as epa_contact_email,
 
 CONCAT(
 CASE 
@@ -191,13 +200,12 @@ END
 ELSE ''
 END) as validation
 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_archive a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b ON b.folderdocinfo_id = a.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive b
 LEFT JOIN " . $wpdb->prefix . "users u ON u.ID = b.validation_user_id
-WHERE 1 ".$searchQuery." AND a.box_id = ".$box_id." 
-order by b.id AND ".$columnName." ".$columnSortOrder.$row_limit;
+WHERE 1 ".$searchQuery." AND b.box_id = ".$box_id." 
+order by ".$columnName." ".$columnSortOrder.$row_limit;
 }
-
+//END REVIEW
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
 
@@ -255,6 +263,7 @@ else {
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
      //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
+     "dbid"=>$row['dbid'],
      "title"=>$row['title'],
      "date"=>Patt_Custom_Func::get_converted_date($row['date']),
      "epa_contact_email"=>$row['epa_contact_email'],

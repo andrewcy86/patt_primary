@@ -14,11 +14,10 @@ $total_count = 0;
 $folderdocarray = array();
 
 foreach($document_array as $key => $value) { 
-    
+//REVIEW
 $get_document = $wpdb->get_row("SELECT a.folderdocinfofile_id as folderdocinfofile_id
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON b.id = a.folderdocinfo_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON b.box_id = c.id 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON a.box_id = c.id 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location d on c.storage_location_id = d.id 
 WHERE (d.aisle <> 0 AND d.bay <> 0 AND d.shelf <> 0 AND d.position <> 0 AND d.digitization_center <> 666) AND 
 (c.box_destroyed = 0) AND a.folderdocinfofile_id = '" . $value . "'");

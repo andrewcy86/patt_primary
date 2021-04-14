@@ -31,11 +31,12 @@ $validate++;
 }
 
 foreach($folderdocid_arr as $key) {
+
+//AY FIX JOIN
 $get_destroyed = $wpdb->get_row("SELECT b.box_destroyed as box_destroyed 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = a.id
-WHERE c.freeze = 0 AND c.folderdocinfofile_id = '".$key."'");
+WHERE a.freeze = 0 AND a.folderdocinfofile_id = '".$key."'");
 $get_destroyed_val = $get_destroyed->box_destroyed;
 
 if ($get_destroyed_val == 1) {
@@ -102,10 +103,10 @@ echo "A folder/file has been selected that has been flagged as validated.<br />P
 
 if($page_id == 'filedetails') {
  
-$get_rescan = $wpdb->get_row("SELECT a.rescan, b.box_id 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.folderdocinfo_id = b.id
-WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
+//AY FIX JOIN
+$get_rescan = $wpdb->get_row("SELECT rescan, box_id 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE folderdocinfofile_id = '".$folderdocid_string."'");
 $get_rescan_val = $get_rescan->rescan;
 $get_rescan_boxid_val = $get_rescan->box_id;
 

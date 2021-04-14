@@ -600,11 +600,6 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     die();
     }
     
-    public function get_temp_attachments(){
-    include WPPATT_ABSPATH . 'includes/ajax/get_temp_attachments.php';
-    die();
-    }
-    
     public function get_box_editor(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_box_editor.php';
     die();
@@ -625,6 +620,11 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     die();
     }
     
+    // Added function to get document relationship
+    public function get_doc_relationship(){
+	    include WPPATT_ABSPATH . 'includes/ajax/get_doc_relationship.php';    
+	    die();
+    }  
     
     // Added function to search for box/folder/file ID in Add Recall page 
     public function recall_search_for_id(){

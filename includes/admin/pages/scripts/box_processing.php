@@ -317,213 +317,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-/*
-$boxQuery = "
-SELECT 
-a.box_id, a.id, f.name as box_status, f.term_id as term,
-CONCAT(
-
-CASE WHEN 
-(
-SELECT sum(c.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id
-) <> 0 AND
-a.box_destroyed > 0 
-
-
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
-
-WHEN a.box_destroyed > 0 
-
-
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
-
-
-ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
-END,
-
-
-CASE 
-WHEN (SELECT sum(c.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'
-ELSE '' 
-END,
-CASE 
-WHEN (SELECT sum(c.unauthorized_destruction = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id WHERE b.box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
-ELSE '' 
-END
-) as box_id_flag,
-
-CONCAT(
-'<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = b.ticket_priority),
-';color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = b.ticket_priority),
-';\">',
-(SELECT name from " . $wpdb->prefix . "terms where term_id = b.ticket_priority),
-'</span>') as ticket_priority,
-
-CASE 
-WHEN b.ticket_priority = 621
-THEN
-1
-WHEN b.ticket_priority = 9
-THEN
-2
-WHEN b.ticket_priority = 8
-THEN
-3
-WHEN b.ticket_priority = 7
-THEN
-4
-ELSE
-999
-END
- as ticket_priority_order,
-
-CASE 
-WHEN a.box_status = 748
-THEN
-1
-WHEN a.box_status = 816
-THEN
-2
-WHEN a.box_status = 672
-THEN
-3
-WHEN a.box_status = 671
-THEN
-4
-WHEN a.box_status = 65
-THEN
-5
-WHEN a.box_status = 6
-THEN
-6
-WHEN a.box_status = 673
-THEN
-7
-WHEN a.box_status = 674
-THEN
-8
-WHEN a.box_status = 743
-THEN
-9
-WHEN a.box_status = 68
-THEN
-10
-WHEN a.box_status = 67
-THEN
-11
-WHEN a.box_status = 66
-THEN
-12
-ELSE
-999
-END
- as box_status_order,
-
-CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
-e.name as location, 
-c.office_acronym as acronym,
-CONCAT(
-CASE 
-
-WHEN (SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) = 0 AND
-(SELECT count(c.id) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-WHERE b.box_id = a.id) = 0
-THEN
-''
-
-WHEN (SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) != 0 AND 
-(SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) < (SELECT count(c.id) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-WHERE b.box_id = a.id)
-THEN 
-'<span style=\"font-size: 1.3em; color: #FF8C00;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
-
-WHEN (SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-WHERE b.box_id = a.id) = 0 AND 
-(SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) < (SELECT count(c.id) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-WHERE b.box_id = a.id)
-THEN 
-'<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
-
-WHEN (SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id) = (SELECT count(c.id) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
-WHERE b.box_id = a.id)
-THEN 
-'<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> '
-
-ELSE '' 
-END,
-
-CASE 
-WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
-THEN
-CONCAT((SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id WHERE fdi.box_id = a.id))
-ELSE '-'
-END
-) as validation
-
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
-
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
-
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
-
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-   
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." 
-order by a.id AND ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
-*/
-
-//INNER JOIN wpqa_wpsc_epa_boxinfo_userstatus g ON g.box_id = a.id
-//INNER JOIN wpqa_wpsc_epa_boxinfo_userstatus h ON h.box_id = a.id 
-
+//REVIEW
 $boxQuery = "
 SELECT 
 a.box_id, a.id as dbid, f.name as box_status, f.term_id as term,
@@ -532,9 +326,8 @@ CONCAT(
 CASE WHEN 
 (
 SELECT sum(c.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
+WHERE c.box_id = a.id
 ) <> 0 AND
 a.box_destroyed > 0 
 
@@ -626,12 +419,12 @@ e.name as location,
 c.office_acronym as acronym,
 CONCAT(
 CASE 
-WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
+WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = a.id) != 0
 THEN
 CONCAT((SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo b 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id 
-WHERE b.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo fdi ON fdi.id = fdif.folderdocinfo_id WHERE fdi.box_id = a.id))
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
+WHERE c.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif
+WHERE fdif.box_id = a.id))
 ELSE '-'
 END
 ) as validation
@@ -671,8 +464,12 @@ while ($row = mysqli_fetch_assoc($boxRecords)) {
 	$box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$row['box_status']."</span>";
 	
 	//$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(666)" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
-	
+
+if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){	
 	$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
+} else {
+    $assigned_agents_icon = '';
+}
 
 $decline_icon = '';
 $recall_icon = '';
@@ -707,15 +504,13 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['box_id'],$type) == 1) {
 }
 
 $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
-FROM wpqa_wpsc_epa_boxinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+FROM wpqa_wpsc_epa_boxinfo a
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
 WHERE a.box_id = '" .  $row['box_id'] . "'");
 
 $get_validation_count = $wpdb->get_row("SELECT SUM(c.validation) as val_count
-FROM wpqa_wpsc_epa_boxinfo a 
-INNER JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.folderdocinfo_id = b.id
+FROM wpqa_wpsc_epa_boxinfo a
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
 WHERE a.box_id = '" .  $row['box_id'] . "'");
 
 if(Patt_Custom_Func::id_in_validation($row['box_id'],$type) == 1) {

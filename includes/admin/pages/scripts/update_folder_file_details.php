@@ -28,9 +28,10 @@ if(
 !empty($_POST['postvarsrightsholder'])
 ){
     
-   //folderdocinfo table id
-   $folderfileid = $_POST['postvarsffid'];
+   //folderdocinfo_files table id
    $pattdocid = $_POST['postvarspdid'];
+   //folderdocinfo_files table folderdocinfofile_id
+   $folderdocinfofileid = $_POST['postvarsfdiid'];
    $il = $_POST['postvarsil'];
    $title = $_POST['postvarstitle'];
    $date = $_POST['postvarsdate'];  
@@ -53,27 +54,18 @@ if(
    $specific_use_restriction = $_POST['postvarsspecificuserestriction'];
    $rights_holder = $_POST['postvarsrightsholder'];
    $source_dimensions = $_POST['postvarssourcedimensions'];
-   
-   //folderdocinfofiles table id
-   $folderdocinfofileid = $_POST['postvarsfdiid'];
+   $program_area = $_POST['postvarsprogramarea'];
 
-$request_id = substr($pattdocid, 0, 7);
+$request_id = substr($folderdocinfofileid, 0, 7);
 $get_ticket_id = $wpdb->get_row("
 SELECT id FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = '" . $request_id . "'");
 $ticket_id = $get_ticket_id->id;
-
-$get_folderdocinfo = $wpdb->get_row("
-SELECT *
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo
-WHERE
-id = '" . $folderfileid . "'
-");
 
 $get_folderdocinfo_files = $wpdb->get_row("
 SELECT *
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE
-id = '" . $folderdocinfofileid . "'
+id = '" . $pattdocid . "'
 ");
 
    $old_ilval = $get_folderdocinfo_files->index_level;
@@ -87,18 +79,18 @@ id = '" . $folderdocinfofileid . "'
    
    if ($get_folderdocinfo_files->title == '' ) { $old_title = 'None'; } else { $old_title = $get_folderdocinfo_files->title; }
    if ($get_folderdocinfo_files->date == '' ) { $old_date = 'None'; } else { $old_date = $get_folderdocinfo_files->date; }
-   if ($get_folderdocinfo->author == '' ) { $old_author = 'None'; } else { $old_author = $get_folderdocinfo->author; }
+   //START REVIEW
+   if ($get_folderdocinfo_files->author == '' ) { $old_author = 'None'; } else { $old_author = $get_folderdocinfo_files->author; }
    if ($get_folderdocinfo_files->record_type == '' ) { $old_record_type = 'None'; } else { $old_record_type = $get_folderdocinfo_files->record_type; }
-   if ($get_folderdocinfo->site_name == '' ) { $old_site_name = 'None'; } else { $old_site_name = $get_folderdocinfo->site_name; }
-   if ($get_folderdocinfo->siteid == '' ) { $old_site_id = 'None'; } else { $old_site_id = $get_folderdocinfo->siteid; }
-   if ($get_folderdocinfo->close_date == '' ) { $old_close_date = 'None'; } else { $old_close_date = $get_folderdocinfo->close_date; }
-   if ($get_folderdocinfo->epa_contact_email == '' ) { $old_contact_email = 'None'; } else { $old_contact_email = $get_folderdocinfo->epa_contact_email; }
-   if ($get_folderdocinfo_files->source_format == '' ) { $old_source_format = 'None'; } else { $old_source_format = $get_folderdocinfo_files->source_format; }
-   if ($get_folderdocinfo->rights == '' ) { $old_rights = 'None'; } else { $old_rights = $get_folderdocinfo->rights; }
-   if ($get_folderdocinfo->folder_identifier == '' ) { $old_folder_identifier = 'None'; } else { $old_folder_identifier = $get_folderdocinfo->folder_identifier; }
-   if ($get_folderdocinfo->addressee == '' ) { $old_addressee = 'None'; } else { $old_addressee = $get_folderdocinfo->addressee; }
-   $old_erval = $get_folderdocinfo->essential_record;
+   if ($get_folderdocinfo_files->site_name == '' ) { $old_site_name = 'None'; } else { $old_site_name = $get_folderdocinfo_files->site_name; }
+   if ($get_folderdocinfo_files->siteid == '' ) { $old_site_id = 'None'; } else { $old_site_id = $get_folderdocinfo_files->siteid; }
+   if ($get_folderdocinfo_files->close_date == '' ) { $old_close_date = 'None'; } else { $old_close_date = $get_folderdocinfo_files->close_date; }
+   if ($get_folderdocinfo_files->folder_identifier == '' ) { $old_folder_identifier = 'None'; } else { $old_folder_identifier = $get_folderdocinfo_files->folder_identifier; }
+   if ($get_folderdocinfo_files->addressee == '' ) { $old_addressee = 'None'; } else { $old_addressee = $get_folderdocinfo_files->addressee; }
+   //END REVIEW
    
+   if ($get_folderdocinfo_files->source_format == '' ) { $old_source_format = 'None'; } else { $old_source_format = $get_folderdocinfo_files->source_format; }
+   $old_erval = $get_folderdocinfo_files->essential_record;
    if ($get_folderdocinfo_files->description == '' ) { $old_description = 'None'; } else { $old_description = $get_folderdocinfo_files->description; }
    if ($get_folderdocinfo_files->tags == '' ) { $old_tags = 'None'; } else { $old_tags = $get_folderdocinfo_files->tags; }
    if ($get_folderdocinfo_files->access_restriction == '' ) { $old_access_restriction = 'None'; } else { $old_access_restriction = $get_folderdocinfo_files->access_restriction; }
@@ -107,10 +99,11 @@ id = '" . $folderdocinfofileid . "'
    if ($get_folderdocinfo_files->specific_use_restriction == '' ) { $old_specific_use_restriction = 'None'; } else { $old_specific_use_restriction = $get_folderdocinfo_files->specific_use_restriction; }
    if ($get_folderdocinfo_files->rights_holder == '' ) { $old_rights_holder = 'None'; } else { $old_rights_holder = $get_folderdocinfo_files->rights_holder; }
    if ($get_folderdocinfo_files->source_dimensions == '' ) { $old_source_dimensions = 'None'; } else { $old_source_dimensions = $get_folderdocinfo_files->source_dimensions; }
+   if ($get_folderdocinfo_files->program_area == '' ) { $old_program_area = 'None'; } else { $old_program_area = $get_folderdocinfo_files->program_area; }
    
 $metadata_array = array();
 
-$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
+//$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
 $folderdocinfofiles_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 $fdiid = $get_folderdocinfo_files->folderdocinfofile_id;
 
@@ -124,7 +117,8 @@ if ($il != $old_il) {
         //rewrite the folderdocinfo_id
         $il_val = '';
         
-        //updates parent folderdocinofo_id and folderdocinfofile_id
+        //START REVIEW
+        //updates parent folderdocinfofile_id
         if(count($pattdocid_split) == 4) {
             if($il == '1') {
                 $il_val = 'Folder';
@@ -135,18 +129,16 @@ if ($il != $old_il) {
                 $pattdocid_new = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '02' . '-' . $pattdocid_split[3];
             }
             
-            $data_update_parent = array('folderdocinfo_id' => $pattdocid_new);
-            $data_update_child = array('folderdocinfofile_id' => $pattdocid_new);
-            $data_where_child = array('id' => $folderdocinfofileid);
-            $data_where_parent = array('id' => $folderfileid);
-            
+            $data_update_parent = array('folderdocinfofile_id' => $pattdocid_new);
+            $data_where_parent = array('id' => $pattdocid);
+
             //update index_level
             array_push($metadata_array,'Index Level: '. $old_ilval . ' > ' . $il_val);
-            $wpdb->update($folderdocinfofiles_table, $data_update_il, $data_where_child);
+            $wpdb->update($folderdocinfofiles_table, $data_update_il, $data_where_parent);
             
             //update parent and child index level - folderdocinfo_id and folderdocinfofile_id
-            $wpdb->update($folderdocinfofiles_table, $data_update_child, $data_where_child);
-            $wpdb->update($table_name, $data_update_parent, $data_where_parent);
+            // ASK STEPHANIE Need to check if $folderfileid maps to $folderdocinfofiles_table id column
+            $wpdb->update($folderdocinfofiles_table, $data_update_parent, $data_where_parent);
         }
         //updates child folderdocinfofile_id
         else {
@@ -160,7 +152,7 @@ if ($il != $old_il) {
             }
             
             $data_update_child = array('folderdocinfofile_id' => $pattdocid_new);
-            $data_where = array('id' => $folderdocinfofileid);
+            $data_where = array('id' => $pattdocid);
             
             //update index_level
             array_push($metadata_array,'Index Level: '. $old_ilval . ' > ' . $il_val);
@@ -169,6 +161,7 @@ if ($il != $old_il) {
             //update child index level - folderdocinfofile_id
             $wpdb->update($folderdocinfofiles_table, $data_update_child, $data_where);
         }
+        //END REVIEW
 }
 
 $old_er = $get_folderdocinfo->essential_record;
@@ -181,7 +174,8 @@ if($old_er == 1) {
 
 if($essential_record != $old_erval) {
 $data_update = array('essential_record' => $essential_record);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 
 $er_val = '';
         if($essential_record == '1') {
@@ -193,20 +187,22 @@ $er_val = '';
 
 array_push($metadata_array,'Essential Record: ' . $old_er . ' > ' . $er_val);
 
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 //updates fields in folder-file-details modal window
 if( (!empty($title)) && ($title != $old_title) ) {
 $data_update = array('title' => $title);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Title: '.$old_title.' > '.$title);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($date)) && ($date != $old_date) ) {
 $data_update = array('date' => $date);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 
 array_push($metadata_array,'Creation Date: '. Patt_Custom_Func::get_converted_date($old_date) .' > '. Patt_Custom_Func::get_converted_date($date) );
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
@@ -214,65 +210,74 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 
 if( (!empty($author)) && ($author != $old_author) ) {
 $data_update = array('author' => $author);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Creator: '.$old_author.' > '.$author);
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($record_type)) && ($record_type != $old_record_type) ) {
 //Remove asterisk from SEMS values
 $data_update = array('record_type' => ltrim($record_type, '*'));
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Record Type: '. ltrim($old_record_type, '*') .' > '. ltrim($record_type, '*'));
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($site_name)) && ($site_name != $old_site_name) ) {
 $data_update = array('site_name' => $site_name);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Site Name: '.$old_site_name.' > '.$site_name);
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($site_id)) && ($site_id != $old_site_id) ) {
 $data_update = array('siteid' => $site_id);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Site ID: '.$old_site_id.' > '.$site_id);
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($close_date)) && ($close_date != $old_close_date) ) {
 $data_update = array('close_date' => $close_date);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Close Date: '. Patt_Custom_Func::get_converted_date($old_close_date) .' > '. Patt_Custom_Func::get_converted_date($close_date));
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($source_format)) && ($source_format != $old_source_format) ) {
 //Remove asterisk from all SEMS values
 $data_update = array('source_format' => stripslashes(ltrim($source_format, '*')));
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Source Type: '. ltrim($old_source_format, '*') .' > '. ltrim($source_format, '*'));
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($folder_identifier)) && ($folder_identifer != $old_folder_identifier) ) {
 $data_update = array('folder_identifier' => $folder_identifier);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Folder Identifier: '.$old_folder_identifier.' > '.$folder_identifier);
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($addressee)) && ($addressee != $old_addressee)) {
 $data_update = array('addressee' => $addressee);
-$data_where = array('id' => $folderfileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Addressee: '.$old_addressee.' > '.$addressee);
-$wpdb->update($table_name, $data_update, $data_where);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($description)) && ($description != $old_description) ) {
 $data_update = array('description' => $description);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Description: '.$old_description.' > '.$description);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
@@ -297,91 +302,103 @@ foreach($tags_explode as $tag) {
 $tags_implode = implode(',', $quoted_tags_array);
 
 $data_update = array('tags' => $tags_implode);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Tags: '.$old_tags.' > '.$tags_implode);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($access_restriction)) && ($access_restriction != $old_access_restriction) ) {
 $data_update = array('access_restriction' => $access_restriction);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Access Restriction: '.$old_access_restriction.' > '.$access_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 //If user selects No then clear specific_access_restriction
-$get_access_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
+//REVIEW
+$get_access_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $pattdocid . "'"); 
 $access_restriction_no = $get_access_restriction_no->access_restriction;
 
 if($access_restriction_no == 'No') {
     $data_update_no = array('specific_access_restriction' => '');
-    $data_where_no = array('id' => $folderdocinfofileid);
+    //REVIEW
+    $data_where_no = array('id' => $pattdocid);
     $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
 }
 
 if( strtolower(str_contains('Please select...', $specific_access_restriction )) == false && $access_restriction_no == 'Yes' && (!empty($specific_access_restriction)) && ($specific_access_restriction != $old_specific_access_restriction) ) {
 $data_update = array('specific_access_restriction' => $specific_access_restriction);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Specific Access Restriction: '.$old_specific_access_restriction.' > '.$specific_access_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($use_restriction)) && ($use_restriction != $old_use_restriction) ) {
 $data_update = array('use_restriction' => $use_restriction);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Use Restriction: ' . $old_use_restriction . ' > ' . $use_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 //If user selects No then clear specific_access_restriction
-$get_use_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderdocinfofileid . "'"); 
+//REVIEW
+$get_use_restriction_no = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $pattdocid . "'"); 
 $use_restriction_no = $get_use_restriction_no->use_restriction;
 
 if($use_restriction_no == 'No') {
     $data_update_no = array('specific_use_restriction' => '');
-    $data_where_no = array('id' => $folderdocinfofileid);
+    //REVIEW
+    $data_where_no = array('id' => $pattdocid);
     $wpdb->update($folderdocinfofiles_table, $data_update_no, $data_where_no);
 }
 
 if( strtolower(str_contains('Please select...', $specific_use_restriction )) == false && $use_restriction_no == 'Yes' && (!empty($specific_use_restriction)) && ($specific_use_restriction != $old_specific_use_restriction)) {
 $data_update = array('specific_use_restriction' => $specific_use_restriction);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Specific Use Restriction: '.$old_specific_use_restriction.' > '.$specific_use_restriction);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($rights_holder)) && ($rights_holder != $old_rights_holder)) {
 $data_update = array('rights_holder' => $rights_holder);
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Rights Holder: '.$old_rights_holder.' > '.$rights_holder);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 if( (!empty($source_dimensions)) && ($source_dimensions != $old_source_dimensions)) {
 $data_update = array('source_dimensions' => stripslashes($source_dimensions));
-$data_where = array('id' => $folderdocinfofileid);
+//REVIEW
+$data_where = array('id' => $pattdocid);
 array_push($metadata_array,'Source Dimensions: '.$old_source_dimensions.' > '.$source_dimensions);
+$wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+}
+
+if( !empty($program_area) && ($program_area != $old_program_area) ) {
+$data_update = array('program_area' => $program_area);
+$data_where = array('id' => $pattdocid);
+array_push($metadata_array, 'Program Area: ' . $old_program_area . ' > ' . $program_area);
 $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 }
 
 $metadata = implode (", ", $metadata_array);
 
+//REVIEW
+/*
 if (($il != $old_il) && ($pattdocid_new != $fdiid)) {
 $pattdocid = $pattdocid_new;
 } else {
 $pattdocid = $fdiid;
 }
-
-//send notification and email when any folder/file metadata has been updated
-/*
-if($il != $old_il || $essential_record != $old_erval || $old_title != $title || $old_date != $date || $old_author != $author 
-|| $old_record_type != $record_type || $old_site_name != $site_name || $old_site_id != $site_id || $old_close_date != $close_date ||
-$old_contact_email != $contact_email || $old_source_format != $source_format || $old_folder_identifier != $folder_identifier 
-|| $old_addressee != $addressee || $old_description!= $description || $old_tags != $tags || $old_access_restriction != $access_restriction ||
-$old_use_restriction != $use_restriction || $old_specific_use_restriction != $specific_use_restriction || $old_rights_holder != $rights_holder ||
-$old_source_dimensions != $source_dimensions) {
 */
 
+//send notification and email when any folder/file metadata has been updated
 $get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
 $get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
 
@@ -393,9 +410,12 @@ $data = [];
 
 //disabled email notification
 //$email = 1;
-Patt_Custom_Func::insert_new_notification('email-folder-file-metadata-updated',$pattagentid_array,$pattdocid,$data,$email);
 
-do_action('wpppatt_after_folder_doc_metadata', $ticket_id, $metadata, $pattdocid);
+//START REVIEW
+Patt_Custom_Func::insert_new_notification('email-folder-file-metadata-updated',$pattagentid_array,$folderdocinfofileid,$data,$email);
+
+do_action('wpppatt_after_folder_doc_metadata', $ticket_id, $metadata, $folderdocinfofileid);
+//END REVIEW
 //}
 
 } else {

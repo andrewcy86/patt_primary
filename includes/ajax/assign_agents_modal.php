@@ -31,11 +31,9 @@ $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $item_ids = $_REQUEST['item_ids']; 
 $num_of_items = count($item_ids);
 //$ticket_id = 1;
-$ticket_id = '0000001';
+//$ticket_id = '0000001';
 $is_single_item = ( $num_of_items == 1 ) ? true : false;
 $alerts_disabled = ( $type == 'view' ) ? true : false;
-
-
 
 /*
 function get_tax() {
@@ -521,8 +519,10 @@ jQuery(document).ready(function(){
 			},
 			select: function (event, ui) {
 
-				console.log('Focus: ');
-				console.log( jQuery(':focus').prop("classList") );
+				//console.log('Focus: ');
+				//console.log( jQuery(':focus').prop("classList") );
+				
+				//console.log({event:event, ui:ui});
 				
 				let list = jQuery(':focus').prop("classList");
 				let the_term = '';
@@ -533,8 +533,10 @@ jQuery(document).ready(function(){
 					}
 				});
 				 							
-				html_str = get_display_user_html(ui.item.label, ui.item.flag_val, the_term);
+				html_str = get_display_user_html(ui.item.label, ui.item.flag_val, the_term, ui.item.wp_user_obj);
  				jQuery('#assigned_agents.term-'+the_term+'').append(html_str);
+ 				
+
  				
  				// Enable / Disable Save based on PHP save enabled which denotes if the Box is savable.
  				var save_enabled = '<?php echo $save_enabled ?>';
@@ -760,7 +762,7 @@ function get_containing_ticket( box_folder_id ) {
 
 // Returns the HTML for the user to be added to a section
 // Error checks for duplicates and 
-function get_display_user_html(user_name, termmeta_user_val, term_id) {
+function get_display_user_html(user_name, termmeta_user_val, term_id, is_wp_user ) {
 	
 	console.log( 'get_display_user_html' );
 	var requestor_list = jQuery("input[name='assigned_agent["+term_id+"]']").map(function(){return jQuery(this).val();}).get();
@@ -777,7 +779,16 @@ function get_display_user_html(user_name, termmeta_user_val, term_id) {
 	console.log({term_id:term_id});
 	console.log( 'test: ' + status_list_no_dup_user.includes(Number(term_id)) );
 	console.log( 'fake test: ' + status_list_no_dup_user.includes("674") );
-
+	
+	// Checks if user is a wp_user (corner case error checking), if they aren't, do not add them. 
+	if( !is_wp_user ) {
+		
+		set_alert( 'danger', 'User: <b>' + user_name + '</b> will not be added as the PATT Agent is not associated with a valid WP User. Try deleting the PATT Agent and re-adding them.' );
+		
+		return false;	
+	}
+	
+	
 	// Checks if the user being added is already listed on the same status (not allowed)
 	if( requestor_list.indexOf(termmeta_user_val.toString()) >= 0 ) { 
 		console.log('termmeta_user_val: '+termmeta_user_val+' is already listed');
@@ -795,6 +806,10 @@ function get_display_user_html(user_name, termmeta_user_val, term_id) {
 
 	}
 	
+	
+	// Validation check: does PATT user have a WP User associated with it. Corner Case issue. 
+	
+	//Patt_Custom_Func::translate_user_id();
 	
 	
 	
@@ -971,7 +986,21 @@ function wppatt_set_agents(){
 	
 	    });
 //     }
-	wpsc_modal_close();
+
+	//wpsc_modal_close();
+
+<?php if($ticket_id != '') { ?>
+wpsc_open_ticket(<?php echo $ticket_id; ?>);
+
+<?php } else { ?>
+
+       var wpsc_setting_action = 'boxes';
+       var attrs = {"page":"boxes"};
+       jQuery(document).ready(function(){
+         wpsc_init(wpsc_setting_action,attrs);
+       });
+<?php } ?>   
+
 } 
 </script>
 

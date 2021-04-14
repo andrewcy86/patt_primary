@@ -683,6 +683,7 @@ jQuery(document).ready(function(){
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
 		}); 
+		dataTable.column(0).checkboxes.deselectAll();
 	});
 
 

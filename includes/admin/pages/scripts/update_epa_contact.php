@@ -11,7 +11,7 @@ if(!empty($_POST['postvarslanid'])){
    //id in box table (e.g. 1)
    $box_id = $_POST['postvarsboxid'];
    //box_id in box table (e.g. 0000001-1)
-   $pattboxid = $_POST['postvarspattboxid'];
+   //$pattboxid = $_POST['postvarspattboxid'];
    $lanid = $_POST['postvarslanid'];
    $pattdocid = $_POST['postvarspattdocid'];
 
@@ -47,13 +47,13 @@ $json = json_decode($response, true);
 $results = $json['totalResults'];
 
 if ($results >= 1) {
-$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
+$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $ticket_id = $get_ticket_id->ticket_id;
 
 $metadata_array = array();
-$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
-$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
+$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $table_name . " WHERE folderdocinfofile_id = '" . $pattdocid . "'");
 $old_lanid = $old_box_lanid->lan_id;
 
 //$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
@@ -61,7 +61,7 @@ $old_lanid = $old_box_lanid->lan_id;
 //updates the epa contact by entering a LANID
 if(!empty($lanid)) {
 $data_update = array('lan_id' => $lanid);
-$data_where = array('id' => $box_id);
+$data_where = array('folderdocinfofile_id' => $pattdocid);
 array_push($metadata_array,'EPA Contact: '.$old_lanid.' > '.$lanid);
 $wpdb->update($table_name, $data_update, $data_where);
 
@@ -74,7 +74,7 @@ $wpdb->update($folderfile_table, $data_update, $data_where);
 $metadata = implode (", ", $metadata_array);
 
 if($old_lanid != $lanid) {
-do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
+do_action('wpppatt_after_folder_doc_metadata', $ticket_id, $metadata, $pattdocid);
 
 //sends email/notification to user when epa contact is updated
 $get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
@@ -87,18 +87,16 @@ $data = [];
 
 $email = 1;
 
-Patt_Custom_Func::insert_new_notification('email-epa-contact-changed',$pattagentid_array,$pattboxid,$data,$email);
+Patt_Custom_Func::insert_new_notification('email-epa-contact-changed',$pattagentid_array,$pattdocid,$data,$email);
 }
 
 
-echo "Box ID #: " . $pattboxid . " has been updated.";
-} else {
-echo 'LAN ID is not valid';
+echo "Folder/File ID #: " . $pattdocid . " has been updated.";
 }
-}
+} else { echo "Please enter a valid LAN ID"; }
 }
 } else {
-    echo $pattboxid;
+   //echo $pattboxid;
    echo "Please make an edit.";
 }
 ?>

@@ -340,9 +340,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 						let index_source_type = 19;
 						let index_source_dim = 20;
 						let index_prog_office = 21; 
-						let index_index_level = 22; 
-						let index_ess_rec = 23; 
-						let index_tags = 25; 
+						let index_prog_area = 22; 
+						let index_index_level = 23; 
+						let index_ess_rec = 24; 
+						let index_tags = 26; 
 						
 						// Required Fields - Checking for blanks // Names for Error Reporting
 						let arr_fields;
@@ -385,6 +386,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                        	'Source Type',
 	                        	'Source Dimensions',
 	                        	'Program Office', 
+	                        	'Program Area', 
 	                        	'Index Level', 
 	                        	'Essential Records'
 	                        ];
@@ -470,6 +472,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                            	parsedData[count][index_source_type], // Source Type 
 	                            	parsedData[count][index_source_dim], // Source Dimensions 
 	                            	parsedData[count][index_prog_office], // Program Office
+	                            	parsedData[count][index_prog_area], // Program Area
 	                            	parsedData[count][index_index_level], // Index Level
 	                            	parsedData[count][index_ess_rec]  // Essential Records
 	                            ];  
@@ -892,7 +895,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                     parsedData[count][22],
                                     parsedData[count][23],
                                     parsedData[count][24],
-                                    parsedData[count][25]
+                                    parsedData[count][25],
+                                    parsedData[count][26]
                                 ]).draw().node();
                             }
                         }

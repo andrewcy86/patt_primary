@@ -177,11 +177,12 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			// Pre-loop Defaults
 			$box = '';
 			$row_counter = 1;
-			$folder_file_counter = 0;
+			$folder_file_counter = 1;
 			$folder_file_sub_counter = 1;
 			$box_id_legacy = $request_id . '-1'; 
 			$epa_contact_legacy = '';
 			$is_parent = true;
+			$new_box_child = false;
 			
 			
 			// DEBUG START
@@ -242,11 +243,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// Set Box ID and box number
 				$box_id = $request_id . '-' . $boxinfo['Box'];
 				$box_num = $boxinfo['Box'];
+				//$is_new_box = !( $box_num !== $box );
 				
 				$boxinfo['Parent/Child'] = trim(strtoupper($boxinfo['Parent/Child']));
 				
 				if( $boxinfo['Parent/Child'] == 'P' ) {
 					$parent_child_single = 'parent';
+					if( $new_box_child ) {
+						$new_box_child = false;
+					}
 				} elseif( $boxinfo['Parent/Child'] == 'C' ) {
 					$parent_child_single = 'child';
 				} elseif( $boxinfo['Parent/Child'] == 'S' ) {
@@ -258,10 +263,24 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				
 				
 				// Reset row_counter for proper box_id when new Box is detected. 
+				// If New Box
 				if( $box_id != $box_id_legacy ) {
 					$row_counter = 1;
 					$box_id_legacy = $box_id;
-					$folder_file_counter = 0;
+					$is_new_box = true;
+					
+					// If child AND new Box, then keep numbering from last parent
+					if( $parent_child_single == 'child' ) {
+						// keep numbering the same. No change. 
+						$new_box_child = true;
+					} else {
+						// New Box and Parent .:. reset counter
+						$folder_file_counter = 1;
+					}
+					
+					//$folder_file_counter = 1;
+				} else {
+					$is_new_box = false;
 				}
 				
 				
@@ -272,12 +291,13 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 				if ( $box !== $box_num ) {
 					
+					//$box_validation = true;
+					
 					// Disposition Schedule Number //old: Record Schedule Number
 					$record_schedule_number_break = explode( ':', $boxinfo['Disposition Schedule & Item Number'] );
 					$record_schedule_number = trim( str_replace( array( '[', ']' ), '', $record_schedule_number_break[0] ) );
 					
-					// EPA Contact for Lan ID and Lan ID Details
-					$epa_contact = trim( $boxinfo['EPA Contact'] );
+					
 					
 					// Program Office
 					if( !$superfund ) {
@@ -295,11 +315,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$region_id = str_replace( 'R', '', $region_code);
 					}
 					
-					// Fetch lan id and json
-					// Commentted out while on Dev Server that has no access to EPA Network
-					
-					// $lan_id = Patt_Custom_Func::lan_id_check( $epa_contact, $request_id );
-					// $lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+										
 					
 					// Box information for insertion
 					$boxarray = array(
@@ -309,8 +325,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						// 'bay' => '1',
 						'storage_location_id' => $this->get_new_storage_location_row_id(),
 						'location_status_id' => 1,
-						'lan_id' => $epa_contact, // on production server, use: $lan_json
-						'lan_id_details' => '',
+						//'lan_id' => $lan_id, 
+						//'lan_id_details' => $lan_json,
 						'program_office_id' => $this->get_programe_office_id( $program_office_id ),
 						'record_schedule_id' => $this->get_record_schedule_id( $record_schedule_number ),
 						'date_created' => gmdate( 'Y-m-d H:i:s' ),
@@ -375,20 +391,29 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							<?php esc_html_e( 'If this error persists, please copy this error message and the details below, and send them to the development team.', 'pattracking' ); ?>
 							<br><br>
 							<?php 
-								
-								echo '<pre>';
-								print_r( $boxarray );
-								echo '</pre>';
 /*
-								echo '<pre>';
-								print_r( $boxinfo_array );
-								echo '</pre>';
+									echo 'Box: ' + $box_num + '<br>';
+									echo 'Row in box: ' + $row_counter + '<br>';
+									
+									echo 'epa_contact: ' + $epa_contact + '<br>';
+									echo 'lan_id: ' + $lan_id + '<br>';
+									echo 'lan_json: <br>';
+									echo '<pre>';
+									print_r( $lan_json );
+									echo '</pre>';
 */
+								
+									echo '<pre>';
+									print_r( $boxarray );
+									echo '</pre>';
+/*
+									echo '<pre>';
+									print_r( $boxinfo_array );
+									echo '</pre>';
+*/								
+								
 							?>
-							<br>
-							<pre>
-							<?php print_r( $boxarray );  ?>
-							</pre>
+							<br>							
 						</div>
 						<?php
 						$ticket_error_message = ob_get_clean();
@@ -446,30 +471,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				
 				
 				// EPA Contact for Lan ID and Lan ID Details
-				if( !$superfund ) {
-
-					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
-					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
-					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
-				} else {
-					// Superfund defaults
-					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
-					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
-					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
-					
-				}
 				
-				
-				// Prep Close date
-				if( $boxinfo['Close Date'] == '' ) {
-					$new_date = '';
-				} else {
-					$datetime = new DateTime();
-					//$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
-					$new_date = $datetime->createFromFormat( 'm/d/Y', $boxinfo['Close Date']);
-					//$new_date = $new_date->format( 'Y-m-d H:i:s' );
-					$new_date = $new_date->format( 'Y-m-d' );
-				}
 				
 				//
 				// Insert folder doc info 
@@ -598,23 +600,67 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// for naming convention
 				$row_counter++;
 				
+				// Set superfund and ECMS defaults - edit: currently the same.
+				//if( !$superfund ) {
+
+					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
+					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
+					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
+					
+/*
+				} else {
+					// Superfund defaults
+					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
+					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
+					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
+					
+				}
+*/
+				
+				
+				
+				// Prep Close date
+				if( $boxinfo['Close Date'] == '' ) {
+					$new_date = '';
+				} else {
+					$datetime = new DateTime();
+					//$new_date = $datetime->createFromFormat( 'm/d/Y H:i:s', $boxinfo['Close Date']);
+					$new_date = $datetime->createFromFormat( 'm/d/Y', $boxinfo['Close Date']);
+					//$new_date = $new_date->format( 'Y-m-d H:i:s' );
+					$new_date = $new_date->format( 'Y-m-d' );
+				}
+				
+				
+				
 				// Get & Set folderdocinfofile_id
 				if( $parent_child_single == 'parent' ) {
-					$folder_file_counter++;
+					
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_counter = 1; //Reset for new file folder
 					$folder_file_sub_id = $folder_file_id;
 					
+					
 					$is_parent = true;
 					
 				} elseif( $parent_child_single == 'child') {
+					
+					// If not new box, decrement folder file counter to keep child name same as parent.
+					// if new box, then folder_file_counter = 1; 
+					
+					if( !$is_new_box || $new_box_child ) {
+						$folder_file_counter--;
+					}
+					
+					
+					
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_id = $folder_file_id . '-a' . $folder_file_sub_counter;
 					$folder_file_sub_counter++; //Increment it for next file.
 					
 					$is_parent = false;
 					
-				} elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
+				} /*
+elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$folder_file_counter++;
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_counter = 1; //Reset for new file folder
@@ -622,6 +668,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					$is_parent = false;
 				}
+*/
 				
 				// Get & Set relation_part & relation_part_of
 				$part_match = preg_match( "/\[Part(.*?)]/", $boxinfo['Title'], $matches);
@@ -644,15 +691,39 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$source_format = "{$boxinfo['Source Type']}";
 				}
 				
+				// EPA Contact for Lan ID and Lan ID Details
+				$lan_id = trim( $boxinfo['EPA Contact'] );
+				$lan_json = '';
+				
 				//
 				// Validation
 				//
 				
 				$validation = true;
 				
+				// Fetch lan id and json
+				// Commented out while on Dev Server that has no access to EPA Network
+				
+/*
+				$lan_id = Patt_Custom_Func::lan_id_check( $lan_id, $request_id );
+				$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+				 
+				if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
+					$validation = false;
+					
+					$val_type = 'single';
+					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error. This may be due to it being an invalid lan_id or due to the validating server.';
+					
+				}
+
+				if( $lan_json == 'Error' || $lan_json == null || $lan_json == '' ) {
+					$validation = false;
+					$val_type = 'single';
+					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
+				}
+*/
+
 				// Specific Access Restrictions - Validation Check
-				
-				
 				if( $boxinfo['Access Restrictions'] == 'Yes' && $boxinfo['Specific Access Restrictions'] == '' ) {
 					$validation = false;
 					$val_type = 'a-b';
@@ -845,12 +916,22 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					// use previous $parent_id
 				}
 				
-				$folderdocfiles_id_FAKE = 1;
+				$file_name = '';
+				
+				//$folderdocfiles_id_FAKE = null;
 				
 				// Convert Date
 				$time = strtotime( $boxinfo['Creation Date'] );
 				$newdatetimeformat = date( 'Y-m-d' ,$time );
+				//$newdatetimeformat = gmdate( 'Y-m-d' );
+				//$newdatetimeformat = '1996-11-08';
 				
+				
+				
+				// fake data debug
+				//$region_id = 1;
+				//$file_name = 'fake';
+				//$boxinfo['Folder/Filename'] = 'fake';
 				
 				// 
 				// ELECTRONIC FILE - Folder Doc Info File
@@ -863,7 +944,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					add_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );
 
 					// Get filename with extension
-					$file_name = explode( '\\', $boxinfo['Folder/Filename'] );
+					//$file_name = explode( '\\', $boxinfo['Folder/Filename'] );
+					$file_name = explode( '/', $boxinfo['Folder/Filename'] );
 					$file_name = end( $file_name );
 
 					// Get filename without extension
@@ -914,7 +996,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					// ECMS FDIF data
 					$folderdocfiles_info = [
-						'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+						//'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
 						'parent_id' => $parent_id,
 						'box_id' => $boxinfo_id,
 						'folderdocinfofile_id'   => $folder_file_sub_id,
@@ -946,6 +1028,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						'close_date' => $new_date,
 						'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 						'essential_record' => "{$essential_record}",
+						'program_area' => $boxinfo['Program Area'],
+						'lan_id' => $lan_id,
+						'lan_id_details' => $lan_json,
 						'date_created' => gmdate( 'Y-m-d H:i:s' ),
 						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 					];
@@ -965,16 +1050,22 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					// Remove custom upload directory folder
 					remove_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );  
 					
-/*
 					//
 					// D E B U G - START
 					//
+/*
 					ob_start();
 					?>
 					<div class="col-sm-12 ticket-error-msg">
 						<?php esc_html_e( 'Folderdocinfo Files Electronic Debug.', 'pattracking' ); ?>
 						<br><br>
 						<?php 
+							
+							echo 'insert id: ' . $folderdocfiles_info_id . '<br>';
+							echo 'test 1 : ' . ($boxinfo['Folder/Filename'] !== "") . '<br>';
+							echo 'test 2 : ' . ($boxinfo['Folder/Filename'] !== null ) . '<br>';
+							echo 'test 3 &&: ' . (($boxinfo['Folder/Filename'] !== "") && $boxinfo['Folder/Filename'] !== null) . '<br>';
+							echo 'folder Filename: ' . $boxinfo['Folder/Filename'] . '<br>';
 							
 							echo 'folderdocfiles_info: <br>';
 							echo '<pre>';
@@ -996,8 +1087,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 					echo json_encode( $response );
 					die();
-					// D E B U G - END
 */
+					// D E B U G - END
 					
 				} else {
 					
@@ -1046,7 +1137,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 */
 						
 						$folderdocfiles_info = [
-							'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+							//'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
 							'parent_id' => $parent_id,
 							'box_id' => $boxinfo_id,
 							'folderdocinfofile_id'   => $folder_file_sub_id,
@@ -1076,6 +1167,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 							'essential_record' => "{$essential_record}",
+							'program_area' => $boxinfo['Program Area'],
+							'lan_id' => $lan_id,
+							'lan_id_details' => $lan_json,
 							'date_created' => gmdate( 'Y-m-d H:i:s' ),
 							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 						];
@@ -1087,9 +1181,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						// $folder_file_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 						
 						// Convert Date
+/*
 						$time = strtotime( $boxinfo['Creation Date'] );
 						//$newdatetimeformat = date( 'Y-m-d H:i:s', $time );
 						$newdatetimeformat = date( 'Y-m-d', $time );
+*/
 						
 						// Insert data for folderdocinfo_files :: SEMS Superfund
 /*
@@ -1116,9 +1212,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'relation_part_of' => $of_y
 						];
 */
+
+						
 						
 						$folderdocfiles_info = [
-							'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
+							//'folderdocinfo_id'  => $folderdocfiles_id_FAKE, 
 							'parent_id' => $parent_id,
 							'box_id' => $boxinfo_id,
 							'folderdocinfofile_id'   => $folder_file_sub_id,
@@ -1148,6 +1246,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 							'essential_record' => "{$essential_record}",
+							'program_area' => $boxinfo['Program Area'],
+							'lan_id' => $lan_id,
+							'lan_id_details' => $lan_json,
 							'date_created' => gmdate( 'Y-m-d H:i:s' ),
 							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 						];
@@ -1164,10 +1265,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$folderdocfiles_info_id = $wpdb->insert_id;
 					
 					
-/*
 					//
 					// D E B U G - START
 					//
+/*
 					ob_start();
 					?>
 					<div class="col-sm-12 ticket-error-msg">
@@ -1175,10 +1276,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						<br><br>
 						<?php 
 							echo 'superfund: ' . $superfund . '<br>';
-							echo 'mdocs_post_id: ' . $mdocs_post_id . '<br>';
 							echo 'folder_file_id: ' . $folder_file_id . '<br>';
 							echo 'Specific Access Restrictions: ' . $boxinfo['Specific Access Restrictions'] . '<br>'; 
 							echo 'Specific Access Restrictions null: ' . is_null( $boxinfo['Specific Access Restrictions'] ) . '<br>'; 
+							echo 'SAR: ' . $SAR . '<br>'; 
+							echo 'SAR null: ' . is_null( $SAR ) . '<br>'; 
 							echo 'folderdocfiles_info_id: ' . $folderdocfiles_info_id . '<br>'; 
 							echo 'region_code: ' . $region_code . '<br>';
 							echo 'region_id: ' . $region_id . '<br>';
@@ -1224,8 +1326,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 					echo json_encode( $response );
 					die();
-					// D E B U G - END
 */
+					// D E B U G - END
 					
 				} // End - FDIF Electronic or Paper
 				
@@ -1236,6 +1338,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$parent_id = $folderdocfiles_info_id;
 					$wpdb->update( $table_name, array( 'parent_id' => $parent_id ), array( 'id' => $parent_id ) );
 				}
+				
+				// Increment folder file counter for naming convention
+				$folder_file_counter++;
 				
 			}
 			// End of New BoxInfo Code.
@@ -1427,6 +1532,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 								<th>Source Type</th>
 								<th>Source Dimensions</th>
 								<th>Program Office</th>
+								<th>Program Area</th>
 								<th>Index Level</th>
 								<th>Essential Record</th>
 								<th>Folder/Filename</th>

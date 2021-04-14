@@ -201,9 +201,10 @@ div.dataTables_processing { z-index: 1; }
 <br /><br />
 
 <?php
+//REVIEW
 $convert_box_id = $wpdb->get_row(
 "SELECT b.id
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo a
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE b.box_id = '" .  $global_id . "'");
 

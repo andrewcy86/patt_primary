@@ -126,78 +126,7 @@ $totalRecords = $records['allcount'];
     
     
 /*
-## Base Query for Records  // UPDATED: for Title and Date moved to folderdocinfo_files
-$baseQuery = "
-SELECT
-    wpqa_wpsc_epa_recallrequest.id,
-    wpqa_wpsc_epa_recallrequest.recall_id,
-    wpqa_wpsc_epa_recallrequest.expiration_date,
-    wpqa_wpsc_epa_recallrequest.request_date,
-    wpqa_wpsc_epa_recallrequest.request_receipt_date,
-    wpqa_wpsc_epa_recallrequest.return_date,
-    wpqa_wpsc_epa_recallrequest.updated_date,
-    wpqa_wpsc_epa_recallrequest.comments,
-    wpqa_wpsc_epa_recallrequest.recall_status_id,
-    wpqa_wpsc_epa_boxinfo.ticket_id,
-    wpqa_wpsc_epa_storage_location.id AS location_id,
-    T2.name AS digitization_center,
-    wpqa_wpsc_epa_boxinfo.box_id,
-    wpqa_wpsc_epa_boxinfo.storage_location_id,
-    wpqa_wpsc_epa_boxinfo.location_status_id,
-    wpqa_wpsc_epa_boxinfo.box_destroyed,
-    wpqa_wpsc_epa_boxinfo.date_created,
-    wpqa_wpsc_epa_boxinfo.date_updated,
-    FDIF.title,
-    wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id AS folderdoc_id,
-    wpqa_wpsc_epa_program_office.office_acronym,
-    wpqa_wpsc_epa_shipping_tracking.company_name AS shipping_carrier,
-    wpqa_wpsc_epa_shipping_tracking.tracking_number,
-    wpqa_wpsc_epa_shipping_tracking.status,
-    wpqa_wpsc_ticket.customer_name,
-    CONCAT(
-        wpqa_epa_record_schedule.Record_Schedule_Number,
-        ': ',
-        wpqa_epa_record_schedule.Schedule_Title
-    ) AS Record_Schedule,
-    CONCAT(
-        wpqa_epa_record_schedule.Record_Schedule_Number,
-        ': ',
-        wpqa_epa_record_schedule.Schedule_Title
-    ) AS Record_Schedule_Number,
-    CONCAT(
-        wpqa_epa_record_schedule.Record_Schedule_Number,
-        ': ',
-        wpqa_epa_record_schedule.Schedule_Title
-    ) AS Schedule_Title,
-    T1.name AS recall_status,
-    GROUP_CONCAT(
-        wpqa_wpsc_epa_recallrequest_users.user_id
-    ) AS user_id,
-    CASE WHEN folderdoc_id = -99999 THEN GROUP_CONCAT(FDIF.title) ELSE FDIF.title
-END AS all_titles
-FROM
-    wpqa_wpsc_epa_recallrequest
-LEFT JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_recallrequest.box_id
-LEFT JOIN wpqa_wpsc_epa_recallrequest_users ON wpqa_wpsc_epa_recallrequest_users.recallrequest_id = wpqa_wpsc_epa_recallrequest.id
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.id = wpqa_wpsc_epa_recallrequest.folderdoc_id
-LEFT JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_recallrequest.program_office_id
-LEFT JOIN wpqa_wpsc_epa_shipping_tracking ON wpqa_wpsc_epa_shipping_tracking.id = wpqa_wpsc_epa_recallrequest.shipping_tracking_id
-LEFT JOIN wpqa_wpsc_ticket ON wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id
-LEFT JOIN wpqa_epa_record_schedule ON wpqa_epa_record_schedule.id = wpqa_wpsc_epa_recallrequest.record_schedule_id
-LEFT JOIN wpqa_terms T1 ON
-    T1.term_id = wpqa_wpsc_epa_recallrequest.recall_status_id
-LEFT JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
-LEFT JOIN wpqa_terms T2 ON
-    T2.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo FDI ON
-    FDI.box_id = wpqa_wpsc_epa_boxinfo.id
-LEFT JOIN wpqa_wpsc_epa_folderdocinfo_files FDIF ON
-    FDIF.folderdocinfo_id = FDI.folderdocinfo_id
-WHERE
-    wpqa_wpsc_epa_recallrequest.recall_id > 0";
-*/
-
-## Base Query for Records  // UPDATED: folderdocinfo_files JOINED to recallrequest rather than via FDI
+## Base Query for Records  // UPDATED: before dropping folderdocinfo table
 $baseQuery = "
 SELECT
     " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
@@ -263,6 +192,74 @@ LEFT JOIN " . $wpdb->prefix . "terms T2 ON
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo FDI ON
     FDI.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.folderdocinfo_id = FDI.id    
+WHERE
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
+*/
+
+## Base Query for Records  // UPDATED: folderdocinfo_files JOINED to recallrequest rather than via FDI
+$baseQuery = "
+SELECT
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.expiration_date,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.request_date,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.request_receipt_date,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.return_date,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.updated_date,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.comments,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_status_id,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id,
+    " . $wpdb->prefix . "wpsc_epa_storage_location.id AS location_id,
+    T2.name AS digitization_center,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.date_created,
+    " . $wpdb->prefix . "wpsc_epa_boxinfo.date_updated,
+    FDIF.title,
+    FDIF.folderdocinfofile_id AS folderdoc_id,
+    " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.company_name AS shipping_carrier,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.tracking_number,
+    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.status,
+    " . $wpdb->prefix . "wpsc_ticket.customer_name,
+    CONCAT(
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
+        ': ',
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
+    ) AS Record_Schedule,
+    CONCAT(
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
+        ': ',
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
+    ) AS Schedule_Item_Number,
+    CONCAT(
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
+        ': ',
+        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
+    ) AS Schedule_Title,
+    T1.name AS recall_status,
+    GROUP_CONCAT(
+        " . $wpdb->prefix . "wpsc_epa_recallrequest_users.user_id
+    ) AS user_id,
+    CASE WHEN folderdoc_id = -99999 THEN GROUP_CONCAT(FDIF2.title) ELSE FDIF.title
+END AS all_titles
+FROM
+    " . $wpdb->prefix . "wpsc_epa_recallrequest
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.box_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users ON " . $wpdb->prefix . "wpsc_epa_recallrequest_users.recallrequest_id = " . $wpdb->prefix . "wpsc_epa_recallrequest.id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF ON FDIF.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.folderdoc_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.program_office_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking ON " . $wpdb->prefix . "wpsc_epa_shipping_tracking.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.shipping_tracking_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id
+LEFT JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "epa_record_schedule.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.record_schedule_id
+LEFT JOIN " . $wpdb->prefix . "terms T1 ON
+    T1.term_id = " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_status_id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id
+LEFT JOIN " . $wpdb->prefix . "terms T2 ON
+    T2.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id    
 WHERE
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
 

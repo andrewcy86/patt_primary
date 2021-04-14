@@ -23,10 +23,10 @@ $rescan = 0;
 $unathorized_destroy = 0;
 
 foreach($folderdocid_arr as $key) {
+//AY UPDATE JOIN
 $get_destroyed = $wpdb->get_row("SELECT b.box_destroyed as box_destroyed 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo c ON c.id = a.folderdocinfo_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON c.box_id = b.id 
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id 
 WHERE a.freeze = 0 AND a.folderdocinfofile_id = '".$key."'");
 $get_destroyed_val = $get_destroyed->box_destroyed;
 
