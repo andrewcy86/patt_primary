@@ -76,7 +76,7 @@ if (!class_exists('Patt_Custom_Func')) {
 			curl_close($curl);
 			
 			if ($err) {
-				$lan_id_details = 'Error';
+				$lan_id_details = 'Error '.$err;
 			} else {
 			
 			$json = json_decode($response, true);
