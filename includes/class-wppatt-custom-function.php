@@ -49,12 +49,14 @@ if (!class_exists('Patt_Custom_Func')) {
         public static function lan_id_to_json( $lanid )
         {
             global $wpdb;
-			include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+
 			$curl = curl_init();
 			
 			$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lanid;
 			
 			$lan_id_details = '';
+			
+			$eidw_authorization = 'Authorization: Basic '.EIDW;
 			
 			$headers = [
 			    'Cache-Control: no-cache',
@@ -76,7 +78,7 @@ if (!class_exists('Patt_Custom_Func')) {
 			curl_close($curl);
 			
 			if ($err) {
-				$lan_id_details = 'Error ';
+				$lan_id_details = 'Error';
 			} else {
 			
 			$json = json_decode($response, true);
@@ -105,7 +107,7 @@ if (!class_exists('Patt_Custom_Func')) {
 			// Display the output 
 			//echo($json); 	
 			} else {
-				$lan_id_details = 'Error ';
+				$lan_id_details = 'Error';
 			}
 			
 			}

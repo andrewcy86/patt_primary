@@ -764,7 +764,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			//echo($json); 	
 			} else {
 				$lan_id = '';
-				$lan_json = 'Error ';
+				$lan_json = 'Error';
 			}
 			
 			}

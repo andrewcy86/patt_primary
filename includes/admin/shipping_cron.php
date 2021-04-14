@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 //require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 $shippingArray = ["usps", "fedex", "ups", "dhl"];
 
@@ -34,7 +33,7 @@ $url = "http://production.shippingapis.com/shippingAPI.dll";
 $service = "TrackV2";
 
 $xml = rawurlencode("
-<TrackFieldRequest USERID='".$usps_user_id."'>
+<TrackFieldRequest USERID='".USPS."'>
     <TrackID ID=\"".$trackingNumber."\"></TrackID>
     </TrackFieldRequest>");
 
@@ -118,13 +117,13 @@ curl_setopt_array($curl, array(
   <TrackRequest>\r\n
   <WebAuthenticationDetail>\r\n
   <UserCredential>\r\n
-  <Key>".$fedex_key."</Key>\r\n
-  <Password>".$fedex_password."</Password>\r\n
+  <Key>".FEDEX."</Key>\r\n
+  <Password>".FEDEX_PASS."</Password>\r\n
   </UserCredential>\r\n
   </WebAuthenticationDetail>\r\n
   <ClientDetail>\r\n
-  <AccountNumber>".$fedex_account_num."</AccountNumber>\r\n
-  <MeterNumber>".$fedex_meter_num."</MeterNumber>\r\n
+  <AccountNumber>".FEDEX_ACCT."</AccountNumber>\r\n
+  <MeterNumber>".FEDEX_METER."</MeterNumber>\r\n
   </ClientDetail>\r\n
   <TransactionDetail>\r\n
   <CustomerTransactionId>Track By Number_v18</CustomerTransactionId>\r\n
@@ -203,9 +202,9 @@ if($item->shipped == 0) {
 
 $data ="<?xml version=\"1.0\"?>
         <AccessRequest xml:lang='en-US'>
-                <AccessLicenseNumber>".$ups_license_num."</AccessLicenseNumber>
-                <UserId>".$ups_user_id."</UserId>
-                <Password>".$ups_password."</Password>
+                <AccessLicenseNumber>".UPS_LICENSE."</AccessLicenseNumber>
+                <UserId>".UPS."</UserId>
+                <Password>".UPS_PASS."</Password>
         </AccessRequest>
         <?xml version=\"1.0\"?>
         <TrackRequest>
@@ -306,7 +305,7 @@ curl_setopt_array($curl, array(
   CURLOPT_CUSTOMREQUEST => "GET",
   CURLOPT_POSTFIELDS => "",
   CURLOPT_HTTPHEADER => array(
-    "DHL-API-Key: ".$dhl_apikey."",
+    "DHL-API-Key: ".DHL."",
     "cache-control: no-cache"
   ),
 ));
