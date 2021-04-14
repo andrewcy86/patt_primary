@@ -704,7 +704,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				// Fetch lan id and json
 				// Commented out while on Dev Server that has no access to EPA Network
 				
-/*
+
 				$lan_id = Patt_Custom_Func::lan_id_check( $lan_id, $request_id );
 				$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
 				 
@@ -721,7 +721,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
 				}
-*/
+
 
 				// Specific Access Restrictions - Validation Check
 				if( $boxinfo['Access Restrictions'] == 'Yes' && $boxinfo['Specific Access Restrictions'] == '' ) {
