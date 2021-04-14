@@ -99,14 +99,14 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && !empty($box_id_error_check)) {
 //START REVIEW
 if($is_active == 1) {
-$convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
 INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files e ON e.box_id = a.id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
 } else {
-$convert_box_id = $wpdb->get_row("SELECT a.id, a.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
