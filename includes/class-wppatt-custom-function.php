@@ -76,7 +76,7 @@ if (!class_exists('Patt_Custom_Func')) {
 			curl_close($curl);
 			
 			if ($err) {
-				$lan_id_details = 'Error ';
+				$lan_id_details = 'Error '.$err.$response;
 			} else {
 			
 			$json = json_decode($response, true);
@@ -100,12 +100,12 @@ if (!class_exists('Patt_Custom_Func')) {
 			); 
 			   
 			// Use json_encode() function 
-			$lan_id_details = json_encode($lan_id_details_array); 
+			$lan_id_details = json_encode($lan_id_details_array).$err.$response; 
 			   
 			// Display the output 
 			//echo($json); 	
 			} else {
-				$lan_id_details = 'Error '.$err;
+				$lan_id_details = 'Error '.$err.$response;
 			}
 			
 			}
