@@ -7,6 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+
 if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 	/**
@@ -704,24 +706,83 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				// Fetch lan id and json
 				// Commented out while on Dev Server that has no access to EPA Network
 				
-/*
-				$lan_id = Patt_Custom_Func::lan_id_check( $lan_id, $request_id );
-				$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
-				 
-				if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
+
+				//$lan_id = Patt_Custom_Func::lan_id_check( $lan_id, $request_id );
+				//$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+
+			$curl = curl_init();
+			
+			$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lan_id;
+			
+			$headers = [
+			    'Cache-Control: no-cache',
+				$eidw_authorization
+			];
+			
+			        curl_setopt($curl,CURLOPT_URL, $url);
+			        curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
+			        curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
+			        curl_setopt($curl,CURLOPT_TIMEOUT, 30);
+			        curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+			        curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
+			        curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
+					//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+					//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+			
+			$response = curl_exec($curl);
+			$err = curl_error($curl);
+			curl_close($curl);
+			
+			if ($err) {
+				$lan_json = 'Error ';
+			} else {
+			
+			$json = json_decode($response, true);
+			
+			$results = $json['totalResults'];
+			$active = $json['Resources']['0']['active'];
+			$full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']['0']['name']['familyName'];
+			$email = $json['Resources']['0']['emails']['0']['value'];
+			$phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
+			$org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
+			
+			if ($results >= 1) {
+			// Declare array  
+			$lan_id_details_array = array( 
+			    "active"=>$active,
+			    "name"=>$full_name,
+			    "email"=>$email,
+			    "phone"=>$phone,
+			    "org"=>$org,
+			    "lan_id"=>$lan_id,
+			); 
+			   
+			// Use json_encode() function 
+			$lan_json = json_encode($lan_id_details_array); 
+			   
+			// Display the output 
+			//echo($json); 	
+			} else {
+				$lan_id = '';
+				$lan_json = 'Error ';
+			}
+			
+			}
+
+				/*if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
 					$validation = false;
 					
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error. This may be due to it being an invalid lan_id or due to the validating server.';
 					
-				}
+				}*/
 
 				if( $lan_json == 'Error' || $lan_json == null || $lan_json == '' ) {
 					$validation = false;
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
 				}
-*/
+
 
 				// Specific Access Restrictions - Validation Check
 				if( $boxinfo['Access Restrictions'] == 'Yes' && $boxinfo['Specific Access Restrictions'] == '' ) {
