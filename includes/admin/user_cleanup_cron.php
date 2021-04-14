@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -4)));
 //require_once ($_SERVER['DOCUMENT_ROOT'] . $WP_PATH . '/wp/wp-load.php');
 
-include_once (WPPATT_UPLOADS . 'api_authorization_strings.php');
+//include_once (WPPATT_UPLOADS . 'api_authorization_strings.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
@@ -22,7 +22,9 @@ foreach ($get_all_users as $item)
     $curl = curl_init();
 
     $url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20' . $user_login;
-
+    
+    $eidw_authorization = 'Authorization: Basic '.EIDW;
+    
     $headers = ['Cache-Control: no-cache', $eidw_authorization];
 
     curl_setopt($curl, CURLOPT_URL, $url);

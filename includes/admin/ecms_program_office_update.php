@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-include WPPATT_UPLOADS.'api_authorization_strings.php';
+//include WPPATT_UPLOADS.'api_authorization_strings.php';
 
 //$path = preg_replace('/wp-content.*$/','',__DIR__);
 //include($path.'wp-load.php');
@@ -23,7 +23,7 @@ $items = 100;
 $page = $GLOBALS['num'];
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov/ecms/find/1.0?apiKey=".$ecms_apikey."&dql=".urlencode($sql)."&items-per-page=".urlencode($items)."&page=".urlencode($page),
+  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov/ecms/find/1.0?apiKey=".ECMS_API."&dql=".urlencode($sql)."&items-per-page=".urlencode($items)."&page=".urlencode($page),
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_CUSTOMREQUEST => "GET",
   CURLOPT_FAILONERROR => true,

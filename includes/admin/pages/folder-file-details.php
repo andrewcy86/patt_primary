@@ -13,7 +13,7 @@ use Aws\Exception\AwsException;
 $s3_exist = 0;
 
 $subfolder_path = site_url( '', 'relative');
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+//include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
@@ -693,7 +693,7 @@ echo '<span class="details-name" >File Size: </span><span class="" >' . $file_si
 if ($folderfile_details->object_key != '') {
 
 $s3Client = new Aws\S3\S3Client([
-    'region' => $s3_region,
+    'region' => AWS_S3_REGION,
     'version' => 'latest'
 ]);
 
@@ -707,7 +707,7 @@ $s3_exist = 1;
 
 //Updated to use Pre-signed URL
 $cmd = $s3Client->getCommand('GetObject', [
-    'Bucket' => $s3_bucket,
+    'Bucket' => AWS_S3_BUCKET,
     'Key' => $folderfile_details->object_key
 ]);
 

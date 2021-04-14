@@ -12,7 +12,7 @@ require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
 use Aws\S3\S3Client;  
 use Aws\Exception\AwsException;
 
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+//include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 global $current_user, $wpscfunction, $wpdb;
 
@@ -27,12 +27,12 @@ function flip_isset_diff($b, $a) {
 }
 
 		$s3 = new Aws\S3\S3Client([
-			'region'  => $s3_region,
+			'region'  => AWS_S3_REGION,
 			'version' => 'latest'
 		]);	
 		
 		 $results = $s3->getPaginator('ListObjects', [
-        'Bucket' => $s3_bucket
+        'Bucket' => AWS_S3_BUCKET
     ]);
 
 $s3_object_keys_array = array();

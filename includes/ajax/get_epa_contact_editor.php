@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+//include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 $subfolder_path = site_url( '', 'relative'); 
 

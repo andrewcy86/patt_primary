@@ -5,7 +5,7 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+//include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
 if(!empty($_POST['postvarslanid'])){
    //id in box table (e.g. 1)
@@ -18,7 +18,7 @@ if(!empty($_POST['postvarslanid'])){
 $curl = curl_init();
 
 $url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lanid;
-
+$eidw_authorization = 'Authorization: Basic '.EIDW;
 $headers = [
     'Cache-Control: no-cache',
 	$eidw_authorization
