@@ -4,7 +4,16 @@ global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+?>
 
+<style>
+.dataTable thead tr {
+	background-color: rgb(66, 73, 73) !important; 
+	color: rgb(255, 255, 255) !important;
+}
+</style>
+
+<?php
 //Define tables
 $table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
 $table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
@@ -210,10 +219,9 @@ $is_active = Patt_Custom_Func::request_status( $location_request_id );
 if (!empty($box_details_id) && $is_active == 1) {
 //REVIEW
 			$box_content = $wpdb->get_results(
-				"SELECT " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id as folderdocinfofile_id, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.title as title, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.date as date, " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id as contact, " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.validation as validation
-                FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
-                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files ON " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
-                WHERE " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = '" . $box_details_id . "'"
+				"SELECT folderdocinfofile_id as id, title as title, date as date, lan_id as contact, validation as validation
+                FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+                WHERE box_id = '" . $box_details_id . "'"
 			);
 
 

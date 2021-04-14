@@ -1,3 +1,0 @@
-[31-Mar-2021 13:18:55 UTC] WordPress database error Unknown column 'wpqa_epa_record_schedule.Record_Schedule_Number' in 'field list' for query SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum 
-FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo 
-WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id AND wpqa_wpsc_epa_boxinfo.ticket_id =9
