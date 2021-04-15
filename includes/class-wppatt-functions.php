@@ -60,13 +60,7 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     // CRON for eidw
     public function wppatt_eidw_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/eidw_cron.php';
-    }   
-
-    // CRON for eidw instant
-    public function wppatt_eidw_instant_cron_schedule($ticket_id){    
-    extract($ticket_id);
-    include WPPATT_ABSPATH . 'includes/admin/eidw_instant_cron.php';
-    }   
+    }
     
     // CRON for message cleanup
     public function wppatt_private_message_cleanup_cron_schedule(){    

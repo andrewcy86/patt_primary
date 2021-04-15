@@ -125,8 +125,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add Return / Decline Shipping CRON
         add_action( 'wppatt_shipping_cron_return', array($frontend, 'wppatt_return_shipping_status_schedule'));
 
-        // Add EIDW Instant CRON
-        add_action( 'wppatt_eidw_instant_cron', array($frontend, 'wppatt_eidw_instant_cron_schedule'), 10, 1); 
+        
         // Add EIDW CRON
         add_action( 'wppatt_eidw_cron', array($frontend, 'wppatt_eidw_cron_schedule')); 
         // Add Recycle Bin Cron
@@ -150,6 +149,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pallet_btnAfterClone'));
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
+          
+          // Add EIDW Instant CRON
+          add_action( 'wp_ajax_wppatt_eidw_instant', array( $backend, 'get_eidw_instant_update')); 
           
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));

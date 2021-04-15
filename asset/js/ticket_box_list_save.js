@@ -4,10 +4,10 @@ jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
-	    
-	    //let superfund = jQuery('#super-fund').val();
-		//console.log( '!superfund: ' + superfund );
-		console.log({settings:settings});
+	   
+		
+		//jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
+		//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 		
 		
 //         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {

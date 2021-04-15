@@ -560,6 +560,13 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	}
 }
 
+
+    // CRON for eidw instant
+    public function get_eidw_instant_update(){
+    include WPPATT_ABSPATH . 'includes/ajax/get_eidw_instant_update.php';
+    die();
+    }   
+    
 	public function get_help_alert(){    	
     include WPPATT_ABSPATH . 'includes/ajax/get_help_alert.php';	
     die();	

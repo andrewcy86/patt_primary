@@ -14,6 +14,7 @@ if(!empty($_POST['postvarslanid'])){
    //$pattboxid = $_POST['postvarspattboxid'];
    $lanid = $_POST['postvarslanid'];
    $pattdocid = $_POST['postvarspattdocid'];
+   $folderdocinfofile_id = $_POST['postvarsfolderdocinfofileid'];
 
 $curl = curl_init();
 
@@ -53,28 +54,23 @@ $ticket_id = $get_ticket_id->ticket_id;
 $metadata_array = array();
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
-$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $table_name . " WHERE folderdocinfofile_id = '" . $pattdocid . "'");
+$old_box_lanid = $wpdb->get_row("SELECT lan_id FROM " . $table_name . " WHERE id = '" . $pattdocid . "'");
 $old_lanid = $old_box_lanid->lan_id;
 
 //$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
 
 //updates the epa contact by entering a LANID
-if(!empty($lanid)) {
-$data_update = array('lan_id' => $lanid);
+if(!empty($lanid) && $old_lan_id != $lan_id) {
+$get_json = Patt_Custom_Func::lan_id_to_json($lanid);
+$data_update = array('lan_id' => $lanid, 'lan_id_details' => $get_json);
 $data_where = array('folderdocinfofile_id' => $pattdocid);
 array_push($metadata_array,'EPA Contact: '.$old_lanid.' > '.$lanid);
 $wpdb->update($table_name, $data_update, $data_where);
 
-//updates all associated documents with new epa contact LANID
-/*$data_update = array('epa_contact_email' => $lanid);
-$data_where = array('box_id' => $box_id);
-$wpdb->update($folderfile_table, $data_update, $data_where);
-}*/
-
 $metadata = implode (", ", $metadata_array);
 
 if($old_lanid != $lanid) {
-do_action('wpppatt_after_folder_doc_metadata', $ticket_id, $metadata, $pattdocid);
+do_action('wpppatt_after_folder_doc_metadata', $ticket_id, $metadata, $folderdocinfofile_id);
 
 //sends email/notification to user when epa contact is updated
 $get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
