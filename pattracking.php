@@ -333,9 +333,6 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Update s3 Details
           add_action('wp_ajax_wppatt_update_s3_details', array($backend, 'update_s3_details'));
 		  
-		  // Add hook actions which supliment the MLD plugin
-		  //include WPPATT_ABSPATH . 'includes/admin/pages/scripts/mld_patt_hooks.php';
-		  
           // Set Barcode Scanning Page
           //add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
           
