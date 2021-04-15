@@ -11,24 +11,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-
 $lanid_query = $wpdb->get_results(
 "
 SELECT 
-DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, c.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id <> '' AND c.id = ".$ticket_id
+DISTINCT a.lan_id as lan_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id <> '' AND c.id = ".$ticket_id
 );
 
 
 foreach ($lanid_query as $lan_id) {
 
-$id_val = $lan_id->id;
-$lan_id_val = $lan_id->lan_id; 
-$lan_id_details_val = $lan_id->lan_id_details; 
-$request_id_val = $lan_id->request_id; 
+$lan_id_check_val = $lan_id->lan_id; 
 
 $curl = curl_init();
 
-$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lan_id_val;
+$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lan_id_check_val;
 
 $eidw_authorization = 'Authorization: Basic '.EIDW;
 
@@ -44,8 +40,8 @@ $headers = [
         curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
         curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
 $response = curl_exec($curl);
 $err = curl_error($curl);
@@ -57,9 +53,10 @@ if ($err) {
 $lan_id_details = 'Error';
 } else {
 
+    
 $json = json_decode($response, true);
 
-$results = $json['totalResults'];
+$active = $json['Resources']['0']['active'];
 $full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']['0']['name']['familyName'];
 $email = $json['Resources']['0']['emails']['0']['value'];
 $phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
@@ -68,27 +65,30 @@ $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterpris
 //get LAN ID to compare on the box details page
 $lan_id_username = $json['Resources'][0]['userName'];
 
-if ($results == 0) {
+if ($active != 1) {
+    
+$request_id_query = $wpdb->get_results("SELECT a.id as id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id = '" . $lan_id_check_val . "' AND c.id = ".$ticket_id);
+
 $find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.id = '" . $ticket_id . "'");
 
 $requester_lanid = $find_requester->user_login;
+$requestor_json = Patt_Custom_Func::lan_id_to_json( $requester_lanid );
+
+foreach ($request_id_query as $request_lan_id_update) {
+$request_db_lan_id = $request_lan_id_update->id ;
 
 $folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
-$data_lan_update = array('lan_id' => $requester_lanid);
-$data_lan_where = array('id' => $id_val);
-$wpdb->update($folderdocinfo_files_table, $data_lan_update, $data_lan_where);
+$data_update = array('lan_id_details' => $requestor_json, 'lan_id' => $requester_lanid);
+$data_where = array('id' => $request_db_lan_id);
+$wpdb->update($folderdocinfo_files_table, $data_update, $data_where);
+
 }
 
-if ($results >= 1) {
+}
 
-$id_query = $wpdb->get_results("SELECT DISTINCT id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE lan_id = '" . $lan_id_val . "'");
-
-
-
-foreach ($id_query as $lan_id_update) {
-$db_lan_id = $lan_id_update->id ;
+if ($active == 1) {
 
 // Declare array  
 $lan_id_details_array = array( 
@@ -103,10 +103,15 @@ $lan_id_details_array = array(
 $json = json_encode($lan_id_details_array); 
    
 // Display the output 
-echo($json); 
+//echo($json); 
    
    
 $lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username;
+
+$id_query = $wpdb->get_results("SELECT a.id as id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id = '" . $lan_id_check_val . "' AND c.id = ".$ticket_id);
+
+foreach ($id_query as $lan_id_update) {
+$db_lan_id = $lan_id_update->id ;
 
 // Detects update to contact info, if yes then update table
 if ($lan_id_details != $lan_id_details_val && $lan_id_details != 'Error')
@@ -126,6 +131,9 @@ $wpdb->update($folderdocinfo_files_table, $data_update, $data_where);
 //print_r($response);
 
 }
+
+
+
 }
 
 ?>

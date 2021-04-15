@@ -59,7 +59,7 @@ $lan_id_details = 'Error';
 
 $json = json_decode($response, true);
 
-$results = $json['totalResults'];
+$active = $json['Resources']['0']['active'];
 $full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']['0']['name']['familyName'];
 $email = $json['Resources']['0']['emails']['0']['value'];
 $phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
@@ -68,7 +68,7 @@ $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterpris
 //get LAN ID to compare on the box details page
 $lan_id_username = $json['Resources'][0]['userName'];
 
-if ($results == 0) {
+if ($active != 1) {
 $find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
 
@@ -81,7 +81,7 @@ $data_lan_where = array('id' => $id_val);
 $wpdb->update($folderdocinfo_files_table, $data_lan_update, $data_lan_where);
 }
 
-if ($results >= 1) {
+if ($active == 1) {
 
 $id_query = $wpdb->get_results("SELECT DISTINCT id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE lan_id = '" . $lan_id_val . "'");
 
