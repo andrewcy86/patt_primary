@@ -719,27 +719,32 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				$inserted = [];
 					
 				// Real - for Staging and Production Servers
-				$lan_id = Patt_Custom_Func::lan_id_check( $a_lan_id, $request_id );
-				$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+				//$lan_id = Patt_Custom_Func::lan_id_check( $a_lan_id, $request_id );
+				//$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
 					
 				// Fake for D E B U G 
 				//$lan_json = '{"name":"Andrew Yuen","email":"Yuen.Andrew@epa.gov","phone":"202-510-6390","org":"HGA00000","lan_id":"' . $lan_id . '"}';
 				//$lan_json = 'Error';
 				
+				
 				// Error Checking
+/*
 				if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
 					$validation = false;
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error. This may be due to it being an invalid lan_id or due to the validating server.';
 					
 				}
+*/
 				
 				// Error Checking
+/*
 				if( $lan_json == 'Error' || $lan_json == null || $lan_json == '' ) {
 					$validation = false;
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
 				}
+*/
 					
 				// if lan_id is not in the name_array, add it.
 				if( array_search( $lan_json, $lan_id_obj_array ) === false ) {
@@ -1555,6 +1560,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			}
 */
 			
+			do_action( 'wppatt_eidw_instant_cron', $ticket_id );
 			
 		}
 

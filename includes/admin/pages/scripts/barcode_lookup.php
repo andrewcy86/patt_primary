@@ -373,7 +373,8 @@ $folderfile_details = $wpdb->get_row(
     b.use_restriction,
     b.specific_use_restriction,
     b.rights_holder,
-    b.source_dimensions
+    b.source_dimensions,
+    b.program_area
 	
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
     INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON c.id = b.box_id
@@ -400,6 +401,7 @@ $folderfile_details = $wpdb->get_row(
     $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
     $folderfile_rights_holder = $folderfile_details->rights_holder;
     $folderfile_source_dimensions = $folderfile_details->source_dimensions;
+    $folderfile_program_area = $folderfile_details->program_area;
     
     $type = 'folderfile';
 
@@ -556,6 +558,10 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 			
 			if(!empty($folderfile_source_dimensions)) {
 			    echo "<strong>Source Dimensions:</strong> " . stripslashes($folderfile_source_dimensions) . "<br />";
+			}
+			
+			if(!empty($folderfile_program_area)) {
+			    echo "<strong>Program Area:</strong> " . $folderfile_program_area . "<br />";
 			}
 			
 			if($folderfile_essential_record == 1) {
