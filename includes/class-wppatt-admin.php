@@ -788,9 +788,9 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	    die();
     }   
     
-    // Create MLD Post from S3 upload data 
-    public function create_mld_post(){
-	    include WPPATT_ABSPATH . 'includes/ajax/create_mld_post.php';    
+    // Update s3 Details including object name, bucket and file size
+    public function update_s3_details(){
+	    include WPPATT_ABSPATH . 'includes/ajax/update_s3_details.php';    
 	    die();
     }
     

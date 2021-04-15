@@ -398,7 +398,7 @@ function save_s3_data_in_fdi_files() {
 */
 	
 	let data = {
-		action: 'wppatt_create_mld_post',
+		action: 'wppatt_update_s3_details',
 		obj_s3link: obj_s3link,
 		obj_key: obj_key, 
 		obj_size: obj_size,
