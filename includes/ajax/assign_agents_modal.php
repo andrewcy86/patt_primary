@@ -989,17 +989,31 @@ function wppatt_set_agents(){
 
 	//wpsc_modal_close();
 
-<?php if($ticket_id != '') { ?>
+<?php if($ticket_id != '' && $_REQUEST['page'] == 'request') { ?>
 wpsc_open_ticket(<?php echo $ticket_id; ?>);
+wpsc_modal_close();
+<?php
+}
 
-<?php } else { ?>
+if ($_REQUEST['page'] == 'boxes') {
+?>
+var wpsc_setting_action = 'boxes';
+var attrs = {"page":"boxes"};
 
-       var wpsc_setting_action = 'boxes';
-       var attrs = {"page":"boxes"};
-       jQuery(document).ready(function(){
+jQuery(document).ready(function(){
          wpsc_init(wpsc_setting_action,attrs);
-       });
-<?php } ?>   
+});
+
+wpsc_modal_close();
+<?php 
+} 
+if ($_REQUEST['page'] == 'boxdetails') {
+?>
+wpsc_modal_close();
+<?php 
+}
+?>   
+
 
 } 
 </script>

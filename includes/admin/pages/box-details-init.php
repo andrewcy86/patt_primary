@@ -1016,6 +1016,7 @@ function wpsc_get_assigned_staff_editor(box_id){
 	var data = {
 		action: 'wppatt_assign_agents',
 	    item_ids: arr,
+	    page: 'boxdetails',
 	    type: 'edit'
 	};
 	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {

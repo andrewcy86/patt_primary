@@ -767,6 +767,7 @@ if($is_active == 1 && $rescan_count > 0){
 		    action: 'wppatt_assign_agents',
 		    ticket_id: <?php echo $ticket_id; ?>,
 		    item_ids: arr,
+		    page: 'request',
 		    type: 'edit'
 		};
 		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {

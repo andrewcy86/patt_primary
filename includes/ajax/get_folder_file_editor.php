@@ -240,7 +240,6 @@ else {
   <option value="Controlled / General Proprietary Business Information">Controlled / General Proprietary Business Information</option>
   <option value="Controlled / Proprietary Business Information-Claimed">Controlled / Proprietary Business Information-Claimed</option>
   <option value="Controlled-Undetermined">Controlled-Undetermined</option>
-  <option value="Uncontrolled">Uncontrolled</option>
 </select></br>
 <!--</div>-->
 

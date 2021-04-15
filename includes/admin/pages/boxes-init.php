@@ -674,6 +674,7 @@ jQuery(document).ready(function(){
 		var data = {
 		    action: 'wppatt_assign_agents',
 		    item_ids: arr,
+		    page: 'boxes',
 		    type: 'edit'
 		};
 		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
