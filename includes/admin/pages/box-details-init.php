@@ -262,7 +262,7 @@ jQuery(document).ready(function(){
     'processing': true,
     'serverSide': true,
     'serverMethod': 'post',
-    'stateSave': true,
+    'stateSave': false,
     //'scrollX' : true,
     "initComplete": function (settings, json) {
         jQuery("#tbl_templates_box_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
@@ -273,12 +273,12 @@ jQuery(document).ready(function(){
         	        var response = settings.json;
 	        console.log(response);
      },
-    'stateSaveParams': function(settings, data) {
-      data.sg = jQuery('#searchGeneric').val();
-    },
-    'stateLoadParams': function(settings, data) {
-      jQuery('#searchGeneric').val(data.sg);
-    },
+    //'stateSaveParams': function(settings, data) {
+    //  data.sg = jQuery('#searchGeneric').val();
+    //},
+    //'stateLoadParams': function(settings, data) {
+    //  jQuery('#searchGeneric').val(data.sg);
+    //},
     'searching': false, // Remove default Search Control
     'ajax': {
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_details_processing.php',
