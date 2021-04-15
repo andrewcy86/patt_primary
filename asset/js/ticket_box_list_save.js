@@ -656,8 +656,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 alert( alert_message );
                                 flag = true;
                             }
-
+							
+							
                             // Epa contact, program office, record no validation
+                            
+                            // Remove requirement that epa_contact is the same for each box. 
+                            prev_epa_contact = parsedData[count][index_epa_contact];
+                            
                             if(
                             	flag != true && 
                             	count > 1 && 
@@ -706,7 +711,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 								alert_message += "'" + _column + "' must have the same value for all items in the same box ";
 								alert_message += "(Box: " + prev_box + "). \n\n";
 								alert_message += "Line " + count + " has value '" + _prev + "' while \n";
-								alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";
+								alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
+								
                                 alert( alert_message );
                                 flag = true;
                             }

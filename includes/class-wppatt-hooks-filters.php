@@ -7,8 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
-
 if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 	/**
@@ -158,14 +156,17 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			// Add Super Fund flag to ticket_meta
 			$wpscfunction->add_ticket_meta( $ticket_id, 'super_fund', $data['super_fund'] );
 			
+			// variables for storing lan_id obj in DB with min memory usage.
+			$lan_id_name_array = [];
+			$lan_id_obj_array = [];
+			$lan_id_box_array = [];
 			
-			$test = ''; // DEBUG
 			
 			if( !$superfund ) {
 				// New BoxInfo Code.
 				$boxinfodata = stripslashes( $data['box_info'] );
 				$boxinfo_array = json_decode( $boxinfodata, true );
-				$test = 'Box'; // DEBUG
+				
 			} else {
 				// New SEMS BoxInfo
 				$boxinfodata = stripslashes( $data['box_info'] );
@@ -173,7 +174,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// OLD: before SEMS dropzone merged with ECMS
 				//$boxinfodata = stripslashes( $data['superfund_data'] );
 				$boxinfo_array = json_decode( $boxinfodata, true );
-				$test = 'SEMS'; // DEBUG
+				
 			}
 			
 			// Pre-loop Defaults
@@ -197,7 +198,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				<?php 
 					echo 'superfund: ' . $superfund . '<br>';
 					echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
-					echo 'test: ' . $test . '<br>';
+					
 					echo 'box_id_legacy : ' . $box_id_legacy . '<br>'; 
 					echo ': '   . '<br>';
 					//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
@@ -337,7 +338,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 					//Create boxinfo record
 					$boxinfo_id = $this->create_new_boxinfo( $boxarray );
-										
+					
+					// save box_id FK into array for targeting lan_id update after for loop
+					$lan_id_box_array[] = $boxinfo_id; 
+					
+					// tracking for new box
 					$box = $box_num;
 
 					// D E B U G - START
@@ -442,7 +447,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							<?php 
 								echo 'superfund: ' . $superfund . '<br>';
 								echo 'superfund bool: ' . is_bool($superfund) . '<br>'; 
-								echo 'test: ' . $test . '<br>';
+								
 								//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
 								echo '<pre>';
 								print_r( $boxarray );
@@ -697,6 +702,12 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				$lan_id = trim( $boxinfo['EPA Contact'] );
 				$lan_json = '';
 				
+				// if lan_id is not in the name_array, add it.
+				if( array_search( $lan_id, $lan_id_name_array ) === false ) {
+					$lan_id_name_array[] = $lan_id;
+				}
+				
+				
 				//
 				// Validation
 				//
@@ -704,85 +715,38 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				$validation = true;
 				
 				// Fetch lan id and json
-				// Commented out while on Dev Server that has no access to EPA Network
-				
-
-				//$lan_id = Patt_Custom_Func::lan_id_check( $lan_id, $request_id );
-				//$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
-
-			$curl = curl_init();
-			
-			$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lan_id;
-			
-			$headers = [
-			    'Cache-Control: no-cache',
-				$eidw_authorization
-			];
-			
-			        curl_setopt($curl,CURLOPT_URL, $url);
-			        curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
-			        curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
-			        curl_setopt($curl,CURLOPT_TIMEOUT, 30);
-			        curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
-			        curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
-			        curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-					//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-					//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-			
-			$response = curl_exec($curl);
-			$err = curl_error($curl);
-			curl_close($curl);
-			
-			if ($err) {
-				$lan_json = 'Error ';
-			} else {
-			
-			$json = json_decode($response, true);
-			
-			$results = $json['totalResults'];
-			$active = $json['Resources']['0']['active'];
-			$full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']['0']['name']['familyName'];
-			$email = $json['Resources']['0']['emails']['0']['value'];
-			$phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
-			$org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
-			
-			if ($results >= 1) {
-			// Declare array  
-			$lan_id_details_array = array( 
-			    "active"=>$active,
-			    "name"=>$full_name,
-			    "email"=>$email,
-			    "phone"=>$phone,
-			    "org"=>$org,
-			    "lan_id"=>$lan_id,
-			); 
-			   
-			// Use json_encode() function 
-			$lan_json = json_encode($lan_id_details_array); 
-			   
-			// Display the output 
-			//echo($json); 	
-			} else {
-				$lan_id = '';
-				$lan_json = 'Error';
-			}
-			
-			}
-
-				/*if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
-					$validation = false;
+				$table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+				$inserted = [];
 					
+				// Real - for Staging and Production Servers
+				$lan_id = Patt_Custom_Func::lan_id_check( $a_lan_id, $request_id );
+				$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+					
+				// Fake for D E B U G 
+				//$lan_json = '{"name":"Andrew Yuen","email":"Yuen.Andrew@epa.gov","phone":"202-510-6390","org":"HGA00000","lan_id":"' . $lan_id . '"}';
+				//$lan_json = 'Error';
+				
+				// Error Checking
+				if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
+					$validation = false;
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error. This may be due to it being an invalid lan_id or due to the validating server.';
 					
-				}*/
-
+				}
+				
+				// Error Checking
 				if( $lan_json == 'Error' || $lan_json == null || $lan_json == '' ) {
 					$validation = false;
 					$val_type = 'single';
 					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
 				}
-
+					
+				// if lan_id is not in the name_array, add it.
+				if( array_search( $lan_json, $lan_id_obj_array ) === false ) {
+					$lan_id_obj_array[] = $lan_json;
+				}
+					
+					
 
 				// Specific Access Restrictions - Validation Check
 				if( $boxinfo['Access Restrictions'] == 'Yes' && $boxinfo['Specific Access Restrictions'] == '' ) {
@@ -829,7 +793,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				} 
 				
 				// Site Name & Site ID - Validation Check
-				if( $boxinfo['Site Name'] == '' && $validation == true ) {
+				if( $boxinfo['Site Name/OU'] == '' && $validation == true ) {
 					
 /*
 					$validation = false;
@@ -852,8 +816,9 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$err_message_2 = ' ';
 */
 					
-				} elseif( $boxinfo['Site Name'] != '' && $boxinfo['Site ID #'] != '' && $validation == true ) {
-					$validation = true;
+				} elseif( $boxinfo['Site Name/OU'] != '' && $boxinfo['Site ID #'] != '' && $validation == true ) {
+					//$validation = true;
+					//$validation = false;
 					// hit api to get Site Name from Site ID #.
 					// Compare Site Name with returned Site Name
 					
@@ -888,6 +853,14 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 								echo '<b>' . $col_a_key . '</b> has value of <b><u>' . $col_a_val 
 										. '</u></b> and <b>' . $col_b_key . '</b> has value of <b><u>' .$col_b_val .'</u></b><br>';
 							}
+							
+/*
+							echo 'Ticket ID: ' . $ticket_id . ' not created. <br>';
+							echo 'delete_ticket: ' . $delete_ticket . ' <br>';
+							echo '<pre>';
+							print_r( $delete_ticket );
+							echo '</pre>';
+*/
 							
 							
 							// D E B U G - START
@@ -1084,7 +1057,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 						'record_type' => $boxinfo['Record Type'],
 						'author' => "{$boxinfo['Creator']}",
 						'addressee' => "{$boxinfo['Addressee']}",
-						'site_name' => "{$boxinfo['Site Name']}",
+						'site_name' => "{$boxinfo['Site Name/OU']}",
 						'siteid' => "{$boxinfo['Site ID #']}",
 						'close_date' => $new_date,
 						'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
@@ -1223,7 +1196,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							'record_type' => $boxinfo['Record Type'],
 							'author' => "{$boxinfo['Creator']}",
 							'addressee' => "{$boxinfo['Addressee']}",
-							'site_name' => "{$boxinfo['Site Name']}",
+							'site_name' => "{$boxinfo['Site Name/OU']}",
 							'siteid' => "{$boxinfo['Site ID #']}",
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
@@ -1302,7 +1275,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							'record_type' => $boxinfo['Record Type'],
 							'author' => "{$boxinfo['Creator']}",
 							'addressee' => "{$boxinfo['Addressee']}",
-							'site_name' => "{$boxinfo['Site Name']}",
+							'site_name' => "{$boxinfo['Site Name/OU']}",
 							'siteid' => "{$boxinfo['Site ID #']}",
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
@@ -1403,8 +1376,186 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				// Increment folder file counter for naming convention
 				$folder_file_counter++;
 				
+				
+				
+			} // End of foreach loop
+			
+			
+			//
+			// lan_id validation
+			//
+			
+			// Update each new box that was added
+			foreach( $lan_id_name_array as $num => $the_lan_id ) {	
+				foreach( $lan_id_box_array as $boxid ) {
+				
+					//$inserted[] = $wpdb->update( $table, array( 'lan_id_details' => $lan_json ), array( 'lan_id' => $lan_id, 'box_id' => $boxid ) );
+					$wpdb->update( $table, array( 'lan_id_details' => $lan_id_obj_array[$num] ), array( 'lan_id' => $the_lan_id, 'box_id' => $boxid ) );
+					
+				}
 			}
-			// End of New BoxInfo Code.
+			
+			
+/*
+			$lan_id_validation = true;
+			$table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+			$inserted = [];
+			
+			// Loop through each unique lan_id, hit the endpoint, update all item's lan_id_details with the same lan_id
+			forEach( $lan_id_name_array as $a_lan_id ) {
+				
+				// Real
+				//$lan_id = Patt_Custom_Func::lan_id_check( $a_lan_id, $request_id );
+				//$lan_json = Patt_Custom_Func::lan_id_to_json( $lan_id );
+				
+				// Fake for D E B U G 
+				$lan_id = $a_lan_id;
+				$lan_json = '{"name":"Andrew Yuen","email":"Yuen.Andrew@epa.gov","phone":"202-510-6390","org":"HGA00000","lan_id":"' . $lan_id . '"}';
+				//$lan_json = 'Error';
+				
+				// Error Checking
+				if( $lan_id == 'LAN ID cannot be assigned' || $lan_id == null || $lan_id == '' ) {
+					$lan_id_validation = false;
+					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error. This may be due to it being an invalid lan_id or due to the validating server.';
+					
+				}
+				
+				// Error Checking
+				if( $lan_json == 'Error' || $lan_json == null || $lan_json == '' ) {
+					$lan_id_validation = false;
+					$err_message_1 = 'The lan_id used in the "EPA Contact" column caused an error for lan_json. This may be due to it being an invalid lan_id or due to the validating server.';
+				}
+				
+				// If Valid, update DB
+				if( $lan_id_validation ) {
+					
+					// Update each new box that was added
+					foreach( $lan_id_box_array as $boxid ) {
+					
+						$inserted[] = $wpdb->update( $table, array( 'lan_id_details' => $lan_json ), array( 'lan_id' => $lan_id, 'box_id' => $boxid ) );
+						
+					}
+					
+				}
+				
+			}
+*/
+			
+			
+			
+			
+
+			
+			
+			
+			// D E B U G - START
+/*
+			ob_start();
+			?>
+			<div class="col-sm-12 ticket-error-msg">
+				<?php esc_html_e( 'Post Ingestion D E B U G.', 'pattracking' ); ?>
+				<br><br>
+				<?php 
+			echo '<br><br>';
+			echo '------------------------D-E-B-U-G------------------------' . '<br>';
+			echo 'ticket_id: ' . $ticket_id . '<br>';
+			echo 'lan_id: ' . $lan_id . '<br>';
+			echo 'lan_json: ' . $lan_json . '<br><br>';
+			
+			echo 'lan_id_name_array: <br>'; 
+			echo '<pre>';
+			print_r( $lan_id_name_array );
+			echo '</pre>';
+			
+			echo 'inserted: <br>'; 
+			echo '<pre>';
+			print_r( $inserted );
+			echo '</pre>';
+			
+			echo 'inserted: <br>'; 
+			echo '<pre>';
+			print_r( $inserted );
+			echo '</pre>';
+			
+			echo 'lan_id_obj_array: <br>'; 
+			echo '<pre>';
+			print_r( $lan_id_obj_array );
+			echo '</pre>';
+			
+			//echo '<pre>';
+			//print_r( $boxarray );
+			//echo '</pre>';
+			
+			$ticket_error_message = ob_get_clean();
+
+			$response = array(
+				'redirct_url'    => '',
+				'thank_you_page' => $ticket_error_message,
+			);
+
+			echo json_encode( $response );
+			die();
+*/
+			// D E B U G - END
+			
+
+
+
+
+			//
+			// if validation failed, delete ticket, associated data, and display error message.
+			//
+			
+/*
+			if( !$lan_id_validation ) {
+				
+				// delete the ticket.
+				$delete_ticket2 = apply_filters( 'request_ticket_delete', $ticket_id );
+
+				ob_start();
+				?>
+				<div class="col-sm-12 ticket-error-msg">
+					<h3>EPA Contact (lan_id) Validation Failed. Ticket not generated.</h3>
+					<?php 
+						echo $err_message_1 . '<br><br>';	
+									
+						echo 'Ticket ID: ' . $ticket_id . ' not created. <br>';
+						echo 'delete_ticket: ' . $delete_ticket2 . ' <br>';
+						
+						
+						echo 'delete_ticket: <br>'; 
+						echo '<pre>';
+						print_r( $delete_ticket2 );
+						echo '</pre>';
+
+						
+						echo 'lan_id_name_array: <br>'; 
+						echo '<pre>';
+						print_r( $lan_id_name_array );
+						echo '</pre>';
+												
+						echo 'lan_id_box_array: <br>'; 
+						echo '<pre>';
+						print_r( $lan_id_box_array );
+						echo '</pre>';
+
+						echo '<br>';
+					?>
+				</div>
+				<?php
+				$ticket_error_message = ob_get_clean();
+
+				$response = array(
+					'redirct_url'    => '',
+					'thank_you_page' => $ticket_error_message,
+				);
+
+				echo json_encode( $response );
+				die();
+			}
+*/
+			
+			
 		}
 
 
@@ -1581,7 +1732,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 								<th>Record Type</th>
 <!-- 								<th>Record Schedule & Item Number</th> -->
 								<th>Disposition Schedule & Item Number</th>
-								<th>Site Name</th>
+								<th>Site Name/OU</th>
 								<th>Site ID #</th>
 								<th>Close Date</th>
 								<th>EPA Contact</th>								

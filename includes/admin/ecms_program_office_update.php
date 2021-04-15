@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-//include WPPATT_UPLOADS.'api_authorization_strings.php';
+include WPPATT_UPLOADS.'api_authorization_strings.php';
 
 //$path = preg_replace('/wp-content.*$/','',__DIR__);
 //include($path.'wp-load.php');

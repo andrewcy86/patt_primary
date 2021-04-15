@@ -74,11 +74,11 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email
 
 $requester_lanid = $find_requester->user_login;
 
-$boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
 $data_lan_update = array('lan_id' => $requester_lanid);
 $data_lan_where = array('id' => $id_val);
-$wpdb->update($boxinfo_table, $data_lan_update, $data_lan_where);
+$wpdb->update($folderdocinfo_files_table, $data_lan_update, $data_lan_where);
 }
 
 if ($results >= 1) {

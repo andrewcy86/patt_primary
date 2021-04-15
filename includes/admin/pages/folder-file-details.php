@@ -697,7 +697,7 @@ $s3Client = new Aws\S3\S3Client([
     'version' => 'latest'
 ]);
 
-$file_exist = $s3Client->doesObjectExist($s3_bucket, $folderfile_details->object_key);
+$file_exist = $s3Client->doesObjectExist(AWS_S3_BUCKET, $folderfile_details->object_key);
 
 // Success? (Boolean)
 //var_dump($file_exist);

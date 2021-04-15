@@ -36,7 +36,7 @@ if($searchGeneric != ''){
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchGeneric."%' or 
       b.title like '%".$searchGeneric."%' or 
       b.date like '%".$searchGeneric."%' or
-      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) like '%".$searchGeneric."%') ";
+      b.box_id like '%".$searchGeneric."%' ";
 }
 
 if($searchValue != ''){
@@ -44,7 +44,7 @@ if($searchValue != ''){
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchValue."%' or 
       b.title  like '%".$searchValue."%' or 
       b.date like '%".$searchValue."%' or
-      (SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.lan_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) like '%".$searchValue."%') ";
+      b.box_id like '%".$searchGeneric."%' ";
 }
 
 ## Total number of records without filtering

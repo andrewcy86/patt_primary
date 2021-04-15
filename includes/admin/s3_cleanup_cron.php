@@ -65,7 +65,7 @@ $diff_array = flip_isset_diff($s3_object_keys_array,$s3_db_object_keys_array);
 	foreach($diff_array as $key => $value) {
 
     $result = $s3->deleteObject([
-        'Bucket' => $s3_bucket,
+        'Bucket' => AWS_S3_BUCKET,
         'Key'    => $value
     ]);
     
