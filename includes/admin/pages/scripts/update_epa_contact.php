@@ -47,6 +47,7 @@ $json = json_decode($response, true);
 
 $active = $json['Resources']['0']['active'];
 
+echo $active;
 if ($active == 1) {
 $get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $ticket_id = $get_ticket_id->ticket_id;
