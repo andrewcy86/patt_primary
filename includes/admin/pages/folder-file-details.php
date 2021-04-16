@@ -145,7 +145,7 @@ else {
     a.source_dimensions,
     a.program_area
 	
-    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive a
     WHERE a.folderdocinfofile_id = '" . $GLOBALS['id'] . "'"
 	);
     }

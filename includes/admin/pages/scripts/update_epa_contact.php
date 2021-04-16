@@ -85,7 +85,7 @@ $email = 1;
 
 Patt_Custom_Func::insert_new_notification('email-epa-contact-changed',$pattagentid_array,$pattdocid,$data,$email);
 
-echo "Folder/File ID #: " . $pattdocid . " has been updated. <br />";
+echo "Folder/File ID #: " . $pattdocid . " has been updated.";
 }
 } else { echo "Please enter a valid LAN ID"; }
 }
