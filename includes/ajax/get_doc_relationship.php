@@ -14,8 +14,13 @@ $is_active = $_POST["is_active"];
 
 ob_start();
 
-$type = 'folderfile';
-			    
+if($is_active == 1) {
+    $type = 'folderfile';
+}
+else {
+    $type = 'folderfile_archive';
+}
+
 $get_parent_child = Patt_Custom_Func::get_parent_of_child($doc_id, $type);
 
 //Display document IDs from folderdocinfofile and folderdocinfofile_archive table
