@@ -30,18 +30,39 @@ jQuery(document).ready(function(){
                 maxFiles: 1,
                 acceptedFiles: '.xlsx, .xlsm',
                 accept: function (file, done) {
+                    
+                    console.log( 'ACCEPT' );
+                    console.log( 'this.files.length: ' + this.files.length );
+                    
+/*
+                    this.on("addedfile", function (file) {
+			            if (this.files.length > 1) {
+			                this.removeAllFiles()
+			                this.addFile(file);
+			            }
+			        });
+*/
+                    
+                    
                     theFile.file = file;
                     console.log({theFile:theFile});
                     //jQuery('#file_upload_cr').val(1);
                     wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
                 },
                 init: function () {
-                    this.on("maxfilesexceeded", function() {
+                    //console.log( 'INIT' );
+                    this.on("maxfilesexceeded", function(file) {
+/*
                         if (this.files[1]!=null){
                             this.removeFile(this.files[0]);
                         }
+*/
+						console.log( 'maxfilesexceeded' );
+                        this.removeAllFiles();
+						this.addFile(file);
                     });
                     this.on("error", function (file) {
+                        console.log( 'error for maxfilesexceeded' );
                         if (!file.accepted) this.removeFile(file);
                     });
                 }
@@ -187,6 +208,9 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 // Upload boxlist document, and create the data table
 function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	
+	console.log( '--wpsc_spreadsheet_new_upload--' );
+	console.log({id:id, name:name, fileSS:fileSS});
+	
     jQuery('#attachment_upload').unbind('change');
 
     jQuery.fn.dataTable.ext.errMode = 'none';
@@ -248,6 +272,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
         data.append('action', 'wpsc_tickets');
         data.append('setting_action', 'upload_file');
         data.append('nonce', jQuery('#wpsc_nonce').val().trim());
+        
+        console.log( 'The Data' );
+        console.log( data );
 
         // Read file and provide json response
         jQuery.ajax({
@@ -268,6 +295,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
             contentType: false,
             success: function (response) {
                 console.log('box list upload success');
+                console.log(response);
+                
                 jQuery('#boxinfodatatable').show();
                 var return_obj = JSON.parse(response);
                 jQuery(attachment).find('.attachment_cancel').show();
@@ -427,7 +456,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             }
 							
 							// D E B U G Data View
-							console.log( 'count: ' + count );
+							//console.log( 'count: ' + count );
 							//console.log( 'index_rec_type: ' + parsedData[count][index_rec_type] );
 							//console.log( 'index_source_type: ' + parsedData[count][index_source_type] );
 							//console.log( 'index_access_rest: ' + parsedData[count][index_access_rest] );
@@ -490,8 +519,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                        }
                             
                             // D E B U G Data View
-                            console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
-                            console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
+                            //console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
+                            //console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
                             
                             // Validate - Check for blank/null values
                             if( 

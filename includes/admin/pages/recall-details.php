@@ -376,10 +376,12 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			?>
 			
 		</div>
+<!--
 		<div class="">
 			<label class="wpsc_ct_field_label">Shipping Carrier: </label>
 			<span id="shipping_carrier" class=""><?php echo $shipping_carrier_icon; echo strtoupper($shipping_carrier); ?></span>
 		</div>
+-->
 		<div class="">
 			<label class="wpsc_ct_field_label">Status: </label>
 			<span id="status" class="wpsp_admin_label" style="<?php echo $status_style ?>"><?php echo $status; ?></span>

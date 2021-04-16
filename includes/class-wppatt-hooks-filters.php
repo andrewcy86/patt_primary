@@ -58,8 +58,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$param['path'] = $param['basedir'] . $mydir;
 			$param['url']  = $param['baseurl'] . $mydir;
 			
-			echo 'param: ';
-			print_r($param);
+			//echo 'param: ';
+			//print_r($param);
 			
 			
 			return $param;
