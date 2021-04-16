@@ -774,13 +774,13 @@ public static function get_count_of_children_for_parent( $identifier, $type ) {
         WHERE folderdocinfofile_id = '" .  $identifier . "'");
         $parent_id = $get_parent_id->parent_id;
         
-        //Find parent by comparing parent id to db id
-        $get_folderdocinfofile_id = $wpdb->get_row("SELECT folderdocinfofile_id
+        $get_child_count = $wpdb->get_row("SELECT count(id) as child_count
         FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
-        WHERE id = '" .  $parent_id . "'");
-        $folderdocinfofile_id = $get_folderdocinfofile_id->folderdocinfofile_id;
+        WHERE id <> '" .  $parent_id . "' AND
+        parent_id = '" .  $parent_id . "'");
+        $child_count = $get_child_count->child_count;
         
-        return $folderdocinfofile_id;
+        return $child_count;
     }
     else {
         return false;

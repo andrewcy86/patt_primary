@@ -26,29 +26,50 @@ $searchValue = $_POST['search']['value']; // Search value
 
 ## Custom Field value
 $parent_id = $_POST['docid'];
+$is_active = $_POST['isactive'];
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+if($is_active == 1) {
+    $sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+}
+else {
+    $sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+}
+
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
-$sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+if($is_active == 1) {
+    $sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+}
+else {
+    $sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
+}
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 $url_var = 'admin.php?pid=requestdetails&page=filedetails&id=';
 
 ## Fetch records
-$docQuery = "SELECT 
-CONCAT(
-'<a href=\"".$url_var."',folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',folderdocinfofile_id,'</a>') as folderdocinfofile_id,
-title,
-id
-FROM 
-" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE parent_id = ".$parent_id." AND id != ".$parent_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+if($is_active == 1) {
+    $docQuery = "SELECT 
+    CONCAT(
+    '<a href=\"".$url_var."',folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',folderdocinfofile_id,'</a>') as folderdocinfofile_id,
+    title,
+    id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+}
+else {
+    $docQuery = "SELECT 
+    CONCAT(
+    '<a href=\"".$url_var."',folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',folderdocinfofile_id,'</a>') as folderdocinfofile_id,
+    title,
+    id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
+    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;    
+}
 $docRecords = mysqli_query($con, $docQuery);
 $data = array();
 

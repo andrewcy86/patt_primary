@@ -10,6 +10,7 @@ if (!isset($_SESSION)) {
 }
 
 $doc_id = $_POST["doc_id"];
+$is_active = $_POST["is_active"];
 
 ob_start();
 
@@ -17,7 +18,13 @@ $type = 'folderfile';
 			    
 $get_parent_child = Patt_Custom_Func::get_parent_of_child($doc_id, $type);
 
-$get_parent_child_id = $wpdb->get_row("SELECT id FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '" . $get_parent_child . "'");
+//Display document IDs from folderdocinfofile and folderdocinfofile_archive table
+if($is_active == 1) {
+    $get_parent_child_id = $wpdb->get_row("SELECT id FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '" . $get_parent_child . "'");
+}
+else {
+    $get_parent_child_id = $wpdb->get_row("SELECT id FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files_archive WHERE folderdocinfofile_id = '" . $get_parent_child . "'");
+}
 $parent_child_id = $get_parent_child_id->id;
 			
 echo '<h4>Parent Document ID: '.$get_parent_child.'</strong></h4>';
@@ -52,8 +59,10 @@ jQuery(document).ready(function(){
        'data': function(data){
           // Read values
           var docid = <?php echo $parent_child_id; ?>;
+          var isactive = <?php echo $is_active; ?>;
           // Append to data
           data.docid = docid;
+          data.isactive = isactive;
        }
     },
     'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],

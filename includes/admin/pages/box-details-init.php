@@ -270,7 +270,7 @@ jQuery(document).ready(function(){
     'paging' : true,
     'drawCallback': function( settings ) {
         jQuery('[data-toggle="tooltip"]').tooltip();
-        	        var response = settings.json;
+        	var response = settings.json;
 	        console.log(response);
      },
     //'stateSaveParams': function(settings, data) {
@@ -355,17 +355,19 @@ jQuery(document).ready(function(){
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
-        dataTable.state.save();
+        //dataTable.state.save();
         dataTable.draw();
     }
 });
 
-//jQuery('#searchGeneric').on('input keyup paste', function () {
-//            dataTable.state.save();
-//            dataTable.draw();
-//});
+jQuery('#searchGeneric').on('keypress', function () {
+    if(e.which == 13) {
+        //dataTable.state.save();
+        dataTable.draw();
+    }
+});
 
-
+/*
 		function onAddTag(tag) {
 		    dataTable.state.save();
 			dataTable.draw();
@@ -374,7 +376,7 @@ jQuery(document).ready(function(){
 		    dataTable.state.save();
 		    dataTable.draw();
 		}
-
+*/
 jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchGeneric').val('');
     dataTable.column(0).checkboxes.deselectAll();

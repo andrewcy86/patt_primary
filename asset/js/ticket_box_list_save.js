@@ -9,6 +9,15 @@ jQuery(document).ready(function(){
 		//jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
 		//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 		
+		let check = jQuery( '#file_upload_cr' ).val();
+		console.log( 'check: ' + check );
+		
+		if( check == 1 ) {
+			jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
+		} else if( check == 0 ) {
+			jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
+		}
+		
 		
 //         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
 	if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
@@ -23,7 +32,7 @@ jQuery(document).ready(function(){
                 accept: function (file, done) {
                     theFile.file = file;
                     console.log({theFile:theFile});
-                    jQuery('#file_upload_cr').val(1);
+                    //jQuery('#file_upload_cr').val(1);
                     wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
                 },
                 init: function () {
@@ -162,7 +171,9 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
             processData: false,
             data: form_data,
             success: function (response) {
+                
                 console.log("Excel uploaded successfully");
+                console.log(response);
             },  
             error: function (response) {
                 console.log("Excel did not upload successfully");
@@ -905,7 +916,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                     parsedData[count][26]
                                 ]).draw().node();
                             }
-                        }
+                        } //for
+                        
+                        // Set that the file is uploaded.
+                        jQuery('#file_upload_cr').val(1);
+                        jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
+                        console.log( '#file_upload_cr has been update' );
+                        
                     } else {
                         
                         let alert_message = '';

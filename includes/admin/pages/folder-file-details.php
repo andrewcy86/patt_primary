@@ -716,7 +716,7 @@ $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
 // Get the actual presigned-url
 $presignedUrl = (string)$request->getUri();
 
-echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws"></i> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
+echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" title="AWS"></i> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
 }
 
 }
@@ -1226,7 +1226,8 @@ jQuery('#doc_relationship').on('click', function(){
        wpsc_modal_open('Document Relationship');
 		  var data = {
 		    action: 'wpsc_get_doc_relationship',
-		    doc_id: '<?php echo $GLOBALS['id']; ?>'
+		    doc_id: '<?php echo $GLOBALS['id']; ?>',
+		    is_active: '<?php echo $is_active; ?>'
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);

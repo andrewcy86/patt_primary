@@ -57,6 +57,11 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$mydir         = '/box-list';
 			$param['path'] = $param['basedir'] . $mydir;
 			$param['url']  = $param['baseurl'] . $mydir;
+			
+			echo 'param: ';
+			print_r($param);
+			
+			
 			return $param;
 		}
 
@@ -980,6 +985,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				if ( $boxinfo['Folder/Filename'] !== '' && $boxinfo['Folder/Filename'] !== null ) {
 				
 					// Change upload directory.
+/*
 					add_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );
 
 					// Get filename with extension
@@ -1001,6 +1007,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 						fwrite( $file, '' );
 						fclose( $file );
 					}
+*/
 					
 /*
 					// Convert Date
@@ -1087,7 +1094,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					
 					
 					// Remove custom upload directory folder
-					remove_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );  
+					//remove_filter( 'upload_dir', __CLASS__ . '::change_boxinfo_doc_file_upload_dir' );  
 					
 					//
 					// D E B U G - START
@@ -1564,12 +1571,13 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			
 		}
 
-
+		// OLD Not used. 4/16/2020
 		/**
 		 * Change upload path
 		 *
 		 * @param  Array $dir Upload directory information as array.
 		 */
+/*
 		public static function change_boxinfo_doc_file_upload_dir( $dir ) {
 
 			$dir['path']   = $dir['basedir'] . '/mdocs';
@@ -1578,6 +1586,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 
 			return $dir;
 		}
+*/
 
 
 		/**

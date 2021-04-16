@@ -30,13 +30,13 @@ $searchGeneric = $_POST['searchGeneric'];
 $isactive = $_POST['isactive'];
 
 ## Search 
-$searchQuery = " ";
+$searchQuery = "";
 if($searchGeneric != ''){
     //REVIEW
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchGeneric."%' or 
       b.title like '%".$searchGeneric."%' or 
       b.date like '%".$searchGeneric."%' or
-      b.box_id like '%".$searchGeneric."%' ";
+      b.lan_id like '%".$searchGeneric."%') ";
 }
 
 if($searchValue != ''){
@@ -44,7 +44,7 @@ if($searchValue != ''){
    $searchQuery .= " and (b.folderdocinfofile_id like '%".$searchValue."%' or 
       b.title  like '%".$searchValue."%' or 
       b.date like '%".$searchValue."%' or
-      b.box_id like '%".$searchGeneric."%' ";
+      b.lan_id like '%".$searchGeneric."%') ";
 }
 
 ## Total number of records without filtering
@@ -161,7 +161,7 @@ b.id as dbid,
 CONCAT(
 
 CASE WHEN (
-SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = a.box_id) > 0 AND b.freeze <> 1
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) > 0 AND b.freeze <> 1
 THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
 ELSE CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',b.folderdocinfofile_id,'</a>')
 END) as folderdocinfo_id_flag,
@@ -261,7 +261,6 @@ else {
 
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
-     //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "dbid"=>$row['dbid'],
      "title"=>$row['title'],

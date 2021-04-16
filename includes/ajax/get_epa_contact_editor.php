@@ -17,10 +17,10 @@ $folderfile_id = $_POST["folderdocinfofile_id"];
         
 ob_start();
 
-$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id, folderdocinfofile_id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE id = '" . $folderfile_id . "'");
+$box_patt_id = $wpdb->get_row("SELECT box_id, lan_id, id FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '" . $folderfile_id . "'");
 $box_id = $box_patt_id->box_id;
 $user_id = $box_patt_id->lan_id;
-$folderdocinfofile_id = $box_patt_id->folderdocinfofile_id;
+$dbid = $box_patt_id->id;
 
 ?>
 
@@ -37,7 +37,7 @@ else {
 ?>
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_id; ?>">
-<input type="hidden" id="folderdocinfofileid" name="folderdocinfofileid" value="<?php echo $folderdocinfofile_id; ?>"> 
+<input type="hidden" id="dbid" name="dbid" value="<?php echo $dbid; ?>"> 
 </form>
 <?php 
 $body = ob_get_clean();
@@ -65,7 +65,7 @@ function wpsc_edit_epa_contact(){
 postvarsboxid: jQuery("#boxid").val(),
 postvarslanid: jQuery("#lanid").val(),
 postvarspattdocid: jQuery("#pattdocid").val(),
-postvarsfolderdocinfofileid: jQuery("#folderdocinfofileid").val()
+postvarsdbid: jQuery("#dbid").val()
 }, 
 function (response) {
       if(!alert(response)){window.location.reload();}
