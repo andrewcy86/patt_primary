@@ -772,7 +772,7 @@ if( $folderfile_details->file_size == null || $folderfile_details->file_size == 
 ?> 	
 <script type="text/javascript">	
 	// Sets the PK for folderdocinfo_files to be used by the s3upload.js file
-	let folderfileid = '<?php echo $folderfile_details->folderfileid; ?>';
+	let folderfileid = '<?php echo $folderfile_details->id; ?>';
 	jQuery('input[name=folderdocinfo_files_id]').val( folderfileid ); 
 </script>
 <?php

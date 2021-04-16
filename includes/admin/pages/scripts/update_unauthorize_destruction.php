@@ -44,7 +44,7 @@ $getfolderdocinfo_db_id = $wpdb->get_row(
 "SELECT 
 id
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE folderdocinfo_id = '" . $key . "'"
+WHERE folderdocinfofile_id = '" . $key . "'"
 			);
 
 $folderdocinfo_db_id = $getfolderdocinfo_db_id->id;
