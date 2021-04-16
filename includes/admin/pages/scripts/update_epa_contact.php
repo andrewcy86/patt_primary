@@ -47,7 +47,6 @@ $json = json_decode($response, true);
 
 $active = $json['Resources']['0']['active'];
 
-echo $active;
 if ($active == 1) {
 $get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $ticket_id = $get_ticket_id->ticket_id;
@@ -61,7 +60,7 @@ $old_lanid = $old_box_lanid->lan_id;
 //$folderfile_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo';
 
 //updates the epa contact by entering a LANID
-if(!empty($lanid) && $old_lan_id != $lan_id) {
+if(!empty($lanid) && $old_lanid != $lan_id) {
 $get_json = Patt_Custom_Func::lan_id_to_json($lanid);
 $data_update = array('lan_id' => $lanid, 'lan_id_details' => $get_json);
 $data_where = array('folderdocinfofile_id' => $pattdocid);
