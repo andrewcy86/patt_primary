@@ -35,7 +35,6 @@ if($is_active == 1) {
 else {
     $sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive WHERE id != ".$parent_id." AND parent_id = ".$parent_id);
 }
-
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
@@ -59,7 +58,8 @@ if($is_active == 1) {
     title,
     id
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." 
+    order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 }
 else {
     $docQuery = "SELECT 
@@ -68,7 +68,8 @@ else {
     title,
     id
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive
-    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;    
+    WHERE parent_id = ".$parent_id." AND id != ".$parent_id." 
+    order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;    
 }
 $docRecords = mysqli_query($con, $docQuery);
 $data = array();

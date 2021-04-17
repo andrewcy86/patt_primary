@@ -229,12 +229,14 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			
 			</div>
 				
-				<div  data-fieldtype="textarea" data-visibility="" class="col-sm-9 <?php echo $form_field->visibility? 'hidden':'visible'?> <?php echo $form_field->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?>">
+<!-- 				<div  data-fieldtype="textarea" data-visibility="" class="col-sm-9 <?php echo $form_field->visibility? 'hidden':'visible'?> <?php echo $form_field->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?>"> -->
+				<div  data-fieldtype="textarea" data-visibility="" class="col-sm-9 visible wpsc_required form-group wpsc_form_field <?php echo 'field_'.$field->term_id?>">
 					<label class="wpsc_ct_field_label" for="<?php echo $form_field->slug;?>">
 						Comment <?php echo $required_html ?>
 					</label>
 					
-					<textarea name="recall_comment" rows="3" cols="30" class="form-control " style="height: auto !important;" onkeypress="check_color(this.id)" ></textarea>
+<!-- 					<textarea name="recall_comment" rows="3" cols="30" class="form-control " style="height: auto !important;" onkeypress="check_color(this.id)" ></textarea> -->
+						<textarea id="recall_comment_textarea"  name="recall_comment" rows="3" cols="30" class="form-control " style="" onkeypress="check_color(this.id)" ></textarea>
 				</div>
 				
 				
@@ -426,6 +428,10 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	background-color: rgb(66, 73, 73) !important; 
 	color: rgb(255, 255, 255) !important; 
 }
+
+#recall_comment_textarea {
+	height: 6em !important;
+}
 	
 </style>
 
@@ -451,6 +457,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		<script>
 
 		var loading_icon = jQuery('#wppatt_loading_icon').hide();
+		var submit_check = false;
 		
 		jQuery(document)
 			.ajaxStart(function () {
@@ -474,6 +481,16 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	        jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
 	        jQuery('#menu-dashboard').removeClass('current');
 	        jQuery('#menu-dashboard a:first').removeClass('current');
+	        
+	        // Submit Button
+	        
+	        if( submit_check == false ) {
+	        	jQuery('#wpsc_create_recall_submit').attr( 'disabled', 'disabled' );
+	        } else if( submit_check == true ) {
+	        	jQuery('#wpsc_create_recall_submit').removeAttr('disabled');
+	        }
+		
+	        
 	     
 	        <?php
 	        if ($_GET['page'] == 'recallcreate') {
@@ -770,6 +787,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 							//update_recall_box_folder_file(res); // used for OLD button Recall page
 							//error_alerts(res);
 							update_page(res);
+							
+							submit_check = true;
+							jQuery('#wpsc_create_recall_submit').removeAttr('disabled');
 						}
 					} else {
 						console.log("not a valid search ID");
@@ -914,7 +934,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	function onRemoveTag(tag) {
 	    //dataTable.state.save();
 		dataTable.draw();
-		console.log('Search IDs: '+jQuery('#searchByID').val());			
+		console.log('Search IDs: '+jQuery('#searchByID').val());
+		submit_check = false;
+		jQuery('#wpsc_create_recall_submit').attr( 'disabled', 'disabled' );
 	}
 	
 	// DATATABLE - END

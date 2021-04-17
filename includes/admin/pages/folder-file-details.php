@@ -1226,7 +1226,7 @@ jQuery('#doc_relationship').on('click', function(){
        wpsc_modal_open('Document Relationship');
 		  var data = {
 		    action: 'wpsc_get_doc_relationship',
-		    doc_id: '<?php echo $GLOBALS['id']; ?>',
+		    doc_id: '<?php echo $folderfile_folderdocinfofile_id; ?>',
 		    is_active: '<?php echo $is_active; ?>'
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {

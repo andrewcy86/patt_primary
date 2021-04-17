@@ -101,6 +101,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_po_rs_cron', array($frontend, 'wppatt_po_rs_cron_schedule'));
         // Add User Cleanup CRON
         add_action( 'wppatt_user_cleanup_cron', array($frontend, 'wppatt_user_cleanup_schedule'));
+        // Add ECMS/SEMS Status CRON
+        add_action( 'wppatt_ecms_sems_status_cron', array($frontend, 'wppatt_ecms_sems_status_cron_schedule'));
         
         // Add S3 Cleanup CRON
         add_action( 'wppatt_s3_cleanup_cron', array($frontend, 'wppatt_s3_cleanup_cron_schedule'));

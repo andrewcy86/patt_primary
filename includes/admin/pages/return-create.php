@@ -440,6 +440,12 @@ margin: 0px 0px 25px 15px;
 	
 	jQuery(document).ready(function(){
 		
+		// Submit button disable
+		
+    	jQuery('#wpsc_create_return_submit').attr( 'disabled', 'disabled' );
+    	//jQuery('#wpsc_create_return_submit').removeAttr('disabled');
+        
+		
 		// If Requester tries to access page, redirect back to Dashboard
 		let agent_permissions = '<?php echo $agent_permissions['label'] ?>';
 		console.log({agent_permissions:agent_permissions});
@@ -491,6 +497,18 @@ margin: 0px 0px 25px 15px;
 					console.log(typeof(response.responseJSON.errors));										
 					//error_alerts(response.responseJSON.errors);
 					Object.entries(response.responseJSON.errors).forEach(error_alerts);
+					
+					let num_of_entries = response.responseJSON.iTotalDisplayRecords;
+					
+					console.log( 'num_of_entries: ' + num_of_entries );
+					
+					if( num_of_entries > 0 ) {
+						jQuery('#wpsc_create_return_submit').removeAttr('disabled');
+					} else if( num_of_entries == 0 ) {
+						jQuery('#wpsc_create_return_submit').attr( 'disabled', 'disabled' );
+					}
+					
+					
 				}
 			},
 // 			'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],

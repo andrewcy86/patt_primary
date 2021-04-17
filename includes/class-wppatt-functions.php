@@ -12,6 +12,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/get_id_details.php';
     }*/
     
+    // CRON for ECMS/SEMS Status
+    public function wppatt_ecms_sems_status_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/ecms_sems_status_cron.php';
+    }
+    
     // CRON for s3 Cleanup
     public function wppatt_s3_cleanup_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/s3_cleanup_cron.php';

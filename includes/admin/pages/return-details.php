@@ -947,4 +947,8 @@ To be added to a css file later
 		color: #8b0000;
 	}
 	
+	.wpsc_loading_icon {
+		margin-top: 0px !important;
+	}
+	
 </style>

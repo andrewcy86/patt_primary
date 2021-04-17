@@ -10,7 +10,7 @@ jQuery(document).ready(function(){
 		//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 		
 		let check = jQuery( '#file_upload_cr' ).val();
-		console.log( 'check: ' + check );
+		//console.log( 'check: ' + check );
 		
 		if( check == 1 ) {
 			jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
@@ -35,13 +35,17 @@ jQuery(document).ready(function(){
                     console.log( 'this.files.length: ' + this.files.length );
                     
 /*
+                    this.removeAllFiles()
+			        this.addFile(file);
+*/
+                    
                     this.on("addedfile", function (file) {
 			            if (this.files.length > 1) {
+				            console.log( 'TOO LONG' );
 			                this.removeAllFiles()
 			                this.addFile(file);
 			            }
 			        });
-*/
                     
                     
                     theFile.file = file;
