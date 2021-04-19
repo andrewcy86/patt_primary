@@ -19,22 +19,6 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
-$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
-$location_request_id = $request_id->request_id;
-
-$is_active = Patt_Custom_Func::request_status( $location_request_id );
-
-if($is_active == 1) {
-    $type = 'box';
-}
-else {
-    $type = 'box_archive';
-}
-
-$get_request_status_id = $wpdb->get_row("SELECT ticket_status
-FROM ".$wpdb->prefix."wpsc_ticket
-WHERE request_id = ".$location_request_id);
-$request_status_id = $get_request_status_id->ticket_status;
 ?>
 
 <div class="bootstrap-iso">
@@ -63,4 +47,3 @@ var attrs = {"page":page, "pid":pid, "id":id};
        });
   </script>
 </div>
-
