@@ -85,13 +85,12 @@ WHERE id =".$item);
 
     //Determine if requests is SEMS or ECMS?
     $sems_check = $wpscfunction->get_ticket_meta($item,'super_fund');
-                
+    $in_process_tag = get_term_by('slug', 'in-process', 'wpsc_statuses'); //997                
     if(in_array("true", $sems_check)) {
     // Change Request Status to SEMS and Log
     //echo $item.'- SEMS,'. $sems_tag->term_id;
     // Check if status is in Process and not beyond SEMS
     
-    $in_process_tag = get_term_by('slug', 'in-process', 'wpsc_statuses'); //997
         if($ticket_status == $in_process_tag->term_id && !in_array($ticket_status, $exempt_status_array)) {
             $wpscfunction->change_status($item, $sems_tag->term_id);
         }
