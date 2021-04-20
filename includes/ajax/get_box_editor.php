@@ -32,12 +32,6 @@ $patt_box_id_arr = array();
     WHERE box_id = '" . $box_id . "'");
     $program_office = $box_program_office->acronym;
     
-    $box_record_schedule = $wpdb->get_row("SELECT c.Record_Schedule_Number as record_schedule_number 
-    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a 
-    INNER JOIN " . $wpdb->prefix . "epa_record_schedule as c ON record_schedule_id = c.id
-    WHERE box_id = '" . $box_id . "'");
-    $record_schedule = $box_record_schedule->record_schedule_number;
-    
     $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(fdif.validation = 1) as validated, COUNT(fdif.validation) as validation_total
 	FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.box_id = a.id 

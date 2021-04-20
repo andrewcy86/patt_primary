@@ -5,9 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-$GLOBALS['id'] = $_POST['id'];
-$GLOBALS['pid'] = $_POST['pid'];
-$GLOBALS['page'] = $_POST['page'];
+$GLOBALS['id'] = sanitize_text_field($_POST['id']);
+$GLOBALS['pid'] = sanitize_text_field($_POST['pid']);
+$GLOBALS['page'] = sanitize_text_field($_POST['page']);
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
@@ -144,7 +144,7 @@ color: rgb(255, 255, 255) !important;
         </thead>
     </table>
 <br /><br />
-
+<form>
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
 <input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
 <input name="formNonce" id="formNonce" type="hidden" value="<?=create_nonce($_SERVER['SCRIPT_NAME']);?>">

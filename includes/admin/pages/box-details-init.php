@@ -7,9 +7,9 @@ global $wpdb, $current_user, $wpscfunction;
 
 $subfolder_path = site_url( '', 'relative'); 
 
-$GLOBALS['id'] = $_POST['id'];
-$GLOBALS['pid'] = $_POST['pid'];
-$GLOBALS['page'] = $_POST['page'];
+$GLOBALS['id'] = sanitize_text_field($_POST['id']);
+$GLOBALS['pid'] = sanitize_text_field($_POST['pid']);
+$GLOBALS['page'] = sanitize_text_field($_POST['page']);
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 

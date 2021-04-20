@@ -15,9 +15,9 @@ $s3_exist = 0;
 $subfolder_path = site_url( '', 'relative');
 //include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
 
-$GLOBALS['id'] = $_GET['id'];
-$GLOBALS['pid'] = $_GET['pid'];
-$GLOBALS['page'] = $_GET['page'];
+$GLOBALS['id'] = sanitize_text_field($_GET['id']);
+$GLOBALS['pid'] = sanitize_text_field($_GET['pid']);
+$GLOBALS['page'] = sanitize_text_field($_GET['page']);
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 $agent_permissions['label'];

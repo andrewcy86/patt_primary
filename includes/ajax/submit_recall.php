@@ -184,10 +184,12 @@ if($recall_id == 0) {
 	if( $recall_obj->folderdoc_id == null ) {		
 		$recall_type = "Box";
 		$item_id = $recall_obj->box_id;
+		$the_box_id = $recall_obj->box_id;
 // 	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== $db_null ) {
 	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== null ) {
 		$recall_type = "Folder/File";
 		$item_id = $recall_obj->folderdoc_id;
+		$the_box_id = $recall_obj->box_id;
 	} 
 	
 	//echo 'item_id: ' . $item_id . PHP_EOL;
@@ -273,8 +275,9 @@ if($recall_id == 0) {
 */
 	
 	$item_name_and_id_str = $recall_type .': '. $item_id;
+	$box_status_message = 'Box: ' . $the_box_id . '\'s status has changed to <strong>Waiting on RLO</strong>';
 	
-	do_action('wpppatt_after_recall_created', $recall_obj->ticket_id, $recall_id, $item_name_and_id_str );
+	do_action('wpppatt_after_recall_created', $recall_obj->ticket_id, $recall_id, $item_name_and_id_str, $box_status_message );
 	
 	//
 	// Set PM Notifications 

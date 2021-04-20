@@ -6,21 +6,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb, $current_user, $wpscfunction;
 
 if(isset($_POST['id'])) {
-   $global_id = $_POST['id']; 
+   $global_id = sanitize_text_field($_POST['id']); 
 }
 else {
     $global_id = '';
 }
 
 if(isset($_POST['pid'])) {
-   $pid = $_POST['pid'];
+   $pid = sanitize_text_field($_POST['pid']);
 }
 else {
     $pid = '';
 }
 
 if(isset($_POST['page'])) {
-   $page = $_POST['page'];
+   $page = sanitize_text_field($_POST['page']);
 }
 else {
     $page = '';

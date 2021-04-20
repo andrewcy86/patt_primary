@@ -46,7 +46,8 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_recall_cancelled', array( $this, 'recall_cancelled' ), 10, 2); 
       add_action( 'wpppatt_after_recall_approved', array( $this, 'recall_approved' ), 10, 2); 
       add_action( 'wpppatt_after_recall_denied', array( $this, 'recall_denied' ), 10, 2); 
-      add_action( 'wpppatt_after_recall_created', array( $this, 'recall_created' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_created', array( $this, 'recall_created' ), 10, 4); 
+      add_action( 'wpppatt_after_recall_completed', array( $this, 'recall_completed' ), 10, 3); 
       add_action( 'wpppatt_after_return_cancelled', array( $this, 'return_cancelled' ), 10, 2); 
       add_action( 'wpppatt_after_return_created', array( $this, 'return_created' ), 10, 3);
       add_action( 'wpppatt_after_return_expiration_date_extended', array( $this, 'return_extended' ), 10, 2);
@@ -517,12 +518,28 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     }
     
 
-    function recall_created ( $ticket_id, $recall_id, $item_id ){
+    function recall_created ( $ticket_id, $recall_id, $item_id, $box_status_message ){
       global $wpscfunction, $current_user;
       if($current_user->ID){
-        $log_str = sprintf( __('%1$s has recalled %3$s. Recall ID: %2$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $recall_id .'</strong>', '<strong>'.$item_id.'</strong>' );
+        $log_str = sprintf( __('%1$s has recalled %3$s. Recall ID: %2$s. <br> %4$s ','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $recall_id .'</strong>', '<strong>'.$item_id.'</strong>', $box_status_message );
       } else {
-        $log_str = sprintf( __('%1$s has been recalled. Recall ID: %2$s ','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$recall_id.'</strong>' );
+        $log_str = sprintf( __('%1$s has been recalled. Recall ID: %2$s. %3$s ','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$recall_id.'</strong>', $box_status_message );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    function recall_completed ( $ticket_id, $recall_id, $item_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('Recall ID: %2$s is completed. ','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $recall_id .'</strong>', '<strong>'.$item_id.'</strong>' );
+      } else {
+        $log_str = sprintf( __('Recall ID: %2$s is completed. ','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$recall_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,
@@ -565,20 +582,22 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $wpscfunction->submit_ticket_thread($args);
     }
     
-    function box_status_update ( $ticket_id, $status, $item_id ){
-      global $wpscfunction, $current_user;
-      if($current_user->ID){
-        $log_str = sprintf( __('%1$s has changed the status of Box: %3$s from %2$s.','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $status .'</strong>', '<strong>'.$item_id.'</strong>' );
-      } else {
-        $log_str = sprintf( __('%1$s status has been changed from %2$s.','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$status.'</strong>' );
-      }
-      $args = array(
-        'ticket_id'      => $ticket_id,
-        'reply_body'     => $log_str,
-        'thread_type'    => 'log'
-      );
-      $args = apply_filters( 'wpsc_thread_args', $args );
-      $wpscfunction->submit_ticket_thread($args);
+    function box_status_update ( $ticket_id, $status, $item_id ){ 
+		global $wpscfunction, $current_user;
+		if($current_user->ID){
+			$log_str = sprintf( __('%1$s has changed the status of Box: %3$s from %2$s.','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $status .'</strong>', '<strong>'.$item_id.'</strong>' );
+		} else {
+			$log_str = sprintf( __('%1$s status has been changed from %2$s.','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$status.'</strong>' );
+		}
+		
+		$args = array(
+		'ticket_id'      => $ticket_id,
+		'reply_body'     => $log_str,
+		'thread_type'    => 'log'
+		);
+		
+		$args = apply_filters( 'wpsc_thread_args', $args );
+		$wpscfunction->submit_ticket_thread($args);
     }
     
     function box_status_agents_update ( $ticket_id, $status_and_users, $item_id ){

@@ -391,7 +391,7 @@ $recall_complete_recall_status_query = $wpdb->get_results(
       shipping.shipped,
       shipping.delivered,
       shipping.recallrequest_id,
-      rr.id,
+      rr.id as the_id,
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status,
       rr.box_id as box_id,
@@ -413,9 +413,22 @@ $recall_complete_recall_status_query = $wpdb->get_results(
         rr.recall_status_id = " . $status_shipped_back_term_id .
       " ORDER BY shipping.id ASC"
 	);
-	
+
+
+
 // For Recall Status to change from Shipped Back [732] to Recall Complete [733]
 foreach ($recall_complete_recall_status_query as $item) {
+	
+	// Data for Audit logs
+	$dub = array( 'id' => $item->the_id );
+	$recall = Patt_Custom_Func::get_recall_data( $dub );
+	$recall_data = $recall[0];
+	
+	$ticket_id = $recall_data->ticket_id;
+	$box_id = $recall_data->box_id; 
+	$folderdoc_id = $recall_data->folderdoc_id; 
+	$status_id = $recall_data->saved_box_status; 
+	$recall_id = $recall_data->recall_id;
 	
 	
 	
@@ -431,6 +444,21 @@ foreach ($recall_complete_recall_status_query as $item) {
 		$data_where = array( 'id' => $item->box_id );
 		$data_update = array( 'box_status' => $box_status );
 		$wpdb->update( $table_name, $data_update, $data_where );
+		
+		
+		// Audit log for changed box status
+		$sql = 'SELECT * FROM ' . $wpdb->prefix . 'terms WHERE term_id = '.$status_id;
+		$status_info = $wpdb->get_row( $sql );
+		$status_name = $status_info->name;
+		
+		$sql = 'SELECT box_id FROM ' . $wpdb->prefix . 'wpsc_epa_boxinfo WHERE box_id = "'.$box_id . '"';
+		$box_info = $wpdb->get_row( $sql );
+		$item_id = $box_info->box_id;
+		
+		$status_full = 'Waiting on RLO to ' . $status_name;
+		
+		do_action('wpppatt_after_box_status_update', $ticket_id, $status_full, $item_id );
+
 	} 
 	
 	
@@ -448,41 +476,16 @@ foreach ($recall_complete_recall_status_query as $item) {
 	Patt_Custom_Func::update_recall_data( $data, $where );
 	
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
-	// Reset the shipping details as the same id is used for shipping to requestor and back to digitization center.
-/*
-	$data = [
-		'company_name' => '',
-		'tracking_number' => '',
-		'shipped' => 0,
-		'delivered' => 0,		
-		'status' => ''
-	];
-	$where = [
-		'recall_id' => $recall_id
-	];
-
-	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );
-*/
-
-	//
-	// Set Box status back to original status before Recall
-	//  
 	
-/*
-	$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $item->box_id );
-	if( $saved_box_status['num'] ) {
-		$box_status = $saved_box_status['saved_box_status'];
+	// Audit log for Recall Complete
+	if( $folderdoc_id == null || $folderdoc_id == '' ) {
+		$item_id = $box_id;
 	} else {
-		$box_status = $item->saved_box_status;
+		$item_id = $folderdoc_id;
 	}
 	
-	$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-	$data_where = array( 'id' => $item->box_id );
-	//$data_update = array( 'box_status' => $item->saved_box_status );
-	$data_update = array( 'box_status' => $box_status );
-	$wpdb->update( $table_name, $data_update, $data_where );
-*/
 	
+	do_action('wpppatt_after_recall_completed', $ticket_id, 'R-'.$recall_id, $item_id );
 
 }
 
