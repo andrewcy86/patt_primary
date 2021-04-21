@@ -53,7 +53,7 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 
 //Get array of unassigned boxes from ticket ID
 	$box_id_assignment = Patt_Custom_Func::get_unassigned_boxes($tkid);
-print_r($box_id_assignment);
+//print_r($box_id_assignment);
 //Select count of boxes that have not been auto assigned
 	$box_details = $wpdb->get_row("
 SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id, count(" . $wpdb->prefix . "wpsc_epa_boxinfo.id) as count 
