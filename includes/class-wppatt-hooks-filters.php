@@ -57,6 +57,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$mydir         = '/box-list';
 			$param['path'] = $param['basedir'] . $mydir;
 			$param['url']  = $param['baseurl'] . $mydir;
+			//$param['subdir'] = $mydir; // New 4/20/2021 // Breaks WP6 on Dev
 			
 			//echo 'param: ';
 			//print_r($param);
@@ -72,7 +73,12 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 			if ( ! function_exists( 'wp_handle_upload' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
+				//require_once ABSPATH . 'wp-admin/includes/image.php'; // Added 4/20/2021 // breaks ingestion WP6 Dev
+				require_once ABSPATH . 'wp-admin/includes/media.php'; // Added 4/20/2021
 			}
+			
+			
+
 
 			// Move upload file
 			$uploadedfile = ! empty( $_FILES['file'] ) ? $_FILES['file'] : array();  //phpcs:ignore

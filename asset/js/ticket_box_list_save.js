@@ -302,6 +302,14 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 console.log(response);
                 
                 jQuery('#boxinfodatatable').show();
+                
+                // If, after an unsuccessful upload, all subsequent unsuccessful uploads have a reponse of false.
+                // This catches the response so there is no console error ( JSON.parse(response) would throw an error )
+                if( response == false ) {
+	                return;
+                }
+                
+                
                 var return_obj = JSON.parse(response);
                 jQuery(attachment).find('.attachment_cancel').show();
                 
@@ -316,10 +324,19 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     var datatable = jQuery('#boxinfodatatable').DataTable({
                         "autoWidth": true,
                         "scrollX": "100%",
-                        "scrollXInner": "110%"
+                        "scrollXInner": "110%",
+                        columnDefs: [
+							{ orderable: false, targets: '_all' }
+						]
+
+                        
                     });
 
                     datatable.clear().draw();
+                    
+                    // sets order for data table                    
+                    datatable.column( '0:visible' ).order( 'asc' ).draw();
+                    
 
                     var FR = new FileReader();
                     FR.onload = function (e) {
@@ -339,7 +356,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     var parsedData = JSON.parse(arrayOfData);
                     var arrayLength = Object.keys(parsedData).length;
                     
-                    console.log( 'arrayLength: ' + arrayLength );
+                    //console.log( 'arrayLength: ' + arrayLength );
                     
                     // removes asterisks from upload file headers
                     parsedData[1].forEach( function( item, i ) {
@@ -442,20 +459,23 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         //
                         for (var count = 1; count < arrayLength; count++) {
 							
+							//console.log( 'count: ' + count );
+							
 							// Find the last line of filled out data
 							if(
 								count > 1 && 
 									(
 										( parsedData[count][0] == null && 
-										  parsedData[count][15] == null
+										  parsedData[count][1] == null
 										) 
 										||
 										( parsedData[count][0] == undefined && 
-										  parsedData[count][15] == undefined
+										  parsedData[count][1] == undefined
 										) 
 									)
 									
 							) {
+                                console.log( 'SKIP');
                                 continue;
                             }
 							
@@ -464,6 +484,52 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							//console.log( 'index_rec_type: ' + parsedData[count][index_rec_type] );
 							//console.log( 'index_source_type: ' + parsedData[count][index_source_type] );
 							//console.log( 'index_access_rest: ' + parsedData[count][index_access_rest] );
+							
+							
+							
+							// Trim white space, as white space counts as
+							
+							if(
+								count > 1 && 
+									(
+										parsedData[count][index_box] != null
+									&&
+										parsedData[count][index_box] != undefined
+									)
+									
+							) {
+								parsedData[count][index_box] = parsedData[count][index_box].trim();
+								//console.log('trimmed');
+                            }
+
+							
+							
+
+							
+							
+							
+							
+							
+/*
+                        	parsedData[count][index_folder_id] = parsedData[count][index_folder_id].trim(); // Folder Identifier
+                        	parsedData[count][index_title] = parsedData[count][index_title].trim(); // Title
+                        	parsedData[count][index_desc_record] = parsedData[count][index_desc_record].trim(); // Description of Record
+                        	parsedData[count][index_pcd] = parsedData[count][index_pcd].trim(); // Parent / Child
+                        	parsedData[count][index_creation_date] = parsedData[count][index_creation_date].trim(); // Creation Date
+                        	parsedData[count][index_creator] = parsedData[count][index_creator].trim(); // Creator 
+                        	parsedData[count][index_rec_type] = parsedData[count][index_rec_type].trim(); // Record Type 
+                        	parsedData[count][index_rec_sched] = parsedData[count][index_rec_sched].trim(); // Disposition Schedule & Item Number 
+                        	parsedData[count][index_epa_contact] = parsedData[count][index_epa_contact].trim(); // EPA Contact 
+                        	parsedData[count][index_access_rest] = parsedData[count][index_access_rest].trim(); // Access Restrictions 
+                        	parsedData[count][index_use_rest] = parsedData[count][index_use_rest].trim(); // Use Restrictions 
+                        	parsedData[count][index_source_type] = parsedData[count][index_source_type].trim(); // Source Type 
+                        	parsedData[count][index_source_dim] = parsedData[count][index_source_dim].trim(); // Source Dimensions 
+                        	parsedData[count][index_prog_office] = parsedData[count][index_prog_office].trim(); // Program Office
+                        	parsedData[count][index_prog_area] = parsedData[count][index_prog_area].trim(); // Program Area
+                        	parsedData[count][index_index_level] = parsedData[count][index_index_level].trim(); // Index Level
+                        	parsedData[count][index_ess_rec] = parsedData[count][index_ess_rec].trim();
+*/
+							
 							
 							// Clean Record Type. If * remove them. 
 							if( parsedData[count][index_rec_type] ) {
@@ -532,7 +598,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             	count > 1 && 
                             		( 
                             			( invalid_index.indexOf( null ) > -1 ) || 
-                            			( invalid_index.indexOf( undefined ) > -1 )
+                            			( invalid_index.indexOf( undefined ) > -1 ) ||
+                            			( invalid_index.indexOf( '' ) > -1 ) 
                             		) 
                             ) {
 								let err_index;
@@ -541,6 +608,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 									err_index = invalid_index.indexOf( null );
 								} else if( invalid_index.indexOf( undefined ) > -1  ) {
 									err_index = invalid_index.indexOf( undefined );
+								} else if( invalid_index.indexOf( '' ) > -1  ) {
+									err_index = invalid_index.indexOf( '' );
 								}
 								
 								let alert_message = '';
@@ -673,6 +742,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 
 
                             // Box ID validation // Redundant. Can be removed.
+/*
                             if( 
                             	flag != true && 
                             	count > 1 && 
@@ -685,6 +755,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 alert( alert_message );
                                 flag = true;
                             }
+*/
 
                             // Index level validation
                             if(
@@ -891,21 +962,33 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                 alert( alert_message );
                                 flag = true;
                             }
-
+							
+							
                             // Clear table if err
                             if( flag == true ) {
-
+								console.log('clear table');
                                 datatable.clear().draw();
                                 jQuery('#file_upload_cr').val(0);
 
                                 jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
                                     obj.remove();
                                 });
-
+								
+								console.log( file.previewElement );
+								if( file.previewElement != null ) {
+									console.log( 'remove preview' );
+									file.previewElement.parentNode.removeChild(file.previewElement);
+								}
+								
+								// Changed return to false, as after an unsuccessful upload, the response was causing JSON.parse to throw
+								// an error.
                                 var _ref;
-                                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                                //return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+                                return false;
                             }
-
+							
+							console.log( 'post validation' );
+							
                             // Add record to datatable if no error
                             if (
                             	parsedData[count] !== undefined && 

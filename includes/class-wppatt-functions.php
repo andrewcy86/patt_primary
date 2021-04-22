@@ -12,6 +12,21 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/get_id_details.php';
     }*/
     
+    // CRON for Timestamp Reporting Qlik
+    public function wppatt_timestamp_reporting_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/timestamp_reporting_cron.php';
+    }
+    
+    // CRON for East Location Cleanup
+    public function wppatt_e_location_cleanup_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php';
+    }
+    
+    // CRON for West Location Cleanup
+    public function wppatt_w_location_cleanup_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php';
+    }
+    
     // CRON for ECMS/SEMS Status
     public function wppatt_ecms_sems_status_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/ecms_sems_status_cron.php';

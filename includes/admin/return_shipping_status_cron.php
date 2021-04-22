@@ -533,6 +533,9 @@ foreach ($return_complete_return_status_query as $item) {
 	Patt_Custom_Func::update_return_data( $data, $where );
 	
 	
+	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
+	$ticket_id = ltrim( $ticket_id, '0' );
+	
 	//
 	// Set Box status back to original status before Decline
 	//  
@@ -546,9 +549,22 @@ foreach ($return_complete_return_status_query as $item) {
 		$data_where = array( 'box_id' => $box_id );
 		$data_update = array( 'box_status' => $decline_obj->saved_box_status[$key] );
 		$wpdb->update( $table_name, $data_update, $data_where );
+		
+		// Box Status Audit Log
+		$sql = 'SELECT * FROM ' . $wpdb->prefix . 'terms WHERE term_id = ' . $decline_obj->saved_box_status[$key];
+		$status_info = $wpdb->get_row( $sql );
+		$status_name = $status_info->name;
+		
+		$status_full = 'Waiting on RLO to ' . $status_name;
+		do_action('wpppatt_after_box_status_update', $ticket_id, $status_full, $box_id );	
+		
 	}
 
+	// Decline Audit Log
 	
+
+	
+	do_action('wpppatt_after_return_completed', $ticket_id, 'D-'.$return_id );
 
 	//
 	// PM Notification :: Requester & Digitization Staff - Decline Complete

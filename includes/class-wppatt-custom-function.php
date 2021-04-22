@@ -3354,32 +3354,24 @@ public static function id_in_recall( $identifier, $type ) {
         public static function convert_request_id( $id )
         {
             global $wpdb;
-            $id = '"'.$id.'"';
-            $args = [
-                'select' => 'id',
-                'where' => ['request_id',  $id],
-            ];
-            $wpqa_wpsc_request = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_ticket");
-            $id_key = $wpqa_wpsc_request->get_row($args, false);
-
-            $key = $id_key->id;
-            return $key;
+            $get_db_id = $wpdb->get_row("SELECT id
+            FROM wpqa_wpsc_ticket
+            WHERE request_id = '" .  $id . "'");
+            $dbid = $get_db_id->id;
+            
+            return $dbid;
         }
         
         //Convert id to patt request id
         public static function convert_request_db_id( $id )
         {
             global $wpdb;
-            $id = '"'.$id.'"';
-            $args = [
-                'select' => 'request_id',
-                'where' => ['id',  $id],
-            ];
-            $wpqa_wpsc_request = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_ticket");
-            $id_key = $wpqa_wpsc_request->get_row($args, false);
-
-            $key = $id_key->request_id;
-            return $key;
+            $get_request_id = $wpdb->get_row("SELECT request_id
+            FROM wpqa_wpsc_ticket
+            WHERE id = '" .  $id . "'");
+            $request_id = $get_request_id->id;
+            
+            return $request_id;
         }
         
         //Function to obtain box ID, title, date and contact 
@@ -5832,7 +5824,7 @@ if($type == 'comment') {
 		
 		/**
          * Get the ticket_id (request_id) by recall_id.
-         * Accepts $recall_id in these formats: R-0000008, r-0000008, 0000008
+         * Accepts $recall_id in these formats: R-0000008, r-0000008, 0000008, 8
          * @return ticket_id
          */
 		public static function get_ticket_id_from_recall_id( $recall_id ) {
@@ -5867,8 +5859,8 @@ if($type == 'comment') {
 		}
 		
 		/**
-         * Get the ticket_id (request_id) by recall_id.
-         * Accepts $recall_id in these formats: R-0000008, r-0000008, 0000008
+         * Get the ticket_id (request_id) by return_id (decline_id).
+         * Accepts $decline_id in these formats: D-0000008, d-0000008, 0000008, 8
          * @return ticket_id
          */
 		public static function get_ticket_id_from_decline_id( $decline_id ) {
@@ -5879,7 +5871,8 @@ if($type == 'comment') {
 			
 			$start_str = substr( $decline_id, 0, 2 );
 			if( $start_str === 'D-' || $start_str === 'd-' ) {
-				$real_decline_id = str_ireplace('r-', '', $decline_id );
+				//$real_decline_id = str_ireplace('r-', '', $decline_id );
+				$real_decline_id = str_ireplace('d-', '', $decline_id );
 			}
 			
 			$decline_id_num = ltrim( $real_decline_id, '0' );

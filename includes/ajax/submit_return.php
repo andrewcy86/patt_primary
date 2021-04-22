@@ -205,7 +205,7 @@ if($return_id == 0) {
 
 
 	// Audit Log for each item
-	foreach( $item_ids as $id ) {
+	foreach( $item_ids as $key => $id ) {
 		if( substr_count($id, '-') == 1 ) {
 			$return_type = 'Box';
 			$arr = explode("-", $id, 2);
@@ -219,10 +219,23 @@ if($return_id == 0) {
 			$item_id = $id;
 
 		}
-
+			
+		
+		// Box status change Audit Log
+		$sql = 'SELECT saved_box_status FROM ' . $wpdb->prefix . 'wpsc_epa_return_items WHERE box_id = ' . $item_ids_box[$key];
+		$item_obj = $wpdb->get_row( $sql );
+		$saved_box_term = $item_obj->saved_box_status;
+		
+		$sql = 'SELECT * FROM ' . $wpdb->prefix . 'terms WHERE term_id = ' . $saved_box_term;
+		$status_info = $wpdb->get_row( $sql );
+		$status_name = $status_info->name;
+		
+		$status_full = $status_name . ' to Waiting on RLO';
+		do_action('wpppatt_after_box_status_update', $ticket_id, $status_full, $item_id );	
+		
+		// Decline Audit Log
 		$item_name_and_id_str = $return_type .': '. $item_id.' due to: '.$return_reason;
-		do_action('wpppatt_after_return_created', $ticket_id, $return_id, $item_name_and_id_str );		
-	
+		do_action('wpppatt_after_return_created', $ticket_id, $return_id, $item_name_and_id_str );
 	
 	
 		// Set PM Notifications 

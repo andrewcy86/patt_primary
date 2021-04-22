@@ -138,7 +138,13 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON
         add_action( 'wppatt_private_message_cleanup_cron', array($frontend, 'wppatt_private_message_cleanup_cron_schedule'));
-      
+
+        // Add Location Cleanup CRONS
+        add_action( 'wppatt_e_location_cleanup_cron', array($frontend, 'wppatt_e_location_cleanup_schedule')); 
+        add_action( 'wppatt_w_location_cleanup_cron', array($frontend, 'wppatt_w_location_cleanup_schedule')); 
+        // Add Timestamp Cron for Qlik Reports
+        add_action( 'wppatt_timestamp_reporting_cron', array($frontend, 'wppatt_timestamp_reporting_schedule'));         
+        
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           

@@ -14,6 +14,8 @@ $table_name_sl = $wpdb->prefix . 'wpsc_epa_scan_list';
 $invalid_response = 0;
 $pallet_set_count = 0;
 
+$dc_check = 0;
+
 $metadata_array = array();
 
 	//
@@ -21,14 +23,14 @@ $metadata_array = array();
 	//
 	$item_ids = $_REQUEST['item_ids'];
 	$is_single_item = (count($item_ids) > 1 ) ? false : true;
-	
-if( $type == 'yes' ) {
-	
-	// Set Pallet ID
-	
+
 		// Determine East or West
-		
-		$digitzation_center = $wpdb->get_row(
+
+$digitization_center_array = array();
+
+	foreach( $item_ids as $id ) {
+
+$digitzation_center = $wpdb->get_row(
 
  "SELECT DISTINCT " . $wpdb->prefix . "terms.name as digitization_center
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
@@ -41,18 +43,38 @@ if( $type == 'yes' ) {
         " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
-        " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $ticket_id
+        " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
         
 			);
+	
+			$dc = $digitzation_center->digitization_center;
 			
-		$dc = $digitzation_center->digitization_center;
-		if($dc == 'East') {
-		    $dc_acronym = 'E';
-		}
+	array_push($digitization_center_array,$dc);
+	
+	}
 		
-		if($dc == 'West') {
-		    $dc_acronym = 'W';
-		}
+
+if( count(array_unique($digitization_center_array)) == 1 && in_array('East', $digitization_center_array )) {
+$dc_acronym = 'E';
+}
+
+if( count(array_unique($digitization_center_array)) == 1 && in_array('West', $digitization_center_array )) {
+$dc_acronym = 'W';
+}
+
+if(array_search('', $digitization_center_array)!==false) {
+$dc_check = 1;
+}
+
+if( count(array_unique($digitization_center_array)) == 2 && in_array('East', $digitization_center_array ) && in_array('West', $digitization_center_array )) {
+$dc_check = 2;
+}
+
+echo array_search('', $digitization_center_array);
+
+if( $type == 'yes' && $dc_check == 0) {
+	
+	// Set Pallet ID
 		
 		// Build Pallet ID
 		$num_id = random_int(1,99999);
@@ -102,7 +124,7 @@ if( $type == 'yes' ) {
 	
 echo "Pallets have been assigned an ID.";
 
-} elseif( $type == 'no' ) {
+} elseif( $type == 'no' && $dc_check == 0) {
 	
 	foreach( $item_ids as $id ) {
 //Pull previous pallet ID if exists
@@ -133,7 +155,10 @@ if($invalid_response >= 1) {
 echo "Pallets IDs have been un-assigned.";
 }
 
-} elseif ( $type == 'reassign' ) {
+} elseif ( $type == 'reassign' && $dc_check == 0 ) {
+
+//Get 3rd value from pallet_id/Digitization Center
+$pallet_dc = substr($pallet_id, 2, 1);
 
 //echo 'PALLET : ' . $pallet_id;
 $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
@@ -162,8 +187,37 @@ $physical_location_id = 3;
 
 //echo 'PHYSICAL LOCATION : ' . $physical_location_id;
 
+			
 foreach( $item_ids as $id ) {
 
+$digitzation_center_reassign = $wpdb->get_row(
+ "SELECT DISTINCT " . $wpdb->prefix . "terms.name as digitization_center
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+        INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+        WHERE
+        " . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
+        " . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
+        " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
+        " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
+        " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
+        " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
+        " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
+        
+			);
+	
+			$get_dc_reassign = $digitzation_center_reassign->digitization_center;
+			
+			$dc_reassign = '';
+			
+			if($get_dc_reassign == 'East') {
+			$dc_reassign = 'E';
+			}
+			
+			if($get_dc_reassign == 'West') {
+			$dc_reassign = 'W';
+			}
+			
 $get_old_physical_location = $wpdb->get_row("SELECT b.locations, a.location_status_id, a.pallet_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status b ON b.id = a.location_status_id
@@ -189,7 +243,7 @@ if(!empty($pallet_id)) {
 
 //updates pallet ID
 
-if(!empty($pallet_id) && ($old_pallet_id != $pallet_id) && !empty($old_pallet_id)) {
+if(!empty($pallet_id) && ($old_pallet_id != $pallet_id) && ($pallet_dc == $dc_reassign) && !empty($old_pallet_id)) {
 
 //if pallet ID is reassigned set physical location to Pending, unless new pallet ID already has a stagingarea_id, then set to In Staging Area
 //echo $scan_list_id;
@@ -203,7 +257,7 @@ array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
 }
 
 //updates pallet ID when unassigned
-if(!empty($pallet_id) && empty($old_pallet_id) ) {
+if(!empty($pallet_id) && empty($old_pallet_id) && ($pallet_dc == $dc_reassign)) {
 
 $data_update_unassigned = array('pallet_id' => $pallet_id, 'scan_list_id' => $scan_list_id);
 $data_where_unassigned = array('box_id' => $id);
@@ -215,7 +269,7 @@ array_push($metadata_array,'Pallet ID: '.$old_pallet_id.' > '.$pallet_id);
 
 }
 
-if($old_location_status_id != $physical_location_id) {
+if($old_location_status_id != $physical_location_id && $pallet_dc == $dc_reassign) {
 
     $get_new_physical_location = $wpdb->get_row("SELECT a.locations
     FROM " . $wpdb->prefix . "wpsc_epa_location_status a
@@ -242,13 +296,26 @@ $pallet_set_count++;
 
 }
 
-if($pallet_set_count >= 1 && $pallet_set_count != 99999) {
+if($pallet_set_count >= 1 && $pallet_set_count != 99999 && ($pallet_dc == $dc_reassign) ) {
 echo "Successfully updated Pallet ID.";
 }
+
+if($pallet_dc != $dc_reassign) {
+echo "Attempted to assign a pallet that belongs to a different digitization center. ";
+}
+
 if($pallet_set_count == 99999) {
 echo "No Pallet IDs to update.";
 }
 
+}
+
+if($dc_check == 1) {
+echo "Digitization center has not been assigned to one or more boxes.";
+}
+
+if($dc_check == 2) {
+echo "You must select boxes that are all associated with the same digitization center.";
 }
 
 Patt_Custom_Func::pallet_cleanup();

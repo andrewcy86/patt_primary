@@ -51,6 +51,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_return_cancelled', array( $this, 'return_cancelled' ), 10, 2); 
       add_action( 'wpppatt_after_return_created', array( $this, 'return_created' ), 10, 3);
       add_action( 'wpppatt_after_return_expiration_date_extended', array( $this, 'return_extended' ), 10, 2);
+      add_action( 'wpppatt_after_return_completed', array( $this, 'return_completed' ), 10, 2);
       
       add_action( 'wpppatt_after_box_status_update', array( $this, 'box_status_update' ), 10, 3);      
       add_action( 'wpppatt_after_box_status_agents', array( $this, 'box_status_agents_update' ), 10, 3);             
@@ -572,6 +573,22 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s has Declined %3$s. Decline ID: %2$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $return_id .'</strong>', '<strong>'.$item_id.'</strong>' );
       } else {
         $log_str = sprintf( __('%1$s has been Declined. Decline ID: %2$s ','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$return_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    function return_completed ( $ticket_id, $return_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('Decline ID: %2$s is completed. ','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>', '<strong>'. $return_id .'</strong>' );
+      } else {
+        $log_str = sprintf( __('Decline ID: %1$s is completed. ','supportcandy'), '<strong>'.$recall_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,
