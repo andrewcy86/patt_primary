@@ -3355,7 +3355,7 @@ public static function id_in_recall( $identifier, $type ) {
         {
             global $wpdb;
             $get_db_id = $wpdb->get_row("SELECT id
-            FROM wpqa_wpsc_ticket
+            FROM ".$wpdb->prefix."wpsc_ticket
             WHERE request_id = '" .  $id . "'");
             $dbid = $get_db_id->id;
             
@@ -3366,12 +3366,12 @@ public static function id_in_recall( $identifier, $type ) {
         public static function convert_request_db_id( $id )
         {
             global $wpdb;
-            $get_request_id = $wpdb->get_row("SELECT request_id
-            FROM wpqa_wpsc_ticket
+            $get_db_id = $wpdb->get_row("SELECT request_id
+            FROM ".$wpdb->prefix."wpsc_ticket
             WHERE id = '" .  $id . "'");
-            $request_id = $get_request_id->id;
+            $dbid = $get_db_id->request_id;
             
-            return $request_id;
+            return $dbid;
         }
         
         //Function to obtain box ID, title, date and contact 
