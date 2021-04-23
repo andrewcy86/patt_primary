@@ -223,6 +223,18 @@ WHERE
         return $ecms_sems;
     }
     
+    function fetch_box_ecms_sems() {
+        global $wpdb;
+        $get_ecms_sems = $wpdb->get_row("SELECT c.meta_value as ecms_sems
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+        INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
+        INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta c ON c.ticket_id = b.id
+        WHERE c.meta_key = 'super_fund' AND a.box_id = '" .  $GLOBALS['id'] . "'");
+        $ecms_sems = $get_ecms_sems->ecms_sems;
+        
+        return $ecms_sems;
+    }
+    
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
 
@@ -317,6 +329,8 @@ $not_assigned_flag = 1;
 //Box
 if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
        $box_array = fetch_box_id_a();
+       $box_ecms_sems_indicator = fetch_box_ecms_sems();
+       
 }
 
         //Set count to 0. This count determine odd or even components of the array
@@ -327,7 +341,6 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         {
             
 if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {           
-
         $asset_ticket_id = $wpdb->get_row( "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
                 
         $asset_request_id = $wpdb->get_row( "SELECT * FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
@@ -543,10 +556,9 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             //$obj_pdf->Rect($x_loc_ba1, $y_loc_ba1, $x_loc_la2, $y_loc_la2, 'D', array(
                 //'all' => $style_box_dash
             //));
-            
             //ECMS/SEMS indicator
             $ecms_sems_indicator = '';
-            if($box_ecms_sems == 'true') {
+            if($box_ecms_sems == 'true' || $box_ecms_sems_indicator == 'true') {
                 $ecms_sems_indicator = 'SEMS';
             }
             else {
@@ -566,7 +578,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->RoundedRect($x_loc_digi_box_dashed, $y_loc_digi_box_dashed, 46.5, 16, 2, '1111', null, $style_box_dash);
             
             //Black rectangle containing program office and month/year of request
-            if($box_ecms_sems == 'true') {
+            if($box_ecms_sems == 'true' || $box_ecms_sems_indicator == 'true') {
                 $obj_pdf->Rect($x_loc_black_rectangle, $y_loc_black_rectangle, 140, 35, 'F', '', array(179,0,0));
             }
             else {
