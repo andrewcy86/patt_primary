@@ -48,7 +48,16 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
 $result = curl_exec($curl);
 //var_dump($result);
+
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 curl_close($curl);
+
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('usps-shipping-cron',$status,$err);
+}
 
 $response = new SimpleXMLElement($result);
 
@@ -154,7 +163,15 @@ curl_setopt_array($curl, array(
 
 $response = curl_exec($curl);
 
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 curl_close($curl);
+
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('fedex-shipping-cron',$status,$err);
+}
 
 $xml = new SimpleXMLElement($response);
 $body = $xml->xpath('//SOAP-ENV:Body')[0];
@@ -254,7 +271,16 @@ $php_stmt .= '[$xml_elem[\'tag\']] = $xml_elem[\'value\'];';
 eval($php_stmt);
  }
 }
+
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 curl_close($curl);
+
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('ups-shipping-cron',$status,$err);
+}
 
 //print_r($array);
 
@@ -311,14 +337,17 @@ curl_setopt_array($curl, array(
 ));
 
 $response = curl_exec($curl);
-$err = curl_error($curl);
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
 curl_close($curl);
 
-if ($err) {
-  echo "cURL Error #:" . $err;
-} else {
-  $json = json_decode($response, true);
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+  Patt_Custom_Func::insert_api_error('dhl-shipping-cron',$status,$err);
+}
+
+$json = json_decode($response, true);
 
 $deliveryStatus = $json['shipments']['0']['status']['description'].' : '
 .$json['shipments']['0']['status']['timestamp'];
@@ -337,7 +366,7 @@ $wpdb->update( $table_name, array( 'delivered' => 1),array('ID'=>$item->id));
 $wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
 $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$item->id));
 }
-}
+
 
 }
         break;

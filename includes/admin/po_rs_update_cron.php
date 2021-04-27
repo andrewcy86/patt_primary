@@ -10,7 +10,6 @@ global $current_user, $wpscfunction, $wpdb;
 
 $endpoint = "https://api.edap-cluster.com/ecms-graphql/graphql";
 $count = 0;
-$error_table = $wpdb->prefix . 'epa_error_log';
 
 //Program Office
 $po_query = "query officeQuery {
@@ -45,11 +44,8 @@ $po_result = file_get_contents($endpoint, false, $po_context);
 
 if ($po_result === FALSE) { 
 
-$wpdb->insert($error_table, array(
-    'Status_Code' => $http_response_header[0],
-    'Error_Message' => '',
-    'Service_Type' => 'PO RS Cron'
-));
+$err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
+Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
     
 }
 

@@ -48,13 +48,15 @@ $headers = [
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
 $response = curl_exec($curl);
-$err = curl_error($curl);
+
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 curl_close($curl);
 
-$lan_id_details = '';
+$err = Patt_Custom_Func::convert_http_error_code($status);
 
-if ($err) {
-$lan_id_details = 'Error';
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('eidw-eidw-cron',$status,$err);
 } else {
 
 $json = json_decode($response, true);

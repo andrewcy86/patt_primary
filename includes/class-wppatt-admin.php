@@ -482,6 +482,8 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		echo '<h4 class="widget_header"> <i class="fa fa-truck"></i> ' . $ticket_widget_name;
 		if($is_active == 1) {
 		echo ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit"></i></button></h4>';
+		} else {
+		echo ' </h4>';
 		}
 		echo '<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">';
 		

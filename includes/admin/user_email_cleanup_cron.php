@@ -38,14 +38,15 @@ foreach ($get_all_users as $item)
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
     $response = curl_exec($curl);
-    $err = curl_error($curl);
-    curl_close($curl);
 
-    $lan_id_details = '';
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
-    if ($err)
-    {
-        $lan_id_details = 'Error';
+curl_close($curl);
+
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+    if ($status != 200) {
+    Patt_Custom_Func::insert_api_error('eidw-user-email-cleanup-cron',$status,$err);
     }
     else
     {

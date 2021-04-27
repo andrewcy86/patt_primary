@@ -24,7 +24,7 @@ class WP_EIDW_Request extends WP_Async_Request {
 	protected function handle() {
 		// Actions to perform
 global $current_user, $wpscfunction,$wpdb;
-
+		
 $ticket_id = $_POST['ticket_id'];
 
 $json;
@@ -73,17 +73,15 @@ foreach ($lanid_query as $lan_id) {
 	//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 	
 	$response = curl_exec($curl);
-	$err = curl_error($curl);
-	curl_close($curl);
-	
-	$lan_id_details = '';
-	
-	$error_check = '404 Not Found';
-	
-	//if ( $err ) {
-	//if ( $response == null || str_contains( $reponse, $error_check ) ) {
-	if ( $response == null ) {	
-		$lan_id_details = 'Error';
+
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
+curl_close($curl);
+
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$err);
 	} else {
 	
 	    

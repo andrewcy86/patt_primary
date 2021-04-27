@@ -3,6 +3,7 @@ var theFile = {};
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     
+    
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	   
 		
@@ -117,6 +118,17 @@ function clearBoxTable() {
     
     var datatableSEMS = jQuery('#boxinfodatatableSEMS').DataTable();
     datatableSEMS.clear().draw();
+}
+
+// reset / reload page
+function reset_page() {
+	
+	jQuery('#file_upload_cr').val(0);
+	jQuery( '#processing_notification_div' ).addClass( 'yellow_update' );
+	jQuery( '#processing_notification' ).text( '' );
+	console.log( 'reset ----------------------' );
+	
+	wpsc_get_create_ticket();
 }
 
 /* Converts datatable data into json */
@@ -236,6 +248,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     if (!flag && (jQuery.inArray(file_extension, allowedExtensionSetting) <= -1)) {
         flag = true;
         alert('Attached file type not allowed!');
+        
     }
 
     var current_filesize = file.size / 1000000;
@@ -315,7 +328,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
             data: data,
             xhr: function () {
                 var xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress", function (evt) {
+                xhr.upload.addEventListener( "progress", function (evt) {
                     if (evt.lengthComputable) {
                         var percentComplete = Math.floor((evt.loaded / evt.total) * 100);
                         jQuery(attachment).find('.progress-bar').css('width', percentComplete + '%');
@@ -347,12 +360,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 console.log({response:response});
                 console.log({return_obj:return_obj});
 
-                if( parseInt(return_obj.id) != 0 ) {
-                    jQuery(attachment).append('<input type="hidden" name="' + name + '[]" value="' + return_obj.id + '">');
-                    jQuery(attachment).find('.progress-bar').addClass('progress-bar-success');
+                if( parseInt( return_obj.id ) != 0 ) {
+                    jQuery(attachment).append( '<input type="hidden" name="' + name + '[]" value="' + return_obj.id + '">' );
+                    jQuery(attachment).find( '.progress-bar' ).addClass( 'progress-bar-success' );
 
                     //Start of new Datatable code
-                    var datatable = jQuery('#boxinfodatatable').DataTable({
+                    var datatable = jQuery( '#boxinfodatatable' ).DataTable({
                         "autoWidth": true,
                         "scrollX": "100%",
                         "scrollXInner": "110%",
@@ -390,6 +403,19 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     var arrayLength = Object.keys(parsedData).length;
                     
                     //console.log( 'arrayLength: ' + arrayLength );
+                    
+                    // Get the real arrayLength (previous arrayLength contains a bunch of blanks)
+                    let col1 = parsedData.map( function( value, index ) { return value[0]; });
+                    col1[0] = 'x';  // masks the first undefined, while keeping the index the same. 
+                    console.log({ col1:col1 });
+                    
+                    col1_null = col1.indexOf( null );
+                    col1_undef = col1.indexOf( undefined );
+                    col1_blank = col1.indexOf( '' );
+                    
+                    arrayLength = col1_undef + 2;
+                    
+                    console.log({ col1_null:col1_null, col1_undef:col1_undef, col1_blank:col1_blank });
                     
                     // removes asterisks from upload file headers
                     parsedData[1].forEach( function( item, i ) {
@@ -489,11 +515,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 						
 						
 						//
-                        // Loop through spreadsheet data 
+                        // Loop through spreadsheet data    // OLD // for (var count = 1; count < arrayLength; count++) {		                            
                         //
                         
-                        // // OLD // for (var count = 1; count < arrayLength; count++) {		                            			
-	                    
+                        
+	                    jQuery( '#processing_notification_div' ).show();
 	                    jQuery( '#processing_notification_div' ).addClass( 'yellow_update' );
 	                    jQuery( '#processing_notification' ).text( 'Processing Row #' );
 	                    //jQuery('#boxinfodatatable_wrapper').hide();
@@ -1015,6 +1041,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 									
 		                            // Clear table if err
 		                            if( flag == true ) {
+										
+										
 										console.log('clear table');
 		                                datatable.clear().draw();
 		                                jQuery('#file_upload_cr').val(0);
@@ -1024,10 +1052,20 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                });
 										
 										console.log( file.previewElement );
-										if( file.previewElement != null ) {
+										console.log( file.previewElement.parentNode );
+										
+										//flag = false;
+										
+										if( file.previewElement != null && file.previewElement.parentNode != null ) {
 											console.log( 'remove preview' );
 											file.previewElement.parentNode.removeChild(file.previewElement);
 										}
+										
+										// Stops the interval (e.g. for loop)
+										clearInterval( processLoopID );
+										
+										// resets the page to defaults. 
+										reset_page();
 										
 										// Changed return to false, as after an unsuccessful upload, the response was causing JSON.parse to throw
 										// an error.
@@ -1098,7 +1136,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							        	//
 							        	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );
 							        	jQuery( '#processing_notification_div' ).addClass( 'green_update' );
-							        	jQuery( '#processing_notification_div' ).text( 'Processing Complete.' );
+							        	jQuery( '#processing_notification' ).text( 'Processing Complete.' );
+							        	jQuery( '#processing_notification_persistent' ).hide();
 							        	
 							        	// Set that the file is uploaded.
 							        	jQuery('#file_upload_cr').val(1);
@@ -1117,6 +1156,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 						alert_message += "Spreadsheet is not in the correct format. Please try again.";
                         
                         alert( alert_message );
+                        
+                        //window.location.reload();
+                        
                         jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
                             obj.remove();
                         });
@@ -1125,6 +1167,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         datatable.clear().draw();
 
                         jQuery('#file_upload_cr').val(0);
+                        
+                        reset_page();
+                        
                         var _ref;
                         return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
                     }

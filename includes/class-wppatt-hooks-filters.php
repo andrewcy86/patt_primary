@@ -77,9 +77,6 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/media.php'; // Added 4/20/2021
 			}
 			
-			
-			
-			
 
 			// Move upload file
 			$uploadedfile = ! empty( $_FILES['file'] ) ? $_FILES['file'] : array();  //phpcs:ignore
@@ -1759,8 +1756,10 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					
 					<div style="margin: 10px 0 10px;"  class="row">
 						<div class="col-sm-4"></div>
-						<div id="processing_notification_div" class="col-sm-4">
+						<div id="processing_notification_div" class="col-sm-4" >
 							<span id="processing_notification" ></span>
+							<br>
+							<span id="processing_notification_persistent" >Do Not Navigate Away from this page. Processing will Halt.</span>
 						</div>
 						<div class="col-sm-4"></div>
 					</div>
@@ -1854,14 +1853,23 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				
 				<style>
 					#processing_notification_div {
-/* 						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); */
-/* 						background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%); */
+						display: none;
 						text-align: center;
 						width: 20em;
 						padding: 15px 0px;
 						border-radius: 4px;
+						
+					}
+					
+					#processing_notification {
 						color: white;
 						font-size: 1.5em;
+					}
+					
+					#processing_notification_persistent {
+						color: #d45656;
+						font-size: 1.1em;
+						font-weight: 700;
 					}
 					
 					.yellow_update {
@@ -1870,6 +1878,10 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					
 					.green_update {
 						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%);
+					}
+					
+					.dropzone .dz-preview .dz-progress {
+						top: 70%;
 					}
 				</style>
 				

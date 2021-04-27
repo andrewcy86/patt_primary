@@ -85,6 +85,17 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
 
 				<ul class="approval-preview-image">
+				    <?php
+				    //Get Post ID from Ticket Meta Table
+				    //$get_postid = $wpscfunction->get_ticket_meta($ticket_id,'box_list_post_id');
+				    $get_attachment_url = wp_get_attachment_url(4221);
+				    if ($get_attachment_url != '') {
+				    ?>
+				    <strong><i class="far fa-file-excel fa-lg" title="Download Box List"></i> <a href= "<?php echo $get_attachment_url; ?>">Download Box List</a></strong>
+				    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
+				    <?php
+				    }
+				    ?>
 					<?php
 					$destr_auth_images = self::get_approval_attached_image( $post_id, 'destruction_authorizations_image' );
 					$litig_letter_image = self::get_approval_attached_image( $post_id, 'litigation_letter_image' );

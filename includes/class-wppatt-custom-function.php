@@ -74,11 +74,14 @@ if (!class_exists('Patt_Custom_Func')) {
 					//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 			
 			$response = curl_exec($curl);
-			$err = curl_error($curl);
-			curl_close($curl);
-			
-			if ($err) {
-				$lan_id_details = 'Error';
+            $status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
+            curl_close($curl);
+
+            $err = Patt_Custom_Func::convert_http_error_code($status);
+
+			if ($status != 200) {
+            Patt_Custom_Func::insert_api_error('eidw-customfunc-lanidtojson',$status,$err);
 			} else {
 			
 			$json = json_decode($response, true);
@@ -90,10 +93,9 @@ if (!class_exists('Patt_Custom_Func')) {
 			$phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
 			$org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
 			
-			if ($results >= 1) {
+			if ($active == 1) {
 			// Declare array  
-			$lan_id_details_array = array( 
-			    "active"=>$active,
+			$lan_id_details_array = array(
 			    "name"=>$full_name,
 			    "email"=>$email,
 			    "phone"=>$phone,
@@ -5856,6 +5858,157 @@ if($type == 'comment') {
 			
  			return $results[0]->request_id;
 
+		}
+
+
+		/**
+         * Convert HTTP Error Code
+         * Accepts $error_code
+         * @return text
+         */
+		public static function convert_http_error_code( $error_code ) {
+		    
+		      if ($error_code !== NULL) {
+
+                switch ($error_code) {
+                    case 100: $text = 'Continue'; break;
+                    case 101: $text = 'Switching Protocols'; break;
+                    case 200: $text = 'OK'; break;
+                    case 201: $text = 'Created'; break;
+                    case 202: $text = 'Accepted'; break;
+                    case 203: $text = 'Non-Authoritative Information'; break;
+                    case 204: $text = 'No Content'; break;
+                    case 205: $text = 'Reset Content'; break;
+                    case 206: $text = 'Partial Content'; break;
+                    case 300: $text = 'Multiple Choices'; break;
+                    case 301: $text = 'Moved Permanently'; break;
+                    case 302: $text = 'Moved Temporarily'; break;
+                    case 303: $text = 'See Other'; break;
+                    case 304: $text = 'Not Modified'; break;
+                    case 305: $text = 'Use Proxy'; break;
+                    case 400: $text = 'Bad Request'; break;
+                    case 401: $text = 'Unauthorized'; break;
+                    case 402: $text = 'Payment Required'; break;
+                    case 403: $text = 'Forbidden'; break;
+                    case 404: $text = 'Not Found'; break;
+                    case 405: $text = 'Method Not Allowed'; break;
+                    case 406: $text = 'Not Acceptable'; break;
+                    case 407: $text = 'Proxy Authentication Required'; break;
+                    case 408: $text = 'Request Time-out'; break;
+                    case 409: $text = 'Conflict'; break;
+                    case 410: $text = 'Gone'; break;
+                    case 411: $text = 'Length Required'; break;
+                    case 412: $text = 'Precondition Failed'; break;
+                    case 413: $text = 'Request Entity Too Large'; break;
+                    case 414: $text = 'Request-URI Too Large'; break;
+                    case 415: $text = 'Unsupported Media Type'; break;
+                    case 500: $text = 'Internal Server Error'; break;
+                    case 501: $text = 'Not Implemented'; break;
+                    case 502: $text = 'Bad Gateway'; break;
+                    case 503: $text = 'Service Unavailable'; break;
+                    case 504: $text = 'Gateway Time-out'; break;
+                    case 505: $text = 'HTTP Version not supported'; break;
+                    default:
+                        $text = 'Unknown http status code ' . htmlentities($error_code);
+                    break;
+                }
+                
+                return $text;
+                
+		      }
+                
+		}
+		
+		/**
+         * Send an alert if API fails. Update wpqa_epa_error_log table.
+         * Accepts $id, $service_type, $status_code, $error
+         * @return true/false
+         */
+		public static function insert_api_error( $service_type, $status_code, $error ) {
+			
+			global $wpdb;
+			
+			if(!empty($service_type) || !empty($status_code) || !empty($error)){
+
+            $table_error_log = $wpdb->prefix."epa_error_log";
+            
+            // Insert Error
+			$wpdb->insert(
+				$table_error_log,
+				array(
+					'Status_Code' => $status_code,
+					'Error_Message' => $error,
+					'Service_Type' => $service_type
+				)
+            );
+            
+			// Send email notification
+			$option = get_option( 'rwpm_option' );
+					
+			$get_post_details = $wpdb->get_row("SELECT a.post_title, a.post_content FROM ".$wpdb->prefix."posts a
+			INNER JOIN ".$wpdb->prefix."term_relationships b ON a.id = b.object_id 
+			INNER JOIN ".$wpdb->prefix."term_taxonomy c ON b.term_taxonomy_id = c.term_taxonomy_id 
+			INNER JOIN ".$wpdb->prefix."terms d ON c.term_id = d.term_id
+			WHERE a.post_status = 'publish' AND d.slug = 'email-messages' AND a.post_name = 'email-api-error'");
+			$post_details_subject = $get_post_details->post_title;
+			$post_details_content = $get_post_details->post_content;
+			
+					// send email to user
+					if ( $option['email_enable'] && $email == 1) {
+						$sender = $wpdb->get_var( "SELECT display_name FROM $wpdb->users WHERE user_login = 'admin' LIMIT 1" );
+		
+						// replace tags with values
+						$tags = array( '%TITLE%','%BODY%','%BLOG_NAME%', '%BLOG_ADDRESS%', '%SENDER%', '%INBOX_URL%' );
+						$replacement = array( $post_details_subject, $post_details_content, get_bloginfo( 'name' ), get_bloginfo( 'admin_email' ), $sender, admin_url( 'admin.php?page=rwpm_inbox' ) );
+		
+						$email_name = str_replace( $tags, $replacement, $option['email_name'] );
+						$email_address = str_replace( $tags, $replacement, $option['email_address'] );
+						$email_subject = str_replace( $tags, $replacement, $option['email_subject'] );
+						$email_body = str_replace( $tags, $replacement, $option['email_body'] );
+		
+						// set default email from name and address if missed
+						if ( empty( $email_name ) )
+							$email_name = get_bloginfo( 'name' );
+		
+						if ( empty( $email_address ) )
+							$email_address = get_bloginfo( 'admin_email' );
+		
+						$email_subject = strip_tags( $email_subject );
+						if ( get_magic_quotes_gpc() )
+						{
+							$email_subject = stripslashes( $email_subject );
+							$email_body = stripslashes( $email_body );
+						}
+						$email_body = nl2br( $email_body );
+		
+						$recipient_email = 'ecms@epa.gov';
+						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body <hr /> $service_type : $status_code - $error</body></html>";
+		
+						// set headers to send html email
+						$headers = "To: $recipient_email\r\n";
+						$headers .= "From: $email_name <$email_address>\r\n";
+						$headers .= "MIME-Version: 1.0\r\n";
+						$headers .= 'Content-Type: ' . get_bloginfo( 'html_type' ) . '; charset=' . get_bloginfo( 'charset' ) . "\r\n";
+		
+			$get_identical_error = $wpdb->get_row("SELECT * FROM ".$table_error_log."
+			WHERE Status_Code = '".$status_code."' AND Service_Type = '".$service_type."' AND Error_Message = '".$error."' ORDER BY Timestamp DESC LIMIT 1");
+			$get_timestamp = $get_identical_error->Timestamp;
+			
+            $time = strtotime($get_timestamp);
+
+            $curtime = time();
+
+            if(($curtime-$time) > 300 || empty($get_timestamp)) {     //5 minutes
+              wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
+            }
+            
+					}
+					
+			return true;
+			} else {
+			return false;  
+			}
+            
 		}
 		
 		/**

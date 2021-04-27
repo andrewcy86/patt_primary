@@ -36,11 +36,15 @@ $headers = [
 		//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
 $response = curl_exec($curl);
-$err = curl_error($curl);
+
+$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 curl_close($curl);
 
-if ($err) {
-  echo "cURL Error #:" . $err;
+$err = Patt_Custom_Func::convert_http_error_code($status);
+
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('eidw-update-epa-contact',$status,$err);
 } else {
 
 $json = json_decode($response, true);

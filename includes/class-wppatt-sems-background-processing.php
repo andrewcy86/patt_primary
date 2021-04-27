@@ -23,6 +23,7 @@ class WP_SEMS_Request extends WP_Async_Request {
 	 */
 	protected function handle() {
 		// Actions to perform
+
 global $current_user, $wpscfunction,$wpdb;
 
 $ticket_id = $_POST['ticket_id'];
@@ -228,17 +229,15 @@ $curl = curl_init();
 
 
 $response = curl_exec($curl);
-$err = curl_error($curl);
+
 $status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
 curl_close($curl);
 
-$sems_details = '';
+$err = Patt_Custom_Func::convert_http_error_code($status);
 
-if ($err) {
-$sems_details = "<br /> API::: Error".$err;
-} else {
-$sems_details = "<br /> API::: <pre>".$response."</pre> - ".$status;
+if ($status != 200) {
+Patt_Custom_Func::insert_api_error('sems-class-background-processing',$status,$err);
 }
 	  
         //echo $sems_details;		  
