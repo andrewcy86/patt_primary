@@ -11,3 +11,8 @@ cursor: help;
 .username .view {
     display: none;
 }
+
+/* Mini Orange Code Scan Security Fix */
+#license_upgrade {
+    display: none;
+}
