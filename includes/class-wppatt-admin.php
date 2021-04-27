@@ -566,6 +566,12 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     include WPPATT_ABSPATH . 'includes/ajax/get_eidw_instant_update.php';
     die();
     }   
+
+    // CRON for sems instant
+    public function get_sems_instant_update(){
+    include WPPATT_ABSPATH . 'includes/ajax/get_sems_instant_update.php';
+    die();
+    }   
     
 	public function get_help_alert(){    	
     include WPPATT_ABSPATH . 'includes/ajax/get_help_alert.php';	

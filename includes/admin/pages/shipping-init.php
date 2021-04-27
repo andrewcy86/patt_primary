@@ -200,7 +200,7 @@ jQuery('[data-toggle="tooltip"]').tooltip();
           data.nonce = ne;
        }
     },
-    'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
+    'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
     'drawCallback': function (settings) { 
         // Here the response
         var response = settings.json;

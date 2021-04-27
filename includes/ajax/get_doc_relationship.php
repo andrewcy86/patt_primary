@@ -70,7 +70,7 @@ jQuery(document).ready(function(){
           data.isactive = isactive;
        }
     },
-    'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
+    'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
     'drawCallback': function (settings) { 
         // Here the response
         var response = settings.json;

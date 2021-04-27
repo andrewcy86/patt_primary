@@ -424,7 +424,7 @@ jQuery(document).ready(function(){
 	        var response = settings.json;
 	       	        console.log(response);
     	},
-		'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
+        'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
 		'fixedColumns': true,
 	<?php		
 	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))

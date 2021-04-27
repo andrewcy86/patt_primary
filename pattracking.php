@@ -88,6 +88,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-actions.php' );
         include_once( WPPATT_ABSPATH . 'includes/rest_api/class-rest-child.php' );
         include_once( WPPATT_ABSPATH . 'includes/admin/tickets/ticket_list/filter_get_ticket_list.php' ); 
+        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-eidw-background-processing.php' );
+        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-sems-background-processing.php' );
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
         //add_shortcode('wppattquery', array($frontend, 'get_id_details'));
@@ -162,6 +164,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add EIDW Instant CRON
           add_action( 'wp_ajax_wppatt_eidw_instant', array( $backend, 'get_eidw_instant_update')); 
+          // Add SEMS Instant CRON
+          add_action( 'wp_ajax_wppatt_sems_instant', array( $backend, 'get_sems_instant_update')); 
           
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));

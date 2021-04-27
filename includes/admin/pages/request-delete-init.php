@@ -300,7 +300,7 @@ jQuery(document).ready(function(){
 		  data.searchByUserAAName = aaName;
        }
     },
-    'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
+    'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
     	    'columnDefs': [	
          {	
             'targets': 0,	

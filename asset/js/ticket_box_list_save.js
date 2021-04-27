@@ -189,6 +189,9 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 	var form_data = new FormData();
         form_data.append('file', theFile.file);
         form_data.append('action', 'move_excel_file');
+        console.log('The Form Data');
+        console.log( form_data );
+        console.log( {file:theFile.file} );
         jQuery.ajax({
             url: wpsc_admin.ajax_url,
             type: 'post',
@@ -207,6 +210,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 	
 	
 });
+
+
 
 
 // Upload boxlist document, and create the data table
@@ -279,6 +284,29 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
         
         console.log( 'The Data' );
         console.log( data );
+        
+        
+        
+/*
+        let limit = 2000;
+        let j =0;
+        var refreshIntervalId = setInterval(function() {
+		    //length = array.length;
+		    if ( j < (limit) ) {
+		        jQuery('#processing_notification').text( 'Processing Row #'+j );    
+		    } else {
+		        clearInterval(refreshIntervalId);
+		    }
+		    j++ 
+		}, 1);
+*/
+        
+/*
+        for( var j = 1; j < 2000; j++ ) {
+	    	jQuery('#processing_notification').text( 'Processing Row #'+j );    
+        }
+*/
+        
 
         // Read file and provide json response
         jQuery.ajax({
@@ -301,7 +329,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 console.log('box list upload success');
                 console.log(response);
                 
-                jQuery('#boxinfodatatable').show();
+                jQuery( '#boxinfodatatable' ).show();
+                //jQuery( '#boxinfodatatable' ).hide();
+                jQuery( '#big_wrapper' ).hide();
+                
                 
                 // If, after an unsuccessful upload, all subsequent unsuccessful uploads have a reponse of false.
                 // This catches the response so there is no console error ( JSON.parse(response) would throw an error )
@@ -333,9 +364,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     });
 
                     datatable.clear().draw();
+                    //jQuery('#boxinfodatatable').hide();
+					//jQuery('#boxinfodatatable_wrapper').hide();
                     
                     // sets order for data table                    
-                    datatable.column( '0:visible' ).order( 'asc' ).draw();
+                    //datatable.column( '0:visible' ).order( 'asc' ).draw();
                     
 
                     var FR = new FileReader();
@@ -454,591 +487,630 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                    
 	                    }
 						
+						
 						//
                         // Loop through spreadsheet data 
                         //
-                        for (var count = 1; count < arrayLength; count++) {
-							
-							//console.log( 'count: ' + count );
-							
-							// Find the last line of filled out data
-							if(
-								count > 1 && 
-									(
-										( parsedData[count][0] == null && 
-										  parsedData[count][1] == null
-										) 
-										||
-										( parsedData[count][0] == undefined && 
-										  parsedData[count][1] == undefined
-										) 
-									)
-									
-							) {
-                                console.log( 'SKIP');
-                                continue;
-                            }
-							
-							// D E B U G Data View
-							//console.log( 'count: ' + count );
-							//console.log( 'index_rec_type: ' + parsedData[count][index_rec_type] );
-							//console.log( 'index_source_type: ' + parsedData[count][index_source_type] );
-							//console.log( 'index_access_rest: ' + parsedData[count][index_access_rest] );
-							
-							
-							
-							// Trim white space, as white space counts as
-							
-							if(
-								count > 1 && 
-									(
-										parsedData[count][index_box] != null
-									&&
-										parsedData[count][index_box] != undefined
-									)
-									
-							) {
-								parsedData[count][index_box] = parsedData[count][index_box].trim();
-								//console.log('trimmed');
-                            }
-
-							
-							
-
-							
-							
-							
-							
-							
-/*
-                        	parsedData[count][index_folder_id] = parsedData[count][index_folder_id].trim(); // Folder Identifier
-                        	parsedData[count][index_title] = parsedData[count][index_title].trim(); // Title
-                        	parsedData[count][index_desc_record] = parsedData[count][index_desc_record].trim(); // Description of Record
-                        	parsedData[count][index_pcd] = parsedData[count][index_pcd].trim(); // Parent / Child
-                        	parsedData[count][index_creation_date] = parsedData[count][index_creation_date].trim(); // Creation Date
-                        	parsedData[count][index_creator] = parsedData[count][index_creator].trim(); // Creator 
-                        	parsedData[count][index_rec_type] = parsedData[count][index_rec_type].trim(); // Record Type 
-                        	parsedData[count][index_rec_sched] = parsedData[count][index_rec_sched].trim(); // Disposition Schedule & Item Number 
-                        	parsedData[count][index_epa_contact] = parsedData[count][index_epa_contact].trim(); // EPA Contact 
-                        	parsedData[count][index_access_rest] = parsedData[count][index_access_rest].trim(); // Access Restrictions 
-                        	parsedData[count][index_use_rest] = parsedData[count][index_use_rest].trim(); // Use Restrictions 
-                        	parsedData[count][index_source_type] = parsedData[count][index_source_type].trim(); // Source Type 
-                        	parsedData[count][index_source_dim] = parsedData[count][index_source_dim].trim(); // Source Dimensions 
-                        	parsedData[count][index_prog_office] = parsedData[count][index_prog_office].trim(); // Program Office
-                        	parsedData[count][index_prog_area] = parsedData[count][index_prog_area].trim(); // Program Area
-                        	parsedData[count][index_index_level] = parsedData[count][index_index_level].trim(); // Index Level
-                        	parsedData[count][index_ess_rec] = parsedData[count][index_ess_rec].trim();
-*/
-							
-							
-							// Clean Record Type. If * remove them. 
-							if( parsedData[count][index_rec_type] ) {
-								parsedData[count][index_rec_type] = parsedData[count][index_rec_type].replace( '*', '' );
-							}
-							
-							// Clean Source Type. If * remove them. 
-							if( parsedData[count][index_source_type] ) {
-								parsedData[count][index_source_type] = parsedData[count][index_source_type].replace( '*', '' );
-							}
-                                
-                            // Required fields Validation - Check for blank/null values
-                            let invalid_index;
-                            if( superfundx == 'no' ) {
-	                            // ECMS Required Fields
-	                            invalid_index = [
-	                            	parsedData[count][index_box], // Box
-	                            	parsedData[count][index_folder_id], // Folder Identifier
-	                            	parsedData[count][index_title], // Title
-	                            	parsedData[count][index_desc_record], // Description of Record
-	                            	parsedData[count][index_pcd], // Parent / Child
-	                            	parsedData[count][index_creation_date], // Creation Date
-	                            	parsedData[count][index_creator], // Creator 
-	                            	parsedData[count][index_rec_type], // Record Type 
-	                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
-	                            	parsedData[count][index_epa_contact], // EPA Contact 
-	                            	parsedData[count][index_access_rest], // Access Restrictions 
-	                            	parsedData[count][index_use_rest], // Use Restrictions 
-	                            	parsedData[count][index_source_type], // Source Type 
-	                            	parsedData[count][index_source_dim], // Source Dimensions 
-	                            	parsedData[count][index_prog_office], // Program Office
-	                            	parsedData[count][index_index_level], // Index Level
-	                            	parsedData[count][index_ess_rec]  // Essential Records
-	                            ];  
-	                        } else if( superfundx == 'yes' ) {
-		                        // SEMS Required Fields
-		                        invalid_index = [
-	                            	parsedData[count][index_box], // Box
-	                            	parsedData[count][index_folder_id], // Folder Identifier
-	                            	parsedData[count][index_title], // Title
-	                            	parsedData[count][index_desc_record], // Description of Record
-	                            	parsedData[count][index_pcd], // Parent / Child
-	                            	parsedData[count][index_creation_date], // Creation Date
-	                            	parsedData[count][index_creator], // Creator 
-	                            	parsedData[count][index_rec_type], // Record Type 
-	                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
-	                            	parsedData[count][index_epa_contact], // EPA Contact 
-	                            	parsedData[count][index_access_rest], // Access Restrictions 
-	                            	parsedData[count][index_use_rest], // Use Restrictions 
-	                            	parsedData[count][index_source_type], // Source Type 
-	                            	parsedData[count][index_source_dim], // Source Dimensions 
-	                            	parsedData[count][index_prog_office], // Program Office
-	                            	parsedData[count][index_prog_area], // Program Area
-	                            	parsedData[count][index_index_level], // Index Level
-	                            	parsedData[count][index_ess_rec]  // Essential Records
-	                            ];  
-	                        }
-                            
-                            // D E B U G Data View
-                            //console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
-                            //console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
-                            
-                            // Validate - Check for blank/null values
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		( 
-                            			( invalid_index.indexOf( null ) > -1 ) || 
-                            			( invalid_index.indexOf( undefined ) > -1 ) ||
-                            			( invalid_index.indexOf( '' ) > -1 ) 
-                            		) 
-                            ) {
-								let err_index;
+                        
+                        // // OLD // for (var count = 1; count < arrayLength; count++) {		                            			
+	                    
+	                    jQuery( '#processing_notification_div' ).addClass( 'yellow_update' );
+	                    jQuery( '#processing_notification' ).text( 'Processing Row #' );
+	                    //jQuery('#boxinfodatatable_wrapper').hide();
+	                    
+                        let isBlank = false;
+                        let count = 1;
+				        var processLoopID = setInterval(function() {
+						    if ( count < arrayLength ) {
+						        jQuery('#processing_notification').text( 'Processing Row #' + count );    
+						    
 								
-								if( invalid_index.indexOf( null ) > -1 ) {
-									err_index = invalid_index.indexOf( null );
-								} else if( invalid_index.indexOf( undefined ) > -1  ) {
-									err_index = invalid_index.indexOf( undefined );
-								} else if( invalid_index.indexOf( '' ) > -1  ) {
-									err_index = invalid_index.indexOf( '' );
-								}
+								// Find the last line of filled out data
+								if(
+									count > 1 && 
+										(
+											( parsedData[count][0] == null && 
+											  parsedData[count][1] == null
+											) 
+											||
+											( parsedData[count][0] == undefined && 
+											  parsedData[count][1] == undefined
+											) 
+										)
+										
+								) {
+	                                console.log( 'SKIP');
+	                                isBlank = true;
+	                                //continue;
+	                            } else {
+		                            isBlank = false;
+	                            }
+	                            
+	                            // if row is not blank, then process it. Once the first blank is hit, then processing is finished.
+	                            if( !isBlank ) {
 								
-								let alert_message = '';
-                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
-                                alert_message += (count + 1) + ". This field is required.";
-                                
-                                alert( alert_message );
-                                flag = true;
-                            
-                            }
-							
-							
-							// Validate Creation date
-							if( 
-                            	flag != true && count > 1 && 
-                            	date_reg.test( parsedData[count][index_creation_date] ) == false 
-                            ) {
-                                if( parsedData[count][index_creation_date] != '00/00/0000' ) {
-	                                let alert_message = '';
-									alert_message += "Invalid Creation Date for line " + (count + 1);
-									alert_message += ". \n\n";
-									alert_message += "Invalid value: " + parsedData[count][index_creation_date] + " \n\n";
-									alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or ";
-									alert_message += "MM/DD/YYYY (ex: 1/13/2021).";
-	                                
-	                                alert( alert_message );
-	                                flag = true;
-                                }
-	                             
-                            }
-
-/*							// Removed validation for date time, as time is no longer required. 
-                            if( 
-                            	flag != true && count > 1 && 
-                            	date_time_reg.test( parsedData[count][index_creation_date] ) == false 
-                            ) {
-                                
-                                if( date_reg.test( parsedData[count][index_creation_date] ) == false ) {
-	                                if( parsedData[count][index_creation_date] != '00/00/0000' ) {
-		                                let alert_message = '';
-										alert_message += "Invalid Creation Date for line " + (count + 1) + ". \n\n ";
-										alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or ";
-										alert_message += "MM/DD/YYYY (ex: 1/13/2021).";
+									// D E B U G Data View
+									//console.log( 'count: ' + count );
+									//console.log( 'index_rec_type: ' + parsedData[count][index_rec_type] );
+									//console.log( 'index_source_type: ' + parsedData[count][index_source_type] );
+									//console.log( 'index_access_rest: ' + parsedData[count][index_access_rest] );
+									
+	
+									// Trim white space, as white space counts as
+									
+									if(
+										count > 1 && 
+											(
+												parsedData[count][index_box] != null
+											&&
+												parsedData[count][index_box] != undefined
+											)
+											
+									) {
+										parsedData[count][index_box] = parsedData[count][index_box].trim();
+										//console.log('trimmed');
+		                            }
+		
+									
+									
+		
+									
+									
+									
+									
+									
+		/*
+		                        	parsedData[count][index_folder_id] = parsedData[count][index_folder_id].trim(); // Folder Identifier
+		                        	parsedData[count][index_title] = parsedData[count][index_title].trim(); // Title
+		                        	parsedData[count][index_desc_record] = parsedData[count][index_desc_record].trim(); // Description of Record
+		                        	parsedData[count][index_pcd] = parsedData[count][index_pcd].trim(); // Parent / Child
+		                        	parsedData[count][index_creation_date] = parsedData[count][index_creation_date].trim(); // Creation Date
+		                        	parsedData[count][index_creator] = parsedData[count][index_creator].trim(); // Creator 
+		                        	parsedData[count][index_rec_type] = parsedData[count][index_rec_type].trim(); // Record Type 
+		                        	parsedData[count][index_rec_sched] = parsedData[count][index_rec_sched].trim(); // Disposition Schedule & Item Number 
+		                        	parsedData[count][index_epa_contact] = parsedData[count][index_epa_contact].trim(); // EPA Contact 
+		                        	parsedData[count][index_access_rest] = parsedData[count][index_access_rest].trim(); // Access Restrictions 
+		                        	parsedData[count][index_use_rest] = parsedData[count][index_use_rest].trim(); // Use Restrictions 
+		                        	parsedData[count][index_source_type] = parsedData[count][index_source_type].trim(); // Source Type 
+		                        	parsedData[count][index_source_dim] = parsedData[count][index_source_dim].trim(); // Source Dimensions 
+		                        	parsedData[count][index_prog_office] = parsedData[count][index_prog_office].trim(); // Program Office
+		                        	parsedData[count][index_prog_area] = parsedData[count][index_prog_area].trim(); // Program Area
+		                        	parsedData[count][index_index_level] = parsedData[count][index_index_level].trim(); // Index Level
+		                        	parsedData[count][index_ess_rec] = parsedData[count][index_ess_rec].trim();
+		*/
+									
+									
+									// Clean Record Type. If * remove them. 
+									if( parsedData[count][index_rec_type] ) {
+										parsedData[count][index_rec_type] = parsedData[count][index_rec_type].replace( '*', '' );
+									}
+									
+									// Clean Source Type. If * remove them. 
+									if( parsedData[count][index_source_type] ) {
+										parsedData[count][index_source_type] = parsedData[count][index_source_type].replace( '*', '' );
+									}
+		                                
+		                            // Required fields Validation - Check for blank/null values
+		                            let invalid_index;
+		                            if( superfundx == 'no' ) {
+			                            // ECMS Required Fields
+			                            invalid_index = [
+			                            	parsedData[count][index_box], // Box
+			                            	parsedData[count][index_folder_id], // Folder Identifier
+			                            	parsedData[count][index_title], // Title
+			                            	parsedData[count][index_desc_record], // Description of Record
+			                            	parsedData[count][index_pcd], // Parent / Child
+			                            	parsedData[count][index_creation_date], // Creation Date
+			                            	parsedData[count][index_creator], // Creator 
+			                            	parsedData[count][index_rec_type], // Record Type 
+			                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+			                            	parsedData[count][index_epa_contact], // EPA Contact 
+			                            	parsedData[count][index_access_rest], // Access Restrictions 
+			                            	parsedData[count][index_use_rest], // Use Restrictions 
+			                            	parsedData[count][index_source_type], // Source Type 
+			                            	parsedData[count][index_source_dim], // Source Dimensions 
+			                            	parsedData[count][index_prog_office], // Program Office
+			                            	parsedData[count][index_index_level], // Index Level
+			                            	parsedData[count][index_ess_rec]  // Essential Records
+			                            ];  
+			                        } else if( superfundx == 'yes' ) {
+				                        // SEMS Required Fields
+				                        invalid_index = [
+			                            	parsedData[count][index_box], // Box
+			                            	parsedData[count][index_folder_id], // Folder Identifier
+			                            	parsedData[count][index_title], // Title
+			                            	parsedData[count][index_desc_record], // Description of Record
+			                            	parsedData[count][index_pcd], // Parent / Child
+			                            	parsedData[count][index_creation_date], // Creation Date
+			                            	parsedData[count][index_creator], // Creator 
+			                            	parsedData[count][index_rec_type], // Record Type 
+			                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+			                            	parsedData[count][index_epa_contact], // EPA Contact 
+			                            	parsedData[count][index_access_rest], // Access Restrictions 
+			                            	parsedData[count][index_use_rest], // Use Restrictions 
+			                            	parsedData[count][index_source_type], // Source Type 
+			                            	parsedData[count][index_source_dim], // Source Dimensions 
+			                            	parsedData[count][index_prog_office], // Program Office
+			                            	parsedData[count][index_prog_area], // Program Area
+			                            	parsedData[count][index_index_level], // Index Level
+			                            	parsedData[count][index_ess_rec]  // Essential Records
+			                            ];  
+			                        }
+		                            
+		                            // D E B U G Data View
+		                            //console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
+		                            //console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
+		                            
+		                            // Validate - Check for blank/null values
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( 
+		                            			( invalid_index.indexOf( null ) > -1 ) || 
+		                            			( invalid_index.indexOf( undefined ) > -1 ) ||
+		                            			( invalid_index.indexOf( '' ) > -1 ) 
+		                            		) 
+		                            ) {
+										let err_index;
+										
+										if( invalid_index.indexOf( null ) > -1 ) {
+											err_index = invalid_index.indexOf( null );
+										} else if( invalid_index.indexOf( undefined ) > -1  ) {
+											err_index = invalid_index.indexOf( undefined );
+										} else if( invalid_index.indexOf( '' ) > -1  ) {
+											err_index = invalid_index.indexOf( '' );
+										}
+										
+										let alert_message = '';
+		                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
+		                                alert_message += (count + 1) + ". This field is required.";
 		                                
 		                                alert( alert_message );
 		                                flag = true;
-	                                }
-	                            } 
-                            }
-*/
-                            
-
-							
-							// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halfsies. 
-                            if(
-                            	flag != true && count > 1 && 
-                            		(
-	                            		( parsedData[count][index_site_name] != null && 
-	                            		  parsedData[count][index_site_id] == null 
-	                            		)
-	                            	||
-	                            		( parsedData[count][index_site_name] != undefined && 
-	                            		  parsedData[count][index_site_id] == undefined 
-	                            		)
-	                            	)
-                            ) {
-                                let alert_message = '';
-								alert_message += ' Discrepancy between Site Name and Site ID. \n\n ';
-								alert_message += 'Site Name has a value of "'+parsedData[count][index_site_name];
-								alert_message += '" while Site ID is blank on line '+ (count + 1) + '. \n\n ';
-								alert_message += 'Both Site Name and Site ID must be filled in, or both must be blank.';
-                                
-                                alert( alert_message );
-                                flag = true;
-                            }
-                            
-                            // Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		(
-                            			( parsedData[count][index_site_name] == null && 
-	                            		  parsedData[count][index_site_id] != null 
-	                            		)
-	                            	||
-	                            		( parsedData[count][index_site_name] == undefined && 
-	                            		  parsedData[count][index_site_id] != undefined 
-	                            		)
-	                            	)
-                            ) {
-                                let alert_message = '';
-								alert_message += ' Discrepancy between Site Name and Site ID. \n\n ';
-								alert_message += 'Site Name is blank while Site ID has a value of "' + parsedData[count][index_site_id];
-								alert_message += '" on line '+ (count + 1) + '. \n\n ';
-								alert_message += 'Both Site Name and Site ID must be filled in, or both must be blank.';
-                                
-                                alert( alert_message );
-                                flag = true;
-                            }
-							
-							
-                            // Validate Close Date
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            	date_time_reg.test( parsedData[count][index_close_date] ) == false 
-                            ) {
-                                
-                                if( date_reg.test( parsedData[count][index_close_date] ) == false ) {
-	                                
-	                                if( 
-	                                	parsedData[count][index_close_date] == null || 
-	                                	parsedData[count][index_close_date] == undefined || 
-	                                	parsedData[count][index_close_date] == '00/00/0000' 
-	                                ) {
-										// nothing. Blanks is fine.
-	                                } else {
+		                            
+		                            }
+									
+									
+									// Validate Creation date
+									if( 
+		                            	flag != true && count > 1 && 
+		                            	date_reg.test( parsedData[count][index_creation_date] ) == false 
+		                            ) {
+		                                if( parsedData[count][index_creation_date] != '00/00/0000' ) {
+			                                let alert_message = '';
+											alert_message += "Invalid Creation Date for line " + (count + 1);
+											alert_message += ". \n\n";
+											alert_message += "Invalid value: " + parsedData[count][index_creation_date] + " \n\n";
+											alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or ";
+											alert_message += "MM/DD/YYYY (ex: 1/13/2021).";
+			                                
+			                                alert( alert_message );
+			                                flag = true;
+		                                }
+			                             
+		                            }
+		
+		/*							// Removed validation for date time, as time is no longer required. 
+		                            if( 
+		                            	flag != true && count > 1 && 
+		                            	date_time_reg.test( parsedData[count][index_creation_date] ) == false 
+		                            ) {
+		                                
+		                                if( date_reg.test( parsedData[count][index_creation_date] ) == false ) {
+			                                if( parsedData[count][index_creation_date] != '00/00/0000' ) {
+				                                let alert_message = '';
+												alert_message += "Invalid Creation Date for line " + (count + 1) + ". \n\n ";
+												alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or ";
+												alert_message += "MM/DD/YYYY (ex: 1/13/2021).";
+				                                
+				                                alert( alert_message );
+				                                flag = true;
+			                                }
+			                            } 
+		                            }
+		*/
+		                            
+		
+									
+									// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halfsies. 
+		                            if(
+		                            	flag != true && count > 1 && 
+		                            		(
+			                            		( parsedData[count][index_site_name] != null && 
+			                            		  parsedData[count][index_site_id] == null 
+			                            		)
+			                            	||
+			                            		( parsedData[count][index_site_name] != undefined && 
+			                            		  parsedData[count][index_site_id] == undefined 
+			                            		)
+			                            	)
+		                            ) {
 		                                let alert_message = '';
-										alert_message += "Invalid Close Date for line " + (count + 1) + ". \n\n";
-										alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30).";
+										alert_message += ' Discrepancy between Site Name and Site ID. \n\n ';
+										alert_message += 'Site Name has a value of "'+parsedData[count][index_site_name];
+										alert_message += '" while Site ID is blank on line '+ (count + 1) + '. \n\n ';
+										alert_message += 'Both Site Name and Site ID must be filled in, or both must be blank.';
+		                                
 		                                alert( alert_message );
-										flag = true;
-	                                }
-	                                
-	                            } else {
-		                            // If valid date without time, add time to date for insertion
-		                            //parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';
-	                            }
-                            }
+		                                flag = true;
+		                            }
+		                            
+		                            // Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		(
+		                            			( parsedData[count][index_site_name] == null && 
+			                            		  parsedData[count][index_site_id] != null 
+			                            		)
+			                            	||
+			                            		( parsedData[count][index_site_name] == undefined && 
+			                            		  parsedData[count][index_site_id] != undefined 
+			                            		)
+			                            	)
+		                            ) {
+		                                let alert_message = '';
+										alert_message += ' Discrepancy between Site Name and Site ID. \n\n ';
+										alert_message += 'Site Name is blank while Site ID has a value of "' + parsedData[count][index_site_id];
+										alert_message += '" on line '+ (count + 1) + '. \n\n ';
+										alert_message += 'Both Site Name and Site ID must be filled in, or both must be blank.';
+		                                
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+									
+									
+		                            // Validate Close Date
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	date_time_reg.test( parsedData[count][index_close_date] ) == false 
+		                            ) {
+		                                
+		                                if( date_reg.test( parsedData[count][index_close_date] ) == false ) {
+			                                
+			                                if( 
+			                                	parsedData[count][index_close_date] == null || 
+			                                	parsedData[count][index_close_date] == undefined || 
+			                                	parsedData[count][index_close_date] == '00/00/0000' 
+			                                ) {
+												// nothing. Blanks is fine.
+			                                } else {
+				                                let alert_message = '';
+												alert_message += "Invalid Close Date for line " + (count + 1) + ". \n\n";
+												alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30).";
+				                                alert( alert_message );
+												flag = true;
+			                                }
+			                                
+			                            } else {
+				                            // If valid date without time, add time to date for insertion
+				                            //parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';
+			                            }
+		                            }
+		
+		
+		                            // Box ID validation // Redundant. Can be removed.
+		/*
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_box] == null || 
+		                            		  parsedData[count][index_box] === undefined
+		                            		)
+		                            ) {
+		                                let alert_message = '';
+										alert_message += 'Box ID value "'+parsedData[count][index_box]+'" seems incorrect for line '+ (count + 1);
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+		*/
+		
+		                            // Index level validation
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_index_level].toLowerCase() != 'file' && 
+		                            		  parsedData[count][index_index_level].toLowerCase() != 'folder'
+		                            		)
+		                            ){
+		                                let alert_message = '';
+										alert_message += 'Index level value "'+parsedData[count][index_index_level];
+										alert_message += '" seems incorrect for the line number '+ (count + 1);
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+									
+									
+		                            // Epa contact, program office, record no validation
+		                            
+		                            // Remove requirement that epa_contact is the same for each box. 
+		                            prev_epa_contact = parsedData[count][index_epa_contact];
+		                            
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( prev_box != '' && 
+		                            		  prev_box === parsedData[count][index_box] 
+		                            		) 
+		                            	&& 
+											( prev_epa_contact !== parsedData[count][index_epa_contact] || 
+											  prev_program_office !== parsedData[count][index_prog_office] || 
+											  prev_record_schedule !== parsedData[count][index_rec_sched] 
+											) 
+									) {
+		
+		                                _column = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
+		                                	'EPA Contact' : 
+		                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
+		                                		'Program Office' : 
+		                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
+		                                		'Record Schedule & Item Number' : '' 
+		                                		) 
+		                                	) 
+		                                );
+		                                
+		                                _prev = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
+		                                	prev_epa_contact : 
+		                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
+		                                		prev_program_office : 
+		                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
+		                                		prev_record_schedule : '' 
+		                                		) 
+		                                	) 
+		                                );
+		                                
+		                                _index = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
+		                                	parsedData[count][index_epa_contact] : 
+		                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
+		                                		parsedData[count][index_prog_office] : 
+		                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
+		                                		parsedData[count][index_rec_sched] : '' 
+		                                		) 
+		                                	) 
+		                                );
+										
+										let alert_message = '';
+										alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
+										alert_message += "'" + _column + "' must have the same value for all items in the same box ";
+										alert_message += "(Box: " + prev_box + "). \n\n";
+										alert_message += "Line " + count + " has value '" + _prev + "' while \n";
+										alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
+										
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+		                            
+		                            
+		                            // Validate Access Restriction (No) & Specific Access Restriction (filled in)
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_access_rest] == 'No' && 
+		                            			( parsedData[count][index_sp_access_rest] != null || 
+		                            			  parsedData[count][index_sp_access_rest] != undefined 
+		                            			)
+		                            		) 
+		                            ) {
+		                                
+		                                let alert_message = '';
+		                                alert_message += 'Discrepancy between Access Restriction and Specific Access Restriction. \n\n ';
+		                                alert_message += 'Access Restriction value: "No", while Specific Access Restiction is "'; 
+		                                alert_message += parsedData[count][index_sp_access_rest] + '" on line ' + (count + 1) + '. \n\n '; 
+		                                alert_message += 'If Access Restriction is "No" then Specific Access Restriction must be blank.';
+		                                
+		                                
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+		
+		                            // Validate Access Restriction (Yes) & Specific Access Restriction (blank)                            
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_access_rest] == 'Yes' && 
+		                            			( parsedData[count][index_sp_access_rest] == null || 
+		                            			  parsedData[count][index_sp_access_rest] == undefined 
+		                            			) 
+		                            		) 
+		                            ) {
+		                                let alert_message = '';
+		                                alert_message += 'Discrepancy between Access Restriction and Specific Access Restriction. \n\n ';
+		                                alert_message += 'Access Restriction value: "Yes", while Specific Access Restiction is blank on line ';
+		                                alert_message += (count + 1) + '. \n\n ';
+		                                alert_message += 'If Access Restriction is "Yes" then Specific Access Restriction must be filled in.'
+		                                
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+		                            
+		                            
+		                            // Validate Use Restriction (No) & Specific Use Restriction (filled in)
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		(parsedData[count][index_use_rest] == 'No' && 
+		                            			( parsedData[count][index_sp_use_rest] != null ||
+		                            			  parsedData[count][index_sp_use_rest] != undefined 
+		                            			)
+		                            		)
+		                            ) {
+		                                let alert_message = '';
+		                                alert_message += 'Discrepancy between Use Restriction and Specific Use Restriction. \n\n ';
+		                                alert_message += 'Use Restriction value: "No", while Specific Use Restiction is "';
+		                                alert_message += parsedData[count][index_sp_access_rest] + '" on line '+ (count + 1) + '. \n\n ';
+		                                alert_message += 'If Use Restriction is "No" then Specific Use Restriction must be blank.';
+		                                
+		                                alert(alert_message);
+		                                flag = true;
+		                            }
+		
+		                            // Validate Use Restriction (Yes) & Specific Use Restriction (blank)                            
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_use_rest] == 'Yes' && 
+		                            			( parsedData[count][index_sp_use_rest] == null ||
+		                            			  parsedData[count][index_sp_use_rest] == undefined
+		                            			)
+		                            		)
+		                            ) {
+		                                let alert_message = '';
+		                                alert_message += 'Discrepancy between Use Restriction and Specific Use Restriction. \n\n ';
+		                                alert_message += 'Use Restriction value: "Yes", while Specific Use Restiction is blank on line ';
+		                                alert_message += (count + 1) + '. \n\n ';
+		                                alert_message += 'If Use Restriction is "Yes" then Specific Use Restriction must be filled in.'
+		                                
+		                                alert(alert_message);
+		                                flag = true;
+		                            }
+		                            
+		                            
+		                            // Validate JSON - Tags Column
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	( parsedData[count][index_tags] != null ||
+		                            	  parsedData[count][index_tags] != undefined
+		                            	)
+		                            	&& 
+		                            	parsedData[count][index_tags] != 'Tags' 
+		                            ) {
+										
+										let str = 'x';
+										if( parsedData[count][index_tags].indexOf( '{' ) == 0 ) {
+											str = parsedData[count][index_tags];
+										} else {
+											str = '{ ' + parsedData[count][index_tags] + '}';
+										}
+										
+		                                try {
+									        JSON.parse( str );
+									    } catch ( e ) {
+									        let alert_message = '';
+											alert_message += "Invalid JSON format in the Tags column on line " + (count + 1) + ". ";
+									        alert( alert_message );
+											flag = true;
+									    }
+									}
+		                            
+		                            // Validate Parent/Child
+		                            let pcd;
+		                            if( parsedData[count][index_pcd] ) {
+			                            pcd = parsedData[count][index_pcd].toUpperCase();
+		                            }
+		                            
+		                            if( 
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		!( pcd == 'P' || pcd == 'C' || pcd == 'S' ) 
+		                            ) {
+		                                let alert_message = '';
+										alert_message += "Invalid Parent/Child format for record " + (count + 1) + ".";
+		                                
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+									
+									
+		                            // Clear table if err
+		                            if( flag == true ) {
+										console.log('clear table');
+		                                datatable.clear().draw();
+		                                jQuery('#file_upload_cr').val(0);
+		
+		                                jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
+		                                    obj.remove();
+		                                });
+										
+										console.log( file.previewElement );
+										if( file.previewElement != null ) {
+											console.log( 'remove preview' );
+											file.previewElement.parentNode.removeChild(file.previewElement);
+										}
+										
+										// Changed return to false, as after an unsuccessful upload, the response was causing JSON.parse to throw
+										// an error.
+		                                var _ref;
+		                                //return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		                                return false;
+		                            }
+									
+									console.log( 'post validation' );
+									
+		                            // Add record to datatable if no error
+		                            if (
+		                            	parsedData[count] !== undefined && 
+		                            	parsedData[count].length > 0 && 
+		                            	parsedData[count][0].toString().trim() != "Box"
+		                            ) {
+		
+		                                prev_box = parsedData[count][index_box];
+		                                prev_epa_contact = parsedData[count][index_epa_contact];
+		                                prev_program_office = parsedData[count][index_prog_office];
+		                                prev_record_schedule = parsedData[count][index_rec_sched];
+		
+		                                datatable.row.add([
+		                                    parsedData[count][0],
+		                                    parsedData[count][1],
+		                                    parsedData[count][2],
+		                                    parsedData[count][3],
+		                                    parsedData[count][4],
+		                                    parsedData[count][5],
+		                                    parsedData[count][6],
+		                                    parsedData[count][7],
+		                                    parsedData[count][8],
+		                                    parsedData[count][9],
+		                                    parsedData[count][10],
+		                                    parsedData[count][11],
+		                                    parsedData[count][12],
+		                                    parsedData[count][13],
+		                                    parsedData[count][14],
+		                                    parsedData[count][15],
+		                                    parsedData[count][16],
+		                                    parsedData[count][17], // For Folder/Filename field value
+		                                    //parsedData[count][18], // For Tags field value // removed
+		                                    parsedData[count][18], // For Parent/Child field value
+		                                    parsedData[count][19],
+		                                    parsedData[count][20],
+		                                    parsedData[count][21],
+		                                    parsedData[count][22],
+		                                    parsedData[count][23],
+		                                    parsedData[count][24],
+		                                    parsedData[count][25],
+		                                    parsedData[count][26]
+		                                ]).draw().node();
+		                                
+		                                //jQuery('#processing_notification').text( 'Processing Row #' + count );
+		                            }
+		                        //} //for
+	                        
+	                        	} //if
+	                        
+	                        } else {
+							        	clearInterval( processLoopID );
+							        	//jQuery( '#boxinfodatatable_wrapper' ).show();
+							        	//jQuery( '#boxinfodatatable' ).show();
+							        	jQuery( '#big_wrapper' ).show();
+							        	// sets order for data table                    
+										datatable.column( '0:visible' ).order( 'asc' ).draw();
 
-
-                            // Box ID validation // Redundant. Can be removed.
-/*
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		( parsedData[count][index_box] == null || 
-                            		  parsedData[count][index_box] === undefined
-                            		)
-                            ) {
-                                let alert_message = '';
-								alert_message += 'Box ID value "'+parsedData[count][index_box]+'" seems incorrect for line '+ (count + 1);
-                                alert( alert_message );
-                                flag = true;
-                            }
-*/
-
-                            // Index level validation
-                            if(
-                            	flag != true && 
-                            	count > 1 && 
-                            		( parsedData[count][index_index_level].toLowerCase() != 'file' && 
-                            		  parsedData[count][index_index_level].toLowerCase() != 'folder'
-                            		)
-                            ){
-                                let alert_message = '';
-								alert_message += 'Index level value "'+parsedData[count][index_index_level];
-								alert_message += '" seems incorrect for the line number '+ (count + 1);
-                                alert( alert_message );
-                                flag = true;
-                            }
-							
-							
-                            // Epa contact, program office, record no validation
-                            
-                            // Remove requirement that epa_contact is the same for each box. 
-                            prev_epa_contact = parsedData[count][index_epa_contact];
-                            
-                            if(
-                            	flag != true && 
-                            	count > 1 && 
-                            		( prev_box != '' && 
-                            		  prev_box === parsedData[count][index_box] 
-                            		) 
-                            	&& 
-									( prev_epa_contact !== parsedData[count][index_epa_contact] || 
-									  prev_program_office !== parsedData[count][index_prog_office] || 
-									  prev_record_schedule !== parsedData[count][index_rec_sched] 
-									) 
-							) {
-
-                                _column = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
-                                	'EPA Contact' : 
-                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
-                                		'Program Office' : 
-                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
-                                		'Record Schedule & Item Number' : '' 
-                                		) 
-                                	) 
-                                );
-                                
-                                _prev = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
-                                	prev_epa_contact : 
-                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
-                                		prev_program_office : 
-                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
-                                		prev_record_schedule : '' 
-                                		) 
-                                	) 
-                                );
-                                
-                                _index = ( prev_epa_contact !== parsedData[count][index_epa_contact] ? 
-                                	parsedData[count][index_epa_contact] : 
-                                	( prev_program_office !== parsedData[count][index_prog_office] ? 
-                                		parsedData[count][index_prog_office] : 
-                                		( prev_record_schedule !== parsedData[count][index_rec_sched] ? 
-                                		parsedData[count][index_rec_sched] : '' 
-                                		) 
-                                	) 
-                                );
-								
-								let alert_message = '';
-								alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
-								alert_message += "'" + _column + "' must have the same value for all items in the same box ";
-								alert_message += "(Box: " + prev_box + "). \n\n";
-								alert_message += "Line " + count + " has value '" + _prev + "' while \n";
-								alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
-								
-                                alert( alert_message );
-                                flag = true;
-                            }
-                            
-                            
-                            // Validate Access Restriction (No) & Specific Access Restriction (filled in)
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		( parsedData[count][index_access_rest] == 'No' && 
-                            			( parsedData[count][index_sp_access_rest] != null || 
-                            			  parsedData[count][index_sp_access_rest] != undefined 
-                            			)
-                            		) 
-                            ) {
-                                
-                                let alert_message = '';
-                                alert_message += 'Discrepancy between Access Restriction and Specific Access Restriction. \n\n ';
-                                alert_message += 'Access Restriction value: "No", while Specific Access Restiction is "'; 
-                                alert_message += parsedData[count][index_sp_access_rest] + '" on line ' + (count + 1) + '. \n\n '; 
-                                alert_message += 'If Access Restriction is "No" then Specific Access Restriction must be blank.';
-                                
-                                
-                                alert( alert_message );
-                                flag = true;
-                            }
-
-                            // Validate Access Restriction (Yes) & Specific Access Restriction (blank)                            
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		( parsedData[count][index_access_rest] == 'Yes' && 
-                            			( parsedData[count][index_sp_access_rest] == null || 
-                            			  parsedData[count][index_sp_access_rest] == undefined 
-                            			) 
-                            		) 
-                            ) {
-                                let alert_message = '';
-                                alert_message += 'Discrepancy between Access Restriction and Specific Access Restriction. \n\n ';
-                                alert_message += 'Access Restriction value: "Yes", while Specific Access Restiction is blank on line ';
-                                alert_message += (count + 1) + '. \n\n ';
-                                alert_message += 'If Access Restriction is "Yes" then Specific Access Restriction must be filled in.'
-                                
-                                alert( alert_message );
-                                flag = true;
-                            }
-                            
-                            
-                            // Validate Use Restriction (No) & Specific Use Restriction (filled in)
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		(parsedData[count][index_use_rest] == 'No' && 
-                            			( parsedData[count][index_sp_use_rest] != null ||
-                            			  parsedData[count][index_sp_use_rest] != undefined 
-                            			)
-                            		)
-                            ) {
-                                let alert_message = '';
-                                alert_message += 'Discrepancy between Use Restriction and Specific Use Restriction. \n\n ';
-                                alert_message += 'Use Restriction value: "No", while Specific Use Restiction is "';
-                                alert_message += parsedData[count][index_sp_access_rest] + '" on line '+ (count + 1) + '. \n\n ';
-                                alert_message += 'If Use Restriction is "No" then Specific Use Restriction must be blank.';
-                                
-                                alert(alert_message);
-                                flag = true;
-                            }
-
-                            // Validate Use Restriction (Yes) & Specific Use Restriction (blank)                            
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		( parsedData[count][index_use_rest] == 'Yes' && 
-                            			( parsedData[count][index_sp_use_rest] == null ||
-                            			  parsedData[count][index_sp_use_rest] == undefined
-                            			)
-                            		)
-                            ) {
-                                let alert_message = '';
-                                alert_message += 'Discrepancy between Use Restriction and Specific Use Restriction. \n\n ';
-                                alert_message += 'Use Restriction value: "Yes", while Specific Use Restiction is blank on line ';
-                                alert_message += (count + 1) + '. \n\n ';
-                                alert_message += 'If Use Restriction is "Yes" then Specific Use Restriction must be filled in.'
-                                
-                                alert(alert_message);
-                                flag = true;
-                            }
-                            
-                            
-                            // Validate JSON - Tags Column
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            	( parsedData[count][index_tags] != null ||
-                            	  parsedData[count][index_tags] != undefined
-                            	)
-                            	&& 
-                            	parsedData[count][index_tags] != 'Tags' 
-                            ) {
-								
-								let str = 'x';
-								if( parsedData[count][index_tags].indexOf( '{' ) == 0 ) {
-									str = parsedData[count][index_tags];
-								} else {
-									str = '{ ' + parsedData[count][index_tags] + '}';
-								}
-								
-                                try {
-							        JSON.parse( str );
-							    } catch ( e ) {
-							        let alert_message = '';
-									alert_message += "Invalid JSON format in the Tags column on line " + (count + 1) + ". ";
-							        alert( alert_message );
-									flag = true;
-							    }
-							}
-                            
-                            // Validate Parent/Child
-                            let pcd;
-                            if( parsedData[count][index_pcd] ) {
-	                            pcd = parsedData[count][index_pcd].toUpperCase();
-                            }
-                            
-                            if( 
-                            	flag != true && 
-                            	count > 1 && 
-                            		!( pcd == 'P' || pcd == 'C' || pcd == 'S' ) 
-                            ) {
-                                let alert_message = '';
-								alert_message += "Invalid Parent/Child format for record " + (count + 1) + ".";
-                                
-                                alert( alert_message );
-                                flag = true;
-                            }
-							
-							
-                            // Clear table if err
-                            if( flag == true ) {
-								console.log('clear table');
-                                datatable.clear().draw();
-                                jQuery('#file_upload_cr').val(0);
-
-                                jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
-                                    obj.remove();
-                                });
-								
-								console.log( file.previewElement );
-								if( file.previewElement != null ) {
-									console.log( 'remove preview' );
-									file.previewElement.parentNode.removeChild(file.previewElement);
-								}
-								
-								// Changed return to false, as after an unsuccessful upload, the response was causing JSON.parse to throw
-								// an error.
-                                var _ref;
-                                //return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-                                return false;
-                            }
-							
-							console.log( 'post validation' );
-							
-                            // Add record to datatable if no error
-                            if (
-                            	parsedData[count] !== undefined && 
-                            	parsedData[count].length > 0 && 
-                            	parsedData[count][0].toString().trim() != "Box"
-                            ) {
-
-                                prev_box = parsedData[count][index_box];
-                                prev_epa_contact = parsedData[count][index_epa_contact];
-                                prev_program_office = parsedData[count][index_prog_office];
-                                prev_record_schedule = parsedData[count][index_rec_sched];
-
-                                datatable.row.add([
-                                    parsedData[count][0],
-                                    parsedData[count][1],
-                                    parsedData[count][2],
-                                    parsedData[count][3],
-                                    parsedData[count][4],
-                                    parsedData[count][5],
-                                    parsedData[count][6],
-                                    parsedData[count][7],
-                                    parsedData[count][8],
-                                    parsedData[count][9],
-                                    parsedData[count][10],
-                                    parsedData[count][11],
-                                    parsedData[count][12],
-                                    parsedData[count][13],
-                                    parsedData[count][14],
-                                    parsedData[count][15],
-                                    parsedData[count][16],
-                                    parsedData[count][17], // For Folder/Filename field value
-                                    //parsedData[count][18], // For Tags field value // removed
-                                    parsedData[count][18], // For Parent/Child field value
-                                    parsedData[count][19],
-                                    parsedData[count][20],
-                                    parsedData[count][21],
-                                    parsedData[count][22],
-                                    parsedData[count][23],
-                                    parsedData[count][24],
-                                    parsedData[count][25],
-                                    parsedData[count][26]
-                                ]).draw().node();
-                            }
-                        } //for
+							        	//
+							        	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );
+							        	jQuery( '#processing_notification_div' ).addClass( 'green_update' );
+							        	jQuery( '#processing_notification_div' ).text( 'Processing Complete.' );
+							        	
+							        	// Set that the file is uploaded.
+							        	jQuery('#file_upload_cr').val(1);
+				                        jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
+				                        console.log( '#file_upload_cr has been update' );
+	
+							       }
+						    count++ 
+						}, 1 ); //end of setInterval, 1ms
                         
-                        // Set that the file is uploaded.
-                        jQuery('#file_upload_cr').val(1);
-                        jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
-                        console.log( '#file_upload_cr has been update' );
                         
+                                                
                     } else {
                         
                         let alert_message = '';

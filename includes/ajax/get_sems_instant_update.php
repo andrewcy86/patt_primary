@@ -13,7 +13,7 @@ global $current_user, $wpscfunction, $wpdb;
 
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : 0;
 
-$backgroundAsync = new WP_EIDW_Request();
+$backgroundAsync = new WP_SEMS_Request();
 
 $backgroundAsync->data( array( 'ticket_id' => $ticket_id ) );
 

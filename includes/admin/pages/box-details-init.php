@@ -295,7 +295,7 @@ jQuery(document).ready(function(){
           data.isactive = isactive;
        }
     },
-    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+    'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
     <?php		
     if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
     {

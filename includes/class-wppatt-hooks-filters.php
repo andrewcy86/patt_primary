@@ -78,7 +78,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			}
 			
 			
-
+			
+			
 
 			// Move upload file
 			$uploadedfile = ! empty( $_FILES['file'] ) ? $_FILES['file'] : array();  //phpcs:ignore
@@ -89,12 +90,20 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				'test_form' => false,
 				'unique_filename_callback' => $fty,
 			);
-
+			
+			print_r( $uploadedfile );
+			print_r( $_FILES );
+			
 			add_filter( 'upload_dir', array( $this, 'wpai_set_custom_upload_folder' ) );
 			// $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
 
 			// Add file to wordpress media
 			$attachment_id = media_handle_upload( 'file', 0 );
+			
+			//echo 'attachment_id: '. $attachment_id;
+			//echo $attachment_id;
+			print_r( $attachment_id );
+			
 			if ( ! is_wp_error( $attachment_id ) ) {
 				update_post_meta( $attachment_id, 'folder', 'box-list' );
 				//array_push( $attach_ids, $attachment_id ); // causing error, $attach_ids should be array, null given.
@@ -809,7 +818,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				} 
 				
 				// Site Name & Site ID - Validation Check
-				if( $boxinfo['Site Name/OU'] == '' && $validation == true ) {
+				if( $boxinfo['Site Name'] == '' && $validation == true ) {
 					
 /*
 					$validation = false;
@@ -820,7 +829,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$err_message_1 = 'Blank value for column <b>' . $col_key .'</b><br>';
 */
 					
-				} elseif( $boxinfo['Site ID #'] == '' && $validation == true ) {
+				} elseif( $boxinfo['Site ID # / OU'] == '' && $validation == true ) {
 					
 /*
 					$validation = false;
@@ -832,7 +841,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					$err_message_2 = ' ';
 */
 					
-				} elseif( $boxinfo['Site Name/OU'] != '' && $boxinfo['Site ID #'] != '' && $validation == true ) {
+				} elseif( $boxinfo['Site Name'] != '' && $boxinfo['Site ID # / OU'] != '' && $validation == true ) {
 					//$validation = true;
 					//$validation = false;
 					// hit api to get Site Name from Site ID #.
@@ -1075,8 +1084,8 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 						'record_type' => $boxinfo['Record Type'],
 						'author' => "{$boxinfo['Creator']}",
 						'addressee' => "{$boxinfo['Addressee']}",
-						'site_name' => "{$boxinfo['Site Name/OU']}",
-						'siteid' => "{$boxinfo['Site ID #']}",
+						'site_name' => "{$boxinfo['Site Name']}",
+						'siteid' => "{$boxinfo['Site ID # / OU']}",
 						'close_date' => $new_date,
 						'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 						'essential_record' => "{$essential_record}",
@@ -1214,8 +1223,8 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							'record_type' => $boxinfo['Record Type'],
 							'author' => "{$boxinfo['Creator']}",
 							'addressee' => "{$boxinfo['Addressee']}",
-							'site_name' => "{$boxinfo['Site Name/OU']}",
-							'siteid' => "{$boxinfo['Site ID #']}",
+							'site_name' => "{$boxinfo['Site Name']}",
+							'siteid' => "{$boxinfo['Site ID # / OU']}",
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 							'essential_record' => "{$essential_record}",
@@ -1293,8 +1302,8 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							'record_type' => $boxinfo['Record Type'],
 							'author' => "{$boxinfo['Creator']}",
 							'addressee' => "{$boxinfo['Addressee']}",
-							'site_name' => "{$boxinfo['Site Name/OU']}",
-							'siteid' => "{$boxinfo['Site ID #']}",
+							'site_name' => "{$boxinfo['Site Name']}",
+							'siteid' => "{$boxinfo['Site ID # / OU']}",
 							'close_date' => $new_date,
 							'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
 							'essential_record' => "{$essential_record}",
@@ -1575,6 +1584,14 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			
 			do_action( 'wppatt_eidw_instant_cron', $ticket_id );
 			
+			if( $superfund ) {				
+				do_action( 'wppatt_sems_instant_cron', $ticket_id );
+			} 
+			
+			
+			
+			
+			
 		}
 
 		// OLD Not used. 4/16/2020
@@ -1737,42 +1754,54 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							<button class="dz-button" type="button">Drop your file here to upload (xlsx, xlsm files allowed)</button>
 						</div>
 					</div>
+					
 					<div style="margin: 10px 0 10px;" id="attach_16" class="row spreadsheet_container"></div>
-
-					<table style="display:none;margin-bottom:0;" id="boxinfodatatable" class="table table-striped table-bordered nowrap">
-						<thead style="margin: 0 auto !important;">
-							<tr>
-								<th>Box</th>
-								<th>Folder Identifier</th>
-								<th>Title</th>
-								<th>Description of Record</th>
-								<th>Parent/Child</th>
-								<th>Creation Date</th>
-								<th>Creator</th>
-								<th>Addressee</th>
-								<th>Record Type</th>
-<!-- 								<th>Record Schedule & Item Number</th> -->
-								<th>Disposition Schedule & Item Number</th>
-								<th>Site Name/OU</th>
-								<th>Site ID #</th>
-								<th>Close Date</th>
-								<th>EPA Contact</th>								
-								<th>Access Restrictions</th>
-								<th>Specific Access Restrictions</th>
-								<th>Use Restrictions</th>
-								<th>Specific Use Restrictions</th>
-								<th>Rights Holder</th>
-								<th>Source Type</th>
-								<th>Source Dimensions</th>
-								<th>Program Office</th>
-								<th>Program Area</th>
-								<th>Index Level</th>
-								<th>Essential Record</th>
-								<th>Folder/Filename</th>
-								<th>Tags</th>
-							</tr>
-						</thead>
-					</table>
+					
+					<div style="margin: 10px 0 10px;"  class="row">
+						<div class="col-sm-4"></div>
+						<div id="processing_notification_div" class="col-sm-4">
+							<span id="processing_notification" ></span>
+						</div>
+						<div class="col-sm-4"></div>
+					</div>
+					
+					
+					<div id="big_wrapper">
+						<table style="display:none;margin-bottom:0;" id="boxinfodatatable" class="table table-striped table-bordered nowrap">
+							<thead style="margin: 0 auto !important;">
+								<tr>
+									<th>Box</th>
+									<th>Folder Identifier</th>
+									<th>Title</th>
+									<th>Description of Record</th>
+									<th>Parent/Child</th>
+									<th>Creation Date</th>
+									<th>Creator</th>
+									<th>Addressee</th>
+									<th>Record Type</th>
+	<!-- 								<th>Record Schedule & Item Number</th> -->
+									<th>Disposition Schedule & Item Number</th>
+									<th>Site Name</th>
+									<th>Site ID # / OU</th>
+									<th>Close Date</th>
+									<th>EPA Contact</th>								
+									<th>Access Restrictions</th>
+									<th>Specific Access Restrictions</th>
+									<th>Use Restrictions</th>
+									<th>Specific Use Restrictions</th>
+									<th>Rights Holder</th>
+									<th>Source Type</th>
+									<th>Source Dimensions</th>
+									<th>Program Office</th>
+									<th>Program Area</th>
+									<th>Index Level</th>
+									<th>Essential Record</th>
+									<th>Folder/Filename</th>
+									<th>Tags</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
 
 					<!-- O L D  F I L E  U P L O A D E R         
 					<div class="row attachment_link">
@@ -1822,7 +1851,27 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					<!-- File Upload Validation -->
 					<input type="hidden" id="file_upload_cr_SEMS" name="file_upload_cr_SEMS" value="0" />
 				</div>
-
+				
+				<style>
+					#processing_notification_div {
+/* 						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); */
+/* 						background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%); */
+						text-align: center;
+						width: 20em;
+						padding: 15px 0px;
+						border-radius: 4px;
+						color: white;
+						font-size: 1.5em;
+					}
+					
+					.yellow_update {
+						background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%);
+					}
+					
+					.green_update {
+						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%);
+					}
+				</style>
 				
 				<script>
 					jQuery('#boxdisplaydivSEMS').hide();

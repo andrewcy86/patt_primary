@@ -985,7 +985,7 @@ echo $tbl;
 	     "autoWidth": true,
 	     "paging" : true,
 	     "scrollX" : true,
-		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
+		 "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         'columnDefs': [	
          {	
             'width': '5px',
