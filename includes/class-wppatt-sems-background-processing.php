@@ -23,6 +23,7 @@ class WP_SEMS_Request extends WP_Async_Request {
 	 */
 	protected function handle() {
 		// Actions to perform
+global $current_user, $wpscfunction,$wpdb;
 
 $ticket_id = $_POST['ticket_id'];
 
