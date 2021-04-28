@@ -5954,7 +5954,7 @@ if($type == 'comment') {
 			$post_details_content = $get_post_details->post_content;
 			
 					// send email to user
-					if ( $option['email_enable'] && $email == 1) {
+					if ( $option['email_enable'] ) {
 						$sender = $wpdb->get_var( "SELECT display_name FROM $wpdb->users WHERE user_login = 'admin' LIMIT 1" );
 		
 						// replace tags with values
@@ -5999,11 +5999,7 @@ if($type == 'comment') {
 
             $curtime = time();
 
-            if($get_count = 0) {
-              wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
-            }
-            
-            if(($curtime-$time) > 300) {     //5 minutes
+            if(($curtime-$time) > 300 || $get_count = 0) {     //5 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
             
