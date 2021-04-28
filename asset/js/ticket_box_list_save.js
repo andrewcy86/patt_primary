@@ -214,6 +214,14 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
                 
                 console.log("Excel uploaded successfully");
                 console.log(response);
+                let obj = JSON.parse( response );
+                console.log( obj.attachment_id );
+                
+                jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
+                
+                link_ticket_id_and_attachment();
+                
+                
             },  
             error: function (response) {
                 console.log("Excel did not upload successfully");
@@ -223,6 +231,35 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 	
 });
 
+
+
+function link_ticket_id_and_attachment( ) {
+		
+		
+	let attachement_id = jQuery( '#attachment_upload_cr' ).val();
+	let ticket_id = jQuery( '#ticket_id' ).val();
+	console.log( 'link_ticket_id_and_attachment' );
+	console.log( attachement_id );
+	console.log( ticket_id );
+	
+	let data = {
+		action: 'wppatt_link_ticket_and_attachment',
+		ticket_id : ticket_id ,
+		attachement_id: attachement_id
+	}
+	
+	jQuery.ajax({
+		type: "POST",
+		url: wpsc_admin.ajax_url,
+		data: data,
+		success: function( response ){
+			console.log('link_ticket_and_attachment done');
+			console.log( response );	
+		}
+	
+	});		
+
+}
 
 
 
@@ -413,7 +450,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     col1_undef = col1.indexOf( undefined );
                     col1_blank = col1.indexOf( '' );
                     
-                    arrayLength = col1_undef + 2;
+                    // if array of spreadsheet is NOT the exact length (i.e. blank rows), then use updated length
+                    if( col1_undef != -1 ) {
+                    	arrayLength = col1_undef + 2;
+                    } 
                     
                     console.log({ col1_null:col1_null, col1_undef:col1_undef, col1_blank:col1_blank });
                     

@@ -372,6 +372,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action( 'personal_options_update', array($backend,'save_extra_user_profile_fields' ));
 		  add_action( 'edit_user_profile_update', array($backend,'save_extra_user_profile_fields' ));
 		  add_action( 'admin_notices', array($backend,'error_notice_no_digi_center_set' ));
+		  
+		  add_action( 'wp_ajax_wppatt_link_ticket_and_attachment', array($backend, 'link_ticket_attachment' ));
+		  
           
           
           function epa_admin_menu_items() {

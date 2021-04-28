@@ -63,7 +63,8 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 		 * @param Integer $post_id Post Id as Integer.
 		 */
 		public static function approval_widget( $post_id ) {
-			global $wpdb;
+			
+            global $current_user, $wpscfunction, $wpdb;
 
             $is_active = Patt_Custom_Func::ticket_active( $post_id );
             
@@ -87,9 +88,11 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				<ul class="approval-preview-image">
 				    <?php
 				    //Get Post ID from Ticket Meta Table
-				    //$get_postid = $wpscfunction->get_ticket_meta($ticket_id,'box_list_post_id');
-				    $get_attachment_url = wp_get_attachment_url(4221);
-				    if ($get_attachment_url != '') {
+				    
+				    $get_postid = $wpscfunction->get_ticket_meta($post_id,'box_list_post_id');
+
+				    $get_attachment_url = wp_get_attachment_url($get_postid[0]);
+				    if (!empty($get_attachment_url)) {
 				    ?>
 				    <strong><i class="far fa-file-excel fa-lg" title="Download Box List"></i> <a href= "<?php echo $get_attachment_url; ?>">Download Box List</a></strong>
 				    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">

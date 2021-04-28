@@ -829,6 +829,46 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	    die();
     }
     
+    // links ticket_id and attachment id in DB  
+    public function link_ticket_attachment(){
+	    
+	    global $current_user, $wpdb;
+	    
+	    $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
+	    $attachement_id = isset($_POST['attachement_id']) ? sanitize_text_field($_POST['attachement_id']) : '';
+	    
+	    $data = [
+		    'ticket_id' => $ticket_id,
+			'meta_key' => 'box_list_post_id',
+			'meta_value' => $attachement_id
+	    ];
+	    
+	    //Determine if entry exists prior to insert
+	    
+	    $table = $wpdb->prefix . 'wpsc_ticketmeta';
+	    
+	    $get_box_list_ticket_count = $wpdb->get_row("
+        SELECT count(id) as count FROM " . $table . " 
+        WHERE meta_key = 'box_list_post_id' AND ticket_id = '" . $ticket_id . "'
+        ");
+        $box_list_ticket_count = $get_box_list_ticket_count->count;
+
+        if($box_list_ticket_count == 0) {
+	    $new_id = $wpdb->insert( $table, $data );
+        }
+	    
+	    $response = array(
+			"ticket_id" => $ticket_id,
+			"attachement_id" => $attachement_id,
+			"new_id" => $new_id
+		);
+
+		echo json_encode( $response );
+		
+		die();
+    }
+    
+    
     
     // Displays the user's Digitization Center on their Profile
     public function extra_user_profile_fields( $user ) { 

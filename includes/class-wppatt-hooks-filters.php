@@ -45,6 +45,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			// Move uploaded file.
 			add_action( 'wp_ajax_move_excel_file', array( $this, 'move_excel_file' ) );
 			add_action( 'wp_ajax_nopriv_move_excel_file', array( $this, 'move_excel_file' ) );
+			
+			//add_action( 'wpsc_ticket_created', 'move_excel_file', 10, 1 );
 
 		}
 
@@ -69,7 +71,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 		/**
 		 * After file upload, move it from the temp to custom directory
 		 */
-		public function move_excel_file() {
+		public function move_excel_file(  ) {
 
 			if ( ! function_exists( 'wp_handle_upload' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -88,30 +90,39 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				'unique_filename_callback' => $fty,
 			);
 			
-			print_r( $uploadedfile );
-			print_r( $_FILES );
+			//print_r( $uploadedfile );
+			//print_r( $_FILES );
 			
 			add_filter( 'upload_dir', array( $this, 'wpai_set_custom_upload_folder' ) );
 			// $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
 
 			// Add file to wordpress media
 			$attachment_id = media_handle_upload( 'file', 0 );
+			//$attachment_id = media_handle_upload( 'file', $post_id );
 			
 			//echo 'attachment_id: '. $attachment_id;
 			//echo $attachment_id;
-			print_r( $attachment_id );
+			//print_r( $attachment_id );
 			
 			if ( ! is_wp_error( $attachment_id ) ) {
 				update_post_meta( $attachment_id, 'folder', 'box-list' );
 				//array_push( $attach_ids, $attachment_id ); // causing error, $attach_ids should be array, null given.
 
 				$request_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
-				echo 'File Upload Successfully -> ' . esc_attr( $request_page );
+				//echo 'File Upload Successfully -> ' . esc_attr( $request_page );
 			} else {
-				echo esc_attr( $movefile['error'] );
+				//echo esc_attr( $movefile['error'] );
 			}
 
 			remove_filter( 'upload_dir', array( $this, 'wpai_set_custom_upload_folder' ) );
+			
+			
+			$response = array(
+				"attachment_id" => $attachment_id,
+				"test" => 'test'
+			);
+			
+			echo json_encode( $response );
 
 			die();
 		}
@@ -1809,6 +1820,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					-->
 					<!-- File Upload Validation -->
 					<input type="hidden" id="file_upload_cr" name="file_upload_cr" value="0" />
+					
 					
 				</div>
 				
