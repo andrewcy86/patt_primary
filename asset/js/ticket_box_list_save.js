@@ -173,7 +173,7 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
     console.log({superfund:superfundx});
     
     if( superfundx == '' ) {
-		alert('Please make a selection for the "Are these documents part of SEMS?" dropdown.');
+		alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
 	    return false;
 		
 	} else if( superfundx == 'no' ) {
@@ -232,20 +232,84 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 });
 
 
-
+// Grabs the ticket_id and attachment_id and AJAX calls to link them in ticketmeta DB table
 function link_ticket_id_and_attachment( ) {
 		
-		
-	let attachement_id = jQuery( '#attachment_upload_cr' ).val();
-	let ticket_id = jQuery( '#ticket_id' ).val();
 	console.log( 'link_ticket_id_and_attachment' );
-	console.log( attachement_id );
-	console.log( ticket_id );
 	
+	//let attachment_id = get_attachment_id();
+	let attachment_id = jQuery( '#attachment_upload_cr' ).val();
+	let ticket_id;
+	
+	//let ticket_id = get_ticket_id();
+	let ticket_id_promise = new Promise( function( success, failure ) {
+		//ticket_id = get_ticket_id();
+		
+		let counter = 1;
+	
+		var timer = setInterval(function () {
+			
+		    console.log( "get_ticket_id attempt # " + counter );
+		    ticket_id = jQuery( '#ticket_id' ).val();
+		    
+		    if( ticket_id == '' || ticket_id == null || ticket_id == undefined ) {
+				console.log( 'waiting... on ticket_id' );
+				
+				if( counter >= 120 ) {
+					console.log( 'waiting on ticket_id timeout.' );
+					
+					clearInterval(timer);
+					failure( 'Took too long' );
+				}
+				
+			} else {
+				console.log( 'No (more) waiting necessary: ticket_id' );
+				console.log( 'ticket_id: ' + ticket_id );
+				clearInterval(timer);
+				success( 'We did it.' );
+				
+			}
+		
+		    counter++;
+		
+		}, 250);
+		
+				
+	});
+	
+	
+
+	ticket_id_promise.then(
+		function(value) { console.log( 'ticket_id after: ' + ticket_id ); ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ); },
+		function(error) { ticket_id_failed(  ); }
+		
+	);
+/*
+	ticket_id_promise.then(
+		function( value ) {
+			console.log( value );
+			ajax_link_ticket_id_and_attachment( attachment_id, ticket_id );
+		},
+		function( error ) {
+			console.log( error );
+		}
+	);
+*/
+	
+	//ajax_link_ticket_id_and_attachment( attachment_id, ticket_id );
+
+
+}
+
+function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
+		
+	console.log( 'AJAX link_ticket_id_and_attachment' );
+	
+
 	let data = {
 		action: 'wppatt_link_ticket_and_attachment',
 		ticket_id : ticket_id ,
-		attachement_id: attachement_id
+		attachement_id: attachment_id
 	}
 	
 	jQuery.ajax({
@@ -260,6 +324,78 @@ function link_ticket_id_and_attachment( ) {
 	});		
 
 }
+
+function ticket_id_failed() {
+	console.log( 'ticket_id failed' );
+	//alert( 'Waiting for ticket_id failed. Please retry.' );
+}
+
+// gets the ticket_id from the page (set in sc/.../load_create_ticket.php), and waits until it's set. 
+/*
+function get_ticket_id() {
+	
+	let ticket_id = jQuery( '#ticket_id' ).val();
+	
+	if( ticket_id == '' || ticket_id == null || ticket_id == undefined ) {
+		console.log( 'waiting... on ticket_id' );
+		window.setTimeout( get_ticket_id, 300 );
+	} else {
+		console.log( 'No waiting necessary: ticket_id' );
+		return ticket_id;
+	}
+	
+}
+*/
+
+// gets the ticket_id from the page (set in sc/.../load_create_ticket.php), and waits until it's set. 
+function get_ticket_id() {
+	
+	let counter = 1;
+	
+	var timer = setInterval(function () {
+		
+	    console.log( "get_ticket_id attempt # " + counter );
+	    let ticket_id = jQuery( '#ticket_id' ).val();
+	    
+	    if( ticket_id == '' || ticket_id == null || ticket_id == undefined ) {
+			console.log( 'waiting... on ticket_id' );
+			
+			if( counter >= 120 ) {
+				console.log( 'waiting on ticket_id timeout.' );
+				clearInterval(timer);
+			}
+			
+		} else {
+			console.log( 'No (more) waiting necessary: ticket_id' );
+			clearInterval(timer);
+			
+		}
+	
+	    counter++;
+	
+	}, 250);
+
+	return ticket_id;
+}
+
+
+
+// gets the attchment_id from the page (set in sc/.../load_create_ticket.php), and waits until it's set. 
+/*
+function get_attachment_id() {
+	
+	let attachment_id = jQuery( '#attachment_upload_cr' ).val();
+	
+	if( attachment_id == '' || attachment_id == null || attachment_id == undefined ) {
+		console.log( 'waiting... on attachment_id' );
+		window.setTimeout( get_attachment_id, 300 );
+	} else {
+		console.log( 'No waiting necessary: attachment_id' );
+		return attachment_id;
+	}
+	
+}
+*/
 
 
 
@@ -297,7 +433,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     let superfundx = jQuery('#super-fund').val();
     if( superfundx == '' ) {
 	    flag = true;
-	    alert( 'Please make a selection for "Are these documents part of SEMS?" before uploading the Box List.' );
+	    alert( 'Please make a selection for "Are these records part of SEMS?" before uploading the Box List.' );
     }
 
     //No file
@@ -467,6 +603,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         let prev_epa_contact = '';
                         let prev_program_office = '';
                         let prev_record_schedule = '';
+                        let prev_site_id = '';
 
 						                             
                         //
@@ -947,6 +1084,39 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                flag = true;
 		                            }
 		                            
+		                            // SUPER FUND
+		                            // Site id req
+		                            let cur_site_id_array = parsedData[count][index_site_id].split( '/' );
+		                            let cur_site_id = cur_site_id_array[0];
+		                            
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	superfundx == 'yes' &&
+		                            		( prev_site_id != '' && 
+		                            		  prev_site_id !== cur_site_id 
+		                            		) 
+		                            	
+									) {
+		
+		                                _column = 'Site ID # / OU';
+		                                	 
+		                                _prev = prev_site_id;
+		                               
+		                                _index = cur_site_id;
+										
+										let alert_message = '';
+										alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
+										alert_message += "'" + _column + "' must have the same value for all items in the same request. ";
+										alert_message += "\n\n";
+										alert_message += "Line " + count + " has value '" + _prev + "' while \n";
+										alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
+										
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+
+		                            
 		                            
 		                            // Validate Access Restriction (No) & Specific Access Restriction (filled in)
 		                            if( 
@@ -1127,6 +1297,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                prev_epa_contact = parsedData[count][index_epa_contact];
 		                                prev_program_office = parsedData[count][index_prog_office];
 		                                prev_record_schedule = parsedData[count][index_rec_sched];
+		                                prev_site_id_array = parsedData[count][index_site_id].split( '/' );
+		                                prev_site_id = prev_site_id_array[0];
+		                                
+		                                
 		
 		                                datatable.row.add([
 		                                    parsedData[count][0],

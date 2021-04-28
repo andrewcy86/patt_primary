@@ -5999,10 +5999,11 @@ if($type == 'comment') {
 
             $curtime = time();
 
-            if(($curtime-$time) > 300 || $get_count = 0) {     //5 minutes
+            if(($curtime-$time) > 300 || $get_count == 0) {     //5 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
             
+            //wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
 					}
 					
 			return true;

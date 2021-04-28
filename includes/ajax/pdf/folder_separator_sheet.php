@@ -99,7 +99,7 @@ b.ticket_id = " . $GLOBALS['id']);
     $x_loc_folderdocinfo_title = 32;
     $y_loc_folderdocinfo_title = 130;
 
-if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,3}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id']))) {
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id']))) {
  
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {   
     //Obtain array of Box ID's
@@ -108,7 +108,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     $title_array = fetch_title();
 }
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,3}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 
 $folderdocinfo_array = explode(',', $GLOBALS['id']);
 
@@ -158,7 +158,7 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
         //Folderdocinfo title printout
         $obj_pdf->SetFont('helvetica', '', 30);
         
-    if (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,3}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+    if (preg_match("/^([0-9]{7}-[0-9]{1,3}-01-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
 $folderfile_info = $wpdb->get_row("SELECT title
         FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files

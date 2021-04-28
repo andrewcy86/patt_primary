@@ -805,6 +805,11 @@ echo '</pre>';
 	.wpsc_loading_icon {
 		margin-top: 0px !important;
 	}
+	
+	.dropzone .dz-preview .dz-progress {
+		top: 70%;
+		display: none;
+	}
 
 </style>
 <?php

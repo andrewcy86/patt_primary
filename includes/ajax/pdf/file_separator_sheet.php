@@ -29,7 +29,7 @@ if (isset($_GET['id']))
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
-if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,3}-02-[0-9]{1,3}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id']))) {
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,3}-02-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id']))) {
 
 //REVIEW
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
@@ -121,7 +121,7 @@ $obj_pdf->writeHTML($tbl, true, false, false, false, '');
 
 } //endforeach_regex ticket id
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,3}-02-[0-9]{1,3}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,3}-02-[0-9]{1,4}(-[a][0-9]{1,4})?)(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 
 $final_array = array();
 

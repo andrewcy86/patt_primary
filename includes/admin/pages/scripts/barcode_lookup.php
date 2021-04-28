@@ -346,7 +346,7 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 }
 			
 //Determine if string is a folder/file ID     
-    } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}(-[a][0-9]{1,4})?$/", $barcode)){
+    } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $barcode)){
 
 //echo '<strong>Folder/File ID: '.$barcode.'<strong>';
 //REVIEW

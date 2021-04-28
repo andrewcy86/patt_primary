@@ -1590,10 +1590,10 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			}
 */
 			
-			do_action( 'wppatt_eidw_instant_cron', $ticket_id );
+			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
 			if( $superfund ) {				
-				do_action( 'wppatt_sems_instant_cron', $ticket_id );
+				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
 			
 			
@@ -1723,7 +1723,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 				<div class="row">
 		          	<div  data-fieldtype="dropdown" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?> col-sm-4">
 						<label class="wpsc_ct_field_label" for="super_fund_flag">
-						Are these documents part of SEMS? <span style="color:red;">*</span>
+						Are these records part of SEMS? <span style="color:red;">*</span>
 						</label>
 						<?php 
 						if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>
@@ -1894,7 +1894,10 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					
 					.dropzone .dz-preview .dz-progress {
 						top: 70%;
+						display: none;
 					}
+					
+					
 				</style>
 				
 				<script>
