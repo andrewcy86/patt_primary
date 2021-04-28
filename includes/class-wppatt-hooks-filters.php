@@ -1590,11 +1590,13 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			}
 */
 			
+/*
 			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
 			if( $superfund ) {				
 				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
+*/
 			
 			
 			

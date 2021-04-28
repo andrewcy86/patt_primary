@@ -163,9 +163,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
           
           // Add EIDW Instant CRON
-          add_action( 'wppatt_eidw_instant', array( $backend, 'get_eidw_instant_update')); 
+          add_action( 'wp_ajax_wppatt_eidw_instant', array( $backend, 'get_eidw_instant_update')); 
+          
           // Add SEMS Instant CRON
-          add_action( 'wppatt_sems_instant', array( $backend, 'get_sems_instant_update')); 
+          add_action( 'wp_ajax_wppatt_sems_instant', array( $backend, 'get_sems_instant_update')); 
           
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));

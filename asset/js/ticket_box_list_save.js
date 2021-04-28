@@ -1086,8 +1086,15 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            
 		                            // SUPER FUND
 		                            // Site id req
-		                            let cur_site_id_array = parsedData[count][index_site_id].split( '/' );
-		                            let cur_site_id = cur_site_id_array[0];
+		                            
+/*
+		                            let cur_site_id_array;
+			                        let cur_site_id;
+		                            
+		                            if( superfundx == 'yes' ) {
+			                            let cur_site_id_array = parsedData[count][index_site_id].split( '/' );
+			                            let cur_site_id = cur_site_id_array[0];
+			                        }
 		                            
 		                            if(
 		                            	flag != true && 
@@ -1115,6 +1122,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                alert( alert_message );
 		                                flag = true;
 		                            }
+*/
 
 		                            
 		                            
@@ -1297,8 +1305,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                prev_epa_contact = parsedData[count][index_epa_contact];
 		                                prev_program_office = parsedData[count][index_prog_office];
 		                                prev_record_schedule = parsedData[count][index_rec_sched];
-		                                prev_site_id_array = parsedData[count][index_site_id].split( '/' );
-		                                prev_site_id = prev_site_id_array[0];
+		                                
+/*
+		                                if( superfundx == 'yes' ) {
+			                                prev_site_id_array = parsedData[count][index_site_id].split( '/' );
+			                                prev_site_id = prev_site_id_array[0];
+			                            }
+*/
 		                                
 		                                
 		
