@@ -5990,15 +5990,20 @@ if($type == 'comment') {
 						$headers .= "MIME-Version: 1.0\r\n";
 						$headers .= 'Content-Type: ' . get_bloginfo( 'html_type' ) . '; charset=' . get_bloginfo( 'charset' ) . "\r\n";
 		
-			$get_identical_error = $wpdb->get_row("SELECT * FROM ".$table_error_log."
+			$get_identical_error = $wpdb->get_row("SELECT count(id) as Count, Timestamp FROM ".$table_error_log."
 			WHERE Status_Code = '".$status_code."' AND Service_Type = '".$service_type."' AND Error_Message = '".$error."' ORDER BY Timestamp DESC LIMIT 1");
 			$get_timestamp = $get_identical_error->Timestamp;
-			
+			$get_count = $get_identical_error->Count;
+						
             $time = strtotime($get_timestamp);
 
             $curtime = time();
 
-            if(($curtime-$time) > 300 || empty($get_timestamp)) {     //5 minutes
+            if($get_count = 0) {
+              wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
+            }
+            
+            if(($curtime-$time) > 300) {     //5 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
             
