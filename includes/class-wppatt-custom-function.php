@@ -5932,16 +5932,6 @@ if($type == 'comment') {
 
             $table_error_log = $wpdb->prefix."epa_error_log";
             
-            // Insert Error
-			$wpdb->insert(
-				$table_error_log,
-				array(
-					'Status_Code' => $status_code,
-					'Error_Message' => $error,
-					'Service_Type' => $service_type
-				)
-            );
-            
 			// Send email notification
 			$option = get_option( 'rwpm_option' );
 					
@@ -5994,6 +5984,16 @@ if($type == 'comment') {
 			WHERE Status_Code = '".$status_code."' AND Service_Type = '".$service_type."' AND Error_Message = '".$error."' ORDER BY Timestamp DESC LIMIT 1");
 			$get_timestamp = $get_identical_error->Timestamp;
 
+            // Insert Error
+			$wpdb->insert(
+				$table_error_log,
+				array(
+					'Status_Code' => $status_code,
+					'Error_Message' => $error,
+					'Service_Type' => $service_type
+				)
+            );
+            
             $time = time();			
             $ts1 = strtotime($get_timestamp);
             $ts2 = $time; 
@@ -6002,7 +6002,7 @@ if($type == 'comment') {
             $time = ($seconds_diff/60);		
 
 
-            if($time > 5 || empty($get_timestamp)) {     //5 minutes
+            if($time > 2 || empty($get_timestamp)) {     //2 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
    					}
