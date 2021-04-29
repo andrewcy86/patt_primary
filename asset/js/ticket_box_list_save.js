@@ -1,4 +1,5 @@
 var theFile = {};
+var success = 0;
 
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
@@ -232,73 +233,26 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 });
 
 
-// Grabs the ticket_id and attachment_id and AJAX calls to link them in ticketmeta DB table
+// Grabs the ticket_id and attachment_id and AJAX calls to link them in ticketmeta DB tablefunction 
+
 function link_ticket_id_and_attachment( ) {
-		
-	console.log( 'link_ticket_id_and_attachment' );
-	
-	//let attachment_id = get_attachment_id();
-	let attachment_id = jQuery( '#attachment_upload_cr' ).val();
-	let ticket_id;
-	
-	//let ticket_id = get_ticket_id();
-	let ticket_id_promise = new Promise( function( success, failure ) {
-		//ticket_id = get_ticket_id();
-		
-		let counter = 1;
-	
-		var timer = setInterval(function () {
-			
-		    console.log( "get_ticket_id attempt # " + counter );
-		    ticket_id = jQuery( '#ticket_id' ).val();
-		    
-		    if( ticket_id == '' || ticket_id == null || ticket_id == undefined ) {
-				console.log( 'waiting... on ticket_id' );
-				
-				if( counter >= 120 ) {
-					console.log( 'waiting on ticket_id timeout.' );
-					
-					clearInterval(timer);
-					failure( 'Took too long' );
-				}
-				
-			} else {
-				console.log( 'No (more) waiting necessary: ticket_id' );
-				console.log( 'ticket_id: ' + ticket_id );
-				clearInterval(timer);
-				success( 'We did it.' );
-				
-			}
-		
-		    counter++;
-		
-		}, 250);
-		
-				
-	});
-	
-	
-
-	ticket_id_promise.then(
-		function(value) { console.log( 'ticket_id after: ' + ticket_id ); ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ); },
-		function(error) { ticket_id_failed(  ); }
-		
-	);
-/*
-	ticket_id_promise.then(
-		function( value ) {
-			console.log( value );
-			ajax_link_ticket_id_and_attachment( attachment_id, ticket_id );
-		},
-		function( error ) {
-			console.log( error );
-		}
-	);
-*/
-	
-	//ajax_link_ticket_id_and_attachment( attachment_id, ticket_id );
-
-
+    console.log( 'link_ticket_id_and_attachment' );
+    var ticket_id_loop = setInterval(function() {
+    var txtInput = jQuery( '#ticket_id' ).val();
+    
+    if ( txtInput !== null && txtInput !== '' && txtInput !== undefined ) {
+        
+        var attachment_id = jQuery( '#attachment_upload_cr' ).val();
+        console.log( 'ticket_id after: ' + txtInput );
+        ajax_link_ticket_id_and_attachment( attachment_id, txtInput );
+        success = 1;
+        
+    }
+    
+    if (success > 0) {
+        console.log( 'success: '+ success);
+        clearInterval(ticket_id_loop);}
+    }, 100);
 }
 
 function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
@@ -1416,9 +1370,3 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     }
 
 }
-
-
-
-
-
-

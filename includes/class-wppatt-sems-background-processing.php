@@ -54,7 +54,7 @@ $get_file_count = $wpdb->get_row(
         c.id = '".$ticket_id."'");
 
 //Batch Size
-$range = 1;
+$range = 100;
 $total_size = $get_file_count->count;
 
 //Box array

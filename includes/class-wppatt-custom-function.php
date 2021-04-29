@@ -5999,7 +5999,7 @@ if($type == 'comment') {
 
             $curtime = time();
 
-            if(($curtime-$time) > 300 || $get_count == 0) {     //5 minutes
+            if(($curtime-$time) > 300) {     //5 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
             
@@ -6059,7 +6059,7 @@ if($type == 'comment') {
 	$err = Patt_Custom_Func::convert_http_error_code($status);
 
 	if ($status != 200) {
-		Patt_Custom_Func::insert_api_error('eidw-page-debug',$status,$err);
+		Patt_Custom_Func::insert_api_error('sems-site-id',$status,$err);
 	return 'error';
 	} else {
 	if (strtoupper($site_name_submission) == strtoupper($site_name)) {
