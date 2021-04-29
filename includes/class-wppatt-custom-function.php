@@ -5990,21 +5990,22 @@ if($type == 'comment') {
 						$headers .= "MIME-Version: 1.0\r\n";
 						$headers .= 'Content-Type: ' . get_bloginfo( 'html_type' ) . '; charset=' . get_bloginfo( 'charset' ) . "\r\n";
 		
-			$get_identical_error = $wpdb->get_row("SELECT count(id) as Count, Timestamp FROM ".$table_error_log."
+			$get_identical_error = $wpdb->get_row("SELECT Timestamp FROM ".$table_error_log."
 			WHERE Status_Code = '".$status_code."' AND Service_Type = '".$service_type."' AND Error_Message = '".$error."' ORDER BY Timestamp DESC LIMIT 1");
 			$get_timestamp = $get_identical_error->Timestamp;
-			$get_count = $get_identical_error->Count;
-						
-            $time = strtotime($get_timestamp);
 
-            $curtime = time();
+            $time = time();			
+            $ts1 = strtotime($get_timestamp);
+            $ts2 = $time; 
 
-            if(($curtime-$time) > 300) {     //5 minutes
+            $seconds_diff = $ts2 - $ts1;                            
+            $time = ($seconds_diff/60);		
+
+
+            if($time > 5 || empty($get_timestamp)) {     //5 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
-            
-            //wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
-					}
+   					}
 					
 			return true;
 			} else {
@@ -6015,7 +6016,7 @@ if($type == 'comment') {
 
 
         /**
-         * SEMS SIte ID Validation
+         * SEMS Site ID Validation
          * Accepts $error_code
          * @return text
          */
@@ -6059,7 +6060,7 @@ if($type == 'comment') {
 	$err = Patt_Custom_Func::convert_http_error_code($status);
 
 	if ($status != 200) {
-		Patt_Custom_Func::insert_api_error('sems-site-id',$status,$err);
+		Patt_Custom_Func::insert_api_error('eidw-page-debug',$status,$err);
 	return 'error';
 	} else {
 	if (strtoupper($site_name_submission) == strtoupper($site_name)) {
