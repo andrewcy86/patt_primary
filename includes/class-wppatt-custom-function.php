@@ -5993,16 +5993,15 @@ if($type == 'comment') {
 					'Service_Type' => $service_type
 				)
             );
-            
-            $time = time();			
+            		
             $ts1 = strtotime($get_timestamp);
-            $ts2 = $time; 
+            $ts2 = time();
 
             $seconds_diff = $ts2 - $ts1;                            
             $time = ($seconds_diff/60);		
 
 
-            if($time > 2 || empty($get_timestamp)) {     //2 minutes
+            if($time > 2 || empty($get_timestamp)) {     //Increase in future 15 minutes from 2 minutes
               wp_mail( $recipient_email, $email_subject, $mailtext, $headers );
             }
    					}
