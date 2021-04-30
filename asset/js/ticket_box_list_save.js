@@ -169,7 +169,7 @@ jQuery.fn.toJson = function () {
 
 // Box list file validation on submit
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
-    
+
     let superfundx = jQuery('#super-fund').val();
     console.log({superfund:superfundx});
     
@@ -219,9 +219,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
                 console.log( obj.attachment_id );
                 
                 jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
-                
                 link_ticket_id_and_attachment();
-                
+
                 
             },  
             error: function (response) {
@@ -239,19 +238,20 @@ function link_ticket_id_and_attachment( ) {
     console.log( 'link_ticket_id_and_attachment' );
     var ticket_id_loop = setInterval(function() {
     var txtInput = jQuery( '#ticket_id' ).val();
-    
     if ( txtInput !== null && txtInput !== '' && txtInput !== undefined ) {
         
         var attachment_id = jQuery( '#attachment_upload_cr' ).val();
         console.log( 'ticket_id after: ' + txtInput );
         ajax_link_ticket_id_and_attachment( attachment_id, txtInput );
         success = 1;
-        
     }
     
     if (success > 0) {
         console.log( 'success: '+ success);
-        clearInterval(ticket_id_loop);}
+        clearInterval(ticket_id_loop);
+        jQuery('.wpsc_loading_icon').css("display","none");
+        jQuery("#patt_thankyou").delay(2000).fadeIn(900);
+    }
     }, 100);
 }
 
