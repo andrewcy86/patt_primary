@@ -238,7 +238,7 @@ function link_ticket_id_and_attachment( ) {
     console.log( 'link_ticket_id_and_attachment' );
     var ticket_id_loop = setInterval(function() {
     var txtInput = jQuery( '#ticket_id' ).val();
-    if ( txtInput !== null && txtInput !== '' && txtInput !== undefined ) {
+    if ( txtInput !== '' ) {
         
         var attachment_id = jQuery( '#attachment_upload_cr' ).val();
         console.log( 'ticket_id after: ' + txtInput );
@@ -248,9 +248,9 @@ function link_ticket_id_and_attachment( ) {
     
     if (success > 0) {
         console.log( 'success: '+ success);
-        clearInterval(ticket_id_loop);
         jQuery('.wpsc_loading_icon').css("display","none");
         jQuery("#patt_thankyou").delay(2000).fadeIn(900);
+        clearInterval(ticket_id_loop);
     }
     }, 100);
 }
