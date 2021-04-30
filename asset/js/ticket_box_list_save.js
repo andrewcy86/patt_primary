@@ -220,7 +220,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
                 
                 jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
                 link_ticket_id_and_attachment();
-
+                jQuery('.wpsc_loading_icon').css("display","none");
+                jQuery("#patt_thankyou").fadeIn(1000);
                 
             },  
             error: function (response) {
@@ -248,8 +249,6 @@ function link_ticket_id_and_attachment( ) {
     
     if (success > 0) {
         console.log( 'success: '+ success);
-        jQuery('.wpsc_loading_icon').css("display","none");
-        jQuery("#patt_thankyou").delay(2000).fadeIn(900);
         clearInterval(ticket_id_loop);
     }
     }, 100);
