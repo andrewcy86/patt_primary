@@ -219,9 +219,6 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
                 console.log( obj.attachment_id );
                 
                 jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
-                link_ticket_id_and_attachment();
-                jQuery('.wpsc_loading_icon').css("display","none");
-                jQuery("#patt_thankyou").fadeIn(1000);
                 
             },  
             error: function (response) {
@@ -271,7 +268,10 @@ function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 		data: data,
 		success: function( response ){
 			console.log('link_ticket_and_attachment done');
-			console.log( response );	
+			console.log( response );
+			
+			jQuery('.wpsc_loading_icon').css('display','none');
+            jQuery('#patt_thankyou').delay(2000).fadeIn(2000);
 		}
 	
 	});		
