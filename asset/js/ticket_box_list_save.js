@@ -170,6 +170,10 @@ jQuery.fn.toJson = function () {
 // Box list file validation on submit
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
+	jQuery('.wpsc_loading_icon_submit_ticket').css('display','block');
+	jQuery('.create_ticket_fields_container').css('display','none');
+	jQuery('.create_ticket_frm_submit').css('display','none');
+	
     let superfundx = jQuery('#super-fund').val();
     console.log({superfund:superfundx});
     
@@ -270,8 +274,8 @@ function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 			console.log('link_ticket_and_attachment done');
 			console.log( response );
 			
-			jQuery('.wpsc_loading_icon').css('display','none');
-            jQuery('#patt_thankyou').delay(2000).fadeIn(2000);
+			jQuery('.wpsc_loading_icon_submit_ticket').css('display','none');
+            jQuery('#patt_thankyou').delay(1000).fadeIn(2000);
 		}
 	
 	});		

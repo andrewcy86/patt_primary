@@ -1,3 +1,15 @@
+.wpsc_loading_icon_submit_ticket {
+margin-top: 118px;
+display:none;
+}
+
+.wpsc_loading_icon_submit_ticket img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+
 #patt_thankyou {
 display:none;
 }
