@@ -1249,7 +1249,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                return false;
 		                            }
 									
-									console.log( 'post validation' );
+									//console.log( 'post validation' );
 									
 		                            // Add record to datatable if no error
 		                            if (
