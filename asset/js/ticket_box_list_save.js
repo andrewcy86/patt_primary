@@ -81,6 +81,7 @@ jQuery(document).ready(function(){
 		            this.on("addedfiles", function(files) {
 					    console.log(files.length + ' files added');
 					    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+					    
 					});
 					
 					
@@ -374,6 +375,7 @@ function get_attachment_id() {
 
 function remove_link_clicked() {
 	console.log( 'clickity clack' );
+/*
 	clearBoxTable();
 	jQuery( '.wpsp_spreadsheet' ).hide();
 	jQuery( '#processing_notification_div' ).hide();
@@ -381,6 +383,9 @@ function remove_link_clicked() {
 	
 	jQuery('#file_upload_cr').val(0);
 	jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
+*/
+	
+	reset_page();
 		
 }
 
