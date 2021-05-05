@@ -1,13 +1,12 @@
 var theFile = {};
 var success = 0;
-
+console.log( 'nothing' );
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     
-    
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	   
-		
+
 		//jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
 		//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 		
@@ -23,7 +22,7 @@ jQuery(document).ready(function(){
 		
 //         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
 	if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
-			
+			console.log( 'start' );
             var dropzoneOptions = {
                 url: "test.php",
                 autoProcessQueue: false,
@@ -56,8 +55,9 @@ jQuery(document).ready(function(){
                     wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
                 },
                 init: function () {
-                    //console.log( 'INIT' );
-                    this.on("maxfilesexceeded", function(file) {
+                    console.log( 'INIT' );
+                    
+                    this.on( "maxfilesexceeded", function(file) {
 /*
                         if (this.files[1]!=null){
                             this.removeFile(this.files[0]);
@@ -67,14 +67,29 @@ jQuery(document).ready(function(){
                         this.removeAllFiles();
 						this.addFile(file);
                     });
-                    this.on("error", function (file) {
+                    
+                    this.on( "error", function (file) {
                         console.log( 'error for maxfilesexceeded' );
                         if (!file.accepted) this.removeFile(file);
                     });
+                    
+                    this.on( "complete", function(file) {
+		                console.log( 'dropzone complete' );
+		                jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+		            });
+		            
+		            this.on("addedfiles", function(files) {
+					    console.log(files.length + ' files added');
+					    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+					});
+					
+					
                 }
             };
             var uploader = document.querySelector('#dzBoxUpload');
             var newDropzone = new Dropzone(uploader, dropzoneOptions);      
+            
+            
             
             // SEMS Dropzone setup // no longer used. Dropzone unified.
 /*
@@ -166,6 +181,9 @@ jQuery.fn.toJson = function () {
         alert(ex);
     }
 }
+
+
+
 
 // Box list file validation on submit
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
@@ -354,13 +372,24 @@ function get_attachment_id() {
 }
 */
 
-
+function remove_link_clicked() {
+	console.log( 'clickity clack' );
+	clearBoxTable();
+	jQuery( '.wpsp_spreadsheet' ).hide();
+	jQuery( '#processing_notification_div' ).hide();
+	jQuery( '#big_wrapper' ).hide();
+	
+	jQuery('#file_upload_cr').val(0);
+	jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
+		
+}
 
 // Upload boxlist document, and create the data table
 function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	
-	console.log( '--wpsc_spreadsheet_new_upload--' );
+	console.log( '--wpsc_spreadsheet_new_upload----' );
 	console.log({id:id, name:name, fileSS:fileSS});
+	
 	
     jQuery('#attachment_upload').unbind('change');
 
@@ -896,6 +925,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 		                            
 		                            // Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
+/*
 		                            if( 
 		                            	flag != true && 
 		                            	count > 1 && 
@@ -918,6 +948,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                alert( alert_message );
 		                                flag = true;
 		                            }
+*/
 									
 									
 		                            // Validate Close Date
@@ -1041,17 +1072,23 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                flag = true;
 		                            }
 		                            
+		                            console.log( 'prev_site_id read: ' + prev_site_id );
+		                            
 		                            // SUPER FUND
 		                            // Site id req
 		                            
-/*
 		                            let cur_site_id_array;
 			                        let cur_site_id;
 		                            
 		                            if( superfundx == 'yes' ) {
-			                            let cur_site_id_array = parsedData[count][index_site_id].split( '/' );
-			                            let cur_site_id = cur_site_id_array[0];
+			                            cur_site_id_array = parsedData[count][index_site_id].split( '/' );
+			                            cur_site_id = cur_site_id_array[0].trim();
+			                            console.log( 'cur_site_id: ' + cur_site_id );
+			                            console.log( count );
+			                            
 			                        }
+		                            
+		                            console.log( 'cur_site_id: ' + cur_site_id + ' && prev_site_id: ' + prev_site_id );
 		                            
 		                            if(
 		                            	flag != true && 
@@ -1079,7 +1116,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                alert( alert_message );
 		                                flag = true;
 		                            }
-*/
 
 		                            
 		                            
@@ -1263,12 +1299,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                prev_program_office = parsedData[count][index_prog_office];
 		                                prev_record_schedule = parsedData[count][index_rec_sched];
 		                                
-/*
 		                                if( superfundx == 'yes' ) {
-			                                prev_site_id_array = parsedData[count][index_site_id].split( '/' );
-			                                prev_site_id = prev_site_id_array[0];
+			                                let prev_site_id_array = parsedData[count][index_site_id].split( '/' );
+			                                prev_site_id = prev_site_id_array[0].trim();
+			                                console.log( 'prev_site_id set: ' + prev_site_id );
 			                            }
-*/
 		                                
 		                                
 		

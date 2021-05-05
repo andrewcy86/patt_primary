@@ -357,7 +357,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		  //include WPPATT_ABSPATH . 'includes/admin/pages/scripts/mld_patt_hooks.php';
 		  
           // Set Barcode Scanning Page
-          //add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
+          add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
           
           // Add threaded comment to Recall description comments 
           add_action('wp_ajax_wppatt_recall_threaded_comment_reply', array($backend, 'recall_threaded_comment_reply')); 
@@ -379,8 +379,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           
           function epa_admin_menu_items() {
-            add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            //add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
             add_submenu_page( 'wpsc-tickets', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
+            
             }
             
           function scanning_page(){
@@ -470,6 +472,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function rfid_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid.php'
+            );
+            }
+            
+            function rfid_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid-init.php'
             );
             }
             

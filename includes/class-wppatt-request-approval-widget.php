@@ -398,6 +398,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				</div>
 				<?php wp_nonce_field( 'approval_widget_form_submit', 'approval_widget_generate_nonce' ); ?>
 			</form>
+			<style>
+				.dropzone .dz-preview .dz-progress {
+					top: 70%;
+					display: none;
+				}	
+			</style>
 			<?php
 			$content = ob_get_clean();
 			$output = array(

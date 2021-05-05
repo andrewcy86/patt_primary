@@ -214,6 +214,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$epa_contact_legacy = '';
 			$is_parent = true;
 			$new_box_child = false;
+			$sems_check_site_name;
+			$sems_check_site_id;
+			$num_in_request = count( $boxinfo_array );
 			
 			
 			// DEBUG START
@@ -269,7 +272,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			
 
 			// Loop through box data
-			foreach ( $boxinfo_array as $boxinfo ) {
+			foreach ( $boxinfo_array as $index => $boxinfo ) {
 				
 				// Set Box ID and box number
 				$box_id = $request_id . '-' . $boxinfo['Box'];
@@ -312,6 +315,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					//$folder_file_counter = 1;
 				} else {
 					$is_new_box = false;
+				}
+				
+				// Get final values for Site Name and Site ID for SEMS
+				if(  $superfund && ( $index == $num_in_request - 1 ) ) {
+					$sems_check_site_name = $boxinfo['Site Name'];
+					
+					$site_id_string = $boxinfo['Site ID # / OU'];
+					$site_id_array = explode( "/", $site_id_string );
+					$sems_check_site_id = trim( $site_id_array[0] );
 				}
 				
 				
@@ -1598,6 +1610,40 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			} 
 */
 			
+			// Confirm site name and site id are valid (from api) 
+			if( $superfund ) {
+				
+				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id );
+				
+				if( $site_name_id_valid != 'Success') {
+					
+					$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
+					
+					ob_start();
+						?>
+						<div class="col-sm-12 ticket-error-msg">
+							<?php esc_html_e( 'Error entering box information. Ticket not generated.', 'pattracking' ); ?>
+							<?php esc_html_e( 'If this error persists, please copy this error message and the details below, and send them to the development team.', 'pattracking' ); ?>
+							<br><br>
+							<?php 
+								echo 'Site ID Validation failed. <br>';
+								echo 'Site ID Validation response: ' . $site_name_id_valid . '<br>';
+							?>
+							<br>							
+						</div>
+						<?php
+						$ticket_error_message = ob_get_clean();
+
+						$response = array(
+							'redirct_url'    => '',
+							'thank_you_page' => $ticket_error_message,
+						);
+
+						echo json_encode( $response );
+						die();
+					
+				}
+			} 
 			
 			
 			
@@ -1929,7 +1975,9 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 					jQuery(document).on('click', '.dz-remove', function() {
 					    alert('hello');
 					});
+*/
 					
+/*
 					jQuery('.dz-remove').click( function () {
 						console.log('file removed');
 						jQuery('#file_upload_cr').val('0');

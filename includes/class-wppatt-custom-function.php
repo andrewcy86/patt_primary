@@ -6021,57 +6021,52 @@ if($type == 'comment') {
          */
 		public static function sems_site_id_validation( $site_name_submission, $site_id_submission ) {
 		    
-		      if ($site_name_submission !== NULL || $site_id_submission !== NULL) {
+		    if ($site_name_submission !== NULL || $site_id_submission !== NULL) {
 
-	$curl = curl_init();
-	
-	$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites?id='.$site_id_submission;
-	
-	$headers = [
-	    'Cache-Control: no-cache'
-	];
-	
-    curl_setopt($curl,CURLOPT_URL, $url);
-    curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
-    curl_setopt($curl,CURLOPT_TIMEOUT, 30);
-    curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
-    curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
-    curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-	//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-	//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-	
-	$response = curl_exec($curl);
-	
-	//Strip first and last characters
-	
-	$final_response = substr($response, 1, -1);
-	
-	//
-	$object = json_decode($final_response);
-	
-	$site_name = $object->{'sitename'};
-
-	$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-
-	curl_close($curl);
-
-	$err = Patt_Custom_Func::convert_http_error_code($status);
-
-	if ($status != 200) {
-		Patt_Custom_Func::insert_api_error('eidw-page-debug',$status,$err);
-	return 'error';
-	} else {
-	if (strtoupper($site_name_submission) == strtoupper($site_name)) {
-	return 'Success';
-	} else {
-	return $site_name;
-	}	
-	}
-                
-                
-                
-		      }
+				$curl = curl_init();
+				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites?id='.$site_id_submission;
+				$headers = [
+				    'Cache-Control: no-cache'
+				];
+				
+			    curl_setopt($curl,CURLOPT_URL, $url);
+			    curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
+			    curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
+			    curl_setopt($curl,CURLOPT_TIMEOUT, 30);
+			    curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+			    curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
+			    curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
+				//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+				//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+				
+				$response = curl_exec($curl);
+				
+				//Strip first and last characters
+				
+				$final_response = substr($response, 1, -1);
+				
+				//
+				$object = json_decode($final_response);
+				
+				$site_name = $object->{'sitename'};
+			
+				$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+			
+				curl_close($curl);
+			
+				$err = Patt_Custom_Func::convert_http_error_code($status);
+			
+				if ($status != 200) {
+					Patt_Custom_Func::insert_api_error('eidw-page-debug',$status,$err);
+					return 'error';
+				} else {
+					if (strtoupper($site_name_submission) == strtoupper($site_name)) {
+						return 'Success';
+					} else {
+						return $site_name;
+					}	
+				} 
+		    }
                 
 		}
 		

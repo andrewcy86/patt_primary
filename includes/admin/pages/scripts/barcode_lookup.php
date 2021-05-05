@@ -125,6 +125,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 ';
 
 			foreach ($box_details as $info) {
+			    $boxlist_dbid = $info->id;
 				$boxlist_id = $info->box_id;
 				$boxlist_location = $info->digitization_center;
 				if ($boxlist_location == 'East') {
@@ -148,7 +149,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
                 
 			$tbl .= '<tr>
             <td  width="35px" height="50px"></td>
-            <td><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" target="_blank">' . $boxlist_id . '</a></td>';
+            <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" target="_blank">' . $boxlist_id . '</a></td>';
             
             $type = 'box';
             $loc_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
@@ -219,7 +220,7 @@ $is_active = Patt_Custom_Func::request_status( $location_request_id );
 if (!empty($box_details_id) && $is_active == 1) {
 //REVIEW
 			$box_content = $wpdb->get_results(
-				"SELECT folderdocinfofile_id as id, title as title, date as date, lan_id as contact, validation as validation
+				"SELECT id, folderdocinfofile_id, title as title, date as date, lan_id as contact, validation as validation
                 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
                 WHERE box_id = '" . $box_details_id . "'"
 			);
@@ -303,7 +304,8 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
  </thead><tbody>
 ';
 			foreach ($box_content as $info) {
-				$boxcontent_id = $info->id;
+			    $boxcontent_dbid = $info->id;
+				$boxcontent_id = $info->folderdocinfofile_id;
 				$boxcontent_title = $info->title;
 				$boxcontent_title_truncated = (strlen($boxcontent_title) > 20) ? substr($boxcontent_title, 0, 20) . '...' : $boxcontent_title;
 				$boxcontent_date = $info->date;
@@ -329,7 +331,7 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 				$tbl .= '
     <tr>
             <td width="35px" height="50px"></td>
-            <td><a href="'.$folderfile_url.'&id=' . $boxcontent_id . '" target="_blank">' . $boxcontent_id . '</a></td>
+            <td data-order="'. $boxcontent_dbid .'"><a href="'.$folderfile_url.'&id=' . $boxcontent_id . '" target="_blank">' . $boxcontent_id . '</a></td>
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>

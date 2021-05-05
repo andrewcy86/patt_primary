@@ -52,7 +52,11 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_rfid_data");
+$sel = mysqli_query($con,"select count(*) as allcount FROM " . $wpdb->prefix . "wpsc_epa_rfid_data as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.box_id = b.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as c ON b.ticket_id = c.id
+WHERE (c.active <> 0)
+");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
@@ -60,7 +64,7 @@ $totalRecords = $records['allcount'];
 $sel = mysqli_query($con,"select count(a.box_id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_rfid_data as a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.box_id = b.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as c ON b.ticket_id = c.id
-WHERE 1 ".$searchQuery);
+WHERE (c.active <> 0) AND 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 

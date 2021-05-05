@@ -1,5 +1,7 @@
 <?php
 
+global $wpdb, $current_user, $wpscfunction;
+
 // Set error logging in db.php to yes or no.  Logs are written to log.txt
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
@@ -8,16 +10,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
 	
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
-$host = DB_HOST; /* Host name */
-$user = DB_USER; /* User */
-$password = DB_PASSWORD; /* Password */
-$dbname = DB_NAME; /* Database name */
-
-$con = mysqli_connect($host, $user, $password,$dbname);
-// Check connection
-if (!$con) {
-  die("Connection failed: " . mysqli_connect_error());
-}
+$rfid_table = $wpdb->prefix . "wpsc_epa_rfid_data";
 
 date_default_timezone_set('America/New_York');
 
@@ -46,23 +39,30 @@ $rawPostData = file_get_contents('php://input');
         
         $array = explode(',', $row);
         $array_strip = str_replace('"', '', $array[1]);
-        $box_id = Patt_Custom_Func::convert_epc_pattboxid($array_strip);
         
-        $row = $readerName . "," . $macAddress . ",'" . $box_id . "',"  . $row;
+        $reader_name_strip = substr($readerName, 2, -2);
+        $box_id = Patt_Custom_Func::convert_epc_pattboxid($array_strip);
+        $box_id_strip = str_replace("\\", "", $box_id);
+        
+        $row = $readerName . "," . $macAddress . ",\"" . $box_id_strip . "\","  . $row;
         $fld_value = str_replace("\\", "", $row);
         $row = $fld_value;
 
-$check_boxid = "SELECT count(box_id) as count FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE box_id = '".$box_id."'";
-$boxid_result = mysqli_query($con,$check_boxid);
-$rowcount=mysqli_num_rows($boxid_result);
+	$rfid_count = $wpdb->get_row(
+				"SELECT count(box_id) as count FROM " . $rfid_table . " WHERE box_id = '".$box_id_strip."' AND Reader_Name = '".$reader_name_strip."'");
 
-if ($rowcount > 0) {
-$query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_rfid_data ($fieldNames) VALUES ($row)";
-//$query = "INSERT INTO wpqa_wpsc_epa_rfid_data (Reader_Name) VALUES ('".$rowcount."')";
-$retval = mysqli_query($con,$query);
+    $rfid_count_num = $rfid_count->count;
+
+	$box_check_count = $wpdb->get_row(
+				"SELECT count(box_id) as count FROM ".$wpdb->prefix."wpsc_epa_boxinfo WHERE box_id = '".$box_id_strip."'");
+
+    $box_check_count_num = $box_check_count->count;
+if ($rfid_count_num == 0 && $box_check_count_num > 0) {
+
+$wpdb->query("INSERT INTO ".$rfid_table." (".$fieldNames.") VALUES (".$row.")");
+
 }
 
     }
-    mysqli_close($con);
 
 ?>

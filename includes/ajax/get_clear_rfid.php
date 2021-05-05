@@ -25,8 +25,6 @@ FROM " . $wpdb->prefix . "wpsc_epa_rfid_data
 				$readerid = $info->Reader_Name;
 				array_push($rfid_readerid_array, $readerid);
 			}
-			
-
 ?>
 
 <form>
@@ -46,6 +44,9 @@ ob_start();
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_clear_rfid_readerid();">Clear Results</button>
 <script>
+
+jQuery("#readerid").val("<?php echo $_POST["reader"]; ?>").change();
+
 function wpsc_clear_rfid_readerid(){		
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/clear_rfid_readerid.php',{
@@ -53,7 +54,7 @@ postvarsreaderid: jQuery("#readerid").val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=rfid");
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=rfid&reader=<?php echo $_POST["reader"]; ?>");
    });
 }
 </script>
