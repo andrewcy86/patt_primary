@@ -425,7 +425,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 			function custom_menu_item_redirect_external_link() {
 		        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
 		        if($menu_redirect == 'qlik-report' ) {
-		            echo '<script>window.location.replace("http://www.google.com");</script>';
+		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/c76071e0-5fa3-4e9a-81d0-05fc910b7b6a/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
 		            exit();
 		        }
 			}
