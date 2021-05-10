@@ -59,6 +59,7 @@ $searchGeneric = $_POST['searchGeneric'];
 $searchByRequest = $_POST['searchRequest'];
 $searchByStatus = $_POST['searchByStatus'];
 $searchByPriority = $_POST['searchByPriority'];
+$searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $currentUser = $_POST['currentUser'];
 ## User Search
 //throwing Undefined Index error
@@ -117,6 +118,18 @@ if($searchByDigitizationCenter != ''){
    $searchHaving = " HAVING location like '%".$searchByDigitizationCenter."%' ";
 }
 
+$ecms_sems = '';
+
+if($searchByECMSSEMS != ''){
+    if($searchByECMSSEMS == 'ECMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
+    }
+    
+    if($searchByECMSSEMS == 'SEMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
+    }
+}
+
 if($searchGeneric != ''){
 if(in_array(strtolower($searchGeneric), $locationarray)){
    $searchHaving = " HAVING location like '%".$searchGeneric."%' ";
@@ -144,11 +157,13 @@ $totalRecords = $records['allcount'];
 ## Total number of records with filtering
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 LEFT JOIN " . $wpdb->prefix . "users g ON g.display_name = a.customer_name
-WHERE 1 ".$searchQuery." AND a.active <> 1 group by a.request_id ".$searchHaving.") t");
+WHERE 1 ".$searchQuery." AND a.active <> 1 " . $ecms_sems . "
+group by a.request_id ".$searchHaving.") t");
 
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
@@ -223,12 +238,13 @@ a.date_updated as date_updated,
 
 GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 
 LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
-WHERE 1 ".$searchQuery." AND a.active <> 1 AND a.id <> -99999
+WHERE 1 ".$searchQuery." AND a.active <> 1 AND a.id <> -99999 " . $ecms_sems . "
 group by request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);

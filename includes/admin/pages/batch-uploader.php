@@ -184,21 +184,47 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 							</div>
 						</div>
 						<div style="margin: 10px 0 10px;" id="batch_list_attachment" class="row spreadsheet_container"></div>
-				
-						<table style="display:none;margin-bottom:0;" id="batchlistdatatable" class="table table-striped table-bordered nowrap">
-							<thead style="margin: 0 auto !important;">
-								<tr>
-									<th>File Name</th>
-									<th>Disposition Schedule & Item Number</th>
-								</tr>
-							</thead>
-						</table>
+						
+						<div id="processing_div"   class="row">
+							<div class="col-sm-4"></div>
+							<div id="processing_notification_div" class="col-sm-4" >
+								<span id="processing_notification" ></span>
+								<br>
+								<span id="processing_notification_persistent" >Do Not Navigate Away from this page. Processing will Halt.</span>
+							</div>
+							<div class="col-sm-4"></div>
+						</div>
+						
+						<div id="meta_data_wrapper">
+							<table style="display:none;margin-bottom:0;" id="batchlistdatatable" class="table table-striped table-bordered nowrap">
+								<thead style="margin: 0 auto !important;">
+									<tr id="spreadsheet_dt_row" >
+	<!--
+										<th>File Name</th>
+										<th>Disposition Schedule & Item Number</th>
+	-->
+									</tr>
+								</thead>
+							</table>
+						</div>
 						
 						<!-- Batch List File Upload Validation -->
 						<input type="hidden" id="batch_list_upload_cr" name="batch_list_upload_cr" value="0" />
 					</div>
 				</form>
 				<hr>
+				
+				<div id="batch_uploader_status_div" class="row" >
+					<div id="" class="col-sm-1" ></div>
+					<div class="col-sm-2" >
+						<span>MetaData Files</span> <br>
+						<span id="metadata_file_num"></span>
+					</div>
+					<div id="" class="col-sm-1" ></div>
+					<div id="batchfiles_file_num" class="col-sm-2" ></div>
+					<div id="" class="col-sm-1" ></div>
+					<div id="file_diff" class="col-sm-2" ></div>
+				</div>
 				
 				<div id="alert_status_batch_uploader" class="alert_spacing"></div>
 				
@@ -237,7 +263,47 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 			
 			</div>
 			
-			
+			<style>
+				#batch_uploader_status_div {
+					display: none;
+				}
+				
+				#processing_div {
+					display: none;
+					margin: 10px 0 10px;
+				}
+				
+				#processing_notification_div {
+/* 					display: none; */
+					text-align: center;
+/* 					width: 20em; */
+					padding: 15px 0px;
+					border-radius: 4px;
+				}
+				
+				#processing_notification {
+					color: white;
+					font-size: 1.5em;
+				}
+				
+				#processing_notification_persistent {
+					color: #d45656;
+					font-size: 1.1em;
+					font-weight: 700;
+				}
+				
+				.yellow_update {
+					background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%);
+				}
+				
+				.green_update {
+					background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%);
+				}
+				
+				.dropzone .dz-preview .dz-progress {
+					top: 70%;
+				}	
+			</style>
 			<?php 
 		}
 		

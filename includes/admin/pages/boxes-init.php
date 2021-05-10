@@ -170,6 +170,13 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
                <option value='Decline'>Decline</option>
              </select>
     <br /><br />
+    	
+               <select id='searchByECMSSEMS' aria-label='Search by ECMS or SEMS'>
+               <option value=''>-- Select ECMS or SEMS --</option>
+               <option value='ECMS'>ECMS</option>
+               <option value='SEMS'>SEMS</option>
+             </select>
+<br /><br />
 		<?php		
 		if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 		{
@@ -357,6 +364,7 @@ jQuery(document).ready(function(){
 			data.sp = jQuery('#searchByPriority').val();
 			data.sbs = jQuery('#searchByStatus').val();
 			data.rd = jQuery('#searchByRecallDecline').val();
+			data.es = jQuery('#searchByECMSSEMS').val();
 			data.sbu = jQuery('#searchByUser').val(); 
 			data.aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
 			data.aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get();                   
@@ -368,6 +376,7 @@ jQuery(document).ready(function(){
 			jQuery('#searchByDigitizationCenter').val(data.dc);
 			jQuery('#searchByPriority').val(data.sp);
 			jQuery('#searchByRecallDecline').val(data.rd);
+			jQuery('#searchByECMSSEMS').val(data.es);
 			jQuery('#searchByStatus').val(data.sbs); 
 			jQuery('#searchByUser').val(data.sbu); 
 			
@@ -398,6 +407,7 @@ jQuery(document).ready(function(){
 				var dc = jQuery('#searchByDigitizationCenter').val();
 				var sp = jQuery('#searchByPriority').val();
 				var rd = jQuery('#searchByRecallDecline').val();
+				var es = jQuery('#searchByECMSSEMS').val();
 				var sbs = jQuery('#searchByStatus').val(); 
 				var sbu = jQuery('#searchByUser').val();  
 				var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
@@ -410,7 +420,7 @@ jQuery(document).ready(function(){
 				data.searchByDigitizationCenter = dc;
 				data.searchByPriority = sp;
 				data.searchByRecallDecline = rd;
-				
+				data.searchByECMSSEMS = es;
 				data.searchByStatus = sbs;
 				data.searchByUser = sbu;
 				data.searchByUserAAVal = aaVal;
@@ -512,7 +522,12 @@ jQuery(document).ready(function(){
         dataTable.state.save();
         dataTable.draw();
     });
-	
+    
+    jQuery("#searchByECMSSEMS").change(function(){
+        dataTable.state.save();
+        dataTable.draw();
+    });
+
 	jQuery("#searchByStatus").change(function(){
 		dataTable.state.save();
 		dataTable.draw();
@@ -572,6 +587,7 @@ jQuery(document).ready(function(){
 	    jQuery('#searchByDigitizationCenter').val('');
 	    jQuery('#searchByPriority').val('');
 	    jQuery('#searchByRecallDecline').val('');
+	    jQuery('#searchByECMSSEMS').val('');
 	    jQuery('#searchByUser').val('');
         jQuery('#searchByStatus').val('');
 	    jQuery('#searchByBoxID').importTags('');

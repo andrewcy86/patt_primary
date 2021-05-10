@@ -45,6 +45,7 @@ else {
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
+$searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $searchGeneric = $_POST['searchGeneric'];
 $is_requester = $_POST['is_requester'];
 
@@ -91,6 +92,18 @@ if($searchByRecallDecline != ''){
 
 }
 
+$ecms_sems = '';
+
+if($searchByECMSSEMS != ''){
+    if($searchByECMSSEMS == 'ECMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
+    }
+    
+    if($searchByECMSSEMS == 'SEMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
+    }
+}
+
 // If a user is a requester, only show the folder/files from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
 	$user_name = $current_user->display_name;
@@ -117,10 +130,11 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a 
+$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
@@ -143,7 +157,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    WHERE a.folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.folderdoc_id )  AS j ON j.folderdoc_id = a.id
 
-WHERE a.id <> -99999 AND b.active <> 0 
+WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . "
 ");
 
 $records = mysqli_fetch_assoc($sel);
@@ -151,10 +165,11 @@ $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 //gets all folder/files for every user
-$sel = mysqli_query($con,"select count(a.id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
@@ -177,13 +192,13 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    WHERE a.folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.folderdoc_id )  AS j ON j.folderdoc_id = a.id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery);
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 //SQL query using functions to generate icons
-$docQuery = "SELECT 
+$docQuery = "SELECT DISTINCT
 a.id as dbid,
 a.folderdocinfofile_id as folderdocinfo_id,
 CONCAT(
@@ -242,6 +257,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
@@ -266,7 +282,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
 
 LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
 
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $docRecords = mysqli_query($con, $docQuery);

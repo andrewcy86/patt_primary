@@ -56,6 +56,7 @@ $searchGeneric = $_POST['searchGeneric'];
 $searchByStatus = $_POST['searchByStatus'];
 $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
+$searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $currentUser = $_POST['currentUser'];
 ## User Search
 //throwing Undefined Index error
@@ -136,6 +137,18 @@ if($searchByRecallDecline != ''){
 
 }
 
+$ecms_sems = '';
+
+if($searchByECMSSEMS != ''){
+    if($searchByECMSSEMS == 'ECMS') {
+        $ecms_sems = 'AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
+    }
+    
+    if($searchByECMSSEMS == 'SEMS') {
+        $ecms_sems = 'AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
+    }
+}
+
 if($searchGeneric != ''){
 if(in_array(strtolower($searchGeneric), $locationarray)){
    $searchHaving = " HAVING location like '%".$searchGeneric."%' ";
@@ -158,6 +171,7 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -180,13 +194,15 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
-WHERE a.id <> -99999 AND a.active <> 0 group by a.request_id) t");
+WHERE a.id <> -99999 AND a.active <> 0 " . $ecms_sems . "
+group by a.request_id) t");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 $sel = mysqli_query($con,"select count(*) as allcount FROM (select COUNT(DISTINCT a.request_id) as allcount, GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -209,7 +225,8 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
-WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 group by a.request_id ".$searchHaving.") t");
+WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
+group by a.request_id ".$searchHaving.") t");
 
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
@@ -308,6 +325,7 @@ a.date_updated as date_updated,
 GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -334,7 +352,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
-WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999
+WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);

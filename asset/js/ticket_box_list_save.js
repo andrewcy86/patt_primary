@@ -80,6 +80,20 @@ jQuery(document).ready(function(){
 		            
 		            this.on("addedfiles", function(files) {
 					    console.log(files.length + ' files added');
+					    console.log( files[0].name );
+					    console.log( files );
+					    
+					    let name_arr = files[0].name.split( '.' );
+					    console.log( name_arr );
+					    let extension = name_arr[ name_arr.length - 1 ];
+					    console.log( extension );
+					    
+					    if( !extension.includes( 'xls' ) ) {
+						    console.log( 'wrong type' );
+						    this.removeAllFiles();
+						    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
+						    reset_page();
+					    }
 					    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
 					    
 					});
@@ -425,6 +439,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
     if( superfundx == '' ) {
 	    flag = true;
 	    alert( 'Please make a selection for "Are these records part of SEMS?" before uploading the Box List.' );
+	    reset_page();
     }
 
     //No file

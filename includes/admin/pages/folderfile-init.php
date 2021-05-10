@@ -136,6 +136,14 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
            <option value='Decline'>Decline</option>
          </select>
 <br /><br />
+
+    	
+       <select id='searchByECMSSEMS' aria-label='Search by ECMS or SEMS'>
+       <option value=''>-- Select ECMS or SEMS --</option>
+       <option value='ECMS'>ECMS</option>
+       <option value='SEMS'>SEMS</option>
+     </select>
+<br /><br />
 	                            </div>
 			    		</div>
 	
@@ -257,6 +265,7 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
       data.dc = jQuery('#searchByDigitizationCenter').val();
       data.sp = jQuery('#searchByPriority').val();
       data.rd = jQuery('#searchByRecallDecline').val();
+      data.es = jQuery('#searchByECMSSEMS').val();
     },
     'stateLoadParams': function(settings, data) {
       jQuery('#searchGeneric').val(data.sg);
@@ -265,6 +274,7 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
       jQuery('#searchByDigitizationCenter').val(data.dc);
       jQuery('#searchByPriority').val(data.sp);
       jQuery('#searchByRecallDecline').val(data.rd);
+      jQuery('#searchByECMSSEMS').val(data.es);
     },
     'searching': false, // Remove default Search Control
     'paging': true,
@@ -281,6 +291,7 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
           var dc = jQuery('#searchByDigitizationCenter').val();
           var sp = jQuery('#searchByPriority').val();
           var rd = jQuery('#searchByRecallDecline').val();
+          var es = jQuery('#searchByECMSSEMS').val();
           
           var boxid = jQuery('#box_id').val();
           var page = jQuery('#page').val();
@@ -292,6 +303,7 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
           data.searchByDigitizationCenter = dc;
           data.searchByPriority = sp;
           data.searchByRecallDecline = rd;
+          data.searchByECMSSEMS = es;
           data.is_requester = is_requester;
           
           data.BoxID = boxid;
@@ -384,6 +396,10 @@ jQuery("#searchByRecallDecline").change(function(){
     dataTable.draw();
 });
 
+jQuery("#searchByECMSSEMS").change(function(){
+    dataTable.state.save();
+    dataTable.draw();
+});
 
 //jQuery('#searchGeneric').on('input keyup paste', function () {
  //       dataTable.state.save();
@@ -405,6 +421,7 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchByDigitizationCenter').val('');
     jQuery('#searchByPriority').val('');
     jQuery('#searchByRecallDecline').val('');
+    jQuery('#searchByECMSSEMS').val('');
     jQuery('#searchByDocID').importTags('');
     dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();

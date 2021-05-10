@@ -137,6 +137,12 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
            <option value='Not Assigned'>Not Assigned</option>
          </select>
 <br /><br />
+       <select id='searchByECMSSEMS' aria-label='Search by ECMS or SEMS'>
+       <option value=''>-- Select ECMS or SEMS --</option>
+       <option value='ECMS'>ECMS</option>
+       <option value='SEMS'>SEMS</option>
+     </select>
+<br /><br />
 				<select id='searchByUser'>
 					<option value=''>-- Select User --</option>
 					<option value='mine'>Mine</option>
@@ -255,6 +261,7 @@ jQuery(document).ready(function(){
       data.rid = jQuery('#searchByRequestID').val();
       data.po = jQuery('#searchByProgramOffice').val();
       data.dc = jQuery('#searchByDigitizationCenter').val();
+      data.es = jQuery('#searchByECMSSEMS').val();
 	  data.aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
 	  data.aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get(); 
     },
@@ -265,6 +272,7 @@ jQuery(document).ready(function(){
       jQuery('#searchByRequestID').val(data.rid);
       jQuery('#searchByProgramOffice').val(data.po);
       jQuery('#searchByDigitizationCenter').val(data.dc);
+      jQuery('#searchByECMSSEMS').val(data.es);
       jQuery('#searchByUser').val(data.sbu);
 			jQuery('#user_search').val(data.aaName);
 
@@ -288,12 +296,14 @@ jQuery(document).ready(function(){
           var sg = jQuery('#searchGeneric').val();
           var requestid = jQuery('#searchByRequestID').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
+          var es = jQuery('#searchByECMSSEMS').val();
           // Append to data
           data.searchGeneric = sg;
           data.searchByRequestID = requestid;
           data.searchByStatus = ss;
           data.searchByPriority = sp;
           data.searchByDigitizationCenter = dc;
+          data.searchByECMSSEMS = es;
           data.currentUser = rs_user;
           data.searchByUser = sbu;
 		  data.searchByUserAAVal = aaVal;
@@ -354,6 +364,11 @@ jQuery("#searchByStatus").change(function(){
 });
 
   jQuery("#searchByDigitizationCenter").change(function(){
+    dataTable.state.save();
+    dataTable.draw();
+});
+
+jQuery("#searchByECMSSEMS").change(function(){
     dataTable.state.save();
     dataTable.draw();
 });
@@ -420,6 +435,7 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchGeneric').val('');
     jQuery('#searchByProgramOffice').val('');
     jQuery('#searchByDigitizationCenter').val('');
+    jQuery('#searchByECMSSEMS').val('');
     jQuery('#searchByBoxID').importTags('');
     dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();

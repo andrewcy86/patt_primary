@@ -2,6 +2,62 @@ var theFile = {};
 var batchFiles = {
 	file_list: []
 };
+var metaData = {
+	file_list: [],
+};
+
+
+//
+// Setup
+//
+
+// Column Names
+let name_file_name = 'File Name';
+let name_disp_sched = 'Disposition Schedule & Item Number';
+let name_title = 'Title';
+let name_desc = 'Description';
+let name_creator = 'Creator';
+let name_creation_date = 'Creation Date';
+let name_rights = 'Rights';
+let name_coverage = 'Coverage';
+let name_relation = 'Relation';
+
+// Selectors
+batch_uploader_status_div_sel = '#batch_uploader_status_div';
+metadata_file_num_sel = '#metadata_file_num';
+batchfiles_file_num_sel = '#batchfiles_file_num';
+file_diff_sel = '#file_diff';
+
+// Note: col_names Must be in exact order as on the spreadsheet.
+var spreadsheetMetaData = {
+	file_list: [],
+	col_names: [
+		name_file_name,
+		name_disp_sched,
+		name_title,
+		name_desc,
+		name_creator,
+		name_creation_date,
+		name_rights,
+		name_coverage,
+		name_relation
+	]
+};
+
+let index_file_name = spreadsheetMetaData.col_names.indexOf( name_file_name );
+let index_disp_sched = spreadsheetMetaData.col_names.indexOf( name_disp_sched );
+let index_title = spreadsheetMetaData.col_names.indexOf( name_title );
+let index_description = spreadsheetMetaData.col_names.indexOf( name_desc );
+let index_creator = spreadsheetMetaData.col_names.indexOf( name_creator );
+let index_creation_date = spreadsheetMetaData.col_names.indexOf( name_creation_date );
+let index_rights = spreadsheetMetaData.col_names.indexOf( name_rights );
+let index_coverage = spreadsheetMetaData.col_names.indexOf( name_coverage );
+let index_relation = spreadsheetMetaData.col_names.indexOf( name_relation );
+
+
+// D E B U G - START
+console.log({index_file_name:index_file_name, index_disp_sched:index_disp_sched, index_title:index_title, index_description:index_description, index_creator:index_creator, index_creation_date:index_creation_date, index_rights:index_rights, index_coverage:index_coverage, index_relation:index_relation });
+// D E B U G - END
 
 jQuery(document).ready(function(){
     //Dropzone.autoDiscover = false;
@@ -14,9 +70,10 @@ jQuery(document).ready(function(){
 		 
 		//if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
 			
-            var dropzoneOptions = {
-                url: "test.php",
-                autoProcessQueue: false,
+            var dropzoneOptions_meta_data = {
+                //url: "notreal.php",
+                url: "#",
+                //autoProcessQueue: false,
                 addRemoveLinks: true,
                 uploadMultiple: false,
                 maxFiles: 1,
@@ -30,18 +87,75 @@ jQuery(document).ready(function(){
                     
                 },
                 init: function () {
-                    this.on("maxfilesexceeded", function() {
-                        if (this.files[1]!=null){
-                            this.removeFile(this.files[0]);
+                    this.on( "maxfilesexceeded", function() {
+                        if ( this.files[1]!=null ){
+                            this.removeFile( this.files[0] );
                         }
                     });
-                    this.on("error", function (file) {
+                    this.on( "error", function ( file ) {
                         if (!file.accepted) this.removeFile(file);
                     });
-                }
+                    // working
+                    this.on( "addedfile", function ( file ) {
+                        console.log( '------ addedfile.' );
+                        console.log( file );
+                        jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+                    });
+                    // working
+                    this.on( "removedfile", function ( file ) {
+                        console.log( '------ removedfile.' );
+                        console.log( file );
+                    });
+                    // NOT working
+                    this.on("uploadprogress", function ( file, progress, bytes ) {
+                        console.log( '------ uploadprogress.' );
+                        console.log( progress );
+                    });
+                    // NOT working
+                    this.on("completed", function ( progress ) {
+                        console.log( '------ completed.' );
+                        console.log( progress );
+                    });
+                },
+                // NOT WIRKING
+                uploadprogress: function( file, progress, bytes ) {
+			        console.log( 'progress' );
+			        console.log( progress );
+			        //document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
+			    }, 
+			    // NOT working
+			    completed: function( progress ) {
+			        //$(file.previewElement).find('#total-progress').css('display','none');
+			        console.log( 'completed' );
+			        console.log( progress );
+			    }, 
+			    // working
+			    removedfile: function( file ) {
+			        //removeFile(file.name);
+			        //$(file.previewElement).remove();
+			        console.log( 'removed' );
+			        console.log( file );
+			    },
+			    // NOT working
+			    thumbnail: function( file ) {
+			        //removeFile(file.name);
+			        //$(file.previewElement).remove();
+			        console.log( 'thumbnail' );
+			        console.log( file );
+			    }
+
             };
             var uploader = document.querySelector('#dzBatchListUpload');            
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);
+            var newDropzone = new Dropzone(uploader, dropzoneOptions_meta_data);
+            
+            
+            // Update the total progress bar
+			newDropzone.on( "totaluploadprogress", function( progress ) { 
+			//newDropzone.on( "uploadprogress", function( progress ) { 
+				//document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
+				console.log( 'progress' );
+				console.log( progress );
+			});
             
             
             // Batch File Upload Area
@@ -98,13 +212,18 @@ jQuery(document).ready(function(){
 
         //} 
    // });
-});
+}); // ready
+
+
+
+
 
 //
 // checks file to ensure that it isn't a duplicate and if not, adds
 //
 
-function addToBatchList( file ) {
+/*
+function addToBatchList( file ) { // NOT USED?
 	
 	
 	if( batchFiles.file_list.indexOf( file.name ) >= 0 ) {
@@ -124,6 +243,7 @@ function addToBatchList( file ) {
 
 
 }
+*/
 
 // returns an array of all the file names in the batchFiles object
 function getArrayOfFileNames() {
@@ -138,7 +258,21 @@ function startS3Upload() {
 	
 }
 
+function remove_link_clicked() {	
+	reset_page();
+}
 
+// reset / reload page
+function reset_page() {
+	
+	console.log( 'reset ----------------------' );
+	//jQuery( '#batch_list_upload_cr' ).val(0);
+	//jQuery( '#processing_notification_div' ).addClass( 'yellow_update' );
+	//jQuery( '#processing_notification' ).text( '' );
+	
+	//wpsc_get_create_ticket();
+	window.location.reload();
+}
 
 /* Removes data from the box datatable if there is any error */
 function clearBoxTable() {
@@ -183,10 +317,6 @@ jQuery.fn.toJson = function () {
 
 // Box list file validation on submit // No Submit button currently. 
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
-    
-        
-
-	
 	
 });
 
@@ -266,6 +396,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
                     if (evt.lengthComputable) {
                         var percentComplete = Math.floor((evt.loaded / evt.total) * 100);
                         jQuery(attachment).find('.progress-bar').css('width', percentComplete + '%');
+                        
                     }
                 }, false);
                 return xhr;
@@ -274,7 +405,15 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
             contentType: false,
             success: function (response) {
                 console.log('batch list upload success');
-                jQuery('#batchlistdatatable').show();
+                
+                // Show the DataTable
+                jQuery( '#batchlistdatatable' ).show();
+                //jQuery( '#spreadsheet_dt_row' ).append( '<th>Pods</th>' );
+                
+                spreadsheetMetaData.col_names.forEach( function( colName ) {
+	            	jQuery( '#spreadsheet_dt_row' ).append( '<th>' + colName + '</th>' );
+	            });
+                
                 var return_obj = JSON.parse(response);
                 jQuery(attachment).find('.attachment_cancel').show();
                 
@@ -314,16 +453,41 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 	                    
 	                    console.log({parsedData:parsedData});
 	                    
+	                    
+	                    // Get the real arrayLength (previous arrayLength contains a bunch of blanks)
+	                    let col1 = parsedData.map( function( value, index ) { return value[0]; });
+	                    col1[0] = 'x';  // masks the first undefined, while keeping the index the same. 
+	                    console.log({ col1:col1 });
+	                    
+	                    col1_null = col1.indexOf( null );
+	                    col1_undef = col1.indexOf( undefined );
+	                    col1_blank = col1.indexOf( '' );
+	                    
+	                    // if array of spreadsheet is NOT the exact length (i.e. blank rows), then use updated length
+	                    if( col1_undef != -1 ) {
+	                    	arrayLength = col1_undef + 2;
+	                    } 
+	                    console.log({ col1_null:col1_null, col1_undef:col1_undef, col1_blank:col1_blank });
+	                    
 	                    // removes asterisks from upload file headers
 	                    parsedData[1].forEach( function( item, i ) {
 		                    parsedData[1][i] = item.replaceAll( '*', '' );
 	                    });
 		                
 	                    if (parsedData[1][0] !== undefined && parsedData[1][1] !== undefined) {
-	                        	                             
+	                        
+	                        jQuery( '#processing_div' ).show();
+	                        //jQuery( '#processing_notification_div' ).show();
+		                    jQuery( '#processing_notification_div' ).addClass( 'yellow_update' );
+		                    jQuery( '#processing_notification' ).text( 'Processing Row #' );
+		                    //jQuery('#boxinfodatatable_wrapper').hide();                             
 	                        //
 	                        // Validation
 	                        //
+	                        
+	                        
+	                        
+	                        
 							
 							// Regex
 	                        let date_time_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
@@ -331,63 +495,139 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 							
 														
 							// Column Indexes for Validation checks
-							let index_box = 0;
-							let index_folder_id = 1;
-							let index_title = 2;
-							let index_desc_record = 3;
-							let index_pcd = 4;
-							let index_creation_date = 5;
-							let index_creator = 6;
-							let index_rec_type = 8;
-							let index_rec_sched = 9;
-							let index_site_name = 10;
-							let index_close_date = 12; // 11
-							let index_epa_contact = 13; // 12
-							let index_access_rest = 14;
-							let index_sp_access_rest = 15;
-							let index_use_rest = 16;
-							let index_sp_use_rest = 17;
-							let index_source_type = 19;
-							let index_source_dim = 20;
-							let index_prog_office = 21; // 20
-							let index_index_level = 22; //21 
-							let index_ess_rec = 23; // 22
-							let index_tags = 25; 
-							//let index_last_col = 25;
+							
 							
 							
 	                        /* Loop through spreadsheet data */
-	                        for (var count = 1; count < arrayLength; count++) {
+	                        //for (var count = 2; count < arrayLength; count++) {
+		                        
+		                    //
+	                        // Loop through spreadsheet data    // OLD // for (var count = 1; count < arrayLength; count++) {		                            
+	                        //
+	                        
+	                        
+		                    
+		                    
+	                        let isBlank = false;
+	                        let count = 2;
+					        var processLoopID = setInterval(function() {
+							    if ( count < arrayLength ) {
+							        jQuery('#processing_notification').text( 'Processing Row #' + count );    
+									
+									//
+									// VALIDATION
+									//
+									
+									// Find the last line of filled out data
+									if(
+										count > 1 && 
+											(
+												( parsedData[count][0] == null && 
+												  parsedData[count][1] == null
+												) 
+												||
+												( parsedData[count][0] == undefined && 
+												  parsedData[count][1] == undefined
+												)
+												||
+												( parsedData[count][0] == '' && 
+												  parsedData[count][1] == ''
+												) 
+											)
+											
+									) {
+		                                console.log( 'SKIP');
+		                                isBlank = true;
+		                                //continue;
+		                            } else {
+			                            isBlank = false;
+		                            }
+		                            
+		                            
+		                            //
+									// DATA
+									//
+									
+									// MetaData file list. Used to compare against batchFiles.file_list
+									if( !isBlank ) {
+										metaData.file_list.push( parsedData[count][index_file_name] );
+									}
+
+		                            
+		                            // if row is not blank, then process it. Once the first blank is hit, then processing is finished.
+		                            if( !isBlank ) {    
 								
 								
-								console.log( parsedData[count][0] );
-	                            
-	
-	                            // Clear table if err
-	                            if( flag == true ) {
-	
-	                                datatable.clear().draw();
-	                                jQuery('#batch_list_upload_cr').val(0);
-	
-	                                jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
-	                                    obj.remove();
-	                                });
-	
-	                                var _ref;
-	                                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-	                            }
-	
-	                            // Add record to datatable if no error
-	                            if (parsedData[count] !== undefined && parsedData[count].length > 0 && parsedData[count][0].toString().trim() != "Box") {
-	
-	                                
-	
-	                                datatable.row.add([
-	                                    parsedData[count][0],
-	                                    parsedData[count][1]
-	                                ]).draw().node();
-	                            }
-	                        }
+										console.log( parsedData[count][0] );
+										
+										
+			                            
+			
+			                            // Clear table if err
+			                            if( flag == true ) {
+			
+			                                datatable.clear().draw();
+			                                jQuery('#batch_list_upload_cr').val(0);
+			
+			                                jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
+			                                    obj.remove();
+			                                });
+			
+			                                var _ref;
+			                                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+			                            }
+			
+			                            // Add record to datatable if no error
+			                            if( 
+			                            	parsedData[count] !== undefined && 
+		                            		parsedData[count].length > 0 && 
+		                            		parsedData[count][0].toString().trim() != "Box"
+			                            ) {
+			
+			                                
+			                                datatable.row.add([
+			                                    parsedData[count][0],
+			                                    parsedData[count][1],
+			                                    parsedData[count][2],
+			                                    parsedData[count][3],
+			                                    parsedData[count][4],
+			                                    parsedData[count][5],
+			                                    parsedData[count][6],
+			                                    parsedData[count][7],
+			                                    parsedData[count][8]
+			                                ]).draw().node();
+			                            }
+			                        }
+			                        
+			                        
+			                    } else {
+						        	clearInterval( processLoopID );
+						        	//jQuery( '#boxinfodatatable_wrapper' ).show();
+						        	//jQuery( '#boxinfodatatable' ).show();
+						        	jQuery( '#meta_data_wrapper' ).show();
+						        	
+						        	// sets order for data table                    
+									datatable.column( '0:visible' ).order( 'asc' ).draw();
+
+						        	//
+						        	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );
+						        	jQuery( '#processing_notification_div' ).addClass( 'green_update' );
+						        	jQuery( '#processing_notification' ).text( 'Processing Complete.' );
+						        	jQuery( '#processing_notification_persistent' ).hide();
+						        	
+						        	// Set that the file is uploaded.
+						        	jQuery('#file_upload_cr').val(1); // nonexistant 
+			                        //jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
+			                        console.log( '#file_upload_cr has been update' );
+
+								}
+						    count++ 
+						}, 1 ); //end of setInterval, 1ms    
+	                        
+	                        
+	                        
+	                        
+	                        
 	                    } else {
 	                        alert("Spreadsheet is not in the correct format! Please try again.");
 	                        jQuery('.row.wpsp_spreadsheet').each(function (i, obj) {
@@ -403,12 +643,26 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 	                    }
 	                };
                 FR.readAsArrayBuffer(file);
-                document.getElementById("boxdisplaydiv").style.display = "block";
+                document.getElementById("boxdisplaydiv_files").style.display = "block";
                 
-                //
+                
                 jQuery('#batch-uploader-dropzone').show();
-
-                    //End of new Datatable code
+				
+				console.log( metaData.file_list );
+				console.log( metaData['file_list'] );
+				//console.log( Array.keys(metaData.file_list).length );
+				
+				jQuery( batch_uploader_status_div_sel ).show();
+				jQuery( metadata_file_num_sel ).text( metaData.file_list.length );
+				jQuery( file_diff_sel ).text( metaData.file_list.length );
+				
+				
+				
+				
+                //End of new Datatable code
+                
+                // D E B U G
+                console.log( metaData.file_list );
 
                 } else {
                     jQuery(attachment).find('.progress-bar').addClass('progress-bar-danger');
@@ -441,13 +695,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
         
         
 
-        // Send excel file to S3
-        console.log('before upload');
-        
 
-        
-        //upload( fileSS );
-        console.log('post upload');
         
 
     }

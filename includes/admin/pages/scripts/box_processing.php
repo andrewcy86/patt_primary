@@ -37,6 +37,7 @@ $searchByProgramOffice = $_POST['searchByProgramOffice'];
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
+$searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $searchGeneric = $_POST['searchGeneric'];
 $searchByStatus = $_POST['searchByStatus'];
 $searchByUser = $_POST['searchByUser'];
@@ -119,6 +120,17 @@ if($searchByRecallDecline != ''){
 
 }
 
+$ecms_sems = '';
+
+if($searchByECMSSEMS != ''){
+    if($searchByECMSSEMS == 'ECMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
+    }
+    
+    if($searchByECMSSEMS == 'SEMS') {
+        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
+    }
+}
 
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
@@ -271,10 +283,11 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount 
+$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
 from " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -288,17 +301,18 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE a.id <> -99999 AND b.active <> 0");
+WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . " ");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 0");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
-$sel = mysqli_query($con,"select count(a.box_id) as allcount 
+$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -312,14 +326,14 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery); //(b.active <> 0) AND
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery); //(b.active <> 0) AND
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 //REVIEW
 $boxQuery = "
-SELECT 
+SELECT DISTINCT
 a.box_id, a.id as dbid, f.name as box_status, f.term_id as term,
 CONCAT(
 
@@ -433,6 +447,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
@@ -448,7 +463,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
    
-WHERE (b.active <> 0) AND (a.id <> -99999) AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);
