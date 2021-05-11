@@ -97,6 +97,7 @@ $shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
 $received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
 $in_progress_tag = get_term_by('slug', 'in-process', 'wpsc_statuses');
 $ecms_tag = get_term_by('slug', 'ecms', 'wpsc_statuses');
+$sems_tag = get_term_by('slug', 'sems', 'wpsc_statuses');
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses');
 
@@ -116,6 +117,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
 			<option value="<?php echo $received_tag->term_id; ?>">Received</option>
 			<option value="<?php echo $in_progress_tag->term_id; ?>">In Progress</option>
 			<option value="<?php echo $ecms_tag->term_id; ?>">ECMS</option>
+			<option value="<?php echo $sems_tag->term_id; ?>">SEMS</option>
 			<option value="<?php echo $completed_dispositioned_tag->term_id; ?>">Completed/Dispositioned</option>
 			<option value="<?php echo $cancelled_tag->term_id; ?>">Cancelled</option>
          </select>
