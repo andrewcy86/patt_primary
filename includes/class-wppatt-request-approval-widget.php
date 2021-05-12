@@ -94,7 +94,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				    $get_attachment_url = wp_get_attachment_url($get_postid[0]);
 				    if (!empty($get_attachment_url)) {
 				    ?>
-				    <strong><i class="far fa-file-excel fa-lg" title="Download Box List"></i> <a href= "<?php echo $get_attachment_url; ?>">Download Box List</a></strong>
+				    <strong><a href="<?php echo $get_attachment_url; ?>"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> <a href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/pages/scripts/boxlist_preview.php';?>?id=<?php echo $get_postid[0]; ?>" target="_blank" rel="noopener">View Box List</a></strong>
 				    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
 				    <?php
 				    }

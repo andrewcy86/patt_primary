@@ -24,22 +24,11 @@ $get_ticket_status_val = $get_ticket_status->ticket_status;
 
 array_push($get_ticket_requestid_val_array, $get_ticket_requestid_val);
 
-//$ticket_status = 0;
-//$box_status = 0;
 $recall_decline = 0;
 $status = 0;
 
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
-
-//if($get_ticket_status_val == 69){
-//Requests can be archived if they are Cancelled or Completed/Dispositioned
-
-/*
-if($get_ticket_status_val == $cancelled_tag->term_id || $completed_dispositioned_tag->term_id) {
-   $ticket_status = 1; 
-}
-*/
 
 //Checking if there is a recall/decline in a request
 if( (Patt_Custom_Func::id_in_recall($get_ticket_requestid_val, 'request') == 1) || (Patt_Custom_Func::id_in_return($get_ticket_requestid_val, 'request') == 1) ) {
@@ -56,8 +45,6 @@ foreach ($get_box_status as $boxstatus) {
 
 $box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
 $box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
-
-//if ( array_unique($get_box_status_array) === array($dispositioned_tag->term_id) ) { 
 
 //If all boxes are in the status of Completed/Dispositioned and in the correct request status they can be archived
 if( count(array_unique($get_box_status_array)) == 1 && in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array ) && $get_ticket_status_val == $completed_dispositioned_tag->term_id) {
@@ -76,7 +63,6 @@ if( count(array_unique($get_box_status_array)) == 2 && ( in_array($box_completed
 
 $table_name = $wpdb->prefix . 'wpsc_ticket';
 
-//if( ($ticket_status == 1 || $box_status == 1) && $recall_decline == 0) {
 if($status == 1 && $recall_decline == 0) {
 $data_update = array('active' => 0);
 $data_where = array('id' => $key);
@@ -100,6 +86,39 @@ $email = 1;
 //insert notification for each request
 Patt_Custom_Func::insert_new_notification('email-request-deleted',$pattagentid_array,$get_ticket_requestid_val,$data,$email);
 
+/*
+//PATT BEGIN FOR DELETING REQUEST REPORTING
+$table_timestamp_request = $wpdb->prefix . 'wpsc_epa_timestamps_request';
+$get_request_timestamp = $wpdb->get_results("select id from " . $table_timestamp_request . " where request_id = '".$get_ticket_id_val."'");
+
+foreach($get_request_timestamp as $request_timestamp) {
+    $request_timestamp_id = $request_timestamp->id;
+    // Delete previous value
+    if( !empty($request_timestamp_id) ) {
+      $wpdb->delete( $table_timestamp_request, array( 'id' => $request_timestamp_id ) );
+    }
+}
+
+//PATT BEGIN FOR DELETING BOX REPORTING
+$get_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$get_ticket_id_val."'");
+foreach($get_boxes as $item) {
+    $box_id = $item->id;
+    //PATT DELETING BOX REPORTING
+    $table_timestamp_box = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+    $get_box_timestamp = $wpdb->get_results("select id from " . $table_timestamp_box . " where box_id = '".$box_id."'");
+    
+    foreach($get_box_timestamp as $box_timestamp) {
+        $box_timestamp_id = $box_timestamp->id;
+        // Delete previous value
+        if( !empty($box_timestamp_id) ) {
+          $wpdb->delete( $table_timestamp_box, array( 'id' => $box_timestamp_id ) );
+        }
+    }
+}
+
+*/
+
+/*
 //BEGIN TESTING ONLY REMOVE
 $get_ticket_tmp_contact = $wpdb->get_row("SELECT tmp_contact FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$key."'");
 
@@ -117,12 +136,9 @@ Patt_Custom_Func::insert_new_notification('email-request-deleted',$test_agent_id
 
 }
 //END TESTING ONLY REMOVE
-
+*/
 //BEGIN CLONING DATA TO ARCHIVE
 Patt_Custom_Func::send_to_archive($key);
-
-
-
 }
 
 

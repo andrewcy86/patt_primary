@@ -1,0 +1,4 @@
+[11-May-2021 18:22:12 UTC] PHP Warning:  array_chunk() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php on line 67
+[11-May-2021 18:22:12 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php on line 69
+[11-May-2021 18:22:20 UTC] PHP Warning:  array_chunk() expects parameter 1 to be array, null given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php on line 67
+[11-May-2021 18:22:20 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php on line 69

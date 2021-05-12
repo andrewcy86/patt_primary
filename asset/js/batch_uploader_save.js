@@ -7,6 +7,15 @@ var metaData = {
 };
 
 
+
+
+var peaches = [];
+peaches.push(1);
+peaches.push(2);
+peaches.push(3);
+console.log( peaches );
+console.log( peaches.length );
+
 //
 // Setup
 //
@@ -56,7 +65,7 @@ let index_relation = spreadsheetMetaData.col_names.indexOf( name_relation );
 
 
 // D E B U G - START
-console.log({index_file_name:index_file_name, index_disp_sched:index_disp_sched, index_title:index_title, index_description:index_description, index_creator:index_creator, index_creation_date:index_creation_date, index_rights:index_rights, index_coverage:index_coverage, index_relation:index_relation });
+//console.log({index_file_name:index_file_name, index_disp_sched:index_disp_sched, index_title:index_title, index_description:index_description, index_creator:index_creator, index_creation_date:index_creation_date, index_rights:index_rights, index_coverage:index_coverage, index_relation:index_relation });
 // D E B U G - END
 
 jQuery(document).ready(function(){
@@ -99,7 +108,7 @@ jQuery(document).ready(function(){
                     this.on( "addedfile", function ( file ) {
                         console.log( '------ addedfile.' );
                         console.log( file );
-                        jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+                        jQuery(".dz-remove").attr('onclick', "metadata_remove_link_clicked()");
                     });
                     // working
                     this.on( "removedfile", function ( file ) {
@@ -160,17 +169,24 @@ jQuery(document).ready(function(){
             
             // Batch File Upload Area
             var dropzoneOptions_multi_files = {
-                url: "test2.php",
+                //url: "test2.php",
+                url: "/", // new
+                method: 'put', // new
+                sending (file, xhr) { // new
+				    let _send = xhr.send
+				    xhr.send = () => {
+				      _send.call(xhr, file)
+				    }
+				},
+				header: '', // new
+                uploadMultiple: false, // new // previously: true
                 autoProcessQueue: false,
                 addRemoveLinks: true,
-                uploadMultiple: true,
-                parallelUploads:10,
+                parallelUploads:1, // previously 10
                 maxFiles: 100,
                 acceptedFiles: '.xlsx, .xlsm, .pdf',
                 accept: function (file, done) {
                     console.log({file:file, done:done});
-                    
-                    
                     
                     if( batchFiles.file_list.indexOf( file.name ) >= 0 ) {
 	                    
@@ -180,10 +196,49 @@ jQuery(document).ready(function(){
 	                    
                     } else {
 	                    
-	                    batchFiles.file_list.push( file.name );
+	                    if( metaData.file_list.includes( file.name ) ) {
+							
+		                    batchFiles.file_list.push( file.name );
+		                    console.log( '--- before S3 upload ---' );
+		                    
+/*
+		                    getS3Upload( file )
+								.then( ( url ) => {
+									file.uploadURL = s3upload.uploadXHR[0].responseURL;
+									done();
+									// Manually process each file
+									setTimeout( () => vm.dropzone.processFile( file ) );
+								})
+								.catch( ( err ) => {
+									done( 'Failed to get an S3 signed upload URL' , err );
+								});
+*/
+		                    
+/*
+		                    lambda.getSignedURL(file)
+								.then((url) => {
+									file.uploadURL = url
+									done()
+									// Manually process each file
+									setTimeout(() => vm.dropzone.processFile(file))
+								})
+								.catch((err) => {
+									done('Failed to get an S3 signed upload URL', err)
+								})
+*/
+		                    let newid = file.name;
+							jQuery(".dz-preview:last-child").attr('id', "document-" + newid );
+		                    
+		                    upload( file );
+		                    
+		                    updateFileDashboard();
+		                    
+	                    } else {
+		                    console.log( 'Error: file name not in metadata list' );
+		                    file._removeLink.click();
+	                    }
 	                    
-	                    console.log( '--- before S3 upload ---' );
-	                    upload( file );
+	                    
 	                    
 	                    
                     }
@@ -205,17 +260,46 @@ jQuery(document).ready(function(){
                     this.on("error", function (file) {
                         if (!file.accepted) this.removeFile(file);
                     });
+                    // working
+                    this.on( "addedfile", function ( file ) {
+                        console.log( '------ addedfile. Batch.' );
+                        console.log( file );
+                    });
+                    // working
+                    this.on( "removedfile", function ( file ) {
+                        console.log( '------ removedfile. BATCH' );
+                        console.log( file );
+                        batch_uploader_remove_link_clicked( file );
+                    });
+                    // unknown
+                    this.on( "success", function ( file, response ) {
+                        console.log( '------ success. BATCH' );
+                        console.log( {file:file, response:response} );
+                        file.serverId = response.id;
+						jQuery(".dz-preview:last-child").attr('id', "document-" + file.serverId);
+                    });
+
                 }
-            };
+                            };
             var uploader_files = document.querySelector('#dzBatchUpload_files');
             var newDropzone_files = new Dropzone(uploader_files, dropzoneOptions_multi_files);      
 
         //} 
    // });
+   
+   
+	
 }); // ready
 
 
-
+/*
+newDropzone_files.on("addedfile", function(file) {
+		file.previewElement.addEventListener("click", function() { 
+			myDropzone.removeFile(file); 
+			console.log( 'NEW REMOVE' );
+		});
+	});
+*/
 
 
 //
@@ -258,7 +342,25 @@ function startS3Upload() {
 	
 }
 
-function remove_link_clicked() {	
+function batch_uploader_remove_link_clicked( file ) {	
+	console.log( 'batch remove' );
+	console.log( file.name );
+	
+	
+	
+	const index = batchFiles.file_list.indexOf( file.name );
+	console.log({index:index});
+	console.log( batchFiles.file_list );
+	if ( index > -1 ) {
+		batchFiles.file_list.splice( index, 1 );
+		console.log( batchFiles.file_list );
+	}
+	
+	updateFileDashboard();
+
+}
+
+function metadata_remove_link_clicked() {	
 	reset_page();
 }
 
@@ -551,6 +653,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 									// MetaData file list. Used to compare against batchFiles.file_list
 									if( !isBlank ) {
 										metaData.file_list.push( parsedData[count][index_file_name] );
+										
 									}
 
 		                            
@@ -602,24 +705,13 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 			                        
 			                    } else {
 						        	clearInterval( processLoopID );
-						        	//jQuery( '#boxinfodatatable_wrapper' ).show();
-						        	//jQuery( '#boxinfodatatable' ).show();
-						        	jQuery( '#meta_data_wrapper' ).show();
+						        	
 						        	
 						        	// sets order for data table                    
 									datatable.column( '0:visible' ).order( 'asc' ).draw();
 
-						        	//
-						        	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );
-						        	jQuery( '#processing_notification_div' ).addClass( 'green_update' );
-						        	jQuery( '#processing_notification' ).text( 'Processing Complete.' );
-						        	jQuery( '#processing_notification_persistent' ).hide();
-						        	
-						        	// Set that the file is uploaded.
-						        	jQuery('#file_upload_cr').val(1); // nonexistant 
-			                        //jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
-			                        console.log( '#file_upload_cr has been update' );
-
+									afterInitialProcessing();
+									
 								}
 						    count++ 
 						}, 1 ); //end of setInterval, 1ms    
@@ -646,15 +738,10 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
                 document.getElementById("boxdisplaydiv_files").style.display = "block";
                 
                 
-                jQuery('#batch-uploader-dropzone').show();
+                //jQuery('#batch-uploader-dropzone').show();
 				
-				console.log( metaData.file_list );
-				console.log( metaData['file_list'] );
-				//console.log( Array.keys(metaData.file_list).length );
 				
-				jQuery( batch_uploader_status_div_sel ).show();
-				jQuery( metadata_file_num_sel ).text( metaData.file_list.length );
-				jQuery( file_diff_sel ).text( metaData.file_list.length );
+				
 				
 				
 				
@@ -702,4 +789,57 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
 
 }
 
+// Updates displayed data
+// Fires after JS finishes processing xls for datatable
+function afterInitialProcessing() {
+	
+	jQuery('#batch-uploader-dropzone').show();
+	jQuery( '#meta_data_wrapper' ).show();
+	
+	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );
+	jQuery( '#processing_notification_div' ).addClass( 'green_update' );
+	jQuery( '#processing_notification' ).text( 'Processing Complete.' );
+	jQuery( '#processing_notification_persistent' ).hide();
+	
+	//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
+	
+	// Comparison Div
+	jQuery( batch_uploader_status_div_sel ).show();
+	jQuery( metadata_file_num_sel ).text( metaData.file_list.length );
+	jQuery( file_diff_sel ).text( metaData.file_list.length );
+	jQuery( batchfiles_file_num_sel ).text( 0 );
+}
+
+// Updates
+// fires after a batch file is added
+function updateFileDashboard() {
+	
+	const diff_red_threshold = 3;
+	let batchLength = batchFiles.file_list.length;
+	let metaLength = metaData.file_list.length;
+	let diff = metaLength - batchLength;
+	
+	jQuery( batchfiles_file_num_sel ).text( batchFiles.file_list.length );
+	jQuery( file_diff_sel ).text( diff );
+	
+	if( diff == 0 ) {
+		jQuery( file_diff_sel ).removeClass( 'alert-warning' );
+		jQuery( file_diff_sel ).addClass( 'alert-success' );
+	} else if( diff < diff_red_threshold ) {
+		jQuery( file_diff_sel ).removeClass( 'alert-danger' );
+		jQuery( file_diff_sel ).addClass( 'alert-warning' );
+	} else if( diff >= diff_red_threshold ) {
+		jQuery( file_diff_sel ).removeClass( 'alert-warning' );
+		jQuery( file_diff_sel ).addClass( 'alert-danger' );
+	}
+	
+	if( batchLength == metaLength ) {
+		jQuery( batchfiles_file_num_sel ).removeClass( 'alert-warning' );
+		jQuery( batchfiles_file_num_sel ).addClass( 'alert-success' );
+	} else {
+		jQuery( batchfiles_file_num_sel ).removeClass( 'alert-success' );
+		jQuery( batchfiles_file_num_sel ).addClass( 'alert-warning' );
+	}
+	
+}
 

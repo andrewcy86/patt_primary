@@ -54,6 +54,25 @@ WHERE b.box_id = '" . $pattboxid . "'");
 $new_bs = $new_box_status->box_status;
 
 array_push($metadata_array,'Box Status: '.$old_bs_name.' > '.$new_bs);
+
+//PATT BEGIN FOR REPORTING
+// Define current time
+$date_time = date('Y-m-d H:i:s');
+// This is for Time to process intial request report
+// Check to see if timestamp exists
+$table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+$get_box_timestamp = $wpdb->get_row("select id, count(id) as count from " . $table_timestamp . " where box_id = '".$box_id."'");
+$box_timestamp_id = $get_box_timestamp->id;
+$box_timestamp_count = $get_box_timestamp->count;
+
+/*
+// Delete previous value
+if($box_timestamp_count > 0) {
+  $wpdb->delete( $table_timestamp, array( 'id' => $box_timestamp_id ) );
+}
+*/
+
+$wpdb->insert($table_timestamp, array('box_id' => $box_id, 'type' => $new_bs, 'user' => $current_user->display_name, 'timestamp' => $date_time) ); 
 }
 
 //updates destruction completed and adds to request history

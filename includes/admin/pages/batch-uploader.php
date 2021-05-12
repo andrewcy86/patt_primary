@@ -215,15 +215,21 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 				<hr>
 				
 				<div id="batch_uploader_status_div" class="row" >
-					<div id="" class="col-sm-1" ></div>
+					<div id="" class="col-sm-2" ></div>
 					<div class="col-sm-2" >
-						<span>MetaData Files</span> <br>
-						<span id="metadata_file_num"></span>
+						<span>MetaData Files</span> <br><br><br>
+						<span id="metadata_file_num" class="alert alert-success" ></span>
 					</div>
 					<div id="" class="col-sm-1" ></div>
-					<div id="batchfiles_file_num" class="col-sm-2" ></div>
+					<div id="" class="col-sm-2" >
+						<span>Uploaded Files</span> <br><br><br>
+						<span id="batchfiles_file_num" class="alert alert-warning"></span>
+					</div>
 					<div id="" class="col-sm-1" ></div>
-					<div id="file_diff" class="col-sm-2" ></div>
+					<div id="" class="col-sm-2" >
+						<span>File Difference</span> <br><br><br>
+						<span id="file_diff" class="alert alert-danger" ></span>
+					</div>
 				</div>
 				
 				<div id="alert_status_batch_uploader" class="alert_spacing"></div>
@@ -266,6 +272,8 @@ if ( ! class_exists( 'Patt_BatchUpload' ) ) {
 			<style>
 				#batch_uploader_status_div {
 					display: none;
+					text-align: center;
+					font-size: 2em;
 				}
 				
 				#processing_div {

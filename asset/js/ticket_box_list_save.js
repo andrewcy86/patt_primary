@@ -1,6 +1,6 @@
 var theFile = {};
 var success = 0;
-console.log( 'nothing' );
+//console.log( 'nothing' );
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     
@@ -597,20 +597,25 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     	arrayLength = col1_undef + 2;
                     } 
                     
-                    console.log({ col1_null:col1_null, col1_undef:col1_undef, col1_blank:col1_blank });
+                    console.log({ col1_null:col1_null, col1_undef:col1_undef, col1_blank:col1_blank, arrayLength:arrayLength });
                     
-                    // removes asterisks from upload file headers
-                    parsedData[1].forEach( function( item, i ) {
-	                    parsedData[1][i] = item.replaceAll( '*', '' );
-                    });
+                    console.log({one:parsedData[0]});
+	                console.log({one:parsedData[1]});
+	                //console.log({one:parsedData[1][0], eighteen:parsedData[1][18]});
 	                
-                    if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {
+                    //if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {
+	                if( parsedData[1] !== undefined && parsedData[1] !== null ) {    
                         let prev_box = '';
                         let prev_epa_contact = '';
                         let prev_program_office = '';
                         let prev_record_schedule = '';
                         let prev_site_id = '';
-
+						
+						
+						// removes asterisks from upload file headers
+	                    parsedData[1].forEach( function( item, i ) {
+		                    parsedData[1][i] = item.replaceAll( '*', '' );
+	                    });
 						                             
                         //
                         // Validation
@@ -1033,6 +1038,27 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 									
 									
+									console.log( {superfundx:superfundx});
+									// Program Office: validate that there is a ':' in the name so that php processing works.
+									if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	superfundx != 'yes' && 
+		                            		( 
+		                            		   parsedData[count][index_prog_office].indexOf( ':' ) < 1
+		                            		) 
+		                            	
+									) {
+										let alert_message = '';
+										alert_message += "Program Office appears to be in the incorrect format. \n\n";
+										alert_message += "Expecting a format similar to: OMS-OEIP-RSD : [REGULATORY SUPPORT DIVISION] \n\n";
+										alert_message += "No colon detected. \n\n";
+										alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_prog_office] + "'.";										
+		                                alert( alert_message );
+		                                flag = true;
+									}
+									
+									
 		                            // Epa contact, program office, record no validation
 		                            
 		                            // Remove requirement that epa_contact is the same for each box. 
@@ -1101,10 +1127,27 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                        let cur_site_id;
 		                            
 		                            if( superfundx == 'yes' ) {
-			                            cur_site_id_array = parsedData[count][index_site_id].split( '/' );
-			                            cur_site_id = cur_site_id_array[0].trim();
-			                            console.log( 'cur_site_id: ' + cur_site_id );
-			                            console.log( count );
+			                            
+			                            if(
+			                            	parsedData[count][index_site_id] == null ||
+			                            	parsedData[count][index_site_id] == undefined 
+										) {
+											// Superfund AND null or undefined. Error.
+											let alert_message = '';
+											alert_message += "Site ID is required for SEMS. \n\n";
+											alert_message += "Site ID is blank on line: " + ( count + 1) + ".";
+											
+			                                alert( alert_message );
+			                                flag = true;
+											
+											
+										} else {
+											// Superfund AND not null or undefined. Process.
+											cur_site_id_array = parsedData[count][index_site_id].split( '/' );
+				                            cur_site_id = cur_site_id_array[0].trim();
+				                            console.log( 'cur_site_id: ' + cur_site_id );
+				                            console.log( count );
+										}
 			                            
 			                        }
 		                            
@@ -1138,13 +1181,17 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 
 		                            
+		                            console.log( 'ACCESS RESTRICTIONS' );
+		                            console.log( {accessRest:parsedData[count][index_access_rest], specificiAR:parsedData[count][index_sp_access_rest] });
+		                            console.log( parsedData[count][index_access_rest] == 'No' );
+		                            console.log( parsedData[count][index_sp_access_rest] != null );
 		                            
 		                            // Validate Access Restriction (No) & Specific Access Restriction (filled in)
 		                            if( 
 		                            	flag != true && 
 		                            	count > 1 && 
 		                            		( parsedData[count][index_access_rest] == 'No' && 
-		                            			( parsedData[count][index_sp_access_rest] != null || 
+		                            			( parsedData[count][index_sp_access_rest] != null && 
 		                            			  parsedData[count][index_sp_access_rest] != undefined 
 		                            			)
 		                            		) 

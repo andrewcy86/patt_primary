@@ -600,7 +600,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     }
     
     function box_status_update ( $ticket_id, $status, $item_id ){ 
-		global $wpscfunction, $current_user;
+		global $wpscfunction, $current_user,$wpdb;
 		if($current_user->ID){
 			$log_str = sprintf( __('%1$s has changed the status of Box: %3$s from %2$s.','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $status .'</strong>', '<strong>'.$item_id.'</strong>' );
 		} else {
@@ -615,7 +615,27 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
 		
 		$args = apply_filters( 'wpsc_thread_args', $args );
 		$wpscfunction->submit_ticket_thread($args);
+        
+        //PATT BEGIN FOR REPORTING
+      // Define current time
+      $date_time = date('Y-m-d H:i:s');
+      // This is for Time to process intial request report
+      // Check to see if timestamp exists
+      $box_id = Patt_Custom_Func::convert_box_id($item_id);
+     $table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+     $get_box_timestamp = $wpdb->get_row("select id, count(id) as count from " . $table_timestamp . " where box_id = '".$box_id."'");
+     $box_timestamp_id = $get_box_timestamp->id;
+     $box_timestamp_count = $get_box_timestamp->count;
+     $status_new = substr($status, strpos($status, "to") + 3);
+     /*
+     // Delete previous value
+      if($box_timestamp_count > 0) {
+          $wpdb->delete( $table_timestamp, array( 'id' => $box_timestamp_id ) );
+      }
+     */
+      $wpdb->insert($table_timestamp, array('box_id' => $box_id, 'type' => $status_new, 'user' => $current_user->display_name, 'timestamp' => $date_time) ); 
     }
+    
     
     function box_status_agents_update ( $ticket_id, $status_and_users, $item_id ){
       global $wpscfunction, $current_user;

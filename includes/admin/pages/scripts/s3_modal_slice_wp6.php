@@ -222,7 +222,9 @@ function upload(file) {
     s3upload = new S3MultiUpload(file);
     console.log('about to upload');
     console.log({s3upload:s3upload});
-    
+    if( s3upload.sendBackData != null ) {
+    	console.log({S3name:s3upload.sendBackData.key});
+    }
     
     jQuery('#alert-alert').remove();
     
@@ -249,7 +251,21 @@ function upload(file) {
     };
     s3upload.onProgressChanged = function(uploadedSize, totalSize, speed, partsInProgress, partsCompleted) {
         var progress = parseInt(uploadedSize / totalSize * 100, 10);
-        jQuery('#progress .progress-bar').css(
+        
+        // NEW
+/*
+        let test1 = '#document-file_name_2.pdf';
+        let text = '#document-' + this.fileInfo.name;
+        console.log( text );
+        console.log( jQuery( test1 ) );
+        console.log( jQuery( '#metadata_file_num') );
+        console.log( 'progress changed: ' + this.fileInfo.name + ' - progress: ' + progress );
+        jQuery( '#document-' + this.fileInfo.name + ' > .dz-progress > .dz-upload' ).html( 'yo' );
+        jQuery( '#document-' + this.fileInfo.name ).text( 'yo' );
+        jQuery( test1 ).hide();
+*/
+        
+        jQuery('#progress .progress-bar').css(	
             'width',
             progress + '%'
         );
@@ -345,7 +361,27 @@ jQuery(function(){
         jQuery("#objectlocation").val("");
         document.getElementById('uploadId').readOnly=false
     });
-})
+});
+
+// New Test Scripts // Not used.
+function getS3Upload( file ) {
+    if (!(window.File && window.FileReader && window.FileList && window.Blob && window.Blob.prototype.slice)) {
+        alert("You are using an unsupported browser. Please update your browser.");
+        return;
+    }
+/*
+    jQuery(".fileinput-button").toggle();
+    jQuery(".cancel-button").toggle();
+    jQuery("#upload_alert_status_modal").text(""); 
+    jQuery("#objectkey").val("");
+    jQuery("#objectlocation").val("");
+    jQuery('#progress .progress-bar').css('width',"0px");
+    jQuery('#progress .progress-number').text("");
+*/
+
+    s3upload = new S3MultiUpload( file );
+	return s3upload;    
+}
 
 </script>
 <?php

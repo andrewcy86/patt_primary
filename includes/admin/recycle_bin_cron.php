@@ -4,7 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-/*$path = preg_replace('/wp-content.*$/','',__DIR__);
+/*
+$path = preg_replace('/wp-content.*$/','',__DIR__);
 include($path.'wp-load.php');
 */
 
@@ -21,7 +22,7 @@ foreach($get_total_request_count as $item) {
     $ticket_id = $item->ticket_id;
     $request_id = $item->request_id;
     $ticket_status = $item->ticket_status;
-    
+    echo $ticket_id;
     $recall_decline = 0;
     $status = 0;
     
@@ -43,8 +44,8 @@ foreach($get_total_request_count as $item) {
     $get_box_status = $wpdb->get_results("SELECT box_status FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
     $get_box_status_array = array();
 
-    foreach ($get_box_status as $boxstatus) {
-	    array_push($get_box_status_array, $boxstatus->box_status);
+    foreach ($get_box_status as $box) {
+	    array_push($get_box_status_array, $box->box_status);
 	}
 	
 	//check if all boxes in a request are the same status
@@ -52,6 +53,7 @@ foreach($get_total_request_count as $item) {
         if( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && $ticket_status != $completed_dispositioned_term_id) {
             $wpscfunction->change_status($ticket_id, $completed_dispositioned_term_id);
         }
+        
         if( in_array($box_cancelled_tag->term_id, $get_box_status_array) && $ticket_status != $cancelled_term_id) {
             $wpscfunction->change_status($ticket_id, $cancelled_term_id);
         }
@@ -76,20 +78,7 @@ foreach($get_total_request_count as $item) {
     if( count(array_unique($get_box_status_array)) == 2 && ( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && in_array($box_cancelled_tag->term_id, $get_box_status_array) ) && $ticket_status == $completed_dispositioned_term_id) {
         $status = 1;
     }
-    
-    /*
-    $get_cancelled_request = $wpdb->get_row("SELECT COUNT(id) as cancelled_count
-    FROM " . $wpdb->prefix . "wpsc_ticket a
-    WHERE ticket_status = ".$cancelled_term_id." AND id =  '" . $ticket_id . "'");
-    $total_cancelled_requests = $get_cancelled_request->cancelled_count;
 
-    $get_completed_dispositioned_request = $wpdb->get_row("SELECT COUNT(id) as completed_dispositioned_count
-    FROM " . $wpdb->prefix . "wpsc_ticket a
-    WHERE ticket_status = ".$completed_dispositioned_term_id." AND id =  '" . $ticket_id . "'");
-    $total_completed_dispositioned_requests = $get_completed_dispositioned_request->completed_dispositioned_count;
-    */
-    
-    //if( ($total_completed_dispositioned_requests > 0 || $total_cancelled_requests > 0) && $recall_decline == 0) {
     if($status == 1 && $recall_decline == 0) {
         $data_update = array('active' => 0);
         $data_where = array('id' => $ticket_id);
@@ -120,6 +109,38 @@ foreach($get_total_request_count as $item) {
         
         //$email = 1;
         Patt_Custom_Func::insert_new_notification('email-request-deleted',$pattagentid_array,$request_id,$data,$email);
+        
+        /*
+        //PATT BEGIN FOR DELETING REQUEST REPORTING
+        $table_timestamp_request = $wpdb->prefix . 'wpsc_epa_timestamps_request';
+        $get_request_timestamp = $wpdb->get_results("select id from " . $table_timestamp_request . " where request_id = '".$ticket_id."'");
+        
+        foreach($get_request_timestamp as $request_timestamp) {
+            $request_timestamp_id = $request_timestamp->id;
+            // Delete previous value
+            if( !empty($request_timestamp_id) ) {
+              $wpdb->delete( $table_timestamp_request, array( 'id' => $request_timestamp_id ) );
+            }
+        }
+        
+        //PATT BEGIN FOR DELETING BOX REPORTING
+        $get_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
+        foreach($get_boxes as $item) {
+            $box_id = $item->id;
+            //PATT DELETING BOX REPORTING
+            $table_timestamp_box = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+            $get_box_timestamp = $wpdb->get_results("select id from " . $table_timestamp_box . " where box_id = '".$box_id."'");
+            
+            foreach($get_box_timestamp as $box_timestamp) {
+                $box_timestamp_id = $box_timestamp->id;
+                // Delete previous value
+                if( !empty($box_timestamp_id) ) {
+                  $wpdb->delete( $table_timestamp_box, array( 'id' => $box_timestamp_id ) );
+                }
+            }
+        }
+        */
+ 
     }
 }
 
