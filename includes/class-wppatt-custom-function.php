@@ -5184,7 +5184,8 @@ $recipient_email = 'ecms@epa.gov';
 // Notifications for Comments - Send emails out
 	    public static function insert_new_comment_notification( $request_id, $comment, $user_ids, $bcc, $recall_id, $type ) {
 		    global $wpdb;
-		                
+
+$comment = stripslashes($comment);	                
 if(count($bcc) == 0) {
     $email_array = array();
 } else {
