@@ -146,7 +146,7 @@ var data = [
 	    if($count > 1) {
 		echo "'<tr>";
 		for ( $i = 0; $i < $num_cols; $i ++ ) {
-			echo '<td>' . ( ! empty( $r[ $i ] ) ? $r[ $i ] : '&nbsp;' ) . '</td>';
+			echo '<td>' . addslashes( ! empty( $r[ $i ] ) ? $r[ $i ] : '&nbsp;' ) . '</td>';
 		}
 		echo "</tr>',";
 	    }

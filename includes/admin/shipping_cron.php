@@ -9,6 +9,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+//Change Status to Cancelled if Review Complete Timelapse exceeds 14 days
+$timelapse_query = $wpdb->get_results(
+"SELECT ticket_id, meta_value
+FROM " . $wpdb->prefix . "wpsc_ticketmeta
+WHERE meta_key = 'review_complete_timestamp'"
+);
+foreach ($timelapse_query as $item) {
+
+$t=time();
+$timestamp = $item->meta_value;
+
+$date1 = date('Y-m-d',$timestamp);
+$date2 = date('Y-m-d',$t);
+
+$diff = abs(strtotime($date2) - strtotime($date1));
+
+$days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+
+//$days_remaining = abs($days-14);
+
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
+
+if($days >= 14) {
+// Change Request Status
+$wpscfunction->change_status($item->ticket_id, $cancelled_tag->term_id);
+
+// Change Box Status
+$data_update = array('box_status' => 1057);
+$data_where = array('ticket_id' => $item->ticket_id);
+$wpdb->update($wpdb->prefix.'wpsc_epa_boxinfo', $data_update, $data_where);
+
+
+}
+
+}
+
+
 $shippingArray = ["usps", "fedex", "ups", "dhl"];
 
 // Begin going through the different shipping carriers
@@ -427,6 +464,10 @@ $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
 // IF SHIPPED ONLY AND NOT DELIVERED
 if ( $status_id != $shipped_tag->term_id && (!in_array(0, $shipped_array)) && (in_array(0, $delivered_array))) {
 $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
+// Remove review timestamp
+sleep(1);
+$wpscfunction->delete_ticket_meta($item->ticket_id,'review_complete_timestamp',true);
+
 }
 
 // IF SHIPPED AND DELIVERED 
@@ -435,8 +476,16 @@ if ($status_id == $review_complete_tag->term_id) {
 $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
 sleep(1);
 $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
+// Remove review timestamp
+sleep(1);
+$wpscfunction->delete_ticket_meta($item->ticket_id,'review_complete_timestamp',true);
+
 } elseif ($status_id == $shipped_tag->term_id) {
 $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
+// Remove review timestamp
+sleep(1);
+$wpscfunction->delete_ticket_meta($item->ticket_id,'review_complete_timestamp',true);
+
 }
 }
 

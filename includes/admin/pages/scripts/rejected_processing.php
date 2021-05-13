@@ -19,6 +19,17 @@ $status_id           = $ticket['ticket_status'];
 
 if (isset($_POST['postvartktid']) && isset($_POST['postvarstatus'])) {
 
+
+//Insert timestamp to expedite shipping by requestor
+
+$review_complete_timestamp_check = $wpscfunction->get_ticket_meta($ticket_id,'review_complete_timestamp');
+$t=time();
+if($tkstatus == 4 && empty($review_complete_timestamp_check)) {
+$wpscfunction->add_ticket_meta($ticket_id,'review_complete_timestamp',$t);
+echo 'ticketid'.$tkid;
+}
+
+
 $rejected_comment_check = $wpscfunction->get_ticket_meta($ticket_id,'rejected_comment');
 
 if($tkcomment != '' && $tkstatus == '670' && empty($rejected_comment_check)) {
