@@ -14,17 +14,20 @@ $file_path = get_attached_file( $attachment_id );
 echo '<h3>Box List: '.$filename_only.'</h3>';
 ?>
 <style>
-/* To force exceed overflow-x limit for demo purposes */
-td {
-  white-space: nowrap;
-}
-
-.clusterize-headers {
+html, body {
+  height: 100%;
   overflow: hidden;
 }
 
-.clusterize-scroll {
-    max-height: 550px !important;
+table{
+    table-layout: fixed;
+    margin-bottom: 0 !important;
+    font-size: 12px !important;
+}
+
+td {
+  word-wrap:break-word;
+  max-width:450px;
 }
 
 .datacontent th {
@@ -35,11 +38,16 @@ td {
     background: #fff;
 }
 
+.clusterize {
+max-height: 85% !important;
+}
+
 .clusterize-headers {
     display: none;
     width: 100%;
     z-index: 1;
 }
+
 </style>
 <!--HTML-->
 <div class="clusterize">
@@ -131,7 +139,7 @@ td {
 if ( $xlsx = SimpleXLSX::parse($file_path)) {
 ?>
 <script>
-
+$('.clusterize-scroll').css({"max-height":"92%"});
 var data = [
 
 <?php
@@ -141,6 +149,8 @@ var data = [
 	$num_rows = $dim[1];
 	
 	$count = 0;
+	
+	$xlsx->setDateTimeFormat('m/d/Y');
 
 	foreach ( $xlsx->rows( 0 ) as $r ) {
 	    if($count > 1) {
@@ -223,11 +233,12 @@ $scroll.on('scroll', (function() {
       
     var y = $(this).scrollTop();
     if (y > 50) {
-        $('.clusterize-headers').fadeIn();
+        $('.clusterize-headers').show();
+        $('.clusterize-scroll').css({"max-height":"80%"});
     } else {
-        $('.clusterize-headers').fadeOut();
+        $('.clusterize-headers').hide();
+        $('.clusterize-scroll').css({"max-height":"92%"});
     }
-    
     
     var scrollLeft = $(this).scrollLeft();
     if (scrollLeft == prevScrollLeft) return;
