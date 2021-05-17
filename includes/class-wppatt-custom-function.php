@@ -670,6 +670,21 @@ public static function get_validation_user( $identifier ) {
 }
 
 /**
+ * Convert folderdocinfofile_id to dbid
+ * @return db id
+ */
+ 
+public static function convert_folderdocinfofile_id( $identifier ) {
+    global $wpdb;
+    $get_dbid = $wpdb->get_row("SELECT id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE folderdocinfofile_id = '" .  $identifier . "'");
+    $db_id = $get_dbid->id;
+    
+    return $db_id;
+}
+
+/**
  * Determine if Folder/File is a Parent or Child
  * @return Boolean
  */
@@ -5184,8 +5199,7 @@ $recipient_email = 'ecms@epa.gov';
 // Notifications for Comments - Send emails out
 	    public static function insert_new_comment_notification( $request_id, $comment, $user_ids, $bcc, $recall_id, $type ) {
 		    global $wpdb;
-
-$comment = stripslashes($comment);	                
+		                
 if(count($bcc) == 0) {
     $email_array = array();
 } else {
@@ -5302,6 +5316,7 @@ if($type == 'comment') {
 			
 			if ( $details_array == false ) {
 				$details_array['search_error'] = true;
+				$details_array['searchByID'] = $item_id;
 			} else {
 				$details_array['search_error'] = false;
 				$details_array['searchByID'] = $item_id;
@@ -6014,18 +6029,45 @@ if($type == 'comment') {
             
 		}
 
-
+        /**
+         * Program office to region ID conversion
+         * Converts the program office acronym to the region ID, which is to be ingested into sems_site_id_validation
+         * @return region ID
+         */
+         /*
+		public static function program_office_to_region_id( $program_office_acronym ) {
+		    $region_or_hq = substr($program_office_acronym, 0, 3);
+		    $reg_id = '';
+		    
+		    if( strpos($region_or_hq, 'R') !== false) {
+		        $reg_id = substr($region_or_hq, 1);
+		    }
+		    else {
+		        $reg_id = '11';
+		    }
+		    return $reg_id;
+		}
+*/
         /**
          * SEMS Site ID Validation
          * Accepts $error_code
          * @return text
          */
-		public static function sems_site_id_validation( $site_name_submission, $site_id_submission ) {
+		public static function sems_site_id_validation( $site_name_submission, $site_id_submission, $reg_id ) {
 		    
 		    if ($site_name_submission !== NULL || $site_id_submission !== NULL) {
 
 				$curl = curl_init();
-				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites?id='.$site_id_submission;
+				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites';
+				//7 character site ID
+				if(strlen($site_id_submission) == 7) {
+                    $url .= '?id='.$site_id_submission;
+				}
+				//12 character CERCLIS/EPAID
+				if(strlen($site_id_submission) == 12) {
+                    $url .= '?id='.$site_id_submission.'&regId='.$reg_id;
+				}
+				
 				$headers = [
 				    'Cache-Control: no-cache'
 				];
@@ -6058,7 +6100,7 @@ if($type == 'comment') {
 				$err = Patt_Custom_Func::convert_http_error_code($status);
 			
 				if ($status != 200) {
-					Patt_Custom_Func::insert_api_error('eidw-page-debug',$status,$err);
+					Patt_Custom_Func::insert_api_error('eidw-sems-site-id-validation',$status,$err);
 					return 'error';
 				} else {
 					if (strtoupper($site_name_submission) == strtoupper($site_name)) {
