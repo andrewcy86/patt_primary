@@ -13,13 +13,14 @@ $date_time = date('Y-m-d H:i:s');
 if(!empty($_POST['postvarslanid'])){
    //id in box table (e.g. 1)
    $box_id = $_POST['postvarsboxid'];
+   $box_dbid = Patt_Custom_Func::convert_box_id($box_id);
    //box_id in box table (e.g. 0000001-1)
    //$pattboxid = $_POST['postvarspattboxid'];
    $lanid = $_POST['postvarslanid'];
    $pattdocid = $_POST['postvarspattdocid'];
    $dbid = $_POST['postvarsdbid'];
 
-$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_dbid . "'");
 $ticket_id = $get_ticket_id->ticket_id;
 
    
