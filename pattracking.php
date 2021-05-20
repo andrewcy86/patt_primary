@@ -110,6 +110,12 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         
         // Add S3 Cleanup CRON
         add_action( 'wppatt_s3_cleanup_cron', array($frontend, 'wppatt_s3_cleanup_cron_schedule'));
+
+        // Add Request/Box Timestamp CRON
+        add_action( 'wppatt_timestamp_reporting_request_box_cron', array($frontend, 'wppatt_timestamp_reporting_request_box_cron_schedule'));
+        
+        // Add Folder File/Recall/Decline Timestamp CRON
+        add_action( 'wppatt_timestamp_reporting_folderfile_recall_decline_cron', array($frontend, 'wppatt_timestamp_reporting_folderfile_recall_decline_schedule'));
         
         // Add Decline Reminder Email & PM Notification CRON // No longer used. All actions done in wppatt_return_shipping_status_schedule
         //add_action( 'wppatt_decline_reminder_cron', array($frontend, 'wppatt_decline_reminder_email_cron_schedule'));
@@ -244,7 +250,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           	         	
           // Add Unauthorized Destruction to Folder File Details	
           add_action('wp_ajax_wpsc_unauthorized_destruction_ffd', array($backend, 'get_unauthorized_destruction'));	
-          	
+
+          // Add Unauthorized Destruction to Folder File Details	
+          add_action('wp_ajax_wpsc_user_edit_ffd', array($backend, 'get_bulk_user_edit'));	
+          
           // Add Freeze to Folder File Details	
           add_action('wp_ajax_wpsc_get_freeze_ffd', array($backend, 'get_alert_replacement'));
           
@@ -425,7 +434,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 			function custom_menu_item_redirect_external_link() {
 		        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
 		        if($menu_redirect == 'qlik-report' ) {
-		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/c76071e0-5fa3-4e9a-81d0-05fc910b7b6a/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
+		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/103e14da-fcde-4478-a17b-75bed3bc2064/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
 		            exit();
 		        }
 			}

@@ -108,7 +108,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 				<?php
 					$po_array = Patt_Custom_Func::fetch_program_office_array(); 
 				?>
-				<input type="search" list="searchByProgramOfficeList" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
+				<input type="search" list="searchByProgramOfficeList" aria-label="Enter program office" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
 				<datalist id='searchByProgramOfficeList'>
 					<?php foreach($po_array as $key => $value) { ?>
 					<?php 
@@ -243,7 +243,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 
 
 <div class="table-responsive" style="overflow-x:auto;">
-<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
 <table id="tbl_templates_boxes" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">

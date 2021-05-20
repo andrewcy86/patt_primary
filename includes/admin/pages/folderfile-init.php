@@ -89,7 +89,7 @@ Enter one or more Document IDs:<br />
          <?php
     $po_array = Patt_Custom_Func::fetch_program_office_array();
     ?>
-    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office' id="searchByProgramOffice"/>
+    <input type="text" list="searchByProgramOfficeList" name="program_office" aria-label="Enter program office" placeholder='Enter program office' id="searchByProgramOffice"/>
     <datalist id='searchByProgramOfficeList'>
      <?php foreach($po_array as $key => $value) { ?>
       
@@ -182,7 +182,7 @@ div.dataTables_processing { z-index: 1; }
 </style>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
 <table id="tbl_templates_folderfile" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">

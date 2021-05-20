@@ -38,15 +38,17 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
         autoProcessQueue: false,
         addRemoveLinks: true,
         uploadMultiple: true,
+        acceptedFiles: '.pdf',
         // paramName: 'litigation_letter_files',
         init: function () {
-            this.on("maxfilesexceeded", function() {
-                if (this.files[1]!=null){
-                    this.removeFile(this.files[0]);
+            this.on( "maxfilesexceeded", function() {
+                if ( this.files[1]!=null ){
+                    this.removeFile( this.files[0] );
                 }
             });
-            this.on("error", function (file) {
-                if (!file.accepted) this.removeFile(file);
+            this.on( "error", function( file, errorMessage ) {
+	            alert( 'Error: ' + errorMessage + '\n\n Only ".pdf" files are allowed.');
+                if ( !file.accepted ) this.removeFile( file );
             });
         }
     };

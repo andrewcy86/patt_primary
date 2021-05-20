@@ -776,9 +776,11 @@ if($is_active == 1 && $rescan_count > 0){
 		    jQuery('#wpsc_popup_body').html(response.body);
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
+		    
 		}); 
+
 	});
-	
+
 });
 
 		function wpsc_get_digitization_editor_final(box_id){
@@ -832,6 +834,6 @@ function view_assigned_agents( box_id ) {
 	    jQuery('#wpsc_popup_footer').html(response.footer);
 	    jQuery('#wpsc_cat_name').focus();
 	}); 
-// });
+
 }		
 	</script>

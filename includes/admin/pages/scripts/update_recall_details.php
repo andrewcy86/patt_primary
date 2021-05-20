@@ -308,7 +308,26 @@ if( $type == 'request_date' ) {
 		$data_status = [ 'recall_status_id' => $status_cancelled_term_id ]; //change status from Recalled to Cancelled
 		$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
 		
+		// Audit Log
 		do_action('wpppatt_after_recall_cancelled', $ticket_id, 'R-'.$recall_id);
+		
+		//
+		// Timestamp Table
+		//
+		
+/*
+		$dc = Patt_Custom_Func::get_dc_array_from_ticket_id( $ticket_id );
+		$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+		
+		$data = [
+			'recall_id' => $recall_obj->id,   //$recall_id,
+			'type' => 'Recall Cancelled',
+			'user' => $current_user->user_login,
+			'digitization_center' => $dc_str
+		];
+		
+		Patt_Custom_Func::insert_recall_timestamp( $data );
+*/
 	}
 	
 	

@@ -277,6 +277,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							<div class="fallback">
 								<input name="destruction_authorization_files" type="file" id="destruction_authorization_files" />
 							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+							</div>
 						</div>
 
 						<?php
@@ -307,6 +310,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							<div class="fallback">
 								<input name="litigation_letter_files" type="file" id="litigation_letter_files" />
 							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+							</div>
 						</div>
 
 						<?php
@@ -336,6 +342,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							<div class="fallback">
 								<input name="congressional_files" type="file" id="congressional_files" />
 							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+							</div>
 						</div>
 
 						<?php
@@ -364,6 +373,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						<div class="dropzone" id="foia-dropzone">
 							<div class="fallback">
 								<input name="foia_files" type="file" id="foia_files" />
+							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 

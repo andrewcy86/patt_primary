@@ -589,6 +589,11 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     include WPPATT_ABSPATH . 'includes/ajax/get_unauthorized_destruction.php';	
     die();	
     }
+
+    public function get_bulk_user_edit(){    	
+    include WPPATT_ABSPATH . 'includes/ajax/get_bulk_user_edit.php';	
+    die();	
+    }
     
     public function get_freeze(){    	
     include WPPATT_ABSPATH . 'includes/ajax/get_freeze.php';	

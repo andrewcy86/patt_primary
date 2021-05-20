@@ -126,44 +126,44 @@ Hides specific_access_restriction and specific_use_restriction when option == 'N
 //placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
 
 if(!empty($folderfile_identifier)) {
-    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' placeholder= '$folderfile_identifier'><br /><br />";
+    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' aria-label='Folder Identifier' placeholder= '$folderfile_identifier'><br /><br />";
 }
 else {
-    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' placeholder= 'Enter folder identifier...'><br /><br />";
+    echo "<strong>Folder Identifier</strong><br /><input type='text' id='folder_identifier' aria-label='Folder Identifier' placeholder= 'Enter folder identifier...'><br /><br />";
 }
 
 if(!empty($folderfile_title)) {
-    echo "<strong>Title</strong><br /><input type='text' id='title' placeholder= '$folderfile_title'></br></br>";
+    echo "<strong>Title</strong><br /><input type='text' id='title' aria-label='Title' placeholder= '$folderfile_title'></br></br>";
 }
 else {
-    echo "<strong>Title</strong><br /><input type='text' id='title' placeholder= 'Enter title...'></br></br>";
+    echo "<strong>Title</strong><br /><input type='text' id='title' aria-label='Title' placeholder= 'Enter title...'></br></br>";
 }
 
 if(!empty($folderfile_description)) {
-    echo "<strong>Description</strong><br /><input type='text' id='description' placeholder= '$folderfile_description'><br /><br />";
+    echo "<strong>Description</strong><br /><input type='text' id='description' aria-label='Description' placeholder= '$folderfile_description'><br /><br />";
 }
 else {
-    echo "<strong>Description</strong><br /><input type='text' id='description' placeholder= 'Enter description...'><br /><br />";
+    echo "<strong>Description</strong><br /><input type='text' id='description' aria-label='Description' placeholder= 'Enter description...'><br /><br />";
 }
 
 if(!empty($folderfile_date)) {
-    echo "<strong>Creation Date</strong><br /><input type='date' id='date' placeholder= '$folderfile_date'></br></br>";
+    echo "<strong>Creation Date</strong><br /><input type='date' id='date' aria-label='Creation Date' placeholder= '$folderfile_date'></br></br>";
 }
 else {
-    echo "<strong>Creation Date</strong><br /><input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>";
+    echo "<strong>Creation Date</strong><br /><input type='date' id='date' aria-label='Creation Date' placeholder= 'mm/dd/yyyy'></br></br>";
 }
 ?>
 
 <strong>Creator</strong><br />
-<input type='text' name='author' value='' id='author' class='tags'>
+<input type='text' name='author' value='' aria-label='Creator' id='author' class='tags'>
 </br>
 
 <strong>Addressee</strong><br />
-<input type='text' name='addressee' value="" id='addressee' class='tags'>
+<input type='text' name='addressee' value="" aria-label='Addressee' id='addressee' class='tags'>
 </br>
 
 <strong>Record Type</strong></br>
-<input type="search" list="RecordTypeList" placeholder='Enter record type...' id='record_type' class='datalist'/>
+<input type="search" list="RecordTypeList" aria-label='Enter record type...' placeholder='Enter record type...' id='record_type' class='datalist'/>
     <datalist id = 'RecordTypeList'>
         <option value='*Administrative Record Index'></option>
         <option value='*Agreement'></option>
@@ -198,30 +198,30 @@ else {
 
 <?php
 if(!empty($folderfile_site_name)) {
-    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' placeholder= '$folderfile_site_name'></br></br>";
+    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' aria-label='Site Name' placeholder= '$folderfile_site_name'></br></br>";
 }
 else {
-    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>";
+    echo "<strong>Site Name</strong><br /><input type='text' id='site_name' aria-label='Site Name' placeholder= 'Enter site name...'></br></br>";
 }
 
 if(!empty($folderfile_site_id)) {
-    echo "<strong>Site ID</strong><br /><input type='text' id='site_id' placeholder= '$folderfile_site_id'></br></br>";
+    echo "<strong>Site ID</strong><br /><input type='text' id='site_id'aria-label='Site ID'  placeholder= '$folderfile_site_id'></br></br>";
 }
 else {
-    echo "<strong>Site ID</strong><br /><input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>";
+    echo "<strong>Site ID</strong><br /><input type='text' id='site_id' aria-label='Site ID' placeholder= 'Enter site ID...'></br></br>";
 }
 
 if(!empty($folderfile_close_date)) {
-    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' placeholder= '$folderfile_close_date'></br></br>";
+    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' aria-label='Close Date' placeholder= '$folderfile_close_date'></br></br>";
 }
 else {
-    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
+    echo "<strong>Close Date</strong><br /><input type='date' id='close_date' aria-label='Close Date' placeholder= 'Enter close date...'></br></br>";
 }
 ?>
 
 <strong>Access Restriction</strong><br />
 <!--<select id="access_restriction" name="access_restriction" onclick="showDiv('hidden_div', this)">-->
-  <select id="access_restriction" name="access_restriction">
+  <select id="access_restriction" aria-label='Access Restriction' name="access_restriction">
   <option value="Yes" <?php if ($folderfile_access_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
   <option value="No" <?php if ($folderfile_access_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
 </select></br>
@@ -245,7 +245,7 @@ else {
 
 <br><strong>Use Restriction</strong><br />
 <!--<select id="use_restriction" name="use_restriction" onclick="showDiv('hidden_div_2', this)">-->
-<select id="use_restriction" name="use_restriction">
+<select id="use_restriction" aria-label='Use Restriction' name="use_restriction">
   <option value="Yes" <?php if ($folderfile_use_restriction == 'Yes' || $folderfile_use_restriction == 'yes') echo 'selected' ; ?>>Yes</option>
   <option value="No" <?php if ($folderfile_use_restriction == 'No' || $folderfile_use_restriction == 'no') echo 'selected' ; ?>>No</option>
 </select></br>
@@ -269,11 +269,11 @@ else {
 </br>
 
 <strong>Rights Holder</strong><br />
-<input type='text' name='rights_holder' value="" id='rights_holder' class='tags'>
+<input type='text' name='rights_holder' value="" aria-label='Rights Holder' id='rights_holder' class='tags'>
 </br>
 
 <strong>Source Type</strong></br>
-<input type="search" list="SourceFormatList" placeholder='Enter source type...' id='sf' class='datalist'/>
+<input type="search" list="SourceFormatList" aria-label='Enter source type...' placeholder='Enter source type...' id='sf' class='datalist'/>
     <datalist id = 'SourceFormatList'>
         <option value='4K'></option>
         <option value='*>50MB ELECTRONIC RECORD'></option>
@@ -347,7 +347,8 @@ else {
 </select></br>
 
 <br><strong>Program Area</strong><br />
-<select id="program_area" name="program_area">
+<select id="program_area" aria-label='Program Area' name="program_area">
+    <option value='' <?php if ($folderfile_program_area == '') echo 'selected' ; ?>>-- Select a program area --</option>
     <option value='COMMUNITY INVOLVEMENT' <?php if ($folderfile_program_area == 'COMMUNITY INVOLVEMENT') echo 'selected' ; ?>>COMMUNITY INVOLVEMENT</option>
     <option value='ENFORCEMENT' <?php if ($folderfile_program_area == 'ENFORCEMENT') echo 'selected' ; ?>>ENFORCEMENT</option>
     <option value='FEDERAL FACILITIES' <?php if ($folderfile_program_area == 'FEDERAL FACILITIES') echo 'selected' ; ?>>FEDERAL FACILITIES</option>
@@ -360,13 +361,13 @@ else {
 </select></br>
 
 <br><strong>Essential Record</strong><br />
-<select id="er" name="er">
+<select id="er" aria-label='Essential Record' name="er">
   <option value="1" <?php if ($folderfile_essential_record == 1 ) echo 'selected' ; ?>>Yes</option>
   <option value="0" <?php if ($folderfile_essential_record == 0) echo 'selected' ; ?>>No</option>
 </select></br></br>
 
 <strong>Tags</strong><br />
-<input type='text' name='tags' class='tags' value="" id='tags'>
+<input type='text' name='tags' aria-label='Tags' class='tags' value="" id='tags'>
 </br>
 
 <!-- START REVIEW -->

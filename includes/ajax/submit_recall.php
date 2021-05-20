@@ -185,11 +185,13 @@ if($recall_id == 0) {
 		$recall_type = "Box";
 		$item_id = $recall_obj->box_id;
 		$the_box_id = $recall_obj->box_id;
+		$id_box_id = $recall_obj->recall_box_id;
 // 	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== $db_null ) {
 	} elseif ( $recall_obj->box_id > 0 && $recall_obj->folderdoc_id !== null ) {
 		$recall_type = "Folder/File";
 		$item_id = $recall_obj->folderdoc_id;
 		$the_box_id = $recall_obj->box_id;
+		$id_box_id = $recall_obj->recall_box_id;
 	} 
 	
 	//echo 'item_id: ' . $item_id . PHP_EOL;
@@ -336,6 +338,30 @@ if($recall_id == 0) {
 	} else {
 		$notifications .= "Notification not sent to requester.";
 	}
+	
+	//
+	// Timestamp Table
+	//
+	
+/*
+	if( $recall_type == "Box" ) {
+		//$id_box_id
+	} elseif( $recall_type == "Folder/File" ) {
+		//$id_box_id
+	}
+	
+	$dc = Patt_Custom_Func::get_dc_array_from_ticket_id( $ticket_id );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'recall_id' => $recall_obj->id,   //$recall_id,
+		'type' => 'Recalled',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_recall_timestamp( $data );
+*/
 
 
 }

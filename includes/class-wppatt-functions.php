@@ -102,6 +102,16 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/ecms_ingestion_cron.php';
     }
     
+    // CRON Request/Box Timestamp
+    public function wppatt_timestamp_reporting_request_box_cron_schedule() {
+    include WPPATT_ABSPATH . 'includes/admin/timestamp_reporting_request_box_cron.php';
+    }
+    
+    // CRON Folder File/Recall/Decline Timestamp
+    public function wppatt_timestamp_reporting_folderfile_recall_decline_schedule() {
+    include WPPATT_ABSPATH . 'includes/admin/timestamp_reporting_folderfile_recall_decline_cron.php';
+    }
+    
     public function addStyles(){    
         wp_register_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
         //wp_register_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );

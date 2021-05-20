@@ -155,6 +155,9 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 							<div class="fallback">
 								<input name="litigation_letter_files" type="file" id="litigation_letter_files" />
 							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+							</div>
 						</div>
 					</div>
 
@@ -165,6 +168,9 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 							<div class="fallback">
 								<input name="congressional_files" type="file" id="congressional_files" />
 							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+							</div>
 						</div>
 					</div>
 
@@ -174,6 +180,9 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 						<div class="dropzone" id="foia-dropzone">
 							<div class="fallback">
 								<input name="foia_files" type="file" id="foia_files" />
+							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 					</div>

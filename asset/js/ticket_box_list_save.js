@@ -29,7 +29,7 @@ jQuery(document).ready(function(){
                 addRemoveLinks: true,
                 uploadMultiple: false,
                 maxFiles: 1,
-                acceptedFiles: '.xlsx, .xlsm',
+                acceptedFiles: '.xlsm',
                 accept: function (file, done) {
                     
                     console.log( 'ACCEPT' );
@@ -626,6 +626,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         let date_time_reg = /^(0?[0-9]|1[012])[\/\-](0?[0-9]|[12][0-9]|3[01])[\/\-]\d{4} ([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])$/;
                         //let date_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
                         let date_reg = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
+                        let num_reg = /^[0-9]/;
+                        
 						
 						// Column Indexes for Validation checks
 						let index_box = 0;
@@ -924,6 +926,24 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 		*/
 		                            
+		                            // Disposition Schedule: validate that there is a ':' in the name so that php processing works.
+									if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( 
+		                            		   parsedData[count][index_rec_sched].indexOf( ':' ) < 1
+		                            		) 
+		                            	
+									) {
+										let alert_message = '';
+										alert_message += "Disposition Schedule appears to be in the incorrect format. \n\n";
+										alert_message += "Expecting a format similar to: '[1051b] : Records of Senior Officials' \n\n";
+										alert_message += "No colon detected. \n\n";
+										alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_rec_sched] + "'.";										
+		                                alert( alert_message );
+		                                flag = true;
+									}
+
 		
 									
 									// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halfsies. 
@@ -994,7 +1014,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                } else {
 				                                let alert_message = '';
 												alert_message += "Invalid Close Date for line " + (count + 1) + ". \n\n";
-												alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30).";
+												alert_message += "Format must be MM/DD/YYYY HH:mm:ss (ex: 1/13/2021 3:00:30) or ";
+												alert_message += "MM/DD/YYYY (ex: 1/13/2021).";
 				                                alert( alert_message );
 												flag = true;
 			                                }
@@ -1022,23 +1043,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 		*/
 		
-		                            // Index level validation
-		                            if(
-		                            	flag != true && 
-		                            	count > 1 && 
-		                            		( parsedData[count][index_index_level].toLowerCase() != 'file' && 
-		                            		  parsedData[count][index_index_level].toLowerCase() != 'folder'
-		                            		)
-		                            ){
-		                                let alert_message = '';
-										alert_message += 'Index level value "'+parsedData[count][index_index_level];
-										alert_message += '" seems incorrect for the line number '+ (count + 1);
-		                                alert( alert_message );
-		                                flag = true;
-		                            }
+		                            
 									
 									
-									console.log( {superfundx:superfundx});
+									
 									// Program Office: validate that there is a ':' in the name so that php processing works.
 									if(
 		                            	flag != true && 
@@ -1059,9 +1067,92 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 									}
 									
 									
-		                            // Epa contact, program office, record no validation
+									
+									// EPA Contact should not start with a number. 
+									
+									if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( 
+		                            		   num_reg.test( parsedData[count][index_epa_contact] ) == true 
+		                            		) 
+		                            	
+									) {
+										let alert_message = '';
+										alert_message += "EPA Contact appears to be in the incorrect format. \n\n";
+										alert_message += "Expecting a letter in the first position. \n\n";
+										alert_message += "First position contains a number. \n\n";
+										alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_epa_contact] + "'.";										
+		                                alert( alert_message );
+		                                flag = true;
+									}
+									
+									
+		                            // Epa contact, program office, record num validation
+		                            
+		                            // Record Schedule (Disposition Schedule) Validation
+		                            // Must be the same for entire Request
+		                            
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	prev_box != '' && 
+											(  
+											  prev_record_schedule !== parsedData[count][index_rec_sched] 
+											) 
+									) {
+		
+		                                _column = 'Record Schedule & Item Number';
+		                                _prev = prev_record_schedule;
+		                                _index = parsedData[count][index_rec_sched];
+		                                		
+										
+										let alert_message = '';
+										alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
+										alert_message += "'" + _column + "' must have the same value for all items in the same Request \n\n";
+										alert_message += "Line " + count + " has value '" + _prev + "' while \n";
+										alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
+										
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+									
+									
+									// Program Office Validation
+		                            // Must be the same for each Box
+		                            
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( prev_box != '' && 
+		                            		  prev_box === parsedData[count][index_box] 
+		                            		) 
+		                            	&& 
+											( 
+											  prev_program_office !== parsedData[count][index_prog_office]
+											) 
+									) {
+		
+		                                _column = 'Program Office';
+		                                
+		                                _prev = prev_program_office;
+		                                
+		                                _index = parsedData[count][index_prog_office];
+		                                										
+										let alert_message = '';
+										alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
+										alert_message += "'" + _column + "' must have the same value for all items in the same box ";
+										alert_message += "(Box: " + prev_box + "). \n\n";
+										alert_message += "Line " + count + " has value '" + _prev + "' while \n";
+										alert_message += "Line " + (count + 1) + " has value '" + _index + "'.";							
+										
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+
 		                            
 		                            // Remove requirement that epa_contact is the same for each box. 
+/*
 		                            prev_epa_contact = parsedData[count][index_epa_contact];
 		                            
 		                            if(
@@ -1117,8 +1208,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                alert( alert_message );
 		                                flag = true;
 		                            }
+*/
 		                            
-		                            console.log( 'prev_site_id read: ' + prev_site_id );
+		                            //console.log( 'prev_site_id read: ' + prev_site_id );
 		                            
 		                            // SUPER FUND
 		                            // Site id req
@@ -1181,10 +1273,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            }
 
 		                            
-		                            console.log( 'ACCESS RESTRICTIONS' );
-		                            console.log( {accessRest:parsedData[count][index_access_rest], specificiAR:parsedData[count][index_sp_access_rest] });
-		                            console.log( parsedData[count][index_access_rest] == 'No' );
-		                            console.log( parsedData[count][index_sp_access_rest] != null );
+		                            //console.log( 'ACCESS RESTRICTIONS' );
+		                            //console.log( {accessRest:parsedData[count][index_access_rest], specificiAR:parsedData[count][index_sp_access_rest] });
+		                            //console.log( parsedData[count][index_access_rest] == 'No' );
+		                            //console.log( parsedData[count][index_sp_access_rest] != null );
 		                            
 		                            // Validate Access Restriction (No) & Specific Access Restriction (filled in)
 		                            if( 
@@ -1269,6 +1361,43 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                flag = true;
 		                            }
 		                            
+		                            // Validate Program Area. If ECMS, must be blank.
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            	superfundx == 'no' &&
+											( parsedData[count][index_prog_area] != null && 
+											  parsedData[count][index_prog_area] != undefined && 
+											  parsedData[count][index_prog_area] != ''
+											)
+									) {
+										
+										_column = 'Program Area';
+										
+										alert_message = '';
+		                                alert_message += "Invalid value in column '" + _column + "' on line " + (count + 1) + ". \n\n";
+										alert_message += "'" + _column + "' must be blank when submitting to ECMS. ";
+										alert_message += "\n\n";
+										alert_message += "Line " + (count + 1) + " has value '" + parsedData[count][index_prog_area] + "'.";										
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
+									
+									
+									// Index level validation
+		                            if(
+		                            	flag != true && 
+		                            	count > 1 && 
+		                            		( parsedData[count][index_index_level].toLowerCase() != 'file' && 
+		                            		  parsedData[count][index_index_level].toLowerCase() != 'folder'
+		                            		)
+		                            ){
+		                                let alert_message = '';
+										alert_message += 'Index level value "'+parsedData[count][index_index_level];
+										alert_message += '" seems incorrect for the line number '+ (count + 1);
+		                                alert( alert_message );
+		                                flag = true;
+		                            }
 		                            
 		                            // Validate JSON - Tags Column
 		                            if( 
@@ -1307,7 +1436,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            if( 
 		                            	flag != true && 
 		                            	count > 1 && 
-		                            		!( pcd == 'P' || pcd == 'C' || pcd == 'S' ) 
+		                            		!( pcd == 'P' || pcd == 'C' ) 
 		                            ) {
 		                                let alert_message = '';
 										alert_message += "Invalid Parent/Child format for record " + (count + 1) + ".";

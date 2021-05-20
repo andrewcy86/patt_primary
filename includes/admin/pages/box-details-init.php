@@ -52,6 +52,8 @@ else {
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit"></i> Bulk Edit EPA Contact </button>
+
 		<?php
 		$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
 		$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
@@ -213,7 +215,7 @@ div.dataTables_wrapper {
 </div>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br />
 <form id="frm-example" method="POST">
@@ -430,6 +432,7 @@ postvarpage : jQuery('#page').val()
 	jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_freeze_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
+	jQuery('#wpsc_individual_user_edit_btn').attr('disabled', 'disabled');
 	
 	function toggle_button_display() {
 	//	var form = this;
@@ -439,11 +442,13 @@ postvarpage : jQuery('#page').val()
 			jQuery('#wpsc_individual_damaged_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_freeze_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
+            jQuery('#wpsc_individual_user_edit_btn').removeAttr('disabled');
 	  	} else {
 	    	jQuery('#wpsc_individual_destruction_btn').attr('disabled', 'disabled');
 	    	jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
 	    	jQuery('#wpsc_individual_freeze_btn').attr('disabled', 'disabled');
         	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
+            jQuery('#wpsc_individual_user_edit_btn').attr('disabled', 'disabled');
 	  	}
 	}
 	
@@ -453,6 +458,28 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		  wpsc_modal_open('Unauthorized Destruction');
 		  var data = {
 		    action: 'wpsc_unauthorized_destruction_ffd',
+		    postvarsfolderdocid :  rows_selected.join(","),
+            postvarpage : jQuery('#page').val(),
+            boxid : '<?php echo $the_real_box_id; ?>',
+            pid : jQuery('#p_id').val()
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  dataTable.ajax.reload( null, false );
+		  dataTable.column(0).checkboxes.deselectAll();
+});
+
+
+jQuery('#wpsc_individual_user_edit_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		  wpsc_modal_open('Bulk Edit Users');
+		  var data = {
+		    action: 'wpsc_user_edit_ffd',
 		    postvarsfolderdocid :  rows_selected.join(","),
             postvarpage : jQuery('#page').val(),
             boxid : '<?php echo $the_real_box_id; ?>',
@@ -827,7 +854,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
                 $agent_permissions['label'];
                 if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
-                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
+                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
                 } 
 			?>
 			
@@ -939,7 +966,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
                 $agent_permissions['label'];
                 if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
-                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
+                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
                 } 
 			?>
 			

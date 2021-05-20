@@ -197,6 +197,12 @@ $metadata = implode (", ", $metadata_array);
 
 if( ($old_bs != $bs) || ($dc != $old_dc) || ($po_old_acronym != $po_new_acronym) || ($rs_old_num != $rs_new_num) ) {
 do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
+
+//update date_updated column when metadata is updated
+$date_time = date('Y-m-d H:i:s');
+$data_update_current_time = array('date_updated' => $date_time);
+$data_where_current_time = array('id' => $box_id);
+$wpdb->update($table_name, $data_update_current_time, $data_where_current_time);
 }
 
 //send email/notification when program office is updated

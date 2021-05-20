@@ -776,24 +776,39 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					//console.log(typeof(response.responseJSON.errors));
 					
 					let res = response.responseJSON.details;
-					console.log('The res');
-					console.log(res);
+					console.log( 'The res' );
+					console.log( res );
 					
-					if(res.searchByID) {												
-						if(res.search_error == true ) {
+					if( res.searchByID ) {												
+						if( res.search_error == true ) {
 							console.log("notfound");
-							search_failed_2( 'notfound', res.searchByID[0] ); // use search_failed for OLD button Recall page
+							//search_failed_2( 'notfound', res.searchByID[0] ); // use search_failed for OLD button Recall page
+							search_failed_2( 'notfound', res.searchByID ); // use search_failed for OLD button Recall page
+							
+							submit_check = false;
+							jQuery('#wpsc_create_recall_submit').attr( 'disabled', 'disabled' );
+							
 						} else {
 							//update_recall_box_folder_file(res); // used for OLD button Recall page
 							//error_alerts(res);
 							update_page(res);
 							
+							console.log( 'submit acceptable' );
 							submit_check = true;
 							jQuery('#wpsc_create_recall_submit').removeAttr('disabled');
 						}
 					} else {
 						console.log("not a valid search ID");
 						//search_failed_2( 'blank', '' ); // use search_failed for OLD button Recall page
+						submit_check = false;
+						jQuery('#wpsc_create_recall_submit').attr( 'disabled', 'disabled' );
+						
+						if( res.searchByID == '' ) {
+							
+						} else {
+							console.log( res );
+							search_failed_2( 'notfound', res.searchByID ); 
+						}
 					}
 					
 															
@@ -927,14 +942,14 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	    
 	    //dataTable.state.save();
 		dataTable.draw();
-		console.log('Search IDs: '+jQuery('#searchByID').val());
+		console.log( 'Search IDs: ' + jQuery( '#searchByID' ).val() );
 		console.log(tag);
 	}
 	
 	function onRemoveTag(tag) {
 	    //dataTable.state.save();
 		dataTable.draw();
-		console.log('Search IDs: '+jQuery('#searchByID').val());
+		console.log( 'Search IDs: ' + jQuery( '#searchByID' ).val() );
 		submit_check = false;
 		jQuery('#wpsc_create_recall_submit').attr( 'disabled', 'disabled' );
 	}
@@ -994,7 +1009,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			console.log('This should never happen. A user can no longer accidently search for nothing.');			
 
 		} else if (failure_type == 'notfound' ) {
-			error_str = 'Box/Folder/File <b>"'+item_id+'"</b> Not Found.';
+			error_str = 'Box/Folder/File <b>"' + item_id + '"</b> Not Found.';
 			//jQuery('input#found_item_id').attr('style', style_danger);	
 		}
 		

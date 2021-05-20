@@ -106,6 +106,20 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 			$requester_lanid = $find_requester->user_login;
 			$requestor_json = Patt_Custom_Func::lan_id_to_json( $requester_lanid );
 			
+			// Insert notification to send to requestor indicating bad LAN ID
+			$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+            $get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+            
+            $user_id_array = [$get_user_id->ID];
+            $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
+            $patt_agent_id = implode($convert_patt_id);
+            $pattagentid_array = [$patt_agent_id];
+            $data = [];
+            $request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
+            
+            $email = 1;
+            Patt_Custom_Func::insert_new_notification('email-bad-epa-contact',$pattagentid_array,$request_id,$data,$email);
+            
 			foreach ($request_id_query as $request_lan_id_update) {
 				$request_db_lan_id = $request_lan_id_update->id ;
 				

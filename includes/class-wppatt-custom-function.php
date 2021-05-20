@@ -3471,6 +3471,86 @@ public static function id_in_recall( $identifier, $type ) {
             }
             return $array;
         }
+        
+        //Function to obtain location value from ticket_id
+        public static function get_dc_array_from_ticket_id( $id ) {
+            global $wpdb;
+            $array = array();
+            
+            $sql = "SELECT 
+            			Group_concat( DISTINCT term.term_id ) as dc
+					FROM   
+						" . $wpdb->prefix . "wpsc_epa_boxinfo box
+					LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location AS loc
+						ON loc.id = box.storage_location_id
+					LEFT JOIN " . $wpdb->prefix . "terms AS term
+					    ON term.term_id = loc.digitization_center
+					WHERE  box.ticket_id = " . $id;
+            $dc_num_results = $wpdb->get_results( $sql );
+            $dc_num_obj = $dc_num_results[0];
+            $dc_num_str = $dc_num_obj->dc;
+            $dc_num_array = explode( ',', $dc_num_str );
+            
+            return $dc_num_array;
+        }
+        
+        //Function to obtain location value from ticket_id
+        public static function get_dc_array_from_box_id( $id ) {
+            global $wpdb;
+            $array = array();
+            
+            $sql = "SELECT 
+            			Group_concat( DISTINCT term.term_id ) as dc
+					FROM   
+						" . $wpdb->prefix . "wpsc_epa_boxinfo box
+					LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location AS loc
+						ON loc.id = box.storage_location_id
+					LEFT JOIN " . $wpdb->prefix . "terms AS term
+					    ON term.term_id = loc.digitization_center
+					WHERE  box.id = " . $id;
+            $dc_num_results = $wpdb->get_results( $sql );
+            $dc_num_obj = $dc_num_results[0];
+            $dc_num_str = $dc_num_obj->dc;
+            $dc_num_array = explode( ',', $dc_num_str );
+            
+            return $dc_num_array;
+        }
+        
+        public static function dc_array_to_readable_string( $dc_array ) {
+	        
+	        $dc_check = '';
+	        $dc_count = count( array_unique( $dc_array ) );
+
+			if( $dc_count == 1 && in_array('62', $dc_array )) {
+				$dc_check = 'East';
+			}
+			
+			if( $dc_count == 1 && in_array('2', $dc_array )) {
+				$dc_check = 'West';
+			}
+
+			if( $dc_count == 1 && in_array('666', $dc_array )) {
+				$dc_check = 'Not assigned';
+			}
+
+			if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('2', $dc_array )) {
+				$dc_check = 'Both';
+			}
+			
+			if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('666', $dc_array )) {
+				$dc_check = 'East/Not Assigned';
+			}
+
+			if( $dc_count == 2 && in_array('666', $dc_array ) && in_array('2', $dc_array )) {
+				$dc_check = 'West/Not Assigned';
+			}
+			
+			if( $dc_count == 3 && in_array('666', $dc_array ) && in_array('2', $dc_array ) && in_array('62', $dc_array )) {
+				$dc_check = 'Both/Not Assigned';
+			}
+	        
+	        return $dc_check;
+	    }
 
         /*
         //Function to obtain program office from database
@@ -6065,7 +6145,7 @@ if($type == 'comment') {
 				}
 				//12 character CERCLIS/EPAID
 				if(strlen($site_id_submission) == 12) {
-                    $url .= '?id='.$site_id_submission.'&regId='.$reg_id;
+                    $url .= '?epaId='.$site_id_submission.'&regId='.$reg_id;
 				}
 				
 				$headers = [
@@ -6100,7 +6180,7 @@ if($type == 'comment') {
 				$err = Patt_Custom_Func::convert_http_error_code($status);
 			
 				if ($status != 200) {
-					Patt_Custom_Func::insert_api_error('eidw-sems-site-id-validation',$status,$err);
+					Patt_Custom_Func::insert_api_error('sems-site-id-validation',$status,$err);
 					return 'error';
 				} else {
 					if (strtoupper($site_name_submission) == strtoupper($site_name)) {
@@ -6148,6 +6228,67 @@ if($type == 'comment') {
 			$results = $wpdb->get_results( $sql );
 			
  			return $results[0]->request_id;
+
+		}
+		
+		
+		/**
+         * Inserts a row into the wpqa_wpsc_epa_timestamps_recall table
+         * details what action was taken and inserts the timestamp.
+         * @return true if inserted, false if not.
+         */
+		public static function insert_recall_timestamp( $data ) {
+	        global $wpdb;
+	        
+	        if( 
+	        	is_array( $data ) && 
+	        	array_key_exists( 'recall_id', $data ) &&
+	        	array_key_exists( 'type', $data ) &&
+	        	array_key_exists( 'user', $data ) &&
+	        	array_key_exists( 'digitization_center', $data )
+	        ) {
+		        
+		        $wpsc_epa_recall_timestamp = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_timestamps_recall");
+				
+				$data[ 'timestamp' ] = date("Y-m-d H:i:s");
+                
+                $recepit = $wpsc_epa_recall_timestamp->insert( $data );
+                
+                return true;
+                 
+	        } else {
+		        return false;
+	        }
+
+		}
+		
+		/**
+         * Inserts a row into the wpqa_wpsc_epa_timestamps_decline table
+         * details what action was taken and inserts the timestamp.
+         * @return true if inserted, false if not.
+         */
+		public static function insert_decline_timestamp( $data ) {
+	        global $wpdb;
+	        
+	        if( 
+	        	is_array( $data ) && 
+	        	array_key_exists( 'decline_id', $data ) &&
+	        	array_key_exists( 'type', $data ) &&
+	        	array_key_exists( 'user', $data ) &&
+	        	array_key_exists( 'digitization_center', $data )
+	        ) {
+		        
+		        $wpsc_epa_decline_timestamp = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_timestamps_decline");
+				
+				$data[ 'timestamp' ] = date("Y-m-d H:i:s");
+                
+                $recepit = $wpsc_epa_decline_timestamp->insert( $data );
+                
+                return true;
+                 
+	        } else {
+		        return false;
+	        }
 
 		}
         

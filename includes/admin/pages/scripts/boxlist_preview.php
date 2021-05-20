@@ -237,7 +237,7 @@ $scroll.on('scroll', (function() {
         $('.clusterize-scroll').css({"max-height":"80%"});
     } else {
         $('.clusterize-headers').hide();
-        $('.clusterize-scroll').css({"max-height":"92%"});
+        $('.clusterize-scroll').css({"max-height":"90%"});
     }
     
     var scrollLeft = $(this).scrollLeft();

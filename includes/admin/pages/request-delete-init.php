@@ -110,7 +110,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
 
         <select id='searchByStatus' aria-label="Search by Status">
            <option value=''>-- Select Status --</option>
-			<option value="<?php echo $new_request_tag->term_id; ?>">New</option>
+			<option value="<?php echo $new_request_tag->term_id; ?>">New Request</option>
 			<option value="<?php echo $initial_review_complete_tag->term_id; ?>">Initial Review Complete</option>
 			<option value="<?php echo $initial_review_rejected_tag->term_id; ?>">Initial Review Rejected</option>
 			<option value="<?php echo $shipped_tag->term_id; ?>">Shipped</option>

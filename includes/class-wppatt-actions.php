@@ -627,13 +627,14 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
      $box_timestamp_id = $get_box_timestamp->id;
      $box_timestamp_count = $get_box_timestamp->count;
      $status_new = substr($status, strpos($status, "to") + 3);
-     /*
-     // Delete previous value
-      if($box_timestamp_count > 0) {
-          $wpdb->delete( $table_timestamp, array( 'id' => $box_timestamp_id ) );
-      }
-     */
-      $wpdb->insert($table_timestamp, array('box_id' => $box_id, 'type' => $status_new, 'user' => $current_user->display_name, 'timestamp' => $date_time) ); 
+      $wpdb->insert($table_timestamp, array('box_id' => $box_id, 'type' => $status_new, 'user' => $current_user->display_name, 'timestamp' => $date_time) );
+      
+      $boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+      
+     //Update date_updated column
+    $data_update = array('date_updated' => $date_time);
+    $data_where = array('id' => $box_id);
+    $wpdb->update($boxinfo_table, $data_update, $data_where);
     }
     
     

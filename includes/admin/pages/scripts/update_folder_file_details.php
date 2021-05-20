@@ -389,6 +389,13 @@ $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
 
 $metadata = implode (", ", $metadata_array);
 
+//update date_updated column when metadata is updated
+$date_time = date('Y-m-d H:i:s');
+$data_update_current_time = array('date_updated' => $date_time);
+$data_where_current_time = array('id' => $pattdocid);
+$wpdb->update($folderdocinfofiles_table, $data_update_current_time, $data_where_current_time);
+
+
 //REVIEW
 /*
 if (($il != $old_il) && ($pattdocid_new != $fdiid)) {

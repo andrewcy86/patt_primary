@@ -227,7 +227,7 @@ jQuery(document).ready(function(){
 								})
 */
 		                    let newid = file.name;
-							jQuery(".dz-preview:last-child").attr('id', "document-" + newid );
+							jQuery("#dzBatchUpload_files .dz-preview:last-child").attr('id', "document-" + newid );
 		                    
 		                    upload( file );
 		                    
@@ -276,7 +276,7 @@ jQuery(document).ready(function(){
                         console.log( '------ success. BATCH' );
                         console.log( {file:file, response:response} );
                         file.serverId = response.id;
-						jQuery(".dz-preview:last-child").attr('id', "document-" + file.serverId);
+						//jQuery(".dz-preview:last-child").attr('id', "document-" + file.serverId);
                     });
 
                 }
@@ -498,7 +498,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
                     if (evt.lengthComputable) {
                         var percentComplete = Math.floor((evt.loaded / evt.total) * 100);
                         jQuery(attachment).find('.progress-bar').css('width', percentComplete + '%');
-                        
+
                     }
                 }, false);
                 return xhr;

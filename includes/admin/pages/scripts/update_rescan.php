@@ -16,6 +16,10 @@ $page_id = $_POST['postvarpage'];
 
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
+$table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
+// Define current time
+$date_time = date('Y-m-d H:i:s');
+
 $rescan_reversal = 0;
 $destroyed = 0;
 $validate = 0;
@@ -70,6 +74,22 @@ $data_update = array('rescan' => 0);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+
+// Check to see if timestamp exists
+$converted = Patt_Custom_Func::convert_folderdocinfofile_id($key);
+$get_folderfile_timestamp = $wpdb->get_row("select id from " . $table_timestamp . " where folderdocinfofile_id = '".$converted."' AND type = 'Re-scan' ");
+$folderfile_timestamp_id = $get_folderfile_timestamp->id;
+
+// Delete previous value
+if(!empty($folderfile_timestamp_id)) {
+  $wpdb->delete( $table_timestamp, array( 'id' => $folderfile_timestamp_id ) );
+}
+
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('folderdocinfofile_id' => $key);
+$wpdb->update($table_name, $data_update, $data_where);
+
 }
 
 if ($get_rescan_val == 0){
@@ -77,6 +97,15 @@ $data_update = array('rescan' => 1);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+
+// Check to see if timestamp exists
+$type = 'Re-scan';
+$wpdb->insert($table_timestamp, array('folderdocinfofile_id' => Patt_Custom_Func::convert_folderdocinfofile_id($key), 'type' => $type, 'user' => $current_user->user_login, 'timestamp' => $date_time) ); 
+
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('folderdocinfofile_id' => $key);
+$wpdb->update($table_name, $data_update, $data_where);
 
 $validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
 if ($status_id == $validation_tag->term_id) {
@@ -122,6 +151,22 @@ $data_update = array('rescan' => 0);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+
+// Check to see if timestamp exists
+$converted = Patt_Custom_Func::convert_folderdocinfofile_id($folderdocid_string);
+$get_folderfile_timestamp = $wpdb->get_row("select id from " . $table_timestamp . " where folderdocinfofile_id = '".$converted."' AND type = 'Re-scan' ");
+$folderfile_timestamp_id = $get_folderfile_timestamp->id;
+
+// Delete previous value
+if(!empty($folderfile_timestamp_id)) {
+  $wpdb->delete( $table_timestamp, array( 'id' => $folderfile_timestamp_id ) );
+}
+
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('folderdocinfofile_id' => $folderdocid_string);
+$wpdb->update($table_name, $data_update, $data_where);
+
 }
 
 if ($get_rescan_val == 0){
@@ -129,6 +174,16 @@ $data_update = array('rescan' => 1);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+
+// Check to see if timestamp exists
+$type = 'Re-scan';
+$wpdb->insert($table_timestamp, array('folderdocinfofile_id' => Patt_Custom_Func::convert_folderdocinfofile_id($folderdocid_string), 'type' => $type, 'user' => $current_user->user_login, 'timestamp' => $date_time) ); 
+
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('folderdocinfofile_id' => $folderdocid_string);
+$wpdb->update($table_name, $data_update, $data_where);
+
 $validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
 if ($status_id == $validation_tag->term_id) {
 $wpscfunction->change_status($ticket_id, 743);   

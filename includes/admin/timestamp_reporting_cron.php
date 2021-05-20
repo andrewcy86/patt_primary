@@ -10,10 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $current_user, $wpscfunction, $wpdb;
 
 $timestamp_table = $wpdb->prefix . 'wpsc_epa_timestamps_request';
+$timestamp_table_box = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+$timestamp_table_file = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
+
 $timestamp_requests_array = array();
 $requests_array = array();
 
-// Set deleted flag
 $get_timestamp_requests = $wpdb->get_results("
 SELECT request_id
 FROM " . $wpdb->prefix . "wpsc_epa_timestamps_request
@@ -25,12 +27,12 @@ array_push($timestamp_requests_array,$timestamp_request_id);
 }
 
 $get_requests = $wpdb->get_results("
-SELECT request_id
+SELECT id
 FROM " . $wpdb->prefix . "wpsc_ticket WHERE id <> '-99999'
 ");
 
 foreach($get_requests as $item) {
-$request_id = $item->request_id;
+$request_id = $item->id;
 array_push($requests_array,$request_id);
 }
 
@@ -38,34 +40,23 @@ $result = array_diff($timestamp_requests_array,$requests_array);
 
 //print_r($request);
 
-foreach($result as $diff) {
-
-$update_deleted = array('deleted' => '1');
-$where_deleted = array('request_id' => $diff);
-$wpdb->update($timestamp_table , $update_deleted, $where_deleted);
-
-echo $diff;
-//$wpdb->delete( $wpdb->prefix.'wpsc_epa_storage_location', array( 'id' => $diff) );
-}
-
 // Find missing data from timestamps request table
 $get_digitization_center_blanks = $wpdb->get_results("
 SELECT request_id
 FROM " . $wpdb->prefix . "wpsc_epa_timestamps_request
 WHERE
-digitization_center = '' AND deleted = 0
+digitization_center = ''
 ");
 
 foreach($get_digitization_center_blanks as $item) {
 
 $patt_request_id = $item->request_id;
-$item_request_id = Patt_Custom_Func::convert_request_id($patt_request_id);
 
 $get_boxes = $wpdb->get_results("
 SELECT storage_location_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
-ticket_id = '" . $item_request_id . "'"
+ticket_id = '" . $patt_request_id . "'"
 );
 
 
@@ -124,6 +115,58 @@ $where_dc = array('request_id' => $patt_request_id);
 $wpdb->update($timestamp_table , $update_dc, $where_dc);
 
 
+}
+
+//START DIGITIZATION CENTER BOX UPDATE
+$get_boxes = $wpdb->get_results("SELECT a.box_id as box_id, c.digitization_center as digitization_center
+FROM " . $wpdb->prefix . "wpsc_epa_timestamps_box a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id");
+
+foreach($get_boxes as $item) {
+    $box_id = $item->box_id;
+    $dc = $item->digitization_center;
+    
+    if($dc == 666) {
+        $dc = 'Not Assigned';
+    }
+    if($dc == 62) {
+        $dc = 'East';
+    }
+    if($dc == 2) {
+        $dc = 'West';
+    }
+    
+    $update_dc = array('digitization_center' => $dc);
+    $where_dc = array('box_id' => $box_id);
+    $wpdb->update($timestamp_table_box, $update_dc, $where_dc);
+}
+
+
+//START DIGITIZATION CENTER FOLDER FILE UPDATE
+$get_folderfile = $wpdb->get_results("SELECT a.folderdocinfofile_id as folderdocinfofile_id, c.digitization_center as digitization_center
+FROM " . $wpdb->prefix . "wpsc_epa_timestamps_folderfile a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.id = a.folderdocinfofile_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = d.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id");
+
+foreach($get_folderfile as $item) {
+    $folderfile_id = $item->folderdocinfofile_id;
+    $dc = $item->digitization_center;
+    
+    if($dc == 666) {
+        $dc = 'Not Assigned';
+    }
+    if($dc == 62) {
+        $dc = 'East';
+    }
+    if($dc == 2) {
+        $dc = 'West';
+    }
+    
+    $update_dc = array('digitization_center' => $dc);
+    $where_dc = array('folderdocinfofile_id' => $folderfile_id);
+    $wpdb->update($timestamp_table_file, $update_dc, $where_dc);
 }
 
 ?>

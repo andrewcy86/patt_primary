@@ -15,6 +15,9 @@ $page_id = $_POST['postvarpage'];
 
 $box_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
+// Define current time
+$date_time = date('Y-m-d H:i:s');
+
 $destruction_reversal = 0;
 
 $counter = 0;
@@ -115,6 +118,11 @@ $wpdb->update($box_table_name , $box_data_update, $box_data_where);
 
 do_action('wpppatt_after_box_destruction_unflag', $ticket_id, $key);
 
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('box_id' => $key);
+$wpdb->update($box_table_name, $data_update, $data_where);
+
 }
 
 if ($get_destruction_val == 0){
@@ -148,6 +156,12 @@ $wpdb->update($table_ss , $sso_update, $sso_where);
 }
 
 do_action('wpppatt_after_box_destruction', $ticket_id, $key);
+
+//Update date_updated column
+$data_update = array('date_updated' => $date_time);
+$data_where = array('box_id' => $key);
+$wpdb->update($box_table_name, $data_update, $data_where);
+
 }
 
 if ($destruction_reversal == 1) {

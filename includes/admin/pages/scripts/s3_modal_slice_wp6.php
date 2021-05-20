@@ -205,7 +205,7 @@ if (typeof jQuery != 'undefined') {
 */
 
 var s3upload=null;
-function upload(file) {
+function upload( file ) {
     if (!(window.File && window.FileReader && window.FileList && window.Blob && window.Blob.prototype.slice)) {
         alert("You are using an unsupported browser. Please update your browser.");
         return;
@@ -237,6 +237,24 @@ function upload(file) {
 	    
 	    return;
     }
+    
+    
+    // NEW
+    console.log( 'UPLOAD TEST' );
+    console.log( this );
+    console.log( file );
+    let test1 = '#document-file_name_2.pdf';
+    //let text = '#document-' + this.fileInfo.name;
+    let text = '#document-' + file.name;
+    console.log( text );
+    console.log( jQuery( test1 ) );
+    console.log( jQuery( text ) );
+    console.log( jQuery( '#metadata_file_num') );
+    console.log( 'progress changed: ' + this.fileInfo.name + ' - progress: ' + progress );
+    jQuery( '#document-' + this.fileInfo.name + ' > .dz-progress > .dz-upload' ).html( 'yo' );
+    jQuery( '#document-' + this.fileInfo.name ).text( 'yo' );
+    //jQuery( test1 ).hide();
+    
     
     s3upload.onServerError = function(command, jqXHR, textStatus, errorThrown) {
 //         $("#result").text("Upload failed with server error.");

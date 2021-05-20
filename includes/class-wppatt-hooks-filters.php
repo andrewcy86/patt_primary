@@ -288,8 +288,6 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					}
 				} elseif( $boxinfo['Parent/Child'] == 'C' ) {
 					$parent_child_single = 'child';
-				} elseif( $boxinfo['Parent/Child'] == 'S' ) {
-					$parent_child_single = 'single';
 				} else {
 					//$parent_child_single = 'single';
 					$parent_child_single = 'parent';
@@ -340,22 +338,31 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$record_schedule_number_break = explode( ':', $boxinfo['Disposition Schedule & Item Number'] );
 					$record_schedule_number = trim( str_replace( array( '[', ']' ), '', $record_schedule_number_break[0] ) );
 					
-					
+					$program_office_break = explode( ':', $boxinfo['Program Office'] );
+					$program_office_id = trim( $program_office_break[0] );
+
 					
 					// Program Office
 					if( !$superfund ) {
-						$program_office_break = explode( ':', $boxinfo['Program Office'] );
-						$program_office_id = trim( $program_office_break[0] );
 						$region_id = null;
 					} else {
 						// SEMS Default
-						$program_office_id = 'OLEM-OSRTI';
+						//$program_office_id = 'OLEM-OSRTI';
 						
 						// Get DOC_REGID
 						$program_office_break = explode( ':', $boxinfo['Program Office'] );
 						$region_break = explode( '-', $program_office_break[0] );
 						$region_code = $region_break[0];
-						$region_id = str_replace( 'R', '', $region_code);
+						
+						//if( $region_code )
+						$is_reg = strpos( $region_code, 'R' );
+						if( $is_reg === 0 ) {
+							$region_id = str_replace( 'R', '', $region_code);
+						} else {
+							$region_id = '11';
+						}
+						
+						
 					}
 					
 										
@@ -707,7 +714,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					$is_parent = false;
 					
 				} /*
-elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
+elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 					$folder_file_counter++;
 					$folder_file_id = $request_id . '-' . $box_num . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $folder_file_counter;
 					$folder_file_sub_counter = 1; //Reset for new file folder
@@ -1613,7 +1620,12 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
 				
-				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id );
+				// $sems_check_site_id - always 12 digits (need to confirm). Add reg_id ( '01', '02', etc, or null. 
+				//$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id );
+				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
+				
+				// D E V SITE - TESTING
+				//$site_name_id_valid = 'Success';
 				
 				if( $site_name_id_valid != 'Success') {
 					
@@ -1807,7 +1819,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							<input name="file" type="file" />
 						</div>
 						<div class="dz-default dz-message">
-							<button class="dz-button" type="button">Drop your file here to upload (xlsx, xlsm files allowed)</button>
+							<button class="dz-button" type="button">Drop your file here to upload (only .xlsm files allowed)</button>
 						</div>
 					</div>
 					
@@ -1885,7 +1897,7 @@ elseif( $parent_child_single == 'single' ) {  // DON'T THINK IS IS REAL ANYMORE
 							<input name="file" type="file" />
 						</div>
 						<div class="dz-default dz-message">
-							<button class="dz-button" type="button">Drop your SEMS file here to upload (xlsx files allowed)</button>
+							<button class="dz-button" type="button">Drop your SEMS file here to upload (only .xlsm files allowed)</button>
 						</div>
 					</div>
 					<div style="margin: 10px 0 10px;" id="attach_SEMS" class="row spreadsheet_container"></div>
