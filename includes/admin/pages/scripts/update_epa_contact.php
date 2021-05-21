@@ -87,9 +87,9 @@ $wpdb->update($table_name, $data_update_current_time, $data_where_current_time);
 
 $metadata = 'Multiple EPA contacts have been updated.';
 
-do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $box_id);
+do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $_POST['postvarsboxid']);
 
-echo "Multiple EPA contacts have been updated. Box ID: ". $box_id;
+echo "Multiple EPA contacts have been updated. Box ID: ". $_POST['postvarsboxid'];
 
 } else {
 
