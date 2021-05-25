@@ -71,7 +71,7 @@ foreach( $searchByID as $item ) {
 
 	
 	// Error Checking.
-	// Note: later errors will overwrite ealier errors. 
+	// Note: later errors will overwrite earlier errors. 
 	
 	// Check if item is currently in a Recall.
 	$recall_info = Patt_Custom_Func::item_in_recall( $item );

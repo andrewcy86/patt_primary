@@ -26,7 +26,7 @@ class WP_EIDW_Request extends WP_Async_Request {
 global $current_user, $wpscfunction,$wpdb;
 		
 $ticket_id = $_POST['ticket_id'];
-
+$count = 0;
 $json;
 
 // D E B U G 
@@ -98,6 +98,23 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 		
 		if ($active != 1) {
 		    
+		    // Insert notification to send to requestor indicating bad LAN ID
+		    if($count == 0) {
+        		$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+                $get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+                
+                $user_id_array = [$get_user_id->ID];
+                $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
+                $patt_agent_id = implode($convert_patt_id);
+                $pattagentid_array = [$patt_agent_id];
+                $data = [];
+                $request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
+                
+                $email = 1;
+                Patt_Custom_Func::insert_new_notification('email-bad-epa-contact',$pattagentid_array,$request_id,$data,$email);
+		    }
+		    $count++;
+		    
 			$request_id_query = $wpdb->get_results("SELECT a.id as id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id = '" . $lan_id_check_val . "' AND c.id = ".$ticket_id);
 			
 			$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
@@ -105,20 +122,6 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 			
 			$requester_lanid = $find_requester->user_login;
 			$requestor_json = Patt_Custom_Func::lan_id_to_json( $requester_lanid );
-			
-			// Insert notification to send to requestor indicating bad LAN ID
-			$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
-            $get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
-            
-            $user_id_array = [$get_user_id->ID];
-            $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
-            $patt_agent_id = implode($convert_patt_id);
-            $pattagentid_array = [$patt_agent_id];
-            $data = [];
-            $request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
-            
-            $email = 1;
-            Patt_Custom_Func::insert_new_notification('email-bad-epa-contact',$pattagentid_array,$request_id,$data,$email);
             
 			foreach ($request_id_query as $request_lan_id_update) {
 				$request_db_lan_id = $request_lan_id_update->id ;

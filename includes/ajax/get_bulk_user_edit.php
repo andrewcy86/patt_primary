@@ -25,7 +25,6 @@ ob_start();
 
 <form>
 <?php
-
 //placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
 
 echo "<strong>LAN ID:</strong><br /><input type='text' id='lanid' placeholder= 'Enter a LAN ID...'>";

@@ -92,9 +92,48 @@ foreach ($shipped_return_status_query as $item) {
 	
 	// Update Decline (Return) ship date  when it is shipped.
 	$where = [ 'id' => $return_id ];
-	$current_datetime = date("Y-m-d H:i:s");
+	$current_datetime = date( "Y-m-d H:i:s" );
  	$data = [ 'return_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
 	Patt_Custom_Func::update_return_data( $data, $where );
+	
+	
+	// Prep Timestmp Table data. 
+	// Get Decline obj
+	
+	$where = [
+		'return_id' => $return_id
+	];
+	$return_array = Patt_Custom_Func::get_return_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$return_array_key = array_key_first( $return_array );
+	$return_obj = $return_array[ $return_array_key ];
+
+	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $return_obj->id,   
+		'type' => 'Decline Shipped',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
 	
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
 	// No PM Notification for shipping Decline
@@ -180,7 +219,7 @@ $return_complete_return_status_query = $wpdb->get_results(
 	);
 
 	
-// For Return Status to change from Decline Shipped to Decline Pending Cancelled
+// For Return Status to change from Decline Shipped to Received
 foreach ($return_complete_return_status_query as $item) {
 	
 	// update Decline status to Decline Pending Cancelled
@@ -216,7 +255,49 @@ foreach ($return_complete_return_status_query as $item) {
 	$where = [ 'id' => $return_id ];
 	$data = [ 'expiration_date' => $four_weeks_ahead ]; 
 	Patt_Custom_Func::update_return_data( $data, $where );
+	
+	
+	
+	
+	// Prep Timestmp Table data. 
+	// Get Decline obj
+	
+	$where = [
+		'return_id' => $return_id
+	];
+	$return_array = Patt_Custom_Func::get_return_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$return_array_key = array_key_first( $return_array );
+	$return_obj = $return_array[ $return_array_key ];
 
+	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $return_obj->id,   
+		'type' => 'Received',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
+
+	
 
 	//
 	// PM Notification :: 4 week timer started
@@ -392,7 +473,23 @@ foreach ($return_complete_return_status_query as $item) {
 		$data_where = array('id' => $box_id);
 		$wpdb->update($table_name, $data_update, $data_where);
 	}
+		
 	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $return_obj->id,   
+		'type' => 'Decline Cancelled',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
 	
 	//
 	// PM Notification :: Decline Cancelled
@@ -480,6 +577,45 @@ foreach ($shipped_return_status_query as $item) {
  	$data = [ 'return_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
 	Patt_Custom_Func::update_return_data( $data, $where );
 	
+	
+	// Prep Timestmp Table data. 
+	// Get Decline obj
+	
+	$where = [
+		'return_id' => $return_id
+	];
+	$return_array = Patt_Custom_Func::get_return_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$return_array_key = array_key_first( $return_array );
+	$return_obj = $return_array[ $return_array_key ];
+
+	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $return_obj->id,   
+		'type' => 'Decline Shipped Back',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
+	
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
 	// No PM Notification for shipping Decline Back
 }
@@ -560,9 +696,27 @@ foreach ($return_complete_return_status_query as $item) {
 		
 	}
 
-	// Decline Audit Log
-	
 
+	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $decline_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $decline_obj->id,   
+		'type' => 'Decline Complete',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
+	
+	
+	
+	// Decline Audit Log
 	
 	do_action('wpppatt_after_return_completed', $ticket_id, 'D-'.$return_id );
 

@@ -315,8 +315,7 @@ if( $type == 'request_date' ) {
 		// Timestamp Table
 		//
 		
-/*
-		$dc = Patt_Custom_Func::get_dc_array_from_ticket_id( $ticket_id );
+		$dc = Patt_Custom_Func::get_dc_array_from_box_id( $recall_obj->recall_box_id );
 		$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 		
 		$data = [
@@ -327,7 +326,6 @@ if( $type == 'request_date' ) {
 		];
 		
 		Patt_Custom_Func::insert_recall_timestamp( $data );
-*/
 	}
 	
 	
@@ -425,7 +423,21 @@ if( $type == 'request_date' ) {
 		$notification_post = 'email-recall-id-has-been-approved-requestors';		
 		$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $results_requester, $requestid, $data, $email );
 		
+		//
+		// Timestamp Table
+		//
 		
+		$dc = Patt_Custom_Func::get_dc_array_from_box_id( $recall_obj->recall_box_id );
+		$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+		
+		$data = [
+			'recall_id' => $recall_obj->id,   
+			'type' => 'Recall Approved',
+			'user' => $current_user->user_login,
+			'digitization_center' => $dc_str
+		];
+		
+		Patt_Custom_Func::insert_recall_timestamp( $data );
 		
 	}
 	
@@ -517,6 +529,21 @@ if( $type == 'request_date' ) {
 		$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
 		
 		
+		//
+		// Timestamp Table
+		//
+		
+		$dc = Patt_Custom_Func::get_dc_array_from_box_id( $recall_obj->recall_box_id );
+		$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+		
+		$data = [
+			'recall_id' => $recall_obj->id,   
+			'type' => 'Recall Denied',
+			'user' => $current_user->user_login,
+			'digitization_center' => $dc_str
+		];
+		
+		Patt_Custom_Func::insert_recall_timestamp( $data );
 	}
 	
 	

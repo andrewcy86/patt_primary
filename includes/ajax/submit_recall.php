@@ -178,6 +178,7 @@ if($recall_id == 0) {
 	// $recall_comment
 	
 	// Prepare arguments
+	$id_box_id;
 	
 	//if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id == $db_null ) {
 	//if( $recall_obj->folderdoc_id == $db_null ) {	
@@ -343,14 +344,10 @@ if($recall_id == 0) {
 	// Timestamp Table
 	//
 	
-/*
-	if( $recall_type == "Box" ) {
-		//$id_box_id
-	} elseif( $recall_type == "Folder/File" ) {
-		//$id_box_id
-	}
+		
+	//$dc = Patt_Custom_Func::get_dc_array_from_ticket_id( $ticket_id );
 	
-	$dc = Patt_Custom_Func::get_dc_array_from_ticket_id( $ticket_id );
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $id_box_id );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
 	$data = [
@@ -361,7 +358,6 @@ if($recall_id == 0) {
 	];
 	
 	Patt_Custom_Func::insert_recall_timestamp( $data );
-*/
 
 
 }

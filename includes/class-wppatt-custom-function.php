@@ -1865,11 +1865,14 @@ public static function id_in_recall( $identifier, $type ) {
                         //$record->box_id = explode(',', $record->box_id );		
                         		
                         $temp_box_id = explode(',', $record->box_id );		
-                        $the_array = [];		
+                        $the_array = [];
+                        $box_id_fk_array = [];		
                         foreach( $temp_box_id as $id ) {		
-	                    	$the_array[] = self::get_box_id_by_id($id)[0];		
+	                    	$the_array[] = self::get_box_id_by_id($id)[0];	
+	                    	$box_id_fk_array[] = $id;	
                         }		
-                        $record->box_id = $the_array;		
+                        $record->box_id = $the_array;	
+                        $record->box_id_fk = $box_id_fk_array;		
                         		
                     }		
                     if(!empty($record->folderdoc_id)) {		

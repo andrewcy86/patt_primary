@@ -157,6 +157,7 @@ $data = [
 */
 
 $return_id = Patt_Custom_Func::insert_return_data($data);
+$return_id_fk = $return_id;
 $str_length = 7;
 $return_id = substr("000000{$return_id}", -$str_length);
 
@@ -198,11 +199,25 @@ if($return_id == 0) {
 		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 		$data_where = array( 'id' => $box_FK );
 		$data_update = array( 'box_status' => $status_waiting_rlo_term_id );
-		$wpdb->update( $table_name, $data_update, $data_where );
+		$wpdb->update( $table_name, $data_update, $data_where );	
 		
 	}
 	
-
+	//
+	// Timestamp Table
+	//
+			
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item_ids_box[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'decline_id' => $return_id_fk,   
+		'type' => 'Decline Initiated',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
 
 	// Audit Log for each item
 	foreach( $item_ids as $key => $id ) {
@@ -271,6 +286,11 @@ if($return_id == 0) {
 		} else {
 			$notifications .= "Notification not sent.";
 		}
+		
+		
+		
+		
+		
 	}
 	
 	

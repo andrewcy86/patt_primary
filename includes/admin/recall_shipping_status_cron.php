@@ -55,9 +55,10 @@ $shipped_recall_status_query = $wpdb->get_results(
       shipping.shipped,
       shipping.delivered,
       shipping.recallrequest_id,
-      rr.id,
+      rr.id as id_recall_id,
       rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
+      rr.recall_status_id as recall_status,
+      rr.box_id as recall_box_id
     FROM 
 	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
@@ -138,6 +139,22 @@ foreach ($shipped_recall_status_query as $item) {
 	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );	
 */
 	
+	//
+	// Timestamp Table
+	//
+	
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'recall_id' => $item->id_recall_id,   
+		'type' => 'Shipped',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_recall_timestamp( $data );
+	
 }
 
 
@@ -181,9 +198,10 @@ $on_loan_recall_status_query = $wpdb->get_results(
       shipping.shipped,
       shipping.delivered,
       shipping.recallrequest_id,
-      rr.id,
+      rr.id as id_recall_id,
       rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
+      rr.recall_status_id as recall_status,
+      rr.box_id as recall_box_id
     FROM 
 	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
@@ -235,6 +253,22 @@ foreach ($on_loan_recall_status_query as $item) {
 	// Need to update Recall shipping dates in recallrequest table.
 	
 	
+	//
+	// Timestamp Table
+	//
+	
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'recall_id' => $item->id_recall_id,   
+		'type' => 'On Loan',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_recall_timestamp( $data );
+	
 }
 
 
@@ -277,9 +311,10 @@ $shipped_back_recall_status_query = $wpdb->get_results(
       shipping.shipped,
       shipping.delivered,
       shipping.recallrequest_id,
-      rr.id,
+      rr.id as id_recall_id,
       rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
+      rr.recall_status_id as recall_status,
+      rr.box_id as recall_box_id
     FROM 
 	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
     INNER JOIN 
@@ -348,7 +383,21 @@ foreach ($shipped_back_recall_status_query as $item) {
 	
 	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
 	
+	//
+	// Timestamp Table
+	//
 	
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'recall_id' => $item->id_recall_id,   
+		'type' => 'Shipped Back',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_recall_timestamp( $data );
 }
 
 
@@ -484,9 +533,24 @@ foreach ($recall_complete_recall_status_query as $item) {
 		$item_id = $folderdoc_id;
 	}
 	
-	
 	do_action('wpppatt_after_recall_completed', $ticket_id, 'R-'.$recall_id, $item_id );
-
+	
+	
+	//
+	// Timestamp Table
+	//
+	
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->box_id );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	$data = [
+		'recall_id' => $item->the_id,   
+		'type' => 'Recall Complete',
+		'user' => $current_user->user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_recall_timestamp( $data );
 }
 
 

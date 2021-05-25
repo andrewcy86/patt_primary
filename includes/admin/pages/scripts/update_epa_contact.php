@@ -11,16 +11,14 @@ $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 $date_time = date('Y-m-d H:i:s');
 
 if(!empty($_POST['postvarslanid'])){
-   //id in box table (e.g. 1)
-   
+    
+   $pattboxid = $_POST['postvarsboxid'];
    if(!empty($_POST['postvarsfolderdocid'])) {
    $box_id = Patt_Custom_Func::convert_box_id($_POST['postvarsboxid']);
    } else {
    $box_id = $_POST['postvarsboxid']; 
    }
    
-   //box_id in box table (e.g. 0000001-1)
-   //$pattboxid = $_POST['postvarspattboxid'];
    $lanid = $_POST['postvarslanid'];
    $pattdocid = $_POST['postvarspattdocid'];
    $dbid = $_POST['postvarsdbid'];
@@ -85,11 +83,24 @@ $wpdb->update($table_name, $data_update_current_time, $data_where_current_time);
 
 }
 
-$metadata = 'Multiple EPA contacts have been updated.';
+$metadata = 'Multiple EPA contacts have been updated to ' . $lanid;
 
-do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $_POST['postvarsboxid']);
+//sends email/notification to user when epa contact is updated
+$get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+$get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+$user_id_array = [$get_user_id->ID];
+$convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
+$patt_agent_id = implode($convert_patt_id);
+$pattagentid_array = [$patt_agent_id];
+$data = [];
 
-echo "Multiple EPA contacts have been updated. Box ID: ". $_POST['postvarsboxid'];
+$email = 1;
+
+Patt_Custom_Func::insert_new_notification('email-epa-contact-updated-box',$pattagentid_array,$pattboxid,$data,$email);
+
+do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $box_id);
+
+echo "Multiple EPA contacts have been updated. Box ID: ". $box_id;
 
 } else {
 

@@ -70,7 +70,27 @@ if( $type == 'cancel' ) {
 			$data_where = array( 'box_id' => $box_id );
 			$data_update = array( 'box_status' => $return_obj->saved_box_status[$key] );
 			$wpdb->update( $table_name, $data_update, $data_where );
+				
 		}
+		
+		
+		//
+		// Timestamp Table
+		//
+	
+		$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+		$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+		
+		$data = [
+			'decline_id' => $return_obj->id,   
+			'type' => 'Decline Cancelled',
+			'user' => $current_user->user_login,
+			'digitization_center' => $dc_str
+		];
+		
+		Patt_Custom_Func::insert_decline_timestamp( $data );
+		
+
 		
 		
 		// Get array of items to get ticket_id for Audit Log
