@@ -5081,7 +5081,10 @@ return $patt_type;
 					// Data Switch
 					foreach( $data as $key => $val ) {
 						switch ($key) {
-						    case "item_type":
+						    case "invalid_site_id":
+						        $invalid_site_id = $val;
+						        break;
+							case "item_type":
 						        $item_type = $val;
 						        break;
 						    case "action_initiated_by":
@@ -5102,8 +5105,8 @@ return $patt_type;
 					}
 					}
 					
-					$tags = array( '%ID%', '%URL%', '%ITEM_TYPE%', '%ITEM_ID%', '%INITIATED_BY%', '%DECLINE_REASON%' );
-					$replacement = array( $patt_id, $patt_url, $item_type, $item_id, $action_initiated_by, $decline_reason );
+					$tags = array( '%ID%', '%URL%', '%ITEM_TYPE%', '%ITEM_ID%', '%INITIATED_BY%', '%DECLINE_REASON%', '%INVALID_SITE_ID%' );
+					$replacement = array( $patt_id, $patt_url, $item_type, $item_id, $action_initiated_by, $decline_reason, $invalid_site_id );
 					
 					$post_details_subject = str_replace( $tags, $replacement, $get_post_details->post_title );
 					$post_details_content = str_replace( $tags, $replacement, $get_post_details->post_content );

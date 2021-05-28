@@ -28,8 +28,6 @@ global $current_user, $wpscfunction,$wpdb;
 
 $ticket_id = $_POST['ticket_id'];
 
-$invalid_site_id = array();
-
 // Check if request is SEMS
 $sems_check = $wpscfunction->get_ticket_meta($ticket_id,'super_fund');
 
@@ -43,6 +41,11 @@ SELECT
 DISTINCT a.siteid as siteid, a.site_name as site_name from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id WHERE b.ticket_id = ".$ticket_id
 );
 
+
+$pattagentid_array = '';
+$patt_ticket_id = '';
+$invalid_siteid_array = '';
+$invalid_site_id = array();
 
 foreach ($siteid_query as $siteinfo) {
     
@@ -128,14 +131,17 @@ foreach ($siteid_query as $siteinfo) {
                     $patt_agent_id = implode($convert_patt_id);
                     $pattagentid_array = [$patt_agent_id];
                     
-                    //enabled email notification
-                    $email = 1;
-                    
-                    Patt_Custom_Func::insert_new_notification('email-invalid-site-id',$pattagentid_array,$patt_ticket_id,$invalid_siteid_array,$email);
                     
 					}	
 				} 
 		    }
+}
+
+if(!empty($invalid_site_id)) {
+//enabled email notification
+$email = 1;
+                    
+Patt_Custom_Func::insert_new_notification('email-invalid-site-id',$pattagentid_array,$patt_ticket_id,$invalid_siteid_array,$email);
 }
 
 // Get count of rows from folderdocinfo_files table
