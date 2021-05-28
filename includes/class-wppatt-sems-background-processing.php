@@ -114,11 +114,6 @@ foreach ($siteid_query as $siteinfo) {
 					
 					// Send Email
 					array_push($invalid_site_id, $siteid_check_val);
-					$invalid_site_id_email = explode(',', $invalid_site_id);
-				
-					$invalid_siteid_array = array(
-                    "invalid_site_id" => $invalid_site_id_email
-                    );
                     
                     $patt_ticket_id = Patt_Custom_Func::ticket_to_request_id($ticket_id);
 					
@@ -140,7 +135,10 @@ foreach ($siteid_query as $siteinfo) {
 if(!empty($invalid_site_id)) {
 //enabled email notification
 $email = 1;
-                    
+
+$invalid_site_id_email = implode(', ', $invalid_site_id);
+$invalid_siteid_array = array("invalid_site_id" => $invalid_site_id_email);
+					
 Patt_Custom_Func::insert_new_notification('email-invalid-site-id',$pattagentid_array,$patt_ticket_id,$invalid_siteid_array,$email);
 }
 
