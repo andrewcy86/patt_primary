@@ -1213,7 +1213,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            //console.log( 'prev_site_id read: ' + prev_site_id );
 		                            
 		                            // SUPER FUND
-		                            // Site id req
+		                            // Site id required
+		                            // Site id must be 7 characters long. 
 		                            
 		                            let cur_site_id_array;
 			                        let cur_site_id;
@@ -1221,8 +1222,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                            if( superfundx == 'yes' ) {
 			                            
 			                            if(
-			                            	parsedData[count][index_site_id] == null ||
-			                            	parsedData[count][index_site_id] == undefined 
+			                            	count > 1 &&
+			                            	( 
+			                            		parsedData[count][index_site_id] == null ||
+												parsedData[count][index_site_id] == undefined 
+											)
 										) {
 											// Superfund AND null or undefined. Error.
 											let alert_message = '';
@@ -1233,18 +1237,36 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 											
 											
-										} else {
+										} else if( count > 1 ) {
 											// Superfund AND not null or undefined. Process.
 											cur_site_id_array = parsedData[count][index_site_id].split( '/' );
 				                            cur_site_id = cur_site_id_array[0].trim();
 				                            console.log( 'cur_site_id: ' + cur_site_id );
-				                            console.log( count );
+				                            //console.log( count );
+				                            
+				                            if( cur_site_id.length != 7 ) {
+					                            
+					                            let alert_message = '';
+												alert_message += "Site ID must be 7 digits long. \n\n";
+												alert_message += "Site ID on line: " + ( count + 1 );
+												alert_message += " has a length of " + cur_site_id.length + " digits.";
+												
+				                                alert( alert_message );
+				                                flag = true;
+
+					                            
+				                            }
+				                            
 										}
 			                            
 			                        }
 		                            
-		                            console.log( 'cur_site_id: ' + cur_site_id + ' && prev_site_id: ' + prev_site_id );
+		                            //console.log( 'cur_site_id: ' + cur_site_id + ' && prev_site_id: ' + prev_site_id );
 		                            
+		                            
+		                            // Site ID must be the same for entire box listing. Superfund only.
+		                            
+/*
 		                            if(
 		                            	flag != true && 
 		                            	count > 1 && 
@@ -1271,6 +1293,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                                alert( alert_message );
 		                                flag = true;
 		                            }
+*/
 
 		                            
 		                            //console.log( 'ACCESS RESTRICTIONS' );

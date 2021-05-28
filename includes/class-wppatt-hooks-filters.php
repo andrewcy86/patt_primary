@@ -1620,15 +1620,19 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
 				
-				// $sems_check_site_id - always 12 digits (need to confirm). Add reg_id ( '01', '02', etc, or null. 
-				//$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id );
+				// Kick off SEMS site id validation AJAX here:
 				
-				// MAYBE if site_id length of 7 no reg_id, if length of 12, send reg_id
-				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
+				
+				
+				
+
+				
+				//$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
 				
 				// D E V SITE - TESTING
 				//$site_name_id_valid = 'Success';
 				
+/*
 				if( $site_name_id_valid != 'Success') {
 					
 					$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
@@ -1657,6 +1661,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						die();
 					
 				}
+*/
 			} 
 			
 			

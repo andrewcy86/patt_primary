@@ -84,7 +84,7 @@ if( $type == 'cancel' ) {
 		$data = [
 			'decline_id' => $return_obj->id,   
 			'type' => 'Decline Cancelled',
-			'user' => $current_user->user_login,
+			'user' => $current_user->display_name,
 			'digitization_center' => $dc_str
 		];
 		

@@ -39,6 +39,7 @@ $wpdb->update($folderdocinfo_files_table, $data_update, $data_where);
 
 */
 
+// BEGIN LAN ID PROCESSING
 
 $lanid_query = $wpdb->get_results(
 "

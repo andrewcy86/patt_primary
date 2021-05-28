@@ -40,6 +40,7 @@ $status_decline_pending_cancel_term_id = get_term_by( 'slug', 'decline-pending-c
 $status_decline_shipped_back_term_id = get_term_by( 'slug', 'decline-shipped-back', 'wppatt_return_statuses' ); 
 $status_decline_complete_term_id = get_term_by( 'slug', 'decline-complete', 'wppatt_return_statuses' ); 
 $status_decline_cancelled_term_id = get_term_by( 'slug', 'decline-cancelled', 'wppatt_return_statuses' ); 
+$status_decline_expired_term_id = get_term_by( 'slug', 'decline-expired', 'wppatt_return_statuses' ); 
 
 $status_decline_initiated_term_id = $status_decline_initiated_term_id->term_id;
 $status_decline_shipped_term_id = $status_decline_shipped_term_id->term_id;
@@ -47,7 +48,7 @@ $status_decline_pending_cancel_term_id = $status_decline_pending_cancel_term_id-
 $status_decline_shipped_back_term_id = $status_decline_shipped_back_term_id->term_id;
 $status_decline_complete_term_id = $status_decline_complete_term_id->term_id;
 $status_decline_cancelled_term_id = $status_decline_cancelled_term_id->term_id;
-
+$status_decline_expired_term_id = $status_decline_expired_term_id->term_id;
 
 //
 // For Decline Status to change from Decline Initiated to Decline Shipped
@@ -126,10 +127,15 @@ foreach ($shipped_return_status_query as $item) {
 	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+	
 	$data = [
 		'decline_id' => $return_obj->id,   
 		'type' => 'Decline Shipped',
-		'user' => $current_user->user_login,
+		'user' => $user_login,
 		'digitization_center' => $dc_str
 	];
 	
@@ -188,7 +194,7 @@ foreach ($shipped_return_status_query as $item) {
 
 
 //
-// For Decline Status to change from Decline Shipped to Decline Pending Cancelled (equivolent to Received or On Loan) (OLD: Decline Complete)
+// For Decline Status to change from Decline Shipped to Decline Received (equivolent to On Loan) (OLD: Decline Complete)
 //
 $return_complete_return_status_query = $wpdb->get_results(
 	"SELECT 
@@ -288,10 +294,16 @@ foreach ($return_complete_return_status_query as $item) {
 	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+
+	
 	$data = [
 		'decline_id' => $return_obj->id,   
 		'type' => 'Received',
-		'user' => $current_user->user_login,
+		'user' => $user_login,
 		'digitization_center' => $dc_str
 	];
 	
@@ -412,7 +424,7 @@ foreach ($return_pending_cancel_2week_status_query as $item) {
 
 
 //
-// Check and Cancel Declines that have not been updated after 4 weeks. 
+// Check and Expire Declines that have not been updated after 4 weeks. 
 //
 $return_complete_return_status_query = $wpdb->get_results(
 	"SELECT 
@@ -441,13 +453,13 @@ $return_complete_return_status_query = $wpdb->get_results(
 	);
 
 	
-// For Return Status to change from Decline Pending Cancel to Decline Cancelled
+// For Return Status to change from Decline Pending Cancel to Decline Expired
 foreach ($return_complete_return_status_query as $item) {
 	
-	// update Decline status from Decline Pending Cancel to Cancelled
+	// update Decline status from Decline Pending Cancel to Expired
 	$return_id = $item->return_id;	
 	$where = [ 'id' => $return_id ];
-	$data_status = [ 'return_status_id' => $status_decline_cancelled_term_id ]; //change status from Decline Pending Cancel to Cancelled 
+	$data_status = [ 'return_status_id' => $status_decline_expired_term_id ]; //change status from Decline Pending Cancel to Expired 
 	$obj = Patt_Custom_Func::update_return_data( $data_status, $where );
 	
 	// Update Decline DB updated_date
@@ -456,7 +468,7 @@ foreach ($return_complete_return_status_query as $item) {
 	$data = [ 'updated_date' => $current_datetime ]; 
 	Patt_Custom_Func::update_return_data( $data, $where );
 	
-	// Set all boxes inside the Decline to have Box Status: Cancelled. // TEST ONCE NEW BOX STATUS CREATED UPDATED
+	// Set all boxes inside the Decline to have Box Status: Cancelled. 
 	$where = [
 		'return_id' => $item->return_id
 	];
@@ -482,10 +494,15 @@ foreach ($return_complete_return_status_query as $item) {
 	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+	
 	$data = [
 		'decline_id' => $return_obj->id,   
 		'type' => 'Decline Cancelled',
-		'user' => $current_user->user_login,
+		'user' => $user_login,
 		'digitization_center' => $dc_str
 	];
 	
@@ -607,10 +624,15 @@ foreach ($shipped_return_status_query as $item) {
 	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+	
 	$data = [
 		'decline_id' => $return_obj->id,   
 		'type' => 'Decline Shipped Back',
-		'user' => $current_user->user_login,
+		'user' => $user_login,
 		'digitization_center' => $dc_str
 	];
 	
@@ -705,10 +727,15 @@ foreach ($return_complete_return_status_query as $item) {
 	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $decline_obj->box_id_fk[0] );
 	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
 	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+	
 	$data = [
 		'decline_id' => $decline_obj->id,   
 		'type' => 'Decline Complete',
-		'user' => $current_user->user_login,
+		'user' => $user_login,
 		'digitization_center' => $dc_str
 	];
 	

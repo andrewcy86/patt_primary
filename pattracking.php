@@ -389,8 +389,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           function epa_admin_menu_items() {
             //add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
-            add_submenu_page( 'wpsc-tickets', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
+            add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
             
             }
             
@@ -486,6 +487,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function rfid_init_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid-init.php'
+            );
+            }
+            
+            function rfid_settings_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid-settings.php'
             );
             }
             

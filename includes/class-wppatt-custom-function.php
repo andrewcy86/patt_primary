@@ -1302,8 +1302,9 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
 			$return_id_array = array();
 			
-			$status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' ); // 791
-			$status_decline_completed_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-complete' ); //754
+			$status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' ); 
+			$status_decline_completed_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-complete' ); 
+			$status_decline_expired_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-expired' ); 
 			  
 			if ( $type == 'request' )  {
 		        $get_return_data = $wpdb->get_results("
@@ -1333,7 +1334,7 @@ public static function id_in_recall( $identifier, $type ) {
 					FROM ".$wpdb->prefix."wpsc_epa_return_items a
 					INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
 					INNER JOIN ".$wpdb->prefix."wpsc_epa_return c ON a.return_id = c.id
-					WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+					WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.",".$status_decline_expired_term_id.")
 		        ");
 		        
 		        foreach( $get_return_data as $return_id_val ) {
@@ -4448,6 +4449,14 @@ public static function id_in_recall( $identifier, $type ) {
 			
 //$folderdocinfo_array = array();
 $folderdocinfo_file_array = array();
+
+//Reset review_complete_timestamp to current time
+$get_initial_review_complete_timestamp = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticketmeta WHERE meta_key = 'review_complete_timestamp' AND ticket_id = '".$ticket_id."'");
+$initial_review_complete_timestamp = $get_initial_review_complete_timestamp->id;
+
+$data_update_timestamp = array('meta_value' => time());
+$data_where_timestamp = array('id' => $initial_review_complete_timestamp);
+$wpdb->update($wpdb->prefix . 'wpsc_ticketmeta', $data_update_timestamp, $data_where_timestamp);
 
 //BEGIN RESTORING DATA FROM ARCHIVE
 $get_related_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");

@@ -28,10 +28,115 @@ global $current_user, $wpscfunction,$wpdb;
 
 $ticket_id = $_POST['ticket_id'];
 
+$invalid_site_id = array();
+
 // Check if request is SEMS
 $sems_check = $wpscfunction->get_ticket_meta($ticket_id,'super_fund');
 
 if(in_array("true", $sems_check)) {  
+    
+// Begin Site ID Validation
+
+$siteid_query = $wpdb->get_results(
+"
+SELECT 
+DISTINCT a.siteid as siteid, a.site_name as site_name from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id WHERE b.ticket_id = ".$ticket_id
+);
+
+
+foreach ($siteid_query as $siteinfo) {
+    
+	$siteid_check_val = $siteinfo->siteid; 
+	$current_sitename = $siteinfo->site_name; 
+	
+                $curl = curl_init();
+				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites';
+				//7 character site ID
+				if(strlen($siteid_check_val) == 7) {
+                $url .= '?id='.$siteid_check_val;
+				
+				$headers = [
+				    'Cache-Control: no-cache'
+				];
+				
+			    curl_setopt($curl,CURLOPT_URL, $url);
+			    curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
+			    curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
+			    curl_setopt($curl,CURLOPT_TIMEOUT, 30);
+			    curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+			    curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
+			    curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
+				//curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+				//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+				
+				$response = curl_exec($curl);
+				
+				//Strip first and last characters
+				
+				$final_response = substr($response, 1, -1);
+				
+				//
+				$object = json_decode($final_response);
+				
+				$site_name = $object->{'sitename'};
+			
+				$status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+			
+				curl_close($curl);
+			
+				$err = Patt_Custom_Func::convert_http_error_code($status);
+			
+				if ($status != 200) {
+					Patt_Custom_Func::insert_api_error('sems-site-id-validation',$status,$err);
+				} else {
+				    $folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+				    $box_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+				    
+					if (strtoupper($current_sitename) != strtoupper($site_name)) {
+					 
+                    $sql = 
+                    "UPDATE ".$folderdocinfo_files_table." a
+                    JOIN ".$box_table." b
+                    ON b.id = a.box_id
+                    SET a.site_name = '".$site_name."'
+                    WHERE a.siteid = '".$siteid_check_val."'
+                    AND b.ticket_id = '".$ticket_id."'
+                    ;";
+
+                     $results = $wpdb->query($sql);
+					    
+					$data_update = array('site_name' => $site_name);
+					$data_where = array('siteid' => $siteid_check_val);
+					$wpdb->update($folderdocinfo_files_table, $data_update, $data_where);
+					
+					// Send Email
+					array_push($invalid_site_id, $siteid_check_val);
+					$invalid_site_id_email = explode(',', $invalid_site_id);
+				
+					$invalid_siteid_array = array(
+                    "invalid_site_id" => $invalid_site_id_email
+                    );
+                    
+                    $patt_ticket_id = Patt_Custom_Func::ticket_to_request_id($ticket_id);
+					
+					//send notification and email when any folder/file metadata has been updated
+                    $get_customer_name = $wpdb->get_row('SELECT customer_name FROM ' . $wpdb->prefix . 'wpsc_ticket WHERE id = "' . $ticket_id . '"');
+                    $get_user_id = $wpdb->get_row('SELECT ID FROM ' . $wpdb->prefix . 'users WHERE display_name = "' . $get_customer_name->customer_name . '"');
+                    
+                    $user_id_array = [$get_user_id->ID];
+                    $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
+                    $patt_agent_id = implode($convert_patt_id);
+                    $pattagentid_array = [$patt_agent_id];
+                    
+                    //enabled email notification
+                    $email = 1;
+                    
+                    Patt_Custom_Func::insert_new_notification('email-invalid-site-id',$pattagentid_array,$patt_ticket_id,$invalid_siteid_array,$email);
+                    
+					}	
+				} 
+		    }
+}
 
 // Get count of rows from folderdocinfo_files table
 

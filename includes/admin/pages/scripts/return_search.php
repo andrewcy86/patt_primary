@@ -57,14 +57,14 @@ $error_array = array();
 
 foreach( $searchByID as $item ) {
 	
-	$item_details = Patt_Custom_Func::get_box_file_details_by_id($item);
-	$details_array = json_decode(json_encode($item_details), true);
+	$item_details = Patt_Custom_Func::get_box_file_details_by_id( $item );
+	$details_array = json_decode( json_encode( $item_details ), true );
 	
 	// Search Error
 	if( $details_array == false ) {
-		$error_array[$item]['search_error'] = true;
+		$error_array[ $item ][ 'search_error' ] = true;
 	} else {
-		$error_array[$item]['search_error'] = false;
+		$error_array[ $item ][ 'search_error' ] = false;
 	}
 	
 
@@ -84,7 +84,7 @@ foreach( $searchByID as $item ) {
 	// Check Box status to determine if returnable. 
 // 	$box_statuses_returnable = [ 672, 748 ]; // 671: Scanning/Digitization | 672: Scanning Preparation | 748: Pending
 	$box_statuses_returnable = [ $status_box_scanprep_term_id, $status_box_pending_term_id, $status_box_scan_digitization_term_id ]; 
-	if( !in_array($details_array['box_status'], $box_statuses_returnable) ) {
+	if( !in_array( $details_array['box_status'], $box_statuses_returnable ) ) {
 		
 		$box_statuses = Patt_Custom_Func::get_all_status();
 		
@@ -105,6 +105,33 @@ foreach( $searchByID as $item ) {
 	// Check if item is currently in a Return (Decline)
 	if( $details_array['type'] == 'Box' ) {
 		
+		$in_decline = Patt_Custom_Func::id_in_return( $details_array['box_id'], 'box' );
+		
+		if( $in_decline ) {
+			
+			$return_list = $wpdb->get_results(
+										"SELECT return_id
+										FROM " . $wpdb->prefix . "wpsc_epa_return_items
+										WHERE box_id = '" .  $details_array['Box_id_FK'] . "'");
+			
+			$a_len = count( $return_list );
+			$num = $return_list[ $a_len - 1];
+			$num = $num->return_id;
+			
+			$str_length = 7;	
+	        $return_id = substr("000000{$num}", -$str_length);
+	        
+	        $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" target="_blank">'.$details_array['box_id'].'</a>';
+	            
+			$error_array[$item]['item_error'] = 'Box '.$box_link.' already in Decline ';
+			$error_array[$item]['return_id'] = $return_id;
+			
+		}
+		
+		
+		
+		
+/*
 		$return_check = $wpdb->get_row(
 										"SELECT return_id
 										FROM " . $wpdb->prefix . "wpsc_epa_return_items
@@ -130,7 +157,6 @@ foreach( $searchByID as $item ) {
 	            
 	            $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a>';
 	            
-	// 			$error_array[$item]['item_error'] = 'Box '.$box_link.' already in Return ';
 				$error_array[$item]['item_error'] = 'Box '.$box_link.' already in Decline ';
 				$error_array[$item]['return_id'] = $return_id;
 				
@@ -142,6 +168,7 @@ foreach( $searchByID as $item ) {
 				
 			} 
 		}
+*/
 		
 	} elseif ($details_array['type'] == 'Folder/Doc') { // No longer possible as only Boxes are Declinable. 
 		

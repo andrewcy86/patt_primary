@@ -9,11 +9,12 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 $table_box = $wpdb->prefix . "wpsc_epa_boxinfo";
 $table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
 
-if(isset($_POST['postvarslocation']) && isset($_POST['postvarsboxpallet']) && isset($_POST['postvarsuser'])){
+if(isset($_POST['postvarslocation']) && isset($_POST['postvarsboxpallet']) && isset($_POST['postvarsuser']) && isset($_POST['postvarspage'])){
    $location = $_POST['postvarslocation'];
    $boxpallet = $_POST['postvarsboxpallet'];
    $userinfo = $_POST['postvarsuser'];
-      
+   $pageinfo = $_POST['postvarspage'];
+    
    $boxpallet_arr = explode (",", $boxpallet);  
    //echo $location;
    //echo '/n';
@@ -618,6 +619,20 @@ $wpdb->update($table_scan_list , $boxshelf_scanlist_update, $boxshelf_scanlist_w
                     }
                     
                     } //end loop
+
+//Clear RFID Dashboard
+if($pageinfo == 'rfid'){
+
+foreach($boxpallet_arr as $items) {
+
+$table_name = $wpdb->prefix . 'wpsc_epa_rfid_data';
+
+$wpdb->delete($table_name, array( 'Reader_Name' => $location, 'box_id' => $items) );
+
+}
+
+}
+
 } else {
    echo "Please ensure all box/pallet IDs are valid.";
 }

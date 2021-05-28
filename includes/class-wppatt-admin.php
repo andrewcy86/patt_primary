@@ -342,6 +342,13 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		  add_term_meta ($term['term_id'], 'wppatt_return_status_color', '#ffffff');
 		  add_term_meta ($term['term_id'], 'wppatt_return_status_background_color', '#000000');
 		}
+		
+		$term = wp_insert_term( 'Decline Expired', 'wppatt_return_statuses' );
+		if (!is_wp_error($term) && isset($term['term_id'])) {
+		  add_term_meta ($term['term_id'], 'wppatt_return_status_load_order', 6);
+		  add_term_meta ($term['term_id'], 'wppatt_return_status_color', '#ffffff');
+		  add_term_meta ($term['term_id'], 'wppatt_return_status_background_color', '#000000');
+		}
 
 
 

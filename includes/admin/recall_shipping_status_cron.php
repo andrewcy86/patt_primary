@@ -139,6 +139,41 @@ foreach ($shipped_recall_status_query as $item) {
 	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );	
 */
 	
+	// Prep Timestmp Table data. 
+	// Get Recall obj
+	
+	$where = [
+		'id' => $recall_id
+	];
+	$recall_array = Patt_Custom_Func::get_recall_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$recall_array_key = array_key_first( $recall_array );
+	$recall_obj = $recall_array[ $recall_array_key ];
+	$recall_user_array = $recall_obj->user_id;
+	$recall_names_array = [];
+	
+	
+	foreach( $recall_user_array as $wp_user_num ) {
+		
+		$user_obj = get_user_by( 'id', $wp_user_num );
+		$user_login = $user_obj->data->display_name;
+		$recall_names_array[] = $user_login;
+		
+	}
+	
+	$recal_names_str = implode( ', ', $recall_names_array );
+	
+	
 	//
 	// Timestamp Table
 	//
@@ -149,7 +184,7 @@ foreach ($shipped_recall_status_query as $item) {
 	$data = [
 		'recall_id' => $item->id_recall_id,   
 		'type' => 'Shipped',
-		'user' => $current_user->user_login,
+		'user' => $recal_names_str,
 		'digitization_center' => $dc_str
 	];
 	
@@ -252,6 +287,39 @@ foreach ($on_loan_recall_status_query as $item) {
 	
 	// Need to update Recall shipping dates in recallrequest table.
 	
+	// Prep Timestmp Table data. 
+	// Get Recall obj
+	
+	$where = [
+		'recall_id' => $recall_id
+	];
+	$recall_array = Patt_Custom_Func::get_recall_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$recall_array_key = array_key_first( $recall_array );
+	$recall_obj = $recall_array[ $recall_array_key ];
+	$recall_user_array = $recall_obj->user_id;
+	$recall_names_array = [];
+	
+	
+	foreach( $recall_user_array as $wp_user_num ) {
+		
+		$user_obj = get_user_by( 'id', $wp_user_num );
+		$user_login = $user_obj->data->display_name;
+		$recall_names_array[] = $user_login;
+		
+	}
+	
+	$recal_names_str = implode( ', ', $recall_names_array );
 	
 	//
 	// Timestamp Table
@@ -263,7 +331,7 @@ foreach ($on_loan_recall_status_query as $item) {
 	$data = [
 		'recall_id' => $item->id_recall_id,   
 		'type' => 'On Loan',
-		'user' => $current_user->user_login,
+		'user' => $recal_names_str,
 		'digitization_center' => $dc_str
 	];
 	
@@ -383,6 +451,41 @@ foreach ($shipped_back_recall_status_query as $item) {
 	
 	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
 	
+	
+	// Prep Timestmp Table data. 
+	// Get Recall obj
+	
+	$where = [
+		'recall_id' => $recall_id
+	];
+	$recall_array = Patt_Custom_Func::get_recall_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$recall_array_key = array_key_first( $recall_array );
+	$recall_obj = $recall_array[ $recall_array_key ];
+	$recall_user_array = $recall_obj->user_id;
+	$recall_names_array = [];
+	
+	
+	foreach( $recall_user_array as $wp_user_num ) {
+		
+		$user_obj = get_user_by( 'id', $wp_user_num );
+		$user_login = $user_obj->data->display_name;
+		$recall_names_array[] = $user_login;
+		
+	}
+	
+	$recal_names_str = implode( ', ', $recall_names_array );
+	
 	//
 	// Timestamp Table
 	//
@@ -393,7 +496,7 @@ foreach ($shipped_back_recall_status_query as $item) {
 	$data = [
 		'recall_id' => $item->id_recall_id,   
 		'type' => 'Shipped Back',
-		'user' => $current_user->user_login,
+		'user' => $recal_names_str,
 		'digitization_center' => $dc_str
 	];
 	
@@ -535,6 +638,39 @@ foreach ($recall_complete_recall_status_query as $item) {
 	
 	do_action('wpppatt_after_recall_completed', $ticket_id, 'R-'.$recall_id, $item_id );
 	
+	// Prep Timestmp Table data. 
+	// Get Recall obj
+	
+	$where = [
+		'recall_id' => $recall_id
+	];
+	$recall_array = Patt_Custom_Func::get_recall_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$recall_array_key = array_key_first( $recall_array );
+	$recall_obj = $recall_array[ $recall_array_key ];
+	$recall_user_array = $recall_obj->user_id;
+	$recall_names_array = [];
+	
+	
+	foreach( $recall_user_array as $wp_user_num ) {
+		
+		$user_obj = get_user_by( 'id', $wp_user_num );
+		$user_login = $user_obj->data->display_name;
+		$recall_names_array[] = $user_login;
+		
+	}
+	
+	$recal_names_str = implode( ', ', $recall_names_array );
 	
 	//
 	// Timestamp Table
@@ -546,7 +682,7 @@ foreach ($recall_complete_recall_status_query as $item) {
 	$data = [
 		'recall_id' => $item->the_id,   
 		'type' => 'Recall Complete',
-		'user' => $current_user->user_login,
+		'user' => $recal_names_str,
 		'digitization_center' => $dc_str
 	];
 	

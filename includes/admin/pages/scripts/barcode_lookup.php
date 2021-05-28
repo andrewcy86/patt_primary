@@ -297,8 +297,8 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
     <th width="35px" height="50px"></th>
     <th>ID</th>
     <th>Title</th>
-    <th class="desktop">Date</th>
-    <th class="desktop">Contact</th>
+    <th class="desktop">Creation Date</th>
+    <th class="desktop">EPA Contact</th>
     <th class="desktop">Validation</th>
   </tr>
  </thead><tbody>

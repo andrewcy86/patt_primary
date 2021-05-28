@@ -353,7 +353,7 @@ if($recall_id == 0) {
 	$data = [
 		'recall_id' => $recall_obj->id,   //$recall_id,
 		'type' => 'Recalled',
-		'user' => $current_user->user_login,
+		'user' => $current_user->display_name,
 		'digitization_center' => $dc_str
 	];
 	

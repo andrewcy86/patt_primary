@@ -213,7 +213,7 @@ if($return_id == 0) {
 	$data = [
 		'decline_id' => $return_id_fk,   
 		'type' => 'Decline Initiated',
-		'user' => $current_user->user_login,
+		'user' => $current_user->display_name,
 		'digitization_center' => $dc_str
 	];
 	

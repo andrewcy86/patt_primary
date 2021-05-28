@@ -233,7 +233,7 @@ div.dataTables_wrapper {
     	  			<th class="datatable_header">ID</th>
                     <th class="datatable_header">DB ID</th>
     	  			<th class="datatable_header">Title</th>
-    	  			<th class="datatable_header">Date</th>
+    	  			<th class="datatable_header">Creation Date</th>
     	  			<th class="datatable_header">EPA Contact</th>
     	  			<th class="datatable_header">Validation</th>
             </tr>

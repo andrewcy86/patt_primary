@@ -321,7 +321,7 @@ if( $type == 'request_date' ) {
 		$data = [
 			'recall_id' => $recall_obj->id,   //$recall_id,
 			'type' => 'Recall Cancelled',
-			'user' => $current_user->user_login,
+			'user' => $current_user->display_name,
 			'digitization_center' => $dc_str
 		];
 		
@@ -433,7 +433,7 @@ if( $type == 'request_date' ) {
 		$data = [
 			'recall_id' => $recall_obj->id,   
 			'type' => 'Recall Approved',
-			'user' => $current_user->user_login,
+			'user' => $current_user->display_name,
 			'digitization_center' => $dc_str
 		];
 		
@@ -539,7 +539,7 @@ if( $type == 'request_date' ) {
 		$data = [
 			'recall_id' => $recall_obj->id,   
 			'type' => 'Recall Denied',
-			'user' => $current_user->user_login,
+			'user' => $current_user->display_name,
 			'digitization_center' => $dc_str
 		];
 		

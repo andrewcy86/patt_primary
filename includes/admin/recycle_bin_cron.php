@@ -80,9 +80,11 @@ foreach($get_total_request_count as $item) {
     }
 
     if($status == 1 && $recall_decline == 0) {
+        //set request to inactive
         $data_update = array('active' => 0);
         $data_where = array('id' => $ticket_id);
         $wpdb->update($wpdb->prefix . 'wpsc_ticket' , $data_update, $data_where);
+        
         //Archive audit log
         Patt_Custom_Func::audit_log_backup($ticket_id);
 
@@ -109,37 +111,6 @@ foreach($get_total_request_count as $item) {
         
         //$email = 1;
         Patt_Custom_Func::insert_new_notification('email-request-deleted',$pattagentid_array,$request_id,$data,$email);
-        
-        /*
-        //PATT BEGIN FOR DELETING REQUEST REPORTING
-        $table_timestamp_request = $wpdb->prefix . 'wpsc_epa_timestamps_request';
-        $get_request_timestamp = $wpdb->get_results("select id from " . $table_timestamp_request . " where request_id = '".$ticket_id."'");
-        
-        foreach($get_request_timestamp as $request_timestamp) {
-            $request_timestamp_id = $request_timestamp->id;
-            // Delete previous value
-            if( !empty($request_timestamp_id) ) {
-              $wpdb->delete( $table_timestamp_request, array( 'id' => $request_timestamp_id ) );
-            }
-        }
-        
-        //PATT BEGIN FOR DELETING BOX REPORTING
-        $get_boxes = $wpdb->get_results("SELECT id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
-        foreach($get_boxes as $item) {
-            $box_id = $item->id;
-            //PATT DELETING BOX REPORTING
-            $table_timestamp_box = $wpdb->prefix . 'wpsc_epa_timestamps_box';
-            $get_box_timestamp = $wpdb->get_results("select id from " . $table_timestamp_box . " where box_id = '".$box_id."'");
-            
-            foreach($get_box_timestamp as $box_timestamp) {
-                $box_timestamp_id = $box_timestamp->id;
-                // Delete previous value
-                if( !empty($box_timestamp_id) ) {
-                  $wpdb->delete( $table_timestamp_box, array( 'id' => $box_timestamp_id ) );
-                }
-            }
-        }
-        */
  
     }
 }

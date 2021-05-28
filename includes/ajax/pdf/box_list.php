@@ -47,7 +47,7 @@ class MYPDF extends tcpdf {
     $obj_pdf->setPrintFooter(false);
 
 // set auto page breaks
-$obj_pdf->SetAutoPageBreak(TRUE, 2);
+$obj_pdf->SetAutoPageBreak(TRUE, 30);
 $obj_pdf->SetFont('helvetica', '', 11);
         
         $record_schedules = $wpdb->get_results("SELECT DISTINCT " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number as rsnum 
@@ -148,7 +148,7 @@ $tbl = '
     <th style="border: 1px solid #000000; width: 50px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
     <th style="border: 1px solid #000000; width: 50px; background-color: #f5f5f5; font-weight: bold;">Index Level</th>
     <th style="border: 1px solid #000000; width: 170px; background-color: #f5f5f5; font-weight: bold;">Title</th>
-    <th style="border: 1px solid #000000; width: 110px; background-color: #f5f5f5; font-weight: bold;">Date</th>
+    <th style="border: 1px solid #000000; width: 110px; background-color: #f5f5f5; font-weight: bold;">Creation Date</th>
     <th style="border: 1px solid #000000; width: 60px; background-color: #f5f5f5; font-weight: bold;">Contact</th>
     <th style="border: 1px solid #000000; width: 110px; background-color: #f5f5f5; font-weight: bold;">Source Format</th>    
     <th style="border: 1px solid #000000; width: 130px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>  

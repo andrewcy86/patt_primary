@@ -30,14 +30,14 @@ date_default_timezone_set('America/New_York');
 
                        $request_file = 'request_timestamp_report'; // csv file name
                        $request_results = $wpdb->get_results("SELECT b.request_id,
-                        (SELECT name from wpqa_terms WHERE term_id = b.ticket_priority) as ticket_priority,
-                        (SELECT name from wpqa_terms WHERE term_id = b.ticket_status) as current_ticket_status,
+                        (SELECT name from " . $wpdb->prefix . "terms WHERE term_id = b.ticket_priority) as ticket_priority,
+                        (SELECT name from " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as current_ticket_status,
                         b.date_created,
                         a.type as timestamp_status,
                         a.timestamp,
                         DATEDIFF(a.timestamp, b.date_created) as date_diff
-                        FROM wpqa_wpsc_epa_timestamps_request a INNER JOIN
-                        wpqa_wpsc_ticket b ON a.request_id = b.id",ARRAY_A );
+                        FROM " . $wpdb->prefix . "wpsc_epa_timestamps_request a INNER JOIN
+                        " . $wpdb->prefix . "wpsc_ticket b ON a.request_id = b.id",ARRAY_A );
 
                         // get column names
                         $request_columnNamesList = ['Request ID','Request Priority','Request Status','Request Created Date', 'Timestamp Status', 'Timestamp', 'Date Difference'];
@@ -77,15 +77,15 @@ date_default_timezone_set('America/New_York');
 //Box Timestamp Report
 
                        $box_file = 'box_timestamp_report'; // csv file name
-                       $box_results = $wpdb->get_results("SELECT (SELECT request_id from wpqa_wpsc_ticket WHERE id = b.ticket_id) as request_id,
+                       $box_results = $wpdb->get_results("SELECT (SELECT request_id from " . $wpdb->prefix . "wpsc_ticket WHERE id = b.ticket_id) as request_id,
                         b.box_id,
-                        (SELECT name from wpqa_terms WHERE term_id = b.box_status) as current_box_status,
+                        (SELECT name from " . $wpdb->prefix . "terms WHERE term_id = b.box_status) as current_box_status,
                         b.date_created,
                         a.type as timestamp_status,
                         a.timestamp,
                         DATEDIFF(a.timestamp, b.date_created) as date_diff
-                        FROM wpqa_wpsc_epa_timestamps_box a INNER JOIN
-                        wpqa_wpsc_epa_boxinfo b ON a.box_id = b.id",ARRAY_A );
+                        FROM " . $wpdb->prefix . "wpsc_epa_timestamps_box a INNER JOIN
+                        " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id",ARRAY_A );
 
                         // get column names
                         $box_columnNamesList = ['Request ID','Box ID','Request Priority','Current Box Status','Request Created Date', 'Timestamp Status', 'Timestamp', 'Date Difference'];
