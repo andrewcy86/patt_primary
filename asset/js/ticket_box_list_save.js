@@ -1569,7 +1569,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							        	//jQuery( '#boxinfodatatable' ).show();
 							        	jQuery( '#big_wrapper' ).show();
 							        	// sets order for data table                    
-										datatable.column( '0:visible' ).order( 'asc' ).draw();
+										//datatable.column( '0:visible' ).order( 'asc' ).draw();
+										datatable.order( [ 0, 'asc' ], [ 1, 'asc' ] ).draw();
 
 							        	//
 							        	jQuery( '#processing_notification_div' ).removeClass( 'yellow_update' );

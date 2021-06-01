@@ -1313,7 +1313,7 @@ public static function id_in_recall( $identifier, $type ) {
 						INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
 						INNER JOIN ".$wpdb->prefix."wpsc_epa_return c ON a.return_id = c.id
 						WHERE a.box_id <> '-99999'AND c.return_status_id NOT IN (" . 
-						$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+						$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.",".$status_decline_expired_term_id.")
 		        ");
 		
 		        foreach ($get_return_data as $return_id_val) {

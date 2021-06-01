@@ -673,14 +673,23 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 	 
 	 
 	 
-	 // disable cancel if status not recalled. Or is user doesn't have role. 
-	 jQuery('#wppatt_return_cancel').attr('disabled', 'disabled');
-	 console.log(jQuery('#status').html());
-	 var user_can_cancel = <?php echo $user_can_cancel ?>;
-// 	 if(  jQuery('#status').html() == 'Return Initiated' && user_can_cancel) {
-	 if(  jQuery('#status').html() == 'Decline Initiated' && user_can_cancel) {
-		jQuery('#wppatt_return_cancel').removeAttr('disabled');	 
-	 }
+	// Disable cancel if status not recalled. Or is user doesn't have role. 
+	let current_status = jQuery( '#status' ).html();
+	jQuery( '#wppatt_return_cancel' ).attr( 'disabled', 'disabled' );
+
+	var user_can_cancel = <?php echo $user_can_cancel ?>;
+	//if( jQuery( '#status' ).html() == 'Decline Initiated' && user_can_cancel ) {
+	if( current_status == 'Decline Initiated' && user_can_cancel ) {	
+		jQuery( '#wppatt_return_cancel' ).removeAttr( 'disabled' );	 
+	}
+	 
+	// Disable Extend if status not recalled. Or is user doesn't have role. 
+	jQuery( '#wppatt_return_expiration_extend' ).attr( 'disabled', 'disabled' );
+
+	//var user_can_cancel = <?php echo $user_can_cancel ?>;
+	if( current_status == 'Decline Initiated' && current_status == 'Decline Shipped' && current_status == 'Received' ) {
+		jQuery( '#wppatt_return_expiration_extend' ).removeAttr( 'disabled' );	 
+	} 
 
 
 } );
