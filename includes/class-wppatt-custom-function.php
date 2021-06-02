@@ -6124,6 +6124,44 @@ if($type == 'comment') {
             
 		}
 
+		/**
+         * Insert Pending and New Request timestamp to Timestamps Tables
+         * Accepts $ticket_id
+         * @return text
+         */
+		public static function update_init_timestamp_request( $ticket_id ) {
+		    
+		      global $wpdb;
+		    			
+		      if (!empty($ticket_id)) {
+		          
+			$get_date_timestamp = $wpdb->get_row("SELECT date_created, customer_name FROM ".$wpdb->prefix."wpsc_ticket
+			WHERE id = ".$ticket_id);
+			
+			$date_timestamp = $get_date_timestamp->date_created;
+			$customer_name = $get_date_timestamp->customer_name;
+			
+            $table_timestamp_request = $wpdb->prefix . 'wpsc_epa_timestamps_request';
+            
+            $wpdb->insert($table_timestamp_request, array('request_id' => $ticket_id, 'type' => 'New Request', 'user' => $customer_name, 'timestamp' => $date_timestamp) );
+
+			$get_boxes = $wpdb->get_results("SELECT id FROM ".$wpdb->prefix."wpsc_epa_boxinfo
+			WHERE ticket_id = ".$ticket_id);
+			
+			$table_timestamp_box = $wpdb->prefix . 'wpsc_epa_timestamps_box';
+			            
+			foreach ($get_boxes as $items) {
+			
+			$boxdb_id = $items->id;
+			
+			$wpdb->insert($table_timestamp_box, array('box_id' => $boxdb_id, 'type' => 'Pending', 'user' => $customer_name, 'timestamp' => $date_timestamp) );
+			    
+			}
+
+		      }
+                
+		}
+		
         /**
          * Program office to region ID conversion
          * Converts the program office acronym to the region ID, which is to be ingested into sems_site_id_validation
