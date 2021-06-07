@@ -58,9 +58,7 @@ $patt_ticket_id = $box_details->request_id;
         ?>
          <option selected="selected" value="666" disabled>Not Assigned</option>
          <option value="62">East</option>
-         <option value="663" disabled>East CUI</option>
          <option value="2">West</option>
-         <option value="664" disabled>West CUI</option> 
       </select>
       
 

@@ -108,9 +108,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 				<select id='searchByDigitizationCenter'>
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
-					<option value='East CUI'>East CUI</option>
 					<option value='West'>West</option>
-					<option value='West CUI'>West CUI</option>
 					<option value='Not Assigned'>Not Assigned</option>
 				</select>
 
@@ -655,6 +653,7 @@ function wppatt_return_editor() {
  
 
 </div>
+
 
 
 <!-- Pop-up snippet start from RFID.php-->
