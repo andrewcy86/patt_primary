@@ -85,11 +85,12 @@ foreach($get_total_request_count as $item) {
         $data_where = array('id' => $ticket_id);
         $wpdb->update($wpdb->prefix . 'wpsc_ticket' , $data_update, $data_where);
         
+        //BEGIN CLONING DATA TO ARCHIVE
+        Patt_Custom_Func::send_to_archive($ticket_id);
+        
         //Archive audit log
         Patt_Custom_Func::audit_log_backup($ticket_id);
 
-        //BEGIN CLONING DATA TO ARCHIVE
-        Patt_Custom_Func::send_to_archive($ticket_id);
         
         //Send notification to Admins/Managers/Requester when a request is archived
         /*

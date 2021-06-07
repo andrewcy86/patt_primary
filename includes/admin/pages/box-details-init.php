@@ -36,6 +36,10 @@ else {
     $type = 'box_archive';
 }
 
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 ?>
 
 
@@ -43,9 +47,11 @@ else {
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-        	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-        <?php		
-        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+        
+        <?php
+        //Disable editing capabilities on certain request statuses
+        if ( ($request_status_id != $new_request_tag->term_id && $request_status_id != $tabled_tag->term_id && $request_status_id != $initial_review_rejected_tag->term_id && $request_status_id != $cancelled_tag->term_id) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
 		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button>-->
@@ -53,20 +59,11 @@ else {
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit"></i> Bulk Edit EPA Contact </button>
-
-		<?php
-		$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-		$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-		$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-		if($request_status_id != $new_request_tag->term_id && $request_status_id != $initial_review_rejected_tag->term_id && $request_status_id != $cancelled_tag->term_id) {
-		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button>
-		<?php
-		}
-        }
-        ?>
 
 <?php
+}
+
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($box_id_error_check)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Request</button>

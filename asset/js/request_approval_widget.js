@@ -9,9 +9,16 @@ function wpsc_change_tab(e,content_id){
 
 function wpsc_get_approval_details(ticket_id){
     wpsc_modal_open('Associated Documents');
+    let pid = jQuery('input[name=postid').val();
+    let blpo = jQuery('input[name=box_list_path_orig').val();
+    
+    console.log({pid:pid, blpo:blpo});
+    
     var data = {
         action: 'wpsc_get_approval_details',
-        ticket_id: ticket_id
+        ticket_id: ticket_id,
+        postid: pid,
+        box_list_path_orig: blpo
     };
     jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
         jQuery('#approval_widget_form').remove();
@@ -31,6 +38,7 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
     if( settings.data != '' && settings.data != undefined ) {
         var explode_str = settings.data.toString().split("&ticket_id");
         action_var = explode_str[0];
+        console.log({action_var:action_var});
     }
 
     var requestFormDropzone = {
@@ -52,11 +60,87 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
             });
         }
     };
+    
+    var dropzoneOptionsBoxList = {
+        url: "test.php",
+        autoProcessQueue: false,
+        addRemoveLinks: true,
+        uploadMultiple: false,
+        maxFiles: 1,
+        acceptedFiles: '.xlsm',
+        accept: function (file, done) {
+            
+            console.log( 'ACCEPT' );
+            console.log( 'this.files.length: ' + this.files.length );
+            
+            
+            this.on("addedfile", function (file) {
+	            if (this.files.length > 1) {
+		            console.log( 'TOO LONG' );
+	                this.removeAllFiles()
+	                this.addFile(file);
+	            }
+	        });
+            
+            
+            theFile.file = file;
+            console.log({theFile:theFile});
+            //jQuery('#file_upload_cr').val(1);
+            //wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
+        },
+        init: function () {
+            console.log( 'INIT' );
+            
+            this.on( "maxfilesexceeded", function(file) {
+
+				console.log( 'maxfilesexceeded' );
+                this.removeAllFiles();
+				this.addFile(file);
+            });
+            
+            this.on( "error", function (file) {
+                console.log( 'error for maxfilesexceeded' );
+                if (!file.accepted) this.removeFile(file);
+            });
+            
+            this.on( "complete", function(file) {
+                console.log( 'dropzone complete' );
+                jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+            });
+            
+            this.on("addedfiles", function(files) {
+			    console.log(files.length + ' files added');
+			    console.log( files[0].name );
+			    console.log( files );
+			    
+			    let name_arr = files[0].name.split( '.' );
+			    console.log( name_arr );
+			    let extension = name_arr[ name_arr.length - 1 ];
+			    console.log( extension );
+			    
+			    if( !extension.includes( 'xls' ) ) {
+				    console.log( 'wrong type' );
+				    this.removeAllFiles();
+				    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
+				    reset_page();
+			    }
+			    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+			    
+			});
+			
+			
+        }
+    };
+ 
 
     if ( 'action=wpsc_get_approval_details' == action_var ) {
 
         // Destruction Authorization dropzone file for new request form and approval widget
         var destr_autho_dropzone = new Dropzone('#destr-autho-dropzone', requestFormDropzone );
+        
+        // Add Box List dropzone file for new request form and approval widget
+        //var box_list_dropzone = new Dropzone('#add-box-list-dropzone', dropzoneOptionsBoxList );   
+
     }
 
     if ('action=wpsc_get_approval_details' == action_var || 'action=wpsc_tickets&setting_action=create_ticket' == settings.data) {
@@ -71,7 +155,8 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
 
         // foia dropzone file for new request form and approval widget
         var foia_dropzone = new Dropzone('#foia-dropzone', requestFormDropzone );   
-    }
+        
+            }
 
 });
 

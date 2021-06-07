@@ -253,6 +253,23 @@ jQuery("#checkout-button").click(function () {
     postvarcentername: jQuery("#dc").val()
 }, 
    function (response) {
+       
+       let data = {
+			action: 'wppatt_loc_instant',
+			dc_id : jQuery("#dc").val()
+		}
+		
+		jQuery.ajax({
+			type: "POST",
+			url: wpsc_admin.ajax_url,
+			data: data,
+			success: function( response ){
+				console.log('update location done');
+				console.log( response );	
+			}
+		
+		});  
+		
       if(!alert(response)){window.location.reload();}
       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo $_GET['ticket_id']; ?>");
    });

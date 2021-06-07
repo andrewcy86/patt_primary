@@ -48,6 +48,15 @@ else {
 }
 //echo $GLOBALS['id'];
 
+//Box statuses
+$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
+$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
+
+//Request statuses
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 ?>
 
 
@@ -55,7 +64,6 @@ else {
 <div class="bootstrap-iso">
 <?php
     //switch out SQL statement depending on if the request is archived
-    
     //START REVIEW
     if($is_active == 1) {
 	$folderfile_details = $wpdb->get_row(
@@ -286,12 +294,10 @@ div.dataTables_wrapper {
     	
     	<?php	
     	
-        if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        if ( ($box_ticket_status != $new_request_tag->term_id && $box_ticket_status != $tabled_tag->term_id && $box_ticket_status != $initial_review_rejected_tag->term_id && $box_ticket_status != $cancelled_tag->term_id) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
         <?php 
-        $validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
-        $rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
         if ($box_status == $validation_tag->term_id || $box_status == $rescan_tag->term_id) {
         ?>
         <!-- language of buttons change based on 0 or 1 -->
@@ -488,7 +494,7 @@ $recall_icon = '<span style="color: #000;margin-left:4px;"><i class="far fa-regi
 }
 echo $decline_icon.$recall_icon;
 		  ?>
-		  
+		  <!--
 		  <?php 
 		  if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
@@ -497,6 +503,7 @@ echo $decline_icon.$recall_icon;
 			    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-folder-id-edit-icon'); ?>"><i class="far fa-question-circle"></i></a>
                 <?php }
 		  ?>
+		  -->
       </h3>
 
     </div>
@@ -692,32 +699,48 @@ echo '<span class="details-name" >File Size: </span><span class="" >' . $file_si
 
 if ($folderfile_details->object_key != '') {
 
-$s3Client = new Aws\S3\S3Client([
-    'region' => AWS_S3_REGION,
-    'version' => 'latest'
-]);
-
-$file_exist = $s3Client->doesObjectExist(AWS_S3_BUCKET, $folderfile_details->object_key);
-
-// Success? (Boolean)
-//var_dump($file_exist);
-
-if($file_exist){
-$s3_exist = 1;
-
-//Updated to use Pre-signed URL
-$cmd = $s3Client->getCommand('GetObject', [
-    'Bucket' => AWS_S3_BUCKET,
-    'Key' => $folderfile_details->object_key
-]);
-
-$request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
-
-// Get the actual presigned-url
-$presignedUrl = (string)$request->getUri();
-
-echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" title="AWS"></i> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
-}
+	$s3Client = new Aws\S3\S3Client([
+	    'region' => AWS_S3_REGION,
+	    'version' => 'latest'
+	]);
+	
+	$file_exist = $s3Client->doesObjectExist(AWS_S3_BUCKET, $folderfile_details->object_key);
+	
+	// Success? (Boolean)
+	//var_dump($file_exist);
+	
+	if( $file_exist ) {
+		$s3_exist = 1;
+		
+		//Updated to use Pre-signed URL
+		$cmd = $s3Client->getCommand('GetObject', [
+		    'Bucket' => AWS_S3_BUCKET,
+		    'Key' => $folderfile_details->object_key
+		]);
+		
+		$request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
+		
+		// Get the actual presigned-url
+		$presignedUrl = (string)$request->getUri();
+		
+		echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" title="AWS"></i> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
+		
+		// TEST metadata
+		
+		// get metadata
+/*
+		$headObj = $s3Client->headObject( [
+		    'Bucket' => AWS_S3_BUCKET,
+		    'Key' => $folderfile_details->object_key
+		]);
+		
+		echo '<span class="" >MetaData: </span>';
+		echo '<pre>';
+		print_r( $headObj );
+		echo '</pre>';	
+*/	
+		
+	}
 
 }
 

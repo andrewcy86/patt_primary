@@ -112,6 +112,14 @@ width: 100%;
 //check whether request is active, if not disable buttons
 $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
+
+//$status_id_arr = array('3','670','69');
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id);
+
 if($is_active == 1) {
     $request_type = 'request';
     $type = 'box';
@@ -138,6 +146,15 @@ if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1
 </div>
 <?php
 }
+
+//damaged notification
+if($status_id == $tabled_tag->term_id) {
+?>
+<div class="alert alert-warning" role="alert">
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" title="Alert"></i></span> Editing is disabled and cannot be completed in the Tabled status.
+</div>
+<?php
+}
 ?>
 
 <?php
@@ -149,15 +166,6 @@ if(Patt_Custom_Func::id_in_freeze($converted_to_request_id, $request_type) == 1)
 </div>
 <?php
 }
-?>
-
-<?php 
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
-
-//$status_id_arr = array('3','670','69');
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id);
 ?>
 
 <h4>Boxes Related to Request</h4>

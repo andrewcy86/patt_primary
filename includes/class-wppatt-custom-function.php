@@ -21,6 +21,25 @@ if (!class_exists('Patt_Custom_Func')) {
             global $wpdb; 
             $this->table_prefix = $wpdb->prefix;
         }
+        
+        /**
+         * Determine begin sequence for east/west storage location
+         * @return db id
+         */
+         
+        public static function begin_sequence($dc)		
+{
+        global $wpdb;
+		
+		$get_begin_sequence = $wpdb->get_row("SELECT id FROM ".$wpdb->prefix."wpsc_epa_storage_status 
+        WHERE digitization_center = '" . $dc . "' LIMIT 1");
+
+		$begin_sequence = $get_begin_sequence->id;
+		
+		return $begin_sequence;
+		
+    
+}
 
         /**
          * Determine when to display box assigned users icon
@@ -3217,8 +3236,80 @@ public static function id_in_recall( $identifier, $type ) {
 
         public static function get_default_digitization_center($id)
         {
-            global $wpdb;
+            global $wpdb, $wpscfunction;
 
+
+            $sems_check = $wpscfunction->get_ticket_meta($id,'super_fund');
+                
+            if(in_array("true", $sems_check)) {
+                
+                
+            // Get Distinct program office ID
+            $get_program_office_id = $wpdb->get_results("
+	            SELECT ".$wpdb->prefix."wpsc_epa_program_office.organization_acronym as acronym
+	            FROM ".$wpdb->prefix."wpsc_epa_boxinfo 
+	            LEFT JOIN ".$wpdb->prefix."wpsc_epa_program_office ON ".$wpdb->prefix."wpsc_epa_boxinfo.program_office_id = ".$wpdb->prefix."wpsc_epa_program_office.office_code 
+	            WHERE ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id = '" . $id . "'
+	            ");
+
+            $program_office_east_array = array();
+            $program_office_west_array = array();
+            
+            $count = 0;
+            
+            foreach ($get_program_office_id as $program_office_id_val) {
+                $count++;
+	            $program_office_val = $program_office_id_val->acronym;
+	
+	            $east_region = array("R03");
+	            $west_region = array("AO", "OITA", "OCFO", "OCSPP", "ORD", "OAR", "OW", "OIG", "OGC", "OMS", "OLEM", "OECA", "R01", "R02", "R04", "R05", "R06", "R07", "R08", "R09", "R10");
+	
+	            if (in_array($program_office_val, $east_region))
+	            {
+	            	array_push($program_office_east_array, $program_office_val);
+	            }
+	
+	            if (in_array($program_office_val, $west_region))
+	            {
+	            	array_push($program_office_west_array, $program_office_val);
+	            }
+            }
+
+            $east_count = count($program_office_east_array);
+            $west_count = count($program_office_west_array);
+
+            $set_center = '';
+
+            if ($east_count == $count) {
+                $digi_east_term_id = self::get_term_by_slug( 'e' );	 // 62
+//             	$set_center = 62;
+				$set_center = $digi_east_term_id;
+            }
+            
+            if ($east_count > $west_count)
+            {
+            	$digi_east_term_id = self::get_term_by_slug( 'e' );	 // 62
+//             	$set_center = 62;
+				$set_center = $digi_east_term_id;
+            }
+
+            if ($west_count > $east_count)
+            {
+            	$digi_west_term_id = self::get_term_by_slug( 'w' );	 // 2
+//             	$set_center = 2;
+				$set_center = $digi_west_term_id;
+            }
+
+            if ($west_count == $east_count)
+            {
+            	$digi_not_assigned_term_id = self::get_term_by_slug( 'not-assigned-digi-center' );	 // 666
+//             	$set_center = 666;
+				$set_center = $digi_not_assigned_term_id;
+            }
+            
+            
+            } else {
+                
             // Get Distinct program office ID
             $get_program_office_id = $wpdb->get_results("
 	            SELECT ".$wpdb->prefix."wpsc_epa_program_office.organization_acronym as acronym
@@ -3273,7 +3364,10 @@ public static function id_in_recall( $identifier, $type ) {
 				$set_center = $digi_not_assigned_term_id;
             }
 
+            }
+            
             return $set_center;
+
         }
 
         public static function fetch_request_id($id)
@@ -4826,7 +4920,7 @@ return $post_details_content;
         return $ticket_active;
 
         }
-
+        
         /**
          * Archive audit log information
          * @return true
@@ -4834,7 +4928,6 @@ return $post_details_content;
          
         public static function audit_log_backup($ticket_id)
         {
-
 global $current_user, $wpscfunction, $wpdb;
 
 include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-load.php');
@@ -4842,18 +4935,20 @@ include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/incl
 include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/includes/media.php');
 include_once(implode("/", (explode("/", WPPATT_UPLOADS, -3))).'/wp/wp-admin/includes/file.php');
 
-
+if (!function_exists('strip_tags_deep'))   {
 function strip_tags_deep($value)
 {
   return is_array($value) ?
     array_map('strip_tags_deep', $value) :
     strip_tags(preg_replace( "/\r|\n/", "", $value ));
 }
+}
 
+if (!function_exists('add_quotes'))   {
 function add_quotes($str) {
     return sprintf('"%s"', $str);
 }
-
+}
                        $converted_request_id = self::convert_request_db_id($ticket_id);
                        $file = 'log_backup'; // csv file name
                        $pre_results = $wpdb->get_results("

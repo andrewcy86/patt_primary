@@ -11,20 +11,20 @@ include($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-admin/includes/file.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
-function strip_tags_deep($value)
+function strip_tags_deep_pm($value)
 {
   return is_array($value) ?
-    array_map('strip_tags_deep', $value) :
+    array_map('strip_tags_deep_pm', $value) :
     strip_tags(preg_replace( "/\r|\n/", "", $value ));
 }
 
-function add_quotes($str) {
+function add_quotes_pm($str) {
     return sprintf('"%s"', $str);
 }
 
                        $file = 'message_backup'; // csv file name
                        $pre_results = $wpdb->get_results("select a.pm_id, c.user_login, b.subject, b.content, b.date from " . $wpdb->prefix . "pm_users a INNER JOIN " . $wpdb->prefix . "pm b ON a.pm_id = b.id INNER JOIN " . $wpdb->prefix . "users c ON a.recipient = c.ID WHERE a.deleted = 2",ARRAY_A );
-                       $results = strip_tags_deep($pre_results);
+                       $results = strip_tags_deep_pm($pre_results);
 
 // CONVERT TO EST
 foreach ($results as $key => &$value) {
@@ -51,7 +51,7 @@ foreach ($results as $key => &$value) {
                        if(count($results) > 0){
                           foreach($results as $result){
                           $result = array_values($result);
-                          $result =  implode(',', array_map('add_quotes', $result));
+                          $result =  implode(',', array_map('add_quotes_pm', $result));
                           $csv_output .= $result."\n";
                         }
                       

@@ -26,7 +26,27 @@ $destruction_violation = 0;
 // Determine if violation occured
 $frozen = 0;
 
+$ticket_box_status = 0;
+//Request statuses
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+
 foreach($folderdocid_arr as $key) {
+    
+$get_statuses = $wpdb->get_row("SELECT a.ticket_status
+FROM wpqa_wpsc_ticket a
+INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.folderdocinfofile_id = '".$key."'");
+$get_ticket_status_val = $get_statuses->ticket_status;
+
+//Documents cannot be marked as Damaged in the Completed/Dispositioned box status
+if($get_ticket_status_val == $new_request_tag->term_id || $get_ticket_status_val == $tabled_tag->term_id || $get_ticket_status_val == $initial_review_rejected_tag->term_id || $get_ticket_status_val == $cancelled_tag->term_id) {
+   $ticket_box_status++;
+}
+
 $get_frozen = $wpdb->get_row("SELECT freeze, damaged FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_frozen_val = $get_frozen->freeze;
 $get_damaged_val = $get_frozen->damaged;
@@ -81,7 +101,7 @@ $destruction_violation = 1;
 
 //echo $destruction_violation;
 
-if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $frozen == 0 ) {
+if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $frozen == 0 && $ticket_box_status == 0) {
 foreach($folderdocid_arr as $key) {    
 $get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_destruction_val = $get_destruction->unauthorized_destruction;
@@ -276,7 +296,10 @@ $wpdb->update($table_name, $data_update, $data_where);
 
 }
 } elseif($frozen > 0) {
-echo "A frozen folder/file has been selected and cannot be flagged as unauthorized destruction. Please unselect the frozen folder/file.";
+echo " A frozen folder/file has been selected and cannot be flagged as unauthorized destruction. Please unselect the frozen folder/file. ";
+}
+elseif($ticket_box_status > 0) {
+echo " A folder/file is in a status that cannot be flagged as unauthorized destruction. Please review the folder/files that you have selected. ";
 }
 
 if($page_id == 'filedetails') {
@@ -417,47 +440,47 @@ $get_destruction_sum = $wpdb->get_row("SELECT sum(unauthorized_destruction) as s
 $get_destruction_sum_val = $get_destruction_sum->sum;
 
 
-if ($page_id == 'boxdetails' && $frozen == 0) {
+if ($page_id == 'boxdetails' && $frozen == 0 && $ticket_box_status == 0) {
 if ($get_destruction_sum_val > 0) {
 
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. Please check your selection.";
+echo " A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. Please check your selection. ";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
+echo " Unauthorized destruction has been updated. A unauthorized destruction has been reversed. ";
 } else {
     //print_r($recall_array);
     //print_r($return_array);
-echo "Unauthorized destruction has been updated";
+echo " Unauthorized destruction has been updated. ";
 }
 }
 
 } else {
     //print_r($recall_array);
     //print_r($return_array);
-echo "Unauthorized destruction has been updated";
+echo " Unauthorized destruction has been updated. ";
 }
 }
 
-if ($page_id == 'filedetails' || $page_id == 'folderfile' && $frozen == 0) {
+if ( ($page_id == 'filedetails' || $page_id == 'folderfile') && $frozen == 0 && $ticket_box_status == 0) {
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. Please check your selection.";
+echo " A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. Please check your selection. ";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
+echo " Unauthorized destruction has been updated. A unauthorized destruction has been reversed. ";
 } else {
 
-echo "Unauthorized destruction has been updated";
+echo " Unauthorized destruction has been updated. ";
 }
 }
 }

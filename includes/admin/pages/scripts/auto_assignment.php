@@ -20,7 +20,7 @@ id = '" . $tkid . "'
 
 	$ticket_details_status = $ticket_details->ticket_status;
 
-if (($ticket_details_status == 3 || $ticket_details_status == 4) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
+if (($ticket_details_status == 3 || $ticket_details_status == 2763 || $ticket_details_status == 4) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 
 // Finds Shelf ID of next available sequence
 	$find_sequence = $wpdb->get_row("
@@ -151,6 +151,7 @@ AND digitization_center = '" . $dc_final . "'
 
 				$nc_shelf_id_update = $ncf_aisle . '_' . $ncf_bay . '_' . $ncf_shelf;
 // Update storage status table
+/*
 				$nc_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
@@ -160,13 +161,13 @@ digitization_center = '" . $dc_final . "'
 ");
 
 				$nc_shelf_update_remaining = $nc_shelf_update->remaining - 1;
-
+*/
 				$ncss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				$ncss_data_update = array('occupied' => 1, 'remaining' => $nc_shelf_update_remaining);
-				$ncss_data_where = array('shelf_id' => $nc_shelf_id_update);
+				$ncss_data_update = array('occupied' => 1, 'remaining' => 999);
+				$ncss_data_where = array('shelf_id' => $nc_shelf_id_update, 'digitization_center' => $dc_final);
 
 				$wpdb->update($ncss_table_name, $ncss_data_update, $ncss_data_where);
-				
+	
 // Update physical location
 
 // Get count of first available position
@@ -188,15 +189,17 @@ $wpdb->update($table_pl , $pl_update, $pl_where);
 // When Continuing shelf space space is required
 
 		} else if ($box_details_count <= Patt_Custom_Func::calc_max_gap_val($dc_final)) {
-		    
-			$find_gaps = $wpdb->get_results("
+
+$begin_seq = Patt_Custom_Func::begin_sequence($dc_final);
+
+			$find_gaps = $wpdb->get_row("
 WITH 
 cte1 AS
 (
 SELECT shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE digitization_center = '" . $dc_final . "' AND
-id BETWEEN 1 AND '" . $sequence_shelfid . "'
+id BETWEEN '".$begin_seq."' AND '" . $sequence_shelfid . "'
 )
 SELECT GROUP_CONCAT(shelf_id) as shelf_id,
        GROUP_CONCAT(remaining) as remaining,
@@ -204,27 +207,19 @@ SELECT GROUP_CONCAT(shelf_id) as shelf_id,
 FROM cte1
 WHERE remaining != 0
 GROUP BY group_num
+HAVING total >= 3 
+LIMIT 1
 ");
 
-			$findgaps_array = array();
-
-			$counter = 0;
 
 // Obtain total from above query and determine next available gap that fits the unassigned box total
-			foreach ($find_gaps as $info) {
-				$findgaps_shelfid = $info->shelf_id;
-				$findgaps_remaining = $info->remaining;
-				$findgaps_total = $info->total;
-				array_push($findgaps_array, $findgaps_shelfid);
-				if ($box_details_count <= $findgaps_total) {
-					break;
-				}
-				$counter++;
-			}
-            //echo $counter;
-            
+
+				$findgaps_shelfid = $find_gaps->shelf_id;
+				$findgaps_remaining = $find_gaps->remaining;
+				$findgaps_total = $find_gaps->total;
+
             //print_r($findgaps_array);
-			$shelfid_gaps_array = explode(",", $findgaps_array[$counter]);
+			$shelfid_gaps_array = explode(",", $findgaps_shelfid);
             //print_r($shelfid_gaps_array);
             
 			$missing_gap_array = array();
@@ -310,6 +305,7 @@ array_push($position_gap_array, $array_gap_val_final);
 
 				$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' . $gap_shelf;
 // Update storage status table
+/*
 				$gap_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
@@ -319,12 +315,13 @@ digitization_center = '" . $dc_final . "'
 ");
 
 				$gap_shelf_update_remaining = $gap_shelf_update->remaining - 1;
-
+*/
 				$gapss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				$gapss_data_update = array('occupied' => 1, 'remaining' => $gap_shelf_update_remaining);
-				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
+				$gapss_data_update = array('occupied' => 1, 'remaining' => 999);
+				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update, 'digitization_center' => $dc_final);
 
 				$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
+
 // Update physical location
 // Get count of first available position
 $get_box_id = $wpdb->get_row("
@@ -481,6 +478,7 @@ array_push($position_seq_array, $array_seq_val_final);
 
 				$seq_shelf_id_update = $seq_aisle . '_' . $seq_bay . '_' . $seq_shelf;
 // Update storage status table
+/*
 				$seq_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
@@ -490,12 +488,13 @@ digitization_center = '" . $dc_final . "'
 ");
 
 				$seq_shelf_update_remaining = $seq_shelf_update->remaining - 1;
-
+*/
 				$seqss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				$seqss_data_update = array('occupied' => 1, 'remaining' => $seq_shelf_update_remaining);
-				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
+				$seqss_data_update = array('occupied' => 1, 'remaining' => 999);
+				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update, 'digitization_center' => $dc_final);
 
 				$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
+
 // Update physical location
 // Get count of first available position
 $get_box_id = $wpdb->get_row("
@@ -517,7 +516,9 @@ $wpdb->update($table_pl , $pl_update, $pl_where);
 		} else {
 		    echo "No automatic box shelf assignments made.".$tkstatus;
 		}
-		
+
+do_action( 'wppatt_loc_instant',  $dc_final);
+
 	}
 
 } else {

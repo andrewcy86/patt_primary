@@ -50,7 +50,7 @@ $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
 if ($box_storage_status_remaining <= 4) {
 $table_ss = $wpdb->prefix . 'wpsc_epa_storage_status';
-$ssr_update = array('remaining' => $box_storage_status_remaining_added);
+$ssr_update = array('remaining' => 999);
 $ssr_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
 
@@ -67,10 +67,9 @@ $wpdb->update($table_sl , $sl_update, $sl_where);
 
 $get_ticket_id = $wpdb->get_row("
 SELECT ticket_id
-FROM $wpdb->prefix . 'wpsc_epa_boxinfo
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
 WHERE
-box_id = '" . $box_id_val . "'
-");
+box_id = '" . $box_id_val . "'");
 
 $ticket_id = $get_ticket_id->ticket_id;
 
@@ -79,7 +78,7 @@ do_action('wpppatt_after_digitization_center', $ticket_id, $box_id_val, $box_dc_
 echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$box_dc_name;
    
 } else {
- echo "Error updating location status table.";    
+ echo "Error updating location status table.";  
 }
 
 } else {

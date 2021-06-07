@@ -460,8 +460,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                             '<div class="progress" style="float: none !important; width: unset !important;">' +
                                 '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">' + file.name + '</div>' +
                             '</div>' +
-                            '<img onclick="attachment_cancel(this);clearBoxTable()" class="attachment_cancel" src="' + attachment_info['close_image'] + '" style="display:none;" />' +
                         '</div>';
+                        
+		// Removed x from progress bar.
+		// '<img onclick="attachment_cancel(this);clearBoxTable()" class="attachment_cancel" src="' + attachment_info['close_image'] + '" style="display:none;" />'                         
 
         jQuery('#' + id).append(html_str);
 

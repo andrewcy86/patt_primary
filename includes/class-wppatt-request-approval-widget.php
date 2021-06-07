@@ -96,6 +96,8 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				    ?>
 				    <strong><a href="<?php echo $get_attachment_url; ?>"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> <a href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/pages/scripts/boxlist_preview.php';?>?id=<?php echo $get_postid[0]; ?>" target="_blank" rel="noopener">View Box List</a></strong>
 				    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
+				    <input type="hidden" name="postid" value="<?php echo $get_postid[0]; ?>" />
+					<input type="hidden" name="box_list_path_orig" value="<?php echo $get_attachment_url; ?>" />
 				    <?php
 				    }
 				    ?>
@@ -195,6 +197,29 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							<?php
 						}
 					}
+					
+					// NEW Box List
+					if ( is_array( $foia_file ) && count( $foia_file ) > 0 ) {
+						$foia_counter = 1;
+						$foia_content = '';
+						foreach ( $foia_file as $file ) {
+							$foia_content .= '<li>';
+								$foia_content .= '<a href="' . $file . '" target="_blank">';
+									$foia_content .= '<label>' . __( 'File ', 'pattracking' ) . $foia_counter . '</label>';
+								$foia_content .= '</a>';
+							$foia_content .= '</li>';
+							$foia_counter++;
+						}
+
+						if ( '' !== $foia_content ) {
+							$has_file = true;
+							?>
+								<li><strong><?php esc_html_e( 'FOIA', 'pattracking' ); ?></strong> <a href="#" aria-label="FOIA" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-foia-tab'); ?>"><i class="far fa-question-circle"></i></a>
+								</li>
+								<?php echo $foia_content; // phpcs:ignore ?>
+							<?php
+						}
+					}
 
 					if ( ! $has_file ) {
 						?>
@@ -248,6 +273,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 			global $wpdb;
 
 			$ticket_id   = isset( $_POST['ticket_id'] ) ? intval( $_POST['ticket_id'] ) : 0; //phpcs:ignore
+			//$post_id   = isset( $_POST['postid'] ) ? intval( $_POST['postid'] ) : 0; 
+			$post_id   = isset( $_POST['postid'] ) ?  $_POST['postid']  : 0; 
+			$box_list_path_orig   = isset( $_POST['box_list_path_orig'] ) ?  $_POST['box_list_path_orig']  : 0; 
 
 			$destr_auth_images = self::get_approval_attached_image( $ticket_id, 'destruction_authorizations_image' );
 			$litig_letter_image = self::get_approval_attached_image( $ticket_id, 'litigation_letter_image' );
@@ -267,6 +295,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						<li role="presentation" class="tab" id="wpsc_recall_sla_chan_litigation_letter" onclick="wpsc_change_tab(this,'approval_litigation_letter');"><a href="javascript:void(0);"><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_congressional');"><a href="javascript:void(0);"><?php esc_html_e( 'Congressional', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_foia');"><a href="javascript:void(0);"><?php esc_html_e( 'FOIA', 'pattracking' ); ?></a></li>
+<!-- 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'add_box_list');"><a href="javascript:void(0);"><?php esc_html_e( 'Update Box List', 'pattracking' ); ?></a></li> -->
 					</ul>
 
 
@@ -398,9 +427,51 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						}
 						?>
 					</div>
+					
+<!-- 			New Box List - START -->
+					<div id="add_box_list" class="tab_content hidden">
+<!-- 						<h4><?php esc_html_e( 'Box List', 'pattracking' ); ?></h4> -->
+						<h4>Box List</h4>
+						
+						<div>
+							post_id: <?php echo $post_id; ?>	<br>
+							box list path: <?php echo $box_list_path_orig; ?>	
+						</div>
+						
+						<div class="dropzone" id="add-box-list-dropzone">
+							<div class="fallback">
+								<input name="box_list" type="file" id="box_list" />
+							</div>
+							<div class="dz-default dz-message">
+								<button class="dz-button" type="button">Drop .xlsm file here to upload.</button>
+							</div>
+						</div>
+
+						<?php
+						if ( is_array( $box_list_file ) && count( $box_list_file ) > 0 ) {
+							$counter = 1;
+							foreach ( $box_list_file as $key => $value ) {
+								if ( '' !== $value ) {
+									?>
+									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
+										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
+										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_foia', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
+											<i class="fa fa-trash"></i>
+										</span>
+									</div>
+									<?php
+									$counter++;
+								}
+							}
+						}
+						?>
+					</div>
+					
+<!-- 			New Box List - END -->
 
 					<input name="request_id" value="<?php echo esc_attr( $ticket_id ); ?>" type="hidden" />
 					<input type="hidden" name="action" value="wpsc_set_approval_widget" />
+					
 				</div>
 				<div id="wpsc_popup_footer">
 					<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();"><?php esc_html_e( 'Close', 'wpsc-export-ticket' ); ?></button>

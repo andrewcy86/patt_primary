@@ -19,22 +19,32 @@ $table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
 $date_time = date('Y-m-d H:i:s');
 
 $damaged_reversal = 0;
-$completed_dispositioned = 0;
+$ticket_box_status = 0;
+//Box status
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
 $unauthorized_destruction = 0;
 
+//Request statuses
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+
 foreach($folderdocid_arr as $key) {
 //REVIEW
-$get_completed_dispositioned = $wpdb->get_row("SELECT a.box_status
-FROM wpqa_wpsc_epa_boxinfo a
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
+$get_statuses = $wpdb->get_row("SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
 WHERE c.damaged = 0 AND c.folderdocinfofile_id = '".$key."'");
-$get_completed_dispositioned_val = $get_completed_dispositioned->box_status;
+$get_ticket_status_val = $get_statuses->ticket_status; 
+$get_box_status_val = $get_statuses->box_status;
 
 //Documents cannot be marked as Damaged in the Completed/Dispositioned box status
-if($get_completed_dispositioned_val == $completed_dispositioned_tag->term_id) {
-   $completed_dispositioned++; 
+if($get_box_status_val == $completed_dispositioned_tag->term_id || $get_ticket_status_val == $new_request_tag->term_id || $get_ticket_status_val == $tabled_tag->term_id || $get_ticket_status_val == $initial_review_rejected_tag->term_id || $get_ticket_status_val == $cancelled_tag->term_id) {
+   $ticket_box_status++; 
 }
+
 }
 
 foreach($folderdocid_arr as $key) {
@@ -51,7 +61,7 @@ $unauthorized_destruction++;
 
 //$folderdocid_arr_count = count($folderdocid_arr);
 
-if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
+if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $ticket_box_status == 0 && $unauthorized_destruction == 0) {
 foreach($folderdocid_arr as $key) {
 
 $get_damaged = $wpdb->get_row("SELECT damaged 
@@ -111,12 +121,12 @@ echo "<strong>".$key."</strong> : Damaged has been updated.<br />";
 }
 
 elseif($unauthorized_destruction > 0) {
-echo "A folder/file flagged as unauthorized destruction has been selected and cannot be flagged as damaged.<br />Please unselect the folder/file flagged as unauthorized destruction.";
-} elseif($completed_dispositioned > 0) {
-echo "A folder/file is in the box status of Completed/Dispositioned and cannot be flagged as damaged.<br />Please unselect the folder/file in the box status of Completed/Dispositioned.";
+echo " A folder/file flagged as unauthorized destruction has been selected and cannot be flagged as damaged.<br />Please unselect the folder/file flagged as unauthorized destruction. ";
+} elseif($ticket_box_status > 0) {
+echo " A folder/file is in a status that cannot be flagged as damaged.<br /> Please review the folder/files that you have selected. ";
 }
 
-if( ($page_id == 'filedetails') && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
+if( ($page_id == 'filedetails') && $ticket_box_status == 0 && $unauthorized_destruction == 0) {
 $get_damaged = $wpdb->get_row("SELECT damaged 
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
 WHERE folderdocinfofile_id = '".$folderdocid_string."'");
@@ -169,11 +179,11 @@ $wpdb->update($table_name, $data_update, $data_where);
 
 }
 }
-if (($page_id == 'filedetails') && $damaged_reversal == 1 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
-echo "Damaged has been updated. A damaged flag has been reversed.";
+if (($page_id == 'filedetails') && $damaged_reversal == 1 && $ticket_box_status == 0 && $unauthorized_destruction == 0) {
+echo " Damaged has been updated. A damaged flag has been reversed. ";
 }
-if (($page_id == 'filedetails') && $damaged_reversal == 0 && $completed_dispositioned == 0 && $unauthorized_destruction == 0) {
-echo "Damaged has been updated.";
+if (($page_id == 'filedetails') && $damaged_reversal == 0 && $ticket_box_status == 0 && $unauthorized_destruction == 0) {
+echo " Damaged has been updated. ";
 }
    
 } else {

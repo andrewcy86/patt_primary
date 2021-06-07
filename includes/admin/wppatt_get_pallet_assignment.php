@@ -21,9 +21,10 @@ $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 
 //$status_id_arr = array('3','670','69');
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id);
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id);
 
  if (!(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
 ?>

@@ -13,14 +13,14 @@ include($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-admin/includes/file.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
-function strip_tags_deep($value)
+function strip_tags_deep_ts_ffr($value)
 {
   return is_array($value) ?
     array_map('strip_tags_deep', $value) :
     strip_tags(preg_replace( "/\r|\n/", "", $value ));
 }
 
-function add_quotes($str) {
+function add_quotes_ts_ffr($str) {
     return sprintf('"%s"', $str);
 }
 
@@ -61,7 +61,7 @@ $folderfile_csv_output.="\n";
 if(count($folderfile_results) > 0){
   foreach($folderfile_results as $folderfile_result){
   $folderfile_result = array_values($folderfile_result);
-  $folderfile_result =  implode(',', array_map('add_quotes', $folderfile_result));
+  $folderfile_result =  implode(',', array_map('add_quotes_ts_ffr', $folderfile_result));
   $folderfile_csv_output .= $folderfile_result."\n";
 }
 
@@ -111,7 +111,7 @@ $recall_csv_output.="\n";
 if(count($recall_results) > 0){
   foreach($recall_results as $recall_result){
   $recall_result = array_values($recall_result);
-  $recall_result =  implode(',', array_map('add_quotes', $recall_result));
+  $recall_result =  implode(',', array_map('add_quotes_ts_ffr', $recall_result));
   $recall_csv_output .= $recall_result."\n";
 }
 
@@ -158,7 +158,7 @@ $decline_csv_output.="\n";
 if(count($decline_results) > 0){
   foreach($decline_results as $decline_result){
   $decline_result = array_values($decline_result);
-  $decline_result =  implode(',', array_map('add_quotes', $decline_result));
+  $decline_result =  implode(',', array_map('add_quotes_ts_ffr', $decline_result));
   $decline_csv_output .= $decline_result."\n";
 }
 

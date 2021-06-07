@@ -570,6 +570,12 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 }
 
 
+    // CRON for location instant
+    public function get_loc_instant_update(){
+    include WPPATT_ABSPATH . 'includes/ajax/get_location_instant_update.php';
+    die();
+    }   
+    
     // CRON for eidw instant
     public function get_eidw_instant_update(){
     include WPPATT_ABSPATH . 'includes/ajax/get_eidw_instant_update.php';

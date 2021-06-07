@@ -1,0 +1,53 @@
+[07-Jun-2021 19:18:46 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 64
+[07-Jun-2021 19:18:46 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 82
+[07-Jun-2021 19:18:46 UTC] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/admin/pages/scripts/box_details_processing.php on line 212
+[07-Jun-2021 19:37:41 UTC] PHP Fatal error:  Cannot redeclare strip_tags_deep() (previously declared in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php:4940) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php on line 4940
+[07-Jun-2021 19:41:34 UTC] PHP Fatal error:  Cannot redeclare strip_tags_deep() (previously declared in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php:4939) in /home/acy3/public_html/wordpress6/web/app/mu-plugins/pattracking/includes/class-wppatt-custom-function.php on line 4939
+[07-Jun-2021 20:07:43 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-1-02-1'
+[07-Jun-2021 20:07:43 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-1-02-1-a1'
+[07-Jun-2021 20:07:43 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-1-02-1-a2'
+[07-Jun-2021 20:09:39 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-1-02-1-a3'
+[07-Jun-2021 20:09:39 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-1-01-2'
+[07-Jun-2021 20:10:13 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-2-02-1-a1'
+[07-Jun-2021 20:10:13 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-2-02-1-a2'
+[07-Jun-2021 20:10:13 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folder...' at line 3 for query SELECT a.ticket_status, b.box_status
+FROM wpqa_wpsc_ticket a
+wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.damaged = 0 AND c.folderdocinfofile_id = '0000003-2-02-1-a3'

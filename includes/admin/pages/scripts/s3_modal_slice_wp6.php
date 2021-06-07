@@ -3,6 +3,56 @@
 	
 	ob_start();
 	
+	    
+	    //
+	    // TEST metadata
+		//
+		require WPPATT_ABSPATH . 'includes/admin/pages/scripts/vendor/autoload.php';
+		use Aws\S3\S3Client;  
+		use Aws\Exception\AwsException;
+		
+		$s3Client = new Aws\S3\S3Client([
+		    'region' => AWS_S3_REGION,
+		    'version' => 'latest'
+		]);
+		
+		$s3 = new Aws\S3\S3Client([
+			'region'  => AWS_S3_REGION,
+			'version' => 'latest',
+			'credentials' => [
+				'key'    => "AKIAR7FXZINYI2L5R42Q",
+				'secret' => "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",
+			]
+		]);
+		
+		$test_key = '1622743525_file_name_2.pdf';
+		//$test_key = '1618258817_25MB_pdf_roku.pdf';
+		//$test_key = '';
+		//$file_exist = $s3Client->doesObjectExist( AWS_S3_BUCKET, $test_key );
+		$file_exist = $s3->doesObjectExist( AWS_S3_BUCKET, $test_key, [] );
+		$does_file_exist = $file_exist ? 'true' : 'false';
+		
+		echo '<br>S3 File : ' . $test_key;
+		echo '<br>S3 File Exists: ';
+		echo $does_file_exist;
+		echo '<br>Region: ' . AWS_S3_BUCKET . '<br>';	
+		//echo '<br>S3 Client: ' . $s3Client . '<br>';	
+		echo '<pre>';
+		//print_r( $s3Client );
+		echo '</pre>';
+			
+/*
+		$headObj = $s3Client->headObject( [
+		    'Bucket' => AWS_S3_BUCKET,
+		    //'Key' => $folderfile_details->object_key
+		    'Key' => $test_key;
+		]);
+		
+		echo '<span class="" >MetaData: </span>';
+		echo '<pre>';
+		print_r( $headObj );
+		echo '</pre>';		
+*/
 
 	
 	
@@ -250,9 +300,10 @@ function upload( file ) {
     console.log( jQuery( test1 ) );
     console.log( jQuery( text ) );
     console.log( jQuery( '#metadata_file_num') );
-    console.log( 'progress changed: ' + this.fileInfo.name + ' - progress: ' + progress );
-    jQuery( '#document-' + this.fileInfo.name + ' > .dz-progress > .dz-upload' ).html( 'yo' );
-    jQuery( '#document-' + this.fileInfo.name ).text( 'yo' );
+    //console.log( 'progress changed: ' + this.fileInfo.name + ' - progress: ' + progress );
+    //jQuery( '#document-' + this.fileInfo.name + ' > .dz-progress > .dz-upload' ).html( 'yo' );
+    //jQuery( '#document-' + this.fileInfo.name ).text( 'yo' );
+    // this.obj_name
     //jQuery( test1 ).hide();
     
     
@@ -282,6 +333,10 @@ function upload( file ) {
         jQuery( '#document-' + this.fileInfo.name ).text( 'yo' );
         jQuery( test1 ).hide();
 */
+        
+
+
+        
         
         jQuery('#progress .progress-bar').css(	
             'width',

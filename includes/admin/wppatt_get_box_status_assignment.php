@@ -23,9 +23,10 @@ $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $inital_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 
 //$status_array = array(3, 670, 69);
-$status_array = array($new_request_tag->term_id, $inital_review_rejected_tag->term_id, $cancelled_tag->term_id);
+$status_array = array($new_request_tag->term_id, $inital_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id);
 if (!in_array($status_id, $status_array)) {
     $flag_btn = true;
 }

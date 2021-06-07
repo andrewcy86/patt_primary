@@ -13,14 +13,14 @@ include($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-admin/includes/file.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
-function strip_tags_deep($value)
+function strip_tags_deep_ts_box($value)
 {
   return is_array($value) ?
-    array_map('strip_tags_deep', $value) :
+    array_map('strip_tags_deep_ts_box', $value) :
     strip_tags(preg_replace( "/\r|\n/", "", $value ));
 }
 
-function add_quotes($str) {
+function add_quotes_ts_box($str) {
     return sprintf('"%s"', $str);
 }
 
@@ -59,7 +59,7 @@ date_default_timezone_set('America/New_York');
                        if(count($request_results) > 0){
                           foreach($request_results as $request_result){
                           $request_result = array_values($request_result);
-                          $request_result =  implode(',', array_map('add_quotes', $request_result));
+                          $request_result =  implode(',', array_map('add_quotes_ts_box', $request_result));
                           $request_csv_output .= $request_result."\n";
                         }
                       
@@ -107,7 +107,7 @@ date_default_timezone_set('America/New_York');
                        if(count($box_results) > 0){
                           foreach($box_results as $box_result){
                           $box_result = array_values($box_result);
-                          $box_result =  implode(',', array_map('add_quotes', $box_result));
+                          $box_result =  implode(',', array_map('add_quotes_ts_box', $box_result));
                           $box_csv_output .= $box_result."\n";
                         }
                       

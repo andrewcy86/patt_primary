@@ -25,7 +25,27 @@ $destroyed = 0;
 $validate = 0;
 $unathorized_destroy = 0;
 
+$ticket_box_status = 0;
+//Request statuses
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+
 foreach($folderdocid_arr as $key) {
+
+$get_statuses = $wpdb->get_row("SELECT a.ticket_status
+FROM wpqa_wpsc_ticket a
+INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.folderdocinfofile_id = '".$key."'");
+$get_ticket_status_val = $get_statuses->ticket_status;
+
+//Documents cannot be marked as Damaged in the Completed/Dispositioned box status
+if($get_ticket_status_val == $new_request_tag->term_id || $get_ticket_status_val == $tabled_tag->term_id || $get_ticket_status_val == $initial_review_rejected_tag->term_id || $get_ticket_status_val == $cancelled_tag->term_id) {
+   $ticket_box_status++;
+}    
+
 $get_validate = $wpdb->get_row("SELECT validation FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_validate_val = $get_validate->validation;
 
@@ -57,7 +77,7 @@ $unathorized_destroy++;
 }
 }
 
-if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $validate == 0) {
+if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $validate == 0 && $ticket_box_status == 0) {
 foreach($folderdocid_arr as $key) {
 $get_rescan = $wpdb->get_row("SELECT rescan FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_rescan_val = $get_rescan->rescan;
@@ -113,21 +133,24 @@ $wpscfunction->change_status($ticket_id, 743);
 }
 }
 
-if ($rescan_reversal == 1 && $destroyed == 0 && $validate == 0) {
+if ($rescan_reversal == 1 && $destroyed == 0 && $validate == 0 && $ticket_box_status == 0) {
 //print_r($folderdocid_arr);
 echo "<strong>".$key."</strong> : Re-scan has been updated. A re-scan flag has been reversed.<br />";
-} elseif ($rescan_reversal == 0 && $destroyed == 0) {
+} elseif ($rescan_reversal == 0 && $destroyed == 0 && $ticket_box_status == 0) {
 echo "<strong>".$key."</strong> : Re-scan flag has been set<br />";
 }
 
 }
 
 } elseif($destroyed > 0) {
-echo "A destroyed folder/file has been selected and cannot be validated.<br />Please unselect the destroyed folder/file.";
+echo " A destroyed folder/file has been selected and cannot be validated.<br />Please unselect the destroyed folder/file. ";
 } elseif($unathorized_destroy > 0) {
-echo "A folder/file flagged as unauthorized destruction has been selected and cannot be validated.<br />Please unselect the folder/file flagged as unauthorized destruction folder/file.";
+echo " A folder/file flagged as unauthorized destruction has been selected and cannot be validated.<br />Please unselect the folder/file flagged as unauthorized destruction folder/file. ";
 } elseif($validate > 0) {
-echo "A folder/file has been selected that has been flagged as validated.<br />Please unselect the folder/file flagged as validated before flagging item as re-scan.";
+echo " A folder/file has been selected that has been flagged as validated.<br />Please unselect the folder/file flagged as validated before flagging item as re-scan. ";
+}
+elseif($ticket_box_status > 0) {
+echo " A folder/file is in a status that cannot be flagged as re-scan.<br /> Please review the folder/files that you have selected. ";
 }
 
 if($page_id == 'filedetails') {
@@ -190,11 +213,11 @@ $wpscfunction->change_status($ticket_id, 743);
 }
 }
 
-if ($rescan_reversal == 1 && $destroyed == 0) {
+if ($rescan_reversal == 1 && $destroyed == 0 && $ticket_box_status == 0) {
 //print_r($folderdocid_arr);
-echo "Re-scan has been updated. A re-scan flag has been reversed.";
-} elseif ($rescan_reversal == 0 && $destroyed == 0) {
-echo "Re-scan flag has been set";
+echo " Re-scan has been updated. A re-scan flag has been reversed. ";
+} elseif ($rescan_reversal == 0 && $destroyed == 0 && $ticket_box_status == 0) {
+echo " Re-scan flag has been set. ";
 }
 }
 

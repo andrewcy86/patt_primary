@@ -20,6 +20,9 @@ $bucket = 'cg-bb8dada3-350b-496e-b545-2d2b2a9aa6fe';
 			]
 		]);
 
+echo 'Bucket: ' . $bucket . '<br>';
+echo 'AWS_S3_BUCKET: ' . AWS_S3_BUCKET . '<br>';
+
 // Use the high-level iterators (returns ALL of your objects).
 try {
     $results = $s3->getPaginator('ListObjects', [
@@ -28,7 +31,26 @@ try {
 
     foreach ($results as $result) {
         foreach ($result['Contents'] as $object) {
-            echo $object['Key'] . PHP_EOL . '<br />';
+	        
+	        $file_exist = $s3->doesObjectExist( $bucket, $object['Key'] ); //AWS_S3_BUCKET
+            $does_file_exist = $file_exist ? 'true' : 'false';
+            echo $object['Key'] . ' - ' . $does_file_exist . PHP_EOL . '<br />';
+            echo '<pre>';
+			print_r( $object );
+			echo '</pre>';
+			
+            //echo $object['Key'] . PHP_EOL . '<br />'; // Clean
+            
+            $headObj = $s3->headObject( [
+			    'Bucket' => $bucket,
+			    //'Key' => $folderfile_details->object_key
+			    'Key' => $object['Key']
+			]);
+			
+			echo '<span class="" >MetaData: </span>';
+			echo '<pre>';
+			print_r( $headObj );
+			echo '</pre>';
         }
     }
 } catch (S3Exception $e) {

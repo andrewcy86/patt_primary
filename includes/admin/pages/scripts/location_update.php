@@ -65,12 +65,12 @@ $existing_shelf_update_remaining = $existing_shelf_update->remaining + 1;
 				$existing_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
 				
 				if ($existing_shelf_update_remaining == 4) {
-				$existing_ss_data_update = array('occupied' => 0, 'remaining' => $existing_shelf_update_remaining);
+				$existing_ss_data_update = array('occupied' => 0, 'remaining' => 999);
 				} else {
-				$existing_ss_data_update = array('occupied' => 1, 'remaining' => $existing_shelf_update_remaining);
+				$existing_ss_data_update = array('occupied' => 1, 'remaining' => 999);
 				}
 				
-				$existing_ss_data_where = array('shelf_id' => $existing_shelf_id);
+				$existing_ss_data_where = array('shelf_id' => $existing_shelf_id, 'digitization_center' => $center_term_id);
 
 				$wpdb->update($existing_ss_table_name, $existing_ss_data_update, $existing_ss_data_where);
 				
@@ -95,8 +95,8 @@ digitization_center = '" . $center_term_id . "'
 				$new_shelf_update_remaining = $new_shelf_update->remaining - 1;
 
 				$new_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				$new_ss_data_update = array('occupied' => 1, 'remaining' => $new_shelf_update_remaining);
-				$new_ss_data_where = array('shelf_id' => $new_shelf_id_update);
+				$new_ss_data_update = array('occupied' => 1, 'remaining' => 999);
+				$new_ss_data_where = array('shelf_id' => $new_shelf_id_update, 'digitization_center' => $center_term_id);
 
 				$wpdb->update($new_ss_table_name, $new_ss_data_update, $new_ss_data_where);
 

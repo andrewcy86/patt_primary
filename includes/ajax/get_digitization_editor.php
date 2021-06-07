@@ -53,12 +53,13 @@ $patt_ticket_id = $box_details->request_id;
           $disabled = $digitization_center == $category->term_id ? 'disabled' : '';
           echo '<option '.$selected.' '.$disabled.' value="'.$category->term_id.'">'.$category->name.'</option>';
         endforeach;
+        
         */
         ?>
          <option selected="selected" value="666" disabled>Not Assigned</option>
          <option value="62">East</option>
          <option value="663" disabled>East CUI</option>
-         <option value="2" disabled>West</option>
+         <option value="2">West</option>
          <option value="664" disabled>West CUI</option> 
       </select>
       
@@ -86,7 +87,46 @@ function wpsc_get_digitization_editor(box_id){
     postvarsdc: jQuery("#dc").val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
+
+              let data_east = {
+			action: 'wppatt_loc_instant',
+			dc_id : 62
+		}
+		
+		jQuery.ajax({
+			type: "POST",
+			url: wpsc_admin.ajax_url,
+			data: data_east,
+			success: function( response ){
+				console.log('update location east done');
+				console.log( response );	
+			}
+		
+		});
+
+              let data_west = {
+			action: 'wppatt_loc_instant',
+			dc_id : 2
+		}
+		
+				jQuery.ajax({
+			type: "POST",
+			url: wpsc_admin.ajax_url,
+			data: data_west,
+			success: function( response ){
+				console.log('update location east done');
+				console.log( response );	
+			}
+		
+		});
+		
+		
+      if(!alert(response)){
+          
+          window.location.reload();
+          
+      }
+		
       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($patt_ticket_id); ?>");
    });
 } 
