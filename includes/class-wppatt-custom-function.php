@@ -21,7 +21,36 @@ if (!class_exists('Patt_Custom_Func')) {
             global $wpdb; 
             $this->table_prefix = $wpdb->prefix;
         }
-        
+
+        /**
+         * Truncate to the nearest word
+         * @return truncated string with ellipsis
+         */
+
+
+        /**
+         * Truncate to the nearest word
+         * @return truncated string with ellipsis
+         */
+         
+    public static function wholeWordTruncate($string, $your_desired_width,$delimiter = '...') {
+  $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
+  $parts_count = count($parts);
+
+  $length = 0;
+  $last_part = 0;
+  for (; $last_part < $parts_count; ++$last_part) {
+    $length += strlen($parts[$last_part]);
+    if ($length > $your_desired_width) { break; }
+  }
+
+    if ($length > $your_desired_width) { 
+      return implode(array_slice($parts, 0, $last_part)).$delimiter;
+    } else {
+      return $string;
+    }
+}
+
         /**
          * Determine begin sequence for east/west storage location
          * @return db id
@@ -4001,6 +4030,459 @@ public static function id_in_recall( $identifier, $type ) {
         }	
         
         
+        // Returns an array of acceptable box status that can be set given the array of Box Folder File IDs, based on the following rules:
+		//
+		// 1) IF Nobody assigned to the box THEN all but Pending must be disabled. (672,671,65,6,673,674,743,66,68,67)
+		// 2) Box is not validated (66,68,67) - Validation is a status in same list, right? Must be in status of Validation?
+		//                                   - count validated flag is in folder doc 
+		// 3) Destruction Approval - Check to see if request contains a destruction_approval of 1 in wpqa_wpsc_ticket - IF = 0 then disable
+		//                         - Disable the ability to select Destruction approval if Not approved. 
+		// 4) if request status = 3,670,69 THEN 672,671,65,6,673,674,743,66,68,67 Need to be disabled (Only allow Pending) 
+		// 5) restrict the available status to only the next status in the recall process
+		// 
+		// Also returns text for warnings/errors
+		
+        public static function get_restricted_box_status_list_2( $item_ids, $role = 'Agent' ) {
+	        
+	        global $wpdb;
+	        
+	        $restricted_status_list = array();
+	        $restricted_reason_array = array();
+			$restriction_reason = '';
+			$all_unassigned_x = true;
+			$condition_c1 = false; 
+			$condition_c4 = false; 
+			
+			foreach( $item_ids as $item ) {
+				$box_obj = self::get_box_file_details_by_id($item);
+				$status_agent_array = self::get_user_status_data( ['box_id' => $box_obj->Box_id_FK ] );
+				//$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Cancelled', 'Dispositioned', 'Completed/Dispositioned' ];
+				$ignore_box_status = [ 'Pending', 'Ingestion', 'Completed Permanent Records', 'Cancelled', 'Completed/Dispositioned' ];
+				
+				$status_list_assignable = self::get_all_status($ignore_box_status);
+			 	$where = ['box_folder_file_id' => $box_obj->box_id ];
+			 	$ticket_id_obj = self::get_ticket_id_from_box_folder_file( $where );
+			 	
+			 	// reset restrictions
+			 	$restriction_reason = '';
+			
+				// Condition 1: IF Nobody assigned to the box THEN all but Pending must be disabled.
+				$all_assigned = false;
+				$all_unassigned = true;
+				foreach( $status_agent_array['status'] as $term_id=>$user_array ) {
+					
+					if( array_key_exists($term_id, $status_list_assignable) ) {
+						if( count($user_array) > 0 && $user_array != 'N/A' ) {
+							//users exist
+							$all_unassigned = false;
+							break;
+						}
+					}
+				}
+				
+				// Condition 1 SET.
+				if( $all_unassigned ) {
+					
+					$restriction_reason .= '<p>Box '.$box_obj->box_id.' has no one assigned to Any Status. <p>';
+					$condition_c1 = true;
+					$restricted_reason_array[ $box_obj->box_id ] = $restriction_reason;
+					
+					if( !in_array('Scanning Preparation', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Scanning Preparation';
+					} 
+					if( !in_array('Scanning/Digitization', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Scanning/Digitization';
+					} 
+					if( !in_array('QA/QC', $restricted_status_list) ) {
+						$restricted_status_list[] = 'QA/QC';
+					} 
+					if( !in_array('Digitized - Not Validated', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Digitized - Not Validated';
+					} 
+					if( !in_array('Ingestion', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Ingestion';
+					} 
+					if( !in_array('Validation', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Validation';
+					} 
+					if( !in_array('Re-scan', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Re-scan';
+					} 
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
+					} 
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					} 
+					if( !in_array('Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Dispositioned';
+					} 
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					} 
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
+					} 
+					if( !in_array('Waiting/Shelved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Waiting/Shelved';
+					}
+					if( !in_array('Waiting on RLO', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Waiting on RLO';
+					}
+					if( !in_array('Cancelled', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Cancelled';
+					}
+					
+				}
+				
+				
+				// Condition 2: Box is not validated (66,68,67)
+				$get_sum_total = $wpdb->get_row("SELECT
+												    SUM(q.total_count) AS sum_total_count
+												FROM
+												    (
+												    SELECT
+												        (
+												        SELECT
+												            COUNT(fdif.id)
+												        FROM
+												            ".$wpdb->prefix."wpsc_epa_folderdocinfo_files AS fdif
+												        WHERE
+												            fdif.box_id = a.id
+												    ) AS total_count
+												FROM
+												    ".$wpdb->prefix."wpsc_epa_boxinfo AS a
+												WHERE
+												    a.id = '" . $box_obj->Box_id_FK . "'
+												) q");
+
+				
+				$sum_total_val = $get_sum_total->sum_total_count;
+
+				$get_sum_validation = $wpdb->get_row("SELECT
+													    SUM(b.validation) AS sum_validation
+													FROM
+													    (
+													    SELECT
+													        (
+													        SELECT
+													            SUM(VALIDATION = 1)
+													        FROM
+													            ".$wpdb->prefix."wpsc_epa_folderdocinfo_files fdif
+													        WHERE
+													            fdif.box_id = a.id
+															) AS VALIDATION
+														FROM
+														    ".$wpdb->prefix."wpsc_epa_boxinfo AS a
+														WHERE
+														    a.id = '" . $box_obj->Box_id_FK . "'
+														) b");	
+												
+									
+				$sum_validation = $get_sum_validation->sum_validation;
+			
+				$validated = '';
+				
+				if($sum_total_val == $sum_validation) {
+					$validated = 1;
+				} else {
+					$validated = 0;
+				}
+				
+				// Condition 2 SET
+				if( !$validated ) {
+					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been Validated. </p>';
+					$restricted_reason_array[ $box_obj->box_id ] = $restriction_reason;
+					
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
+					} 
+					if( !in_array('Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Dispositioned';
+					}
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					}
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					}
+				}
+				
+				
+				// Condition 3 - Destruction Approval
+				
+			 	$box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM ".$wpdb->prefix."wpsc_ticket WHERE id='".$ticket_id_obj['ticket_id']."'");				
+				
+				// Condition 3 SET - Show destruction approval setting?
+				if( $box_destruction_approval->destruction_approval ) {
+					
+					// if Destruction Approval has already been restricted AND C1 OR C4 has never come up... 
+					if( in_array('Destruction Approved', $restricted_status_list) && !$condition_c1 && !$condition_c4 ) {
+						$the_key = array_search('Destruction Approved', $restricted_status_list);
+						unset($restricted_status_list[$the_key]);
+						array_values($restricted_status_list);
+					}
+				} else {
+					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been approved for Destruction. </p>';
+					$restricted_reason_array[ $box_obj->box_id ] = $restriction_reason;
+					
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					}
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
+					}
+					if( !in_array('Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Dispositioned';
+					}
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					}
+				}
+				
+				// Condition 4 - if request status = 3,670,69 - only allow 'Pending'
+				$data = [ 'ticket_id'=>$ticket_id_obj['ticket_id'] ];
+				$ticket_status = self::get_ticket_status( $data );
+				
+				
+				// Condition 4 SET
+				// if request status = 3,670,69 THEN 672,671,65,6,673,674,743,66,68,67 Need to be disabled (Only allow Pending) 
+				$rqst_status_new_term_id = self::get_term_by_slug( 'open' );	 // 3 aka New
+				$rqst_status_review_rejected_term_id = self::get_term_by_slug( 'initial-review-rejected' );	 // 670 aka Initial Review Rejected
+				$rqst_status_cancelled_term_id = self::get_term_by_slug( 'destroyed' );	 // 69 aka Cancelled							
+				
+// 				if( $ticket_status == 3 || $ticket_status == 670 || $ticket_status == 69 ) {
+				if( $ticket_status == $rqst_status_new_term_id || $ticket_status == $rqst_status_review_rejected_term_id || $ticket_status == $rqst_status_cancelled_term_id ) {
+					$save_enabled = false;
+					$restriction_reason .= '<p>Containing Request of Box '.$box_obj->box_id.' has a status of New Request, Cancelled, Tabled, or Initial Review Rejected. </p>';
+					$condition_c4 = true;
+					$restricted_reason_array[ $box_obj->box_id ] = $restriction_reason;
+					
+					if( !in_array('Scanning Preparation', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Scanning Preparation';
+					} 
+					if( !in_array('Scanning/Digitization', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Scanning/Digitization';
+					} 
+					if( !in_array('QA/QC', $restricted_status_list) ) {
+						$restricted_status_list[] = 'QA/QC';
+					} 
+					if( !in_array('Digitized - Not Validated', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Digitized - Not Validated';
+					} 
+					if( !in_array('Ingestion', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Ingestion';
+					} 
+					if( !in_array('Validation', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Validation';
+					} 
+					if( !in_array('Re-scan', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Re-scan';
+					} 
+					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed Permanent Records';
+					} 
+					if( !in_array('Destruction Approved', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction Approved';
+					} 
+					if( !in_array('Destruction of Source', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Destruction of Source';
+					} 
+					if( !in_array('Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Dispositioned';
+					} 
+					if( !in_array('Completed/Dispositioned', $restricted_status_list) ) {
+						$restricted_status_list[] = 'Completed/Dispositioned';
+					} 
+					
+				}
+				
+				
+				// Condition 5: restrict the available status to only the next status in the recall process
+				// if multi, they all have same status at this point. 
+				// if single, find status, get next status. 
+				
+				// get current status 
+				// list all statuses - self::get_all_status();
+				// get/set NEXT status
+				// remove NEXT status from array
+				// get NEW $restricted_status_list
+				// compare restricted_status_lists 
+				// box_statuses: [723] => Name
+				
+				if ($role == 'Agent') {
+					$current_status_term = self::get_box_file_details_by_id($item)->box_status;
+					$next_status = '';
+					$next_status_array = array();
+					$all_statuses = self::get_all_status();
+					$current_status = $all_statuses[$current_status_term];
+					
+					// Set $next_status
+					switch($current_status) {
+						case 'Pending':
+							//$next_status = 'Scanning Preparation';
+							$next_status_array[] = 'Scanning Preparation';
+							break;
+						case 'Scanning Preparation':
+							//$next_status = 'Scanning/Digitization';
+							$next_status_array[] = 'Scanning/Digitization';
+							break;
+						case 'Scanning/Digitization':
+							//$next_status = 'QA/QC';
+							$next_status_array[] = 'QA/QC';
+							break;
+						case 'QA/QC':
+							//$next_status = 'Digitized - Not Validated';
+							$next_status_array[] = 'Digitized - Not Validated';
+							break;
+						case 'Digitized - Not Validated':
+							//$next_status = 'Ingestion';
+							$next_status_array[] = 'Ingestion';
+							break;
+						case 'Ingestion':
+							//$next_status = 'Validation';
+							$next_status_array[] = 'Completed Permanent Records';
+							$next_status_array[] = 'Validation';
+							break;
+						case 'Validation':
+							//$next_status = 'Completed Permanent Records'; 
+							//$next_status_array[] = 'Completed Permanent Records';
+							$next_status_array[] = 'Destruction Approved'; 
+							break;
+						case 'Completed':
+							//$next_status = '';
+							$next_status_array[] = '';
+							break;
+						case 'Destruction Approved':
+							//$next_status = '';
+							$next_status_array[] = 'Destruction of Source';
+							break;
+						case 'Destruction of Source':
+							//$next_status = '';
+							$next_status_array[] = 'Completed/Dispositioned';
+							break;	
+						case 'Dispositioned':
+							//$next_status = '';
+							$next_status_array[] = '';
+							break;
+						case 'Completed/Dispositioned':
+							//$next_status = '';
+							$next_status_array[] = '';
+							break;	
+													
+								
+							
+					}
+					
+					// remove NEXT status from $all_statuses array
+					if( !empty( $next_status_array ) ) {
+						
+						// $the_key = array_search($next_status, $all_statuses);
+						// unset($all_statuses[$the_key]);
+						
+						foreach( $next_status_array as $key2 => $value2 ) {
+							$the_key = array_search( $value2, $all_statuses );
+							unset( $all_statuses[$the_key] );
+						}
+					
+					
+						//array_values($all_statuses);
+						
+						// get NEW $restricted_status_list
+						// list_2: [748] => Pending [672] => Scanning | $restricted_status_list: [0]=> Pending [1]=> Scanning Preparation
+						$restricted_status_list_2 = $all_statuses; 
+						foreach( $restricted_status_list_2 as $key=>$value ) {
+							$restricted_status_list[] = $value;
+						}
+						$restricted_status_list = array_unique($restricted_status_list);
+					
+					} 
+						
+					
+					// When Destruction Approval is selected then Validation is disabled (9)
+					if( $current_status == 'Destruction Approved' ) {
+						if( !in_array('Validation', $restricted_status_list) ) {
+							$restricted_status_list[] = 'Validation';
+						} 
+					}
+					// When Dispositioned is selected then disable Destruction Approval (10) // No longer a status
+/*
+					if( $current_status == 'Dispositioned' ) {
+						if( !in_array('Destruction Approved', $restricted_status_list) ) {
+							$restricted_status_list[] = 'Destruction Approved';
+						} 
+					}	
+*/
+					
+					// When Completed Permanent Records is selected then disable all other statuses (11)
+					if( $current_status == 'Completed Permanent Records' ) {
+						$restricted_status_list_2 = $all_statuses; 
+						foreach( $restricted_status_list_2 as $key=>$value ) {
+							$restricted_status_list[] = $value;
+						}
+						$restricted_status_list = array_unique($restricted_status_list);
+					}
+					
+					// When Completed/Dispositioned is selected then disable all other statuses (11)
+					if( $current_status == 'Completed/Dispositioned' ) {
+						$restricted_status_list_2 = $all_statuses; 
+						foreach( $restricted_status_list_2 as $key=>$value ) {
+							$restricted_status_list[] = $value;
+						}
+						$restricted_status_list = array_unique($restricted_status_list);
+					}	
+				} // End IF $role == 'Agent'		
+				
+				// Waiting/Shelved and Re-scan should always be enabled except when status is Completed, Destruction Approval, or Dispositioned (1)
+				if( $current_status != 'Completed Permanent Records' && $current_status != 'Destruction Approved' && $current_status != 'Dispositioned' && $current_status != 'Completed/Dispositioned' ) {
+					
+					$ws_index = array_search('Waiting/Shelved', $restricted_status_list);
+					$rs_index = array_search('Re-scan', $restricted_status_list);
+					$wrlo_index = array_search('Waiting on RLO', $restricted_status_list);
+					$cnl_index = array_search('Cancelled', $restricted_status_list);
+					
+					if ( $ws_index ) {
+						unset($restricted_status_list[$ws_index]);
+					}
+					if ( $rs_index ) {
+						unset($restricted_status_list[$rs_index]);
+					}
+					if ( $wrlo_index ) {
+						unset($restricted_status_list[$wrlo_index]);
+					}
+					if ( $cnl_index ) {
+						unset($restricted_status_list[$cnl_index]);
+					}
+				}
+				
+				// allow current status to be placed in the list
+				$current_status_index = array_search($current_status, $restricted_status_list);
+				if ( $current_status_index ) {
+					unset($restricted_status_list[$current_status_index]);
+				}
+				
+				// Removed Box Status: Cancelled from list always. 
+				//$restricted_status_list[] = 'Cancelled';
+				
+				
+			}
+			
+			$box_statuses = self::get_all_status($restricted_status_list);
+			$return_array = array();
+			$return_array[ 'box_statuses' ] = $box_statuses;
+			$return_array[ 'restriction_reason' ] = $restriction_reason;
+			$return_array[ 'restricted_reason_array' ] = $restricted_reason_array;
+			
+			// DEBUG - START
+			$return_array['debug_restricted_status_list'] = $restricted_status_list;
+			$return_array['debug_restricted_status_list_2'] = $restricted_status_list_2;
+			$return_array['debug_next_status'] = $next_status;
+			$return_array['debug_current_status'] = $current_status;						
+			// DEBUG - END
+
+			return $return_array;
+	    }
+        
 		// Returns an array of acceptable box status that can be set given the array of Box Folder File IDs, based on the following rules:
 		//
 		// 1) IF Nobody assigned to the box THEN all but Pending must be disabled. (672,671,65,6,673,674,743,66,68,67)
@@ -4047,7 +4529,7 @@ public static function id_in_recall( $identifier, $type ) {
 				
 				// Condition 1 SET.
 				if( $all_unassigned ) {
-					$restriction_reason .= '<p>Box '.$box_obj->box_id.' has no one assigned to Any Status. (C1)<p>';
+					$restriction_reason .= '<p>Box '.$box_obj->box_id.' has no one assigned to Any Status. <p>';
 					$condition_c1 = true;
 					
 					if( !in_array('Scanning Preparation', $restricted_status_list) ) {
@@ -4197,7 +4679,7 @@ public static function id_in_recall( $identifier, $type ) {
 				
 				// Condition 2 SET
 				if( !$validated ) {
-					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been Validated. (C2)</p>';
+					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been Validated. </p>';
 					
 					if( !in_array('Completed Permanent Records', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Completed Permanent Records';
@@ -4228,7 +4710,7 @@ public static function id_in_recall( $identifier, $type ) {
 						array_values($restricted_status_list);
 					}
 				} else {
-					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been approved for Destruction. (C3)</p>';
+					$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been approved for Destruction. </p>';
 					if( !in_array('Destruction Approved', $restricted_status_list) ) {
 						$restricted_status_list[] = 'Destruction Approved';
 					}
@@ -4257,7 +4739,7 @@ public static function id_in_recall( $identifier, $type ) {
 // 				if( $ticket_status == 3 || $ticket_status == 670 || $ticket_status == 69 ) {
 				if( $ticket_status == $rqst_status_new_term_id || $ticket_status == $rqst_status_review_rejected_term_id || $ticket_status == $rqst_status_cancelled_term_id ) {
 					$save_enabled = false;
-					$restriction_reason .= '<p>Containing Request of Box '.$box_obj->box_id.' has a status of New, Cancelled, or Initial Review Rejected. (C4)</p>';
+					$restriction_reason .= '<p>Containing Request of Box '.$box_obj->box_id.' has a status of New Request, Cancelled, Tabled, or Initial Review Rejected. </p>';
 					$condition_c4 = true;
 					
 					if( !in_array('Scanning Preparation', $restricted_status_list) ) {
@@ -4977,6 +5459,7 @@ foreach ($results as $key => &$value) {
    $date = new DateTime($value['date'], new DateTimeZone('UTC'));
    $date->setTimezone(new DateTimeZone('America/New_York'));
    $value['date'] = $date->format('m-d-Y h:i:s a');
+   $date_format = $date->format('Y-m-d_h-i-sa');
 }
 
                         // get column names
@@ -5002,8 +5485,8 @@ foreach ($results as $key => &$value) {
                           $csv_output .= htmlspecialchars_decode($result)."\n";
                         }
                       
-
-                      $filename = $converted_request_id."_".$file."_".date("Y-m-d_H-i",time()).".csv";
+                      
+                      $filename = $converted_request_id."_".$file."_".$date_format.".csv";
                       $backup_file  = WPPATT_UPLOADS."/backups/audit/".$filename;
                       
                       //Direct File Download

@@ -417,7 +417,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 }
 
 .requestor_hidden {
-/* 	display: none; */
+	display: none;
 }
 
 .testing_only {
@@ -1849,17 +1849,3 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 <?php
 endif;
 ?>
-
-
-
-
-
-
-
-
-
-	 
-	 
-
-	 
-	 

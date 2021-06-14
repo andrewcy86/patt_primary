@@ -101,6 +101,36 @@ date_add($expiration_date,date_interval_create_from_date_string("30 days"));
 $expiration_date_string = date_format($expiration_date,"Y-m-d H:i:s");
 
 
+// Double check that none of the items are already in a decline
+// Added June 2021 to prevent (unreproducable) error where 2 declines are created in a row. 
+
+foreach( $item_ids as $box ) {
+	
+	$in_decline = Patt_Custom_Func::id_in_return( $box, 'box' );
+	
+	if( $in_decline ) {
+		
+		$error_message .= 'Return Not Submitted';
+		
+		$output = array(
+			'customer_name'   => 'Not Needed',
+			'data' => $data,
+			'date' => date_format($expiration_date,"yy-m-d H:i:s"),
+			'return_id' => 0,
+			'error'  => $error_message,
+			'notifications' => '',
+			'notification data' => '',
+			'item_ids_box' => $item_ids_box,
+			'item_ids_box_status' => $item_ids_box_status
+		);
+		echo json_encode($output);
+		
+		exit();
+		
+	}
+}
+
+
 // Data and Insertion
 /*
 $data = [

@@ -156,7 +156,13 @@ var data = [
 	    if($count > 1) {
 		echo "'<tr>";
 		for ( $i = 0; $i < $num_cols; $i ++ ) {
-			echo '<td>' . addslashes( ! empty( $r[ $i ] ) ? $r[ $i ] : '&nbsp;' ) . '</td>';
+		    
+		    $esc_str1 = str_replace("\n", "", addslashes( ! empty( $r[ $i ] ) ? $r[ $i ] : '&nbsp;' ));
+		    $esc_str = str_replace("\r", "", $esc_str1);
+		    
+		    $out = Patt_Custom_Func::wholeWordTruncate($esc_str,255);
+		    
+			echo '<td>' . $out . '</td>';
 		}
 		echo "</tr>',";
 	    }

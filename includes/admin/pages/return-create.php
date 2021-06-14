@@ -1235,8 +1235,8 @@ margin: 0px 0px 25px 15px;
 			    
 			    //window.location.reload();
 			    if( response.return_id == 0 ) {
-				    var failed_str = "Decline Failed. Please ensure these items are declinable. " +response.return_id;
-				    alert(failed_str);
+				    var failed_str = "Decline Failed. Please ensure these items are declinable. " + response.return_id;
+				    alert( failed_str );
 // 				    location.href='admin.php?page=returncreate&success=false';
 				    location.href='admin.php?page=declinecreate&success=false';
 				    
@@ -1309,17 +1309,3 @@ margin: 0px 0px 25px 15px;
 <?php
 endif;
 ?>
-
-
-
-
-
-
-
-
-
-	 
-	 
-
-	 
-	 
