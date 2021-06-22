@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-$endpoint = "https://api.edap-cluster.com/ecms-graphql/graphql";
+$endpoint = RS_PO_ENDPOINT;
 $count = 0;
 
 //Program Office

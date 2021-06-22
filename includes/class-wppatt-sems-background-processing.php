@@ -53,7 +53,7 @@ foreach ($siteid_query as $siteinfo) {
 	$current_sitename = $siteinfo->site_name; 
 	
                 $curl = curl_init();
-				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites';
+				$url = SEMS_ENDPOINT;
 				//7 character site ID
 				if(strlen($siteid_check_val) == 7) {
                 $url .= '?id='.$siteid_check_val;

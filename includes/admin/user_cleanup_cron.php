@@ -21,7 +21,7 @@ foreach ($get_all_users as $item)
 
     $curl = curl_init();
 
-    $url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20' . $user_login;
+    $url = EIDW_ENDPOINT . $user_login;
     
     $eidw_authorization = 'Authorization: Basic '.EIDW;
     

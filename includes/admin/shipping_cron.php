@@ -66,7 +66,7 @@ $trackingNumber = $item->tracking_number;
 
 if($item->shipped == 0) {
 
-$url = "http://production.shippingapis.com/shippingAPI.dll";
+$url = USPS_ENDPOINT;
 $service = "TrackV2";
 
 $xml = rawurlencode("
@@ -149,7 +149,7 @@ if($item->shipped == 0) {
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "https://ws.fedex.com:443/web-services",
+  CURLOPT_URL => FEDEX_ENDPOINT,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -273,7 +273,7 @@ $data ="<?xml version=\"1.0\"?>
                 </Request>
         <TrackingNumber>".$trackingNumber."</TrackingNumber>
         </TrackRequest>";
-$curl = curl_init("https://onlinetools.ups.com/ups.app/xml/Track");
+$curl = curl_init(UPS_ENDPOINT);
 curl_setopt($curl, CURLOPT_HEADER, 1);
 curl_setopt($curl,CURLOPT_POST,1);
 curl_setopt($curl,CURLOPT_TIMEOUT, 60);
@@ -359,7 +359,7 @@ $trackingNumber = substr($item->tracking_number, 4);
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "https://api-eu.dhl.com/track/shipments?trackingNumber=".$trackingNumber,
+  CURLOPT_URL => DHL_ENDPOINT.$trackingNumber,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,

@@ -54,7 +54,7 @@ foreach ($lanid_query as $lan_id) {
 	
 	$curl = curl_init();
 	
-	$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lan_id_check_val;
+	$url = EIDW_ENDPOINT.$lan_id_check_val;
 	
 	$eidw_authorization = 'Authorization: Basic '.EIDW;
 	

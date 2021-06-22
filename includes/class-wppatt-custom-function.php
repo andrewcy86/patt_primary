@@ -100,7 +100,7 @@ if (!class_exists('Patt_Custom_Func')) {
 
 			$curl = curl_init();
 			
-			$url = 'https://wamssoprd.epa.gov/iam/governance/scim/v1/Users?filter=userName%20eq%20'.$lanid;
+			$url = EIDW_ENDPOINT.$lanid;
 			
 			$lan_id_details = '';
 			
@@ -213,31 +213,31 @@ if (!class_exists('Patt_Custom_Func')) {
 	static $tracking_urls = [
 		//UPS - UNITED PARCEL SERVICE
 		[
-			'url'=>'http://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1=',
+			'url'=>	UPS_URL,
 			'reg'=>'/\b(1Z ?[0-9A-Z]{3} ?[0-9A-Z]{3} ?[0-9A-Z]{2} ?[0-9A-Z]{4} ?[0-9A-Z]{3} ?[0-9A-Z]|T\d{3} ?\d{4} ?\d{3})\b/i'
 		],
 
 		//USPS - UNITED STATES POSTAL SERVICE - FORMAT 1
 		[
-			'url'=>'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
+			'url'=> USPS_URL,
 			'reg'=>'/\b((420 ?\d{5} ?)?(91|92|93|94|01|03|04|70|23|13)\d{2} ?\d{4} ?\d{4} ?\d{4} ?\d{4}( ?\d{2,6})?)\b/i'
 		],
 
 		//USPS - UNITED STATES POSTAL SERVICE - FORMAT 2
 		[
-			'url'=>'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
+			'url'=> USPS_URL,
 			'reg'=>'/\b((M|P[A-Z]?|D[C-Z]|LK|E[A-C]|V[A-Z]|R[A-Z]|CP|CJ|LC|LJ) ?\d{3} ?\d{3} ?\d{3} ?[A-Z]?[A-Z]?)\b/i'
 		],
 
 		//USPS - UNITED STATES POSTAL SERVICE - FORMAT 3
 		[
-			'url'=>'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=',
+			'url'=> USPS_URL,
 			'reg'=>'/\b(82 ?\d{3} ?\d{3} ?\d{2})\b/i'
 		],
 
         //FEDEX - FEDERAL EXPRESS
             [
-                    'url'=>'http://www.fedex.com/Tracking?language=english&cntry_code=us&tracknumbers=',
+                    'url'=> FEDEX_URL,
                     'reg'=>'/\b(((96\d\d|6\d)\d{3} ?\d{4}|96\d{2}|\d{4}) ?\d{4} ?\d{4}( ?\d{3}| ?\d{15})?)\b/i'
             ],
 	];
@@ -250,7 +250,7 @@ if (!class_exists('Patt_Custom_Func')) {
 			return $item['url'] . preg_replace('/\s/', '', strtoupper($match[0]));
 		} elseif (substr( strtoupper($tracking_number), 0, 4 ) === "DHL:") {
 		$dhl_tracking_number = substr($tracking_number, 4);
-        return 'http://www.dhl.com/content/g0/en/express/tracking.shtml?brand=DHL&AWB='.$dhl_tracking_number;
+        return DHL_URL.$dhl_tracking_number;
 		}
 	}
 
@@ -6769,7 +6769,7 @@ if($type == 'comment') {
 		    if ($site_name_submission !== NULL || $site_id_submission !== NULL) {
 
 				$curl = curl_init();
-				$url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/getSites';
+				$url = SEMS_ENDPOINT;
 				//7 character site ID
 				if(strlen($site_id_submission) == 7) {
                     $url .= '?id='.$site_id_submission;

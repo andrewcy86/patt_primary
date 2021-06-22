@@ -1609,13 +1609,13 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 			}
 */
 			
-/*
+
 			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
 			if( $superfund ) {				
 				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
-*/
+
 			
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
