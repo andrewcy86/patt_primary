@@ -20,7 +20,12 @@ id = '" . $tkid . "'
 
 	$ticket_details_status = $ticket_details->ticket_status;
 
-if (($ticket_details_status == 3 || $ticket_details_status == 2763 || $ticket_details_status == 4) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
+    $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
+    $tabled_request_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
+    $complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
+    
+    
+if (($ticket_details_status == $new_request_tag->term_id || $ticket_details_status == $tabled_request_tag->term_id || $ticket_details_status == $complete_tag->term_id) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 
 // Finds Shelf ID of next available sequence
 	$find_sequence = $wpdb->get_row("

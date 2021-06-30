@@ -380,7 +380,7 @@ curl_close($curl);
 
 $err = Patt_Custom_Func::convert_http_error_code($status);
 
-if ($status != 200) {
+if ($status != 200 || $status != 404) {
   Patt_Custom_Func::insert_api_error('dhl-shipping-cron',$status,$err);
 }
 
