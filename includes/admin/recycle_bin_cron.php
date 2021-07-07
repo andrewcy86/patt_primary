@@ -79,11 +79,13 @@ foreach($get_total_request_count as $item) {
         $status = 1;
     }
 
-    if($status == 1 && $recall_decline == 0) {
+    if($status == 1 && $recall_decline == 0 && Patt_Custom_Func::request_status($request_id) == 1) {
+        
         //set request to inactive
         $data_update = array('active' => 0);
         $data_where = array('id' => $ticket_id);
         $wpdb->update($wpdb->prefix . 'wpsc_ticket' , $data_update, $data_where);
+        do_action('wpsc_after_recycle', $ticket_id);
         
         //BEGIN CLONING DATA TO ARCHIVE
         Patt_Custom_Func::send_to_archive($ticket_id);
@@ -110,9 +112,9 @@ foreach($get_total_request_count as $item) {
         $pattagentid_array = array_merge($pattagentid_admin_array,$pattagentid_manager_array);
         $data = [];
         
-        //$email = 1;
         Patt_Custom_Func::insert_new_notification('email-request-deleted',$pattagentid_array,$request_id,$data,$email);
- 
+
+
     }
 }
 
