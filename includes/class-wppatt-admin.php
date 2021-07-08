@@ -442,6 +442,10 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_boxes.php';    
     }
     
+	public function pending_support_agents(){
+    include WPPATT_ABSPATH . 'includes/admin/wppatt_pending_agents.php';    
+    }
+	
     public function request_hide_logs(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_hide_logs.php';    
     }

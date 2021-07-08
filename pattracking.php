@@ -181,6 +181,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));
  
+          // Add Pending Users on PATT Agents page
+          add_action('wpsc_pending_support_agents', array($backend, 'pending_support_agents'));
+		  
           // Hide long logs on Request page
           add_action('wpsc_after_individual_ticket', array($backend, 'request_hide_logs'));
           
