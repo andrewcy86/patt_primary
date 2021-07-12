@@ -12,7 +12,7 @@ if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 ob_start();
 ?>
 
-<div class="wpsc_padding_space"></div>
+<div class="wpsc_padding_space"></div> 
 <strong>Pending Users</strong><br /><br />
 <?php
 
