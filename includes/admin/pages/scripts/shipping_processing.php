@@ -99,7 +99,9 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE id <> -99999 AND tracking_number <> ''");
+$sel = mysqli_query($con,"select count(*) as allcount 
+from " . $wpdb->prefix . "wpsc_epa_shipping_tracking 
+WHERE id <> -99999 AND tracking_number <> '' AND tracking_number NOT LIKE UPPER('%external%') ");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
@@ -149,14 +151,15 @@ WHERE 1 ";
 // .$searchQuery." and Tracking.id <> -99999 AND tracking_number <> '' order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 // $docQuerySearch = " and Tracking.id <> -99999 AND tracking_number <> '' order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
-$docQuerySearch = " and Tracking.id <> -99999 AND tracking_number <> '' order by ".$columnName." ".$columnSortOrder;
+$docQuerySearch = " and Tracking.id <> -99999 AND tracking_number <> '' AND tracking_number NOT LIKE UPPER('%external%') 
+order by ".$columnName." ".$columnSortOrder;
 
 $docQueryWrapped = "SELECT * FROM (".$docQuery.$docQuerySearch.") AS innerTable WHERE 1 ".$searchQuery." limit ".$row.",".$rowperpage;
 
 
 ## Total number of records with filtering
 //$total_filter_rec_query = "select count(id) as allcount FROM wpqa_wpsc_epa_shipping_tracking WHERE 1 ".$searchQuery." and id <> -99999 AND tracking_number <> ''";
-$total_filter_search = " and Tracking.id <> -99999 AND tracking_number <> '' ";
+$total_filter_search = " and Tracking.id <> -99999 AND tracking_number <> '' AND tracking_number NOT LIKE UPPER('%external%')";
 $total_filter_rec_query = "SELECT count(id) as allcount FROM (".$docQuery.$total_filter_search.") AS innerTable WHERE 1 ".$searchQuery;
 $sel = mysqli_query( $con, $total_filter_rec_query );
 $records = mysqli_fetch_assoc($sel);
@@ -299,4 +302,3 @@ if (check_nonce($_POST['nonce'], $_SESSION['current_page'])) {
 */
 
 exit;
-
