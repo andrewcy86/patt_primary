@@ -10,6 +10,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+// Comparison arrays
+$wordpress_users = array();
+$patt_agents = array();
+
+$agents = get_terms([
+	'taxonomy'   => 'wpsc_agents',
+	'hide_empty' => false,
+	'meta_query' => array(
+    array(
+      'key'       => 'agentgroup',
+      'value'     => '0',
+      'compare'   => '='
+    )
+  )
+]);
+
+foreach ($agents as $agent) {
+    array_push($patt_agents, $agent->term_id);
+}
+
 // Get all users in PATT
 $get_all_users = $wpdb->get_results("SELECT id, user_login
 FROM " . $wpdb->prefix . "users");
@@ -18,11 +38,15 @@ foreach ($get_all_users as $item)
 {
     $user_id = $item->id;
     $user_login = $item->user_login;
-
+    
+    $patt_agent_id = Patt_Custom_Func::translate_user_id(array($user_id),'agent_term_id')[0];
+    array_push($wordpress_users, $patt_agent_id);
+    
     $curl = curl_init();
 
     $url = EIDW_ENDPOINT . $user_login;
     
+    //Check for non-active/non-existant users in PATT
     $eidw_authorization = 'Authorization: Basic '.EIDW;
     
     $headers = ['Cache-Control: no-cache', $eidw_authorization];
@@ -127,4 +151,17 @@ $err = Patt_Custom_Func::convert_http_error_code($status);
     }
 }
 
+// Get all PATT agents that are not in the wordpress users list
+$result = array_diff($patt_agents,$wordpress_users);
+// Delete associated agent IDs
+foreach($result as $agent_id) {
+    $user_id = get_term_meta( $agent_id, 'user_id', true);
+    $user = get_user_by('id',$agent_id);
+    if($user){
+    	$user->remove_cap('wpsc_agent');
+    	delete_user_option($user_id,'wpsc_agent_role');
+    }
+    wp_delete_term($agent_id, 'wpsc_agents');
+    do_action('wpsc_delete_agent',$agent_id);
+}
 ?>

@@ -156,7 +156,7 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
         // foia dropzone file for new request form and approval widget
         var foia_dropzone = new Dropzone('#foia-dropzone', requestFormDropzone );   
         
-            }
+    }
 
 });
 
@@ -166,11 +166,60 @@ function wpsc_set_approval_widget(){
     var litigation_letter_element = document.querySelector("#litigation-letter-dropzone").dropzone.files;
     var congressional_element = document.querySelector("#congressional-dropzone").dropzone.files;
     var foia_element = document.querySelector("#foia-dropzone").dropzone.files;
+    //var box_list_element = document.querySelector("#add-box-list-dropzone").dropzone.files;
+    var box_list_element = document.querySelector("#dzBoxUpload").dropzone.files;
+    var box_list_path = jQuery("#box_list_path").val();
+    var box_list_post_id = jQuery("#post_id").val();
 
     var request_id =jQuery('#approval_widget_form input[name=request_id]').val();
-
-    jQuery('.wpsc_submit_wait').show();
+	
+	// Add Super Fund flag data to request
+    let super_fund = jQuery('#super-fund').val();
+	let super_fund_bool;
+	
+	if( super_fund == 'yes' ) {
+		super_fund_bool = true;
+	} else if( super_fund == 'no' ) {
+		super_fund_bool = false;
+	}
+	
+	console.log({super_fund:super_fund, super_fund_bool:super_fund_bool});
+	
+	//var dataform = new FormData(jQuery('#wpsc_frm_create_ticket')[0]);
+	
+	
+	jQuery('.wpsc_submit_wait').show();
     var dataform = new FormData(jQuery('#approval_widget_form')[0]);
+	
+	if( !super_fund_bool ) {
+		//New get DataTable data in the form 
+        var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray(); 
+        var data = JSON.stringify(jQuery('#boxinfodatatable').toJson()).replace(/\\/g,'\\');
+        dataform.append('boxinfo', data);
+        console.log({load_data:data});
+	} else {
+		
+		var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray(); 
+        var data = JSON.stringify(jQuery('#boxinfodatatable').toJson()).replace(/\\/g,'\\');
+        dataform.append('boxinfo', data);
+        console.log({load_data:data});
+        
+        // OLD: dropzone for SEMS removed and replaced with same for ECMS
+		// Add Superfund SEMS datatable data
+        //var SEMS_data = jQuery('#boxinfodatatableSEMS').DataTable().rows().data().toArray(); // Not needed?
+        //var SEMS_data_x = JSON.stringify( jQuery('#boxinfodatatableSEMS').toJson() ).replace(/\\/g,'\\');
+        //SEMS_data_2 = JSON.stringify( SEMS_data );
+        //dataform.append('superfund_data', SEMS_data_2);
+        	                        
+	}
+	
+	
+	
+	
+	
+	
+	
+    
     
     if( destruct_auth_element.length > 0 ) {
         destruct_auth_element.forEach( function( _file ) {
@@ -195,7 +244,89 @@ function wpsc_set_approval_widget(){
             dataform.append( 'foia_files[]', _file );
         } )
     }
+    
+    
+    // Check and Save new Box List
+    console.log({box_list_element:box_list_element});
+    
+    if( box_list_element.length > 0 ) {
+	    console.log( 'inside the box_list_element' );
+        box_list_element.forEach( function( _file ) {
+            dataform.append( 'box_list_files[]', _file );
+            console.log( 'foreach box_list_element');
+        } )
+        
+        dataform.append( 'box_list_path', box_list_path );
+        dataform.append( 'box_list_post_id', box_list_post_id );
+        
+        
+        //
+        // Copied directly from ticket_box_list_save.js in #wpsc_create_ticket_submit
+        //
+        
+        //jQuery('.wpsc_loading_icon_submit_ticket').css('display','block');
+		//jQuery('.create_ticket_fields_container').css('display','none');
+		//jQuery('.create_ticket_frm_submit').css('display','none');
+		
+	    let superfundx = jQuery('#super-fund').val();
+	    console.log({superfund:superfundx});
+	    
+	    if( superfundx == '' ) {
+			alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
+		    return false;
+			
+		} else if( superfundx == 'no' ) {
+	    
+		    if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+		        alert('Please upload the Box List excel sheet');
+		        return false;
+		    }
+		} else if( superfundx == 'yes' ) {
+			
+			if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+		        alert('Please upload the Box List excel sheet');
+		        return false;
+		    }
+			
+		}
+		
+/*
+		var form_data = new FormData();
+	        form_data.append('file', theFile.file);
+	        form_data.append('action', 'move_excel_file');
+	        console.log('The Form Data');
+	        console.log( form_data );
+	        console.log( {file:theFile.file} );
+	        jQuery.ajax({
+	            url: wpsc_admin.ajax_url,
+	            type: 'post',
+	            contentType: false,
+	            processData: false,
+	            data: form_data,
+	            success: function (response) {
+	                
+	                console.log("Excel uploaded successfully");
+	                console.log(response);
+	                let obj = JSON.parse( response );
+	                console.log( obj.attachment_id );
+	                
+	                jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
+	                
+	            },  
+	            error: function (response) {
+	                console.log("Excel did not upload successfully");
+	            }
+	        });
+*/
 
+        //
+        // END copy
+        //
+        
+    }
+	
+	console.log({dataform_raw:dataform});
+	
     jQuery.ajax({
         url: wpsc_admin.ajax_url,
         type: 'POST',
@@ -206,6 +337,14 @@ function wpsc_set_approval_widget(){
     .done(function (response_str) {
 
         var response = JSON.parse(response_str);
+        console.log( response );
+        
+        // Display submit output here
+        if(response.redirct_url==''){
+			jQuery('#add_box_list').html(response.thank_you_page);
+					
+		}
+        
 
         jQuery('.wpsc_submit_wait').hide();
         if (response.sucess_status=='1') {
@@ -215,7 +354,9 @@ function wpsc_set_approval_widget(){
                 jQuery('#wpsc_popup_footer #approval_widget_noti_message').append("<div class='alert-warning alert'>" + response.destruction_approval_warning + "</div>");
             }
         }
-
+		
+		// D E B U G - commented out for debugging.
+/*
         setTimeout(function(){ jQuery('#approval_widget_noti_message').slideUp('fast',function(){
             wpsc_get_approval_details(request_id);
             console.log({location:location});
@@ -224,6 +365,7 @@ function wpsc_set_approval_widget(){
             wpsc_modal_close();
             location.reload();
         }); }, 3000);
+*/
 
     });
 }

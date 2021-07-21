@@ -40,6 +40,9 @@ $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
 ?>
 
 
@@ -51,7 +54,7 @@ $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
         
         <?php
         //Disable editing capabilities on certain request statuses
-        if ( ($request_status_id != $new_request_tag->term_id && $request_status_id != $tabled_tag->term_id && $request_status_id != $initial_review_rejected_tag->term_id && $request_status_id != $cancelled_tag->term_id) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        if ( !in_array($request_status_id, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
 		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button>-->
@@ -253,6 +256,30 @@ div.dataTables_wrapper {
 
 <script>
 
+function wpsc_get_box_details_refresh(){
+
+jQuery.urlParam = function (name) {
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+                      .exec(window.location.search);
+
+    return (results !== null) ? results[1] || 0 : false;
+}
+
+var page = jQuery.urlParam('page');
+var pid = jQuery.urlParam('pid');
+var id = jQuery.urlParam('id');
+
+var wpsc_setting_action = 'boxdetails';
+var attrs = {"page":page, "pid":pid, "id":id};
+
+
+wpsc_init(wpsc_setting_action,attrs);
+
+       
+       
+}
+
+
 jQuery(document).ready(function(){
   var dataTable = jQuery('#tbl_templates_box_details').DataTable({
     'autoWidth': true,
@@ -301,7 +328,8 @@ jQuery(document).ready(function(){
     ?>
     'columnDefs': [
 		{	'width' : 5,
-			'targets': 0,	
+			'targets': 0,
+			'title': 'Select All Checkbox',
 			'checkboxes': {	
 			   'selectRow': true	
 			},
@@ -556,17 +584,15 @@ boxid : jQuery('#box_id').val()
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
 		  }); 
-      
+      //wpsc_get_box_details_refresh();
        var substring_removed = "removed";
        var substring_select = "select";
-       dataTable.ajax.reload( null, false );
-       dataTable.column(0).checkboxes.deselectAll();
        if(response.indexOf(substring_removed) !== -1 || response.indexOf(substring_select) >= 0) {
        jQuery('#damaged_alert').hide();
        } else {
        jQuery('#damaged_alert').show(); 
        }
-       
+    
       //}
    });
 });
@@ -605,7 +631,7 @@ boxid : jQuery('#box_id').val()
        } else {
        jQuery('#freeze_alert').show(); 
        }
-       
+       //wpsc_get_box_details_refresh();
       //}
    });
 });
@@ -628,11 +654,11 @@ postvarsfolderdocid : rows_selected.join(",")
        var substring_true = "true";
 
        if(response.indexOf(substring_false) >= 0) {
-       alert('Cannot print folder/file labels for documents that have been destroyed or are not assigned to a location.');
+       alert('Cannot print folder/file labels for documents that have been destroyed.');
        }
        
        if(response.indexOf(substring_warn) >= 0) {
-       alert('One or more documents that you have selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
+       alert('One or more documents that you have selected have been destroyed and it\'s label will not generate.');
            // Loop through array
     [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);
@@ -849,7 +875,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
-                if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+                if ( !in_array($request_status_id, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
                   echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
                 } 
@@ -1010,7 +1036,7 @@ echo '<span style="padding-left: 10px">Please pass a valid Box ID</span>';
 <!-- Pop-up snippet end -->
 
 <script>
-
+       
 jQuery(document).ready(function(){
   jQuery('[data-toggle="tooltip"]').tooltip();
 });

@@ -65,239 +65,21 @@ if( !$is_single_item ) {
 	// If multiple status exist. Can only move status if all status are the same. 
 	if( $num_of_statuses > 1 ) {
 		$save_enabled = false;
-		$restriction_reason_C5 = 'The statuses of the selected Boxes are not all the same. No Status Selectable. (C6)';
+		$restriction_reason_C5 = 'The statuses of the selected Boxes are not all the same. No Status Selectable.';
 	}
 }
-
-
 
 // New Section - End
 
 
 
-//
-// Checks to determine if status can be saved
-//
-// 1) IF Nobody assigned to the box THEN all but Pending must be disabled. (672,671,65,6,673,674,743,66,68,67)
-// 2) Box is not validated (66,68,67) - Validation is a status in same list, right? Must be in status of Validation?
-//                                   - count validated flag is in folder doc - Andrew to send CODE
-// 3) Destruction Approval - Check to see if request contains a destruction_approval of 1 in wpqa_wpsc_ticket - IF = 0 then disable
-//                         - Disable the ability to select Destruction approval if Not approved. 
-// 4) if request status = 3,670,69 THEN 672,671,65,6,673,674,743,66,68,67 Need to be disabled (Only allow Pending) 
-// 
-
-//ob_start();
-
-//
-// item_ids = array, show data structure. - ["0000001-2", "0000003-2", "0000003-3"] or ["0000001-2"]
-// 
-//
-//
-
-/*
-$restricted_status_list = array();
-$restriction_reason = '';
-$all_unassigned_x = true;
-$condition_c1 = false; 
-$condition_c4 = false; 
-
-foreach( $item_ids as $item ) {
-	$box_obj = Patt_Custom_Func::get_box_file_details_by_id($item);
-	$status_agent_array = Patt_Custom_Func::get_user_status_data( ['box_id' => $box_obj->Box_id_FK ] );
-	$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
-	$status_list_assignable = Patt_Custom_Func::get_all_status($ignore_box_status);
- 	$where = ['box_folder_file_id' => $box_obj->box_id ];
- 	$ticket_id_obj = Patt_Custom_Func::get_ticket_id_from_box_folder_file( $where );
-
-
-
-	
-
-	// Condition 1.
-	$all_assigned = false;
-	$all_unassigned = true;
-	foreach( $status_agent_array['status'] as $term_id=>$user_array ) {
-		
-		if( array_key_exists($term_id, $status_list_assignable) ) {
-			if( count($user_array) > 0 && $user_array != 'N/A' ) {
-				//users exist
-				$all_unassigned = false;
-				break;
-			}
-		}
-	}
-	
-	// Condition 1 SET.
-	if( $all_unassigned ) {
-		$restriction_reason .= '<p>Box '.$box_obj->box_id.' has no one assigned to Any Status. (C1)<p>';
-		$condition_c1 = true;
-
-		
-		if( !in_array('Scanning Preparation', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Scanning Preparation';
-		} 
-		if( !in_array('Scanning/Digitization', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Scanning/Digitization';
-		} 
-		if( !in_array('QA/QC', $restricted_status_list) ) {
-			$restricted_status_list[] = 'QA/QC';
-		} 
-		if( !in_array('Digitized - Not Validated', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Digitized - Not Validated';
-		} 
-		if( !in_array('Ingestion', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Ingestion';
-		} 
-		if( !in_array('Validation', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Validation';
-		} 
-		if( !in_array('Re-scan', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Re-scan';
-		} 
-		if( !in_array('Completed', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Completed';
-		} 
-		if( !in_array('Destruction Approval', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Destruction Approval';
-		} 
-		if( !in_array('Dispositioned', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Dispositioned';
-		} 
-	}
-	
-	
-	// Condition 2 
-	$get_sum_total = $wpdb->get_row("select sum(a.total_count) as sum_total_count
-									from (
-										SELECT (
-											SELECT count(id) 
-												FROM wpqa_wpsc_epa_folderdocinfo as c
-											WHERE box_id = a.id 
-										) as total_count 
-										FROM wpqa_wpsc_epa_boxinfo as a  
-										WHERE a.id = '" . $box_obj->Box_id_FK . "'
-									) 
-								a");
-	
-	$sum_total_val = $get_sum_total->sum_total_count;
-	
-	$get_sum_validation = $wpdb->get_row("select sum(a.validation) as sum_validation
-											from (
-												SELECT (
-													SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id
-												) as validation 
-												FROM wpqa_wpsc_epa_boxinfo as a 
-												
-												WHERE a.id = '" . $box_obj->Box_id_FK . "'	
-											) 
-										a");									
-					
-			
-	$sum_validation = $get_sum_validation->sum_validation;
-
-	$validated = '';
-	
-	if($sum_total_val == $sum_validation) {
-		$validated = 1;
-	} else {
-		$validated = 0;
-	}
-	
-	// Condition 2 SET
-	if( !$validated ) {
-		$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been Validated. (C2)</p>';
-		
-		if( !in_array('Completed', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Completed';
-		} 
-		if( !in_array('Dispositioned', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Dispositioned';
-		}
-		if( !in_array('Destruction Approval', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Destruction Approval';
-		}
-	}
-	
-	
-	// Condition 3 - Destruction Approval
-	
- 	$box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM wpqa_wpsc_ticket WHERE id='".$ticket_id_obj['ticket_id']."'");
-
-	
-	// Condition 3 SET - Show destruction approval setting?
-	if( $box_destruction_approval->destruction_approval ) {
-		//$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have been approved for Destruction.(C3)</p>';
-		
-		// if Destruction Approval has already been restricted AND C1 has never come up... 
-		if( in_array('Destruction Approval', $restricted_status_list) && !$condition_c1 && !$condition_c4 ) {
-			$the_key = array_search('Destruction Approval', $restricted_status_list);
-			unset($restricted_status_list[$the_key]);
-			array_values($restricted_status_list);
-			//$restricted_status_list[] = 'Destruction Approval';
-		}
-	} else {
-		$restriction_reason .= '<p>Contents of Box '.$box_obj->box_id.' have not been approved for Destruction. (C3)</p>';
-		if( !in_array('Destruction Approval', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Destruction Approval';
-		}
-	}
-	
-	// Condition 4 - if request status = 3,670,69 - only allow 'Pending'
-	$data = [ 'ticket_id'=>$ticket_id_obj['ticket_id'] ];
-	$ticket_status = Patt_Custom_Func::get_ticket_status( $data );
-	
-	
-	// Condition 4 SET
-	if( $ticket_status == 3 || $ticket_status == 670 || $ticket_status == 69 ) {
-		$save_enabled = false;
-		$restriction_reason .= '<p>Containing Request of Box '.$box_obj->box_id.' has a status of New, Cancelled, or Initial Review Rejected. (C4)</p>';
-		$condition_c4 = true;
-		
-		if( !in_array('Scanning Preparation', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Scanning Preparation';
-		} 
-		if( !in_array('Scanning/Digitization', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Scanning/Digitization';
-		} 
-		if( !in_array('QA/QC', $restricted_status_list) ) {
-			$restricted_status_list[] = 'QA/QC';
-		} 
-		if( !in_array('Digitized - Not Validated', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Digitized - Not Validated';
-		} 
-		if( !in_array('Ingestion', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Ingestion';
-		} 
-		if( !in_array('Validation', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Validation';
-		} 
-		if( !in_array('Re-scan', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Re-scan';
-		} 
-		if( !in_array('Completed', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Completed';
-		} 
-		if( !in_array('Destruction Approval', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Destruction Approval';
-		} 
-		if( !in_array('Dispositioned', $restricted_status_list) ) {
-			$restricted_status_list[] = 'Dispositioned';
-		} 
-		
-	}
-	
-}
-
-// $ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
-$box_statuses = Patt_Custom_Func::get_all_status($restricted_status_list);
-*/
-
-
 if( $save_enabled ) {
 // 	$status_list = Patt_Custom_Func::get_restricted_box_status_list( $item_ids ); 
-	$status_list = Patt_Custom_Func::get_restricted_box_status_list( $item_ids, $agent_type ); 
-	$box_statuses = $status_list['box_statuses'];
-	$restriction_reason = $status_list['restriction_reason'];
+// 	$status_list = Patt_Custom_Func::get_restricted_box_status_list( $item_ids, $agent_type );
+	$status_list = Patt_Custom_Func::get_restricted_box_status_list_2( $item_ids, $agent_type ); 
+	$box_statuses = $status_list[ 'box_statuses' ];
+	$restriction_reason = $status_list[ 'restriction_reason' ];
+	$restricted_reason_array = $status_list[ 'restricted_reason_array' ];
 	
 	
 	
@@ -335,16 +117,20 @@ echo 'debug_restricted_status_list: <br><pre>';
 print_r($status_list['debug_restricted_status_list']);
 echo '</pre><br>';
 
-echo 'debug_restricted_status_list_2: <br><pre>';
-print_r($status_list['debug_restricted_status_list_2']);
+echo 'box_statuses: <br><pre>';
+print_r( $box_statuses );
 echo '</pre><br>';
 
-echo 'debug_next_status: <br><pre>';
-print_r($status_list['debug_next_status']);
+echo 'restriction_reason: <br><pre>';
+print_r( $restriction_reason );
 echo '</pre><br>';
 
-echo 'debug_current_status: <br><pre>';
-print_r($status_list['debug_current_status']);
+echo 'status_list: <br><pre>';
+print_r( $status_list );
+echo '</pre><br>';
+
+echo 'restricted_reason_array: <br><pre>';
+print_r( $restricted_reason_array );
 echo '</pre><br>';
 */
 
@@ -418,7 +204,7 @@ print_r($status_list_assignable);
 
 
 
-<div id='alert_status' class=''></div> 
+<div id='alert_status' class='col-lg-12'></div> 
 
 <div class="row">
 	<div class="col-lg-2">
@@ -499,18 +285,145 @@ print_r($status_list_assignable);
 }
 
 .alert_spacing {
-	margin: 0px 0px 0px 0px;
+	margin: 0px 0px 10px 0px;
+}
+
+.accordion-header {
+	margin-top: 0px !important;
+	margin-bottom: 5px !important;
+}
+
+.accordion-body {
+	padding-left: 15px;
 }
 
 </style>
 
+<!--
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+-->
+
+<!--
+<div class="accordion">
+    <div class="section">
+        <strong><a class="section-title" style="text-decoration: none;" href="#accordion-1" style="color: #174eb5;">Edit More</a></strong>
+        <div id="accordion-1" class="section-content">
+            <p>
+                <strong>
+                    Program Office:
+                    <a href="#" aria-label="Program office" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-program-office'); ?>">
+                        <i class="far fa-question-circle"></i>
+                    </a>
+                </strong>
+                <br />
+
+                <input type="search" list="ProgramOfficeList" placeholder="Enter program office" id="po" />
+                <datalist id="ProgramOfficeList"> </datalist>
+
+                <br />
+
+                <strong>
+                    Record Schedule:
+                    <a href="#" aria-label="Record Schedule" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-record-schedule'); ?>">
+                        <i class="far fa-question-circle"></i>
+                    </a>
+                </strong>
+                <br />
+
+                <input type="search" list="RecordScheduleList" placeholder="Enter record schedule" id="rs" />
+                <datalist id="RecordScheduleList"> </datalist>
+            </p>
+        </div>
+        
+    </div>
+    
+</div>
+-->
+
+
 <script>
 	jQuery(document).ready(function(){
+		
+		//
+		// Accordion code
+		//
 		
 // 		let current_status = '<?php echo Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->box_status ?>';
 		let current_status = '<?php echo $old_status ?>';		
 		let is_single_item = <?php echo json_encode($is_single_item); ?>;
-		let restriction_reason = '<?php echo $restriction_reason ?>';		
+		let restriction_reason = '<?php echo $restriction_reason ?>';
+		//let restricted_reason_array = <?php echo json_encode( $restricted_reason_array ); ?>;
+		let restricted_reason_obj = <?php echo json_encode( $restricted_reason_array ); ?>;
+		let accordion_notification = '';
+		const restricted_reason_array = Object.entries( restricted_reason_obj );
+		
+		
+		// Construct accordion style notification for each box. 
+		console.log( 'yo' );
+		console.log( restricted_reason_array );
+		
+		let accordion_pre_message = '<div class="" id="alert-message"><b>Saving disabled.</b> Click the Box number to view the restrictions.</div>';
+		let accordion_start = '<div class="accordion" id="the-accordion">';
+
+		//let accordion_item_start = '<div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">';
+		
+		let accordion_item_start_1 = '<div class="accordion-item"><h2 class="accordion-header" id="';
+		let accordion_item_start_2 = '"><button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#';
+		let accordion_item_start_3 = '" aria-expanded="false" aria-controls="';
+		let accordion_item_start_4 = '">';
+
+		//let accordion_item_mid = '</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-parent="#accordionExample"><div class="accordion-body">';
+		let accordion_item_mid_1 = '</button></h2><div id="';
+		let accordion_item_mid_2 = '" class="accordion-collapse collapse section-content" aria-labelledby="';
+		let accordion_item_mid_3 = '" data-parent="#the-accordion"><div class="accordion-body">';
+		
+		
+		let accordion_item_end = '</div></div></div>';
+		let accordion_end = '</div>';
+		
+		accordion_notification += accordion_pre_message;
+		accordion_notification += accordion_start;
+		
+		//Object.entries( restricted_reason_array ).forEach( function( item, index ) {
+		restricted_reason_array.forEach( function( item, index ) {	
+			
+			let heading = 'heading' + index;
+			let collapse = 'collapse' + index;
+			
+			
+			accordion_notification += accordion_item_start_1;
+			accordion_notification += 'heading-' + index;
+			accordion_notification += accordion_item_start_2;
+			accordion_notification += 'collapse-' + index;
+			accordion_notification += accordion_item_start_3;
+			accordion_notification += 'collapse-' + index;
+			accordion_notification += accordion_item_start_4;
+			accordion_notification += item[0];
+			accordion_notification += accordion_item_mid_1;
+			accordion_notification += 'collapse-' + index;
+			accordion_notification += accordion_item_mid_2;
+			accordion_notification += 'heading-' + index;
+			accordion_notification += accordion_item_mid_3;
+			accordion_notification += item[1];
+			accordion_notification += accordion_item_end;
+			
+			
+		});
+		
+		accordion_notification += accordion_end;
+		
+		console.log( accordion_notification );
 
 		// Set the value of the select to the current value. 
 		if( is_single_item ) {
@@ -529,10 +442,55 @@ print_r($status_list_assignable);
 		});
 			
 		
+/*		// OLD: for text restriction_reason
 		if( restriction_reason.length > 0 ) {
 			set_alert('warning', restriction_reason);				
 		}
-
+*/
+		//jQuery('#alert_status').html( 'test' );
+		
+		console.log( Array.isArray(restricted_reason_array) );
+		console.log({length:restricted_reason_array.length});
+		
+		
+		
+		//console.log( Array.isArray(entries) );
+		//console.log({entries_length:entries.length});
+		
+		if( restricted_reason_array.length > 0 ) {
+			console.log('in');
+			//set_alert('warning', accordion_notification);	
+			let alert_style = 'alert-warning';
+			//jQuery('#alert_status').html('<div id="alert-1" class=" alert '+alert_style+'">'+accordion_notification+'</div>'); 
+			//jQuery('#alert_status').html( 'test2' ); 
+			jQuery('#alert_status').html( accordion_notification ); 
+			jQuery('#alert_status').addClass('alert_spacing');
+			jQuery('#alert_status').addClass('alert');
+			jQuery('#alert_status').addClass('alert-warning');				
+		}
+		
+		
+		// additional Accordion code - start
+		jQuery('.section-title').click(function(e) {
+	    // Get current link value
+		    var currentLink = jQuery(this).attr('href');
+		    if(jQuery(e.target).is('.active')) {
+		    	close_section();
+		    }else {
+			     close_section();
+			    // Add active class to section title
+			    jQuery(this).addClass('active');
+			    // Display the hidden content
+			    jQuery('.accordion ' + currentLink).slideDown(350).addClass('open');
+		    }
+			e.preventDefault();
+		});
+	 
+		function close_section() {
+		    jQuery('.accordion .section-title').removeClass('active');
+		    jQuery('.accordion .section-content').removeClass('open').slideUp(350);
+		}
+		// Accordion - end
 		
 		
 	});

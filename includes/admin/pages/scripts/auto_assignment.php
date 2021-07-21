@@ -23,9 +23,11 @@ id = '" . $tkid . "'
     $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
     $tabled_request_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
     $complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
+    $shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
+    $received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
     
     
-if (($ticket_details_status == $new_request_tag->term_id || $ticket_details_status == $tabled_request_tag->term_id || $ticket_details_status == $complete_tag->term_id) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
+if (($ticket_details_status == $shipped_tag->term_id || $ticket_details_status == $received_tag->term_id || $ticket_details_status == $new_request_tag->term_id || $ticket_details_status == $tabled_request_tag->term_id || $ticket_details_status == $complete_tag->term_id) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 
 // Finds Shelf ID of next available sequence
 	$find_sequence = $wpdb->get_row("
@@ -527,5 +529,5 @@ do_action( 'wppatt_loc_instant',  $dc_final);
 	}
 
 } else {
-	echo "No automatic box shelf assignments made.".$tkstatus;
+	echo "No automatic box shelf assignments made.";
 }

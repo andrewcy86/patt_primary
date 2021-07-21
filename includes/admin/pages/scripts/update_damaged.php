@@ -21,7 +21,7 @@ $date_time = date('Y-m-d H:i:s');
 $damaged_reversal = 0;
 $ticket_box_status = 0;
 //Box status
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
+$box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
 $unauthorized_destruction = 0;
 
 //Request statuses
@@ -29,6 +29,9 @@ $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
 $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
 //REVIEW
@@ -40,8 +43,8 @@ WHERE c.damaged = 0 AND c.folderdocinfofile_id = '".$key."'");
 $get_ticket_status_val = $get_statuses->ticket_status; 
 $get_box_status_val = $get_statuses->box_status;
 
-//Documents cannot be marked as Damaged in the Completed/Dispositioned box status
-if($get_box_status_val == $completed_dispositioned_tag->term_id || $get_ticket_status_val == $new_request_tag->term_id || $get_ticket_status_val == $tabled_tag->term_id || $get_ticket_status_val == $initial_review_rejected_tag->term_id || $get_ticket_status_val == $cancelled_tag->term_id) {
+//Documents cannot be marked as Damaged in these statuses
+if( ($get_box_status_val == $box_completed_dispositioned_tag->term_id) || in_array($get_ticket_status_val, $status_id_arr) ) {
    $ticket_box_status++; 
 }
 

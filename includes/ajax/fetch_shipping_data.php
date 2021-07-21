@@ -58,11 +58,21 @@ $tracking_num = '';
   ':company_name'  => Patt_Custom_Func::get_shipping_carrier($_POST["tracking_number"]),
   ':tracking_number'    => $_POST["tracking_number"]
  );
+ 
+ $prev_status = $wpscfunction->get_ticket_fields( $ticket_id, 'ticket_status' );
+ $initial_review_term = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses'); 
+ 
+ // if using External shipping service, update shipped column as well. 
+ if( $_POST["tracking_number"] == WPPATT_EXT_SHIPPING_TERM && $prev_status == $initial_review_term ) {
+   $query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_shipping_tracking (ticket_id, company_name, status, shipped, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', 1, :tracking_number, '-99999',  '-99999')";
+ } else {
+   $query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '-99999',  '-99999')";
+ }
 
- $query = "INSERT INTO " . $wpdb->prefix . "wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '-99999',  '-99999')";
  $statement = $connect->prepare($query);
  $statement->execute($data);
  do_action('wpppatt_after_add_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_POST["company_name"]).' - '.$_POST["tracking_number"]);
+ 
 }
 
 if($method == 'PUT')

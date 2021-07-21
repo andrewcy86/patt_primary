@@ -89,15 +89,73 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				    <?php
 				    //Get Post ID from Ticket Meta Table
 				    
-				    $get_postid = $wpscfunction->get_ticket_meta($post_id,'box_list_post_id');
+				    $get_postid = $wpscfunction->get_ticket_meta( $post_id, 'box_list_post_id' );
+				    $get_attachment_url = wp_get_attachment_url( $get_postid[0] );
+				    
+				    // Addition for Box List Revisions
+				    $get_postid_rev = $wpscfunction->get_ticket_meta( $post_id, 'box_list_post_id_revision' );
 
-				    $get_attachment_url = wp_get_attachment_url($get_postid[0]);
+					if( !empty( $get_postid_rev )) {
+
+						$postid_rev_str = $get_postid_rev[0];
+						$postid_rev_str = str_replace( '[', '', $postid_rev_str );
+						$postid_rev_str = str_replace( ']', '', $postid_rev_str );
+						$postid_rev_arr = explode( ',', $postid_rev_str );
+					}
+				    
 				    if (!empty($get_attachment_url)) {
 				    ?>
-				    <strong><a href="<?php echo $get_attachment_url; ?>"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> <a href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/pages/scripts/boxlist_preview.php';?>?id=<?php echo $get_postid[0]; ?>" target="_blank" rel="noopener">View Box List</a></strong>
-				    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
-				    <input type="hidden" name="postid" value="<?php echo $get_postid[0]; ?>" />
-					<input type="hidden" name="box_list_path_orig" value="<?php echo $get_attachment_url; ?>" />
+<!-- 					    <strong><a href="<?php echo $get_attachment_url; ?>"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> <a href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/pages/scripts/boxlist_preview.php';?>?id=<?php echo $get_postid[0]; ?>" target="_blank" rel="noopener">View Box List</a></strong> -->
+					    
+					    <?php 
+							if( !empty( $get_postid_rev )) {
+								
+								$num = count( $postid_rev_arr ) - 1;
+								$get_attachment_url_rev = wp_get_attachment_url( $postid_rev_arr[$num] );
+								
+								$display_rev_str = '<strong><a href="' . $get_attachment_url_rev .
+													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
+													'?id=' . $postid_rev_arr[$num] .'" target="_blank" rel="noopener">View Box List</a></strong>';
+								$display_rev_str .= ' <span id="show-revs" data-open="0">Show Revisions<i class="fas fa-caret-up"></i></span>';
+								
+								$display_rev_str .= '<br><div class="box-list-rev-display">';
+								$display_rev_str .= '<strong><a href="' . $get_attachment_url .
+													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
+													'?id=' . $get_postid[0] .'" target="_blank" rel="noopener">Original</a></strong> | ';
+								
+								
+								foreach( $postid_rev_arr as $rev => $postid ) {
+									$get_attachment_url_rev = wp_get_attachment_url( $postid );
+									$display_rev_str .= '<strong><a href="' . $get_attachment_url_rev . '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+									$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . '?id=' . $postid .'" target="_blank" rel="noopener">R' . ( $rev + 1 ) . '</a></strong> | ';
+									
+								}
+								$display_rev_str = substr( $display_rev_str, 0, -3 );
+								$display_rev_str .= '</div>';
+								
+							} else {
+								$display_rev_str = '<strong><a href="' . $get_attachment_url .
+													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
+													'?id=' . $get_postid[0] .'" target="_blank" rel="noopener">View Box List</a></strong>';
+
+							}
+							
+							echo $display_rev_str;
+							
+							// D E B U G
+							//echo '<br><pre>' . $get_postid_rev . '</pre>';
+						?>
+					    
+					    
+					    <hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
+					    
+
+					    
+					    <input type="hidden" name="postid" value="<?php echo $get_postid[0]; ?>" />
+						<input type="hidden" name="box_list_path_orig" value="<?php echo $get_attachment_url; ?>" />
 				    <?php
 				    }
 				    ?>
@@ -198,7 +256,10 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						}
 					}
 					
+					//
 					// NEW Box List
+					//
+/*
 					if ( is_array( $foia_file ) && count( $foia_file ) > 0 ) {
 						$foia_counter = 1;
 						$foia_content = '';
@@ -220,6 +281,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							<?php
 						}
 					}
+*/
 
 					if ( ! $has_file ) {
 						?>
@@ -230,7 +292,51 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					}
 					?>
 				</ul>
-			</div>                
+			</div>
+			<style>
+				.box-list-rev-display {
+					margin-top: 5px;
+					line-height: 2;
+					visibility: hidden;
+					transition: all .5s ease-in-out;
+					max-height: 0px;
+				}
+				
+				.fa-caret-up {
+					font-size: 1.5em;
+				}
+				
+				.fa-caret-down {
+					font-size: 1.5em;
+				}
+				
+				#show-revs {
+					
+				}
+			</style> 
+			<script>
+				jQuery(document).ready(function(){
+					console.log( 'mmmhmm' );
+					jQuery( '#show-revs' ).click( function() {
+						console.log( 'clickity clack' );
+						if( jQuery( '#show-revs' ).data( 'open' ) == '0' ) {
+							//jQuery( '.box-list-rev-display' ).show();
+							jQuery( '.box-list-rev-display' ).css( 'visibility', 'visible');
+							jQuery( '.box-list-rev-display' ).css( 'max-height', '1000px');
+							jQuery( '#show-revs' ).data( 'open', '1' );
+							jQuery( '#show-revs' ).html( 'Show Revisions<i class="fas fa-caret-down">' );
+						} else {
+							//jQuery( '.box-list-rev-display' ).hide();
+							jQuery( '.box-list-rev-display' ).css( 'visibility', 'hidden');
+							jQuery( '.box-list-rev-display' ).css( 'max-height', '0px');
+							jQuery( '#show-revs' ).data( 'open', '0' );
+							jQuery( '#show-revs' ).html( 'Show Revisions<i class="fas fa-caret-up">' );
+							
+						}
+					});
+					
+				});	
+			</script>         
 			<?php
 		}
 
@@ -429,15 +535,25 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					</div>
 					
 <!-- 			New Box List - START -->
+					
+					
 					<div id="add_box_list" class="tab_content hidden">
 <!-- 						<h4><?php esc_html_e( 'Box List', 'pattracking' ); ?></h4> -->
 						<h4>Box List</h4>
 						
+						<?php
+							// TEST
+							$field = (object)array('name' => 'ticket_category' );
+							do_action('print_listing_form_block', $field);
+						?>
+						
 						<div>
-							post_id: <?php echo $post_id; ?>	<br>
-							box list path: <?php echo $box_list_path_orig; ?>	
+							<input type="hidden" id="post_id" name="post_id" value="<?php echo $post_id; ?>">
+							<input type="hidden" id="box_list_path" name="box_list_path" value="<?php echo $box_list_path_orig; ?>">
+							<input type="hidden" id="box_list_upload_cr" name="box_list_upload_cr" value="0">
 						</div>
 						
+<!--
 						<div class="dropzone" id="add-box-list-dropzone">
 							<div class="fallback">
 								<input name="box_list" type="file" id="box_list" />
@@ -446,6 +562,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 								<button class="dz-button" type="button">Drop .xlsm file here to upload.</button>
 							</div>
 						</div>
+-->
+						
+
+
+
+						
 
 						<?php
 						if ( is_array( $box_list_file ) && count( $box_list_file ) > 0 ) {
@@ -455,7 +577,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									?>
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
-										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_foia', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
+										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_box_list', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
 											<i class="fa fa-trash"></i>
 										</span>
 									</div>
@@ -485,7 +607,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				.dropzone .dz-preview .dz-progress {
 					top: 70%;
 					display: none;
-				}	
+				}
+				
+				
 			</style>
 			<?php
 			$content = ob_get_clean();
@@ -519,7 +643,27 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 			$litigation_letter_files = isset( $_FILES['litigation_letter_files'] ) ? $_FILES['litigation_letter_files'] : array();
 			$congressional_files = isset( $_FILES['congressional_files'] ) ? $_FILES['congressional_files'] : array();
 			$foia_files = isset( $_FILES['foia_files'] ) ? $_FILES['foia_files'] : array();
-
+			$the_box_list_files = isset( $_FILES['box_list_files'] ) ? $_FILES['box_list_files'] : array();
+			
+			$the_box_list_path = isset( $_POST['box_list_path'] ) ? $_POST['box_list_path'] : '';
+			$the_box_list_post_id = isset( $_POST['box_list_post_id'] ) ? $_POST['box_list_post_id'] : '';
+			
+			// Get new data from request_approval_widget.js
+			$args = [];
+			$boxinfodata = $_POST["boxinfo"];
+			$args['box_info'] = $boxinfodata;
+			
+			$useagedata = $_POST["are-these-documents-used-for-the-following"];
+			$args['ticket_useage'] = $useagedata;
+			
+			$super_fund = $_POST["super_fund"];
+			$args['super_fund'] = $super_fund;
+			
+			$superfund_data = $_POST["superfund_data"];
+			$args['superfund_data'] = $superfund_data;
+			
+			$old_files = $_FILES;
+			
 			$_FILES = array();
 
 			$attach_ids  = array();
@@ -683,7 +827,11 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				remove_filter( 'upload_dir', __CLASS__ . '::change_congressional_upload_dir' );
 				remove_filter( 'intermediate_image_sizes_advanced', __CLASS__ . '::remove_thumbnail_generation' );
 			}
-
+			
+			//
+			// FOIA 
+			//
+			
 			if ( is_array( $foia_files ) && count( $foia_files ) > 0 ) {
 				add_filter( 'upload_dir', __CLASS__ . '::change_foia_upload_dir' );
 				add_filter( 'intermediate_image_sizes_advanced', __CLASS__ . '::remove_thumbnail_generation' );
@@ -734,11 +882,129 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				remove_filter( 'upload_dir', __CLASS__ . '::change_foia_upload_dir' );
 				remove_filter( 'intermediate_image_sizes_advanced', __CLASS__ . '::remove_thumbnail_generation' );
 			}
+			
+			
+			//
+			// Box List Updater - START
+			//
+			
+			// D E B U G
+			$debugging = is_array( $the_box_list_files ) ? '-true-' : '-false-';
+			$debugging .= count( $the_box_list_files );
+			
+			
+			if ( is_array( $the_box_list_files ) && count( $the_box_list_files ) > 0 ) {
+
+				add_filter( 'upload_dir', __CLASS__ . '::change_box_list_upload_dir' );
+				//add_filter( 'upload_dir', __CLASS__ . '::change_foia_upload_dir' );
+				add_filter( 'intermediate_image_sizes_advanced', __CLASS__ . '::remove_thumbnail_generation' );
+				
+				// Get name for the original box list.
+				$old_box_list_arr = explode( '/', $the_box_list_path );
+				$len = count( $old_box_list_arr );
+				$old_box_list_name = $old_box_list_arr[ $len - 1 ];
+				
+				$all_attachments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}posts WHERE post_parent = %d AND post_type = 'attachment'", $the_box_list_post_id ) );
+				$num_of_box_list_revisions = count( $all_attachments ) + 1;
+				
+				$debugging .= '-' . $old_box_list_name;
+				//$debugging .= '-' . $the_box_list_post_id;
+				
+				$attach_ids  = array();
+
+				$ticket_field = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wpsc_ticketmeta WHERE ticket_id= %d AND meta_key = 'box_list_post_id_revision'", $request_id ) );
+
+				if ( ! empty( $ticket_field ) && isset( $ticket_field->id ) && isset( $ticket_field->meta_value ) ) {
+					$ticket_meta_value = json_decode( $ticket_field->meta_value, true );
+					if ( ! empty( $ticket_meta_value ) ) {
+						$attach_ids = array_merge( $attach_ids, $ticket_meta_value );
+					}
+				}
+
+				foreach ( $the_box_list_files['name'] as $key => $file ) {
+					
+					// Use uploaded file name
+					//$name_arr = explode( '.', $file );
+					//$new_name = $name_arr[0] . '-v1.' . $name_arr[1];
+					
+					// Use the Request's original box list name
+					$name_arr = explode( '.', $old_box_list_name );
+					$new_name = $name_arr[0] . '-R' . $num_of_box_list_revisions . '.' . $name_arr[1];
+					
+					
+					
+					$_FILES[ $file . '_' . $key ] = array(
+						'name'     => $new_name,
+						'type'     => $the_box_list_files['type'][ $key ],
+						'tmp_name' => $the_box_list_files['tmp_name'][ $key ],
+						'error'    => $the_box_list_files['error'][ $key ],
+						'size'     => $the_box_list_files['size'][ $key ],
+					);
+					
+					
+					// Get post_id from custom function 
+					$associated_post_id = Patt_Custom_Func::get_box_list_post_id_by_ticket_id( $request_id );
+					
+					$attachment_id = media_handle_upload( $file . '_' . $key, $associated_post_id );
+					if ( ! is_wp_error( $attachment_id ) ) {
+						update_post_meta( $attachment_id, 'folder', 'box-list' ); // check box-list use
+						//update_post_meta( $attachment_id, 'folder', 'foia' );
+						array_push( $attach_ids, $attachment_id );
+					}
+				}
+
+				$approval_flag = ( count( $attach_ids ) > 0 ? 1 : 0 );
+				//$wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'foia_approval' => $approval_flag ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
+				
+				
+				if ( empty( $ticket_field ) && ! isset( $ticket_field->id ) ) {
+					$wpdb->insert(
+						$wpdb->prefix . 'wpsc_ticketmeta',
+						array(
+							'ticket_id'  => $request_id,
+							'meta_key'   => 'box_list_post_id_revision', //check box_list_post_id use
+							'meta_value' => json_encode( $attach_ids ),
+						)
+					);
+				} else {
+					$wpscfunction->update_ticket_meta( $request_id, 'box_list_post_id_revision', array( 'meta_value' => json_encode( $attach_ids ) ) );
+				}
+				
+
+
+				
+				
+				remove_filter( 'upload_dir', __CLASS__ . '::change_box_list_upload_dir' );
+				remove_filter( 'intermediate_image_sizes_advanced', __CLASS__ . '::remove_thumbnail_generation' );
+				
+				// Set data for Ingestion Update
+				$box_FDIF_arr = Patt_Custom_Func::get_box_and_fdif_id_array_from_ticket_id( $ticket_id );
+				
+				
+				$data['ticket_id'] = $request_id;
+				$data['box_info'] = $args["box_info"];
+				$data['ticket_useage'] = $args["ticket_useage"];
+				$data['super_fund'] = $args["super_fund"];
+				$data['superfund_data'] = $args["superfund_data"];
+				$data['update_box_list'] = true;
+				$data['box_fdif_id_arr'] = $box_FDIF_arr;
+				
+				// Run ingestion update
+				do_action('patt_process_boxinfo_records', $data);
+				
+				
+				
+			}
+			
+			//
+			// Box List Updater - END
+			//
 
 			$response = array(
 				'sucess_status' => 1,
 				'messege'       => 'Saved Successfully.',
 				'destruction_approval_warning' => $destruction_approval_warning,
+				'FILES' => $old_files
 			);
 
 			echo wp_json_encode( $response );
@@ -802,6 +1068,41 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 
 			return $dir;
 		}
+		
+		/**
+		 * Change upload path for 
+		 *
+		 * @param  Array $dir Upload directory information as array.
+		 */
+		public static function change_box_list_upload_dir( $dir ) {
+			
+			//$mydir         = '/box-list';
+			$dir['path']   = $dir['basedir'] . '/box-list';
+			$dir['url']    = $dir['baseurl'] . '/box-list';
+			$dir['subdir'] = '/box-list';
+
+			return $dir;
+		}
+		
+		/**
+		 * Assign a new folder for box list excel file // FROM INGESTION FILE
+		 *
+		 * @param Array $param Upload directory information as array.
+		 */
+/*
+		public function wpai_set_custom_upload_folder( $param ) {
+			$mydir         = '/box-list';
+			$param['path'] = $param['basedir'] . $mydir;
+			$param['url']  = $param['baseurl'] . $mydir;
+			//$param['subdir'] = $mydir; // New 4/20/2021 // Breaks WP6 on Dev
+			
+			//echo 'param: ';
+			//print_r($param);
+			
+			
+			return $param;
+		}
+*/
 
 		/**
 		 * Delete Destruction Authorization image

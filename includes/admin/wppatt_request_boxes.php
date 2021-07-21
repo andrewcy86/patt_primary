@@ -116,9 +116,9 @@ $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
 $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-//$status_id_arr = array('3','670','69');
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id);
+$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
 
 if($is_active == 1) {
     $request_type = 'request';
@@ -147,11 +147,17 @@ if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1
 <?php
 }
 
-//damaged notification
-if($status_id == $tabled_tag->term_id) {
+$get_request_status_name = $wpdb->get_row("SELECT b.name
+FROM wpqa_wpsc_ticket a
+INNER JOIN wpqa_terms b ON b.term_id = a.ticket_status
+WHERE a.id = " . $ticket_id);
+$status_name = $get_request_status_name->name;
+
+//editing disabled notification
+if( in_array($status_id, $status_id_arr) ) {
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" title="Alert"></i></span> Editing is disabled and cannot be completed in the Tabled status.
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" title="Alert"></i></span> Editing is disabled and cannot be completed in the <?php echo $status_name; ?> status.
 </div>
 <?php
 }
@@ -541,7 +547,8 @@ if($rescan_count > 0 && $is_active == 1) {
 		 'columnDefs': [
 		    {
             'width': '5px',
-            'targets': 0,	
+            'targets': 0,
+            'title': 'Select All Checkbox',
             'checkboxes': {	
                'selectRow': true	
             },
@@ -576,7 +583,8 @@ if($rescan_count > 0 && $is_active == 1) {
         'columnDefs': [	
          {
             'width': '5px',
-            'targets': 0,	
+            'targets': 0,
+            'title': 'Select All Checkbox',
             'checkboxes': {	
                'selectRow': true	
             },

@@ -1,6 +1,16 @@
 <?php
+/*
+if ( ! defined( 'ABSPATH' ) ) {
+  exit; // Exit if accessed directly
+}
+*/
+
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
+
+if( session_id() == '' || !isset($_SESSION) ) { 
+  session_start(); 
+}  
 	
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */
@@ -241,6 +251,8 @@ $tracking_num = $row['tracking_number'];
 	);
 }
 
+$lasthour = date("G")-1<0 ? date('Ymd').'23' : date("YmdG")-1;
+
 ## Response
 $response = array(
   "draw" => intval($draw),
@@ -252,7 +264,14 @@ $response = array(
   "searchGeneric" => $searchGeneric,
   "sel" => $sel,
   "searchValue" => $searchValue,
-  "total_filter_rec_query" => $total_filter_rec_query
+  "total_filter_rec_query" => $total_filter_rec_query,
+  "debug" => check_nonce( $_POST['nonce'], $_SESSION['current_page'] ),
+  "debug2" => $_POST['nonce'],
+  "debug3" => $_SESSION['current_page'],
+  "debug4" => $_SESSION,
+  "debug5" => hash_hmac('sha256', session_id().$optional_salt, date("YmdG").'someSalt'.$_SERVER['REMOTE_ADDR']),
+  "debug6" => hash_hmac('sha256', session_id().$optional_salt, $lasthour.'someSalt'.$_SERVER['REMOTE_ADDR']),
+  "debug7" => check_nonce( $_POST['nonce'], $_SERVER['REMOTE_ADDR'] )
 );
 
 function check_nonce($nonce, $optional_salt='')
@@ -267,14 +286,17 @@ function check_nonce($nonce, $optional_salt='')
     }
 }
 
+echo json_encode($response);
+
+/*
 $ret = array();
 header('Content-Type: application/json');
-if (check_nonce($_POST['nonce'], $_SESSION['current_page']))
-{
-echo json_encode($response);
+if (check_nonce($_POST['nonce'], $_SESSION['current_page'])) {
+  echo json_encode($response);
 } else {
-echo 'failed check';
+  echo 'failed check';
 }
+*/
 
 exit;
 

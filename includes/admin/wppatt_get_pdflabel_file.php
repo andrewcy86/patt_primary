@@ -31,8 +31,11 @@ $cancelled_term_id = $cancelled_tag->term_id;
 $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 $tabled_term_id = $tabled_tag->term_id;
 
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+$completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
+
 //$status_array = array(3, 670, 69, 2763);
-$status_array = array($new_request_term_id, $initial_review_rejected_term_id, $cancelled_term_id, $tabled_term_id);
+$status_array = array($new_request_term_id, $initial_review_rejected_term_id, $cancelled_term_id, $completed_dispositioned_term_id);
 if (!in_array($status_id, $status_array)) {
     $flag_btn = true;
 }

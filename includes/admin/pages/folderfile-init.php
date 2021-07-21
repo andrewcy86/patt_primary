@@ -120,7 +120,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
          </select>
 <br /><br />
 
-        <select id='searchByDigitizationCenter'>
+        <select id='searchByDigitizationCenter' aria-label='Search by Digitization Center'>
            <option value=''>-- Select Digitization Center --</option>
            <option value='East'>East</option>
            <option value='West'>West</option>
@@ -348,7 +348,8 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-       { data: 'folderdocinfo_id' },
+       { data: 'folderdocinfo_id', 'title': 'Select All Checkbox' },
+       
        <?php
         }
         ?>

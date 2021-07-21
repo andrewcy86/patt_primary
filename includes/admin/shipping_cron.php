@@ -46,12 +46,62 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_boxinfo', $data_update, $data_where);
 }
 
 
-$shippingArray = ["usps", "fedex", "ups", "dhl"];
+$shippingArray = ["external", "usps", "fedex", "ups", "dhl"];
 
 // Begin going through the different shipping carriers
 foreach ($shippingArray as $shippingCompany)  {
 
 switch ($shippingCompany) {
+    case "external":
+
+$table_name = $wpdb->prefix .'wpsc_epa_shipping_tracking';
+
+$shipping_r3_query = $wpdb->get_results(
+"SELECT *
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
+WHERE tracking_number = UPPER('".WPPATT_EXT_SHIPPING_TERM_R3."')"
+);
+
+foreach ($shipping_r3_query as $item) {
+$wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
+}
+
+$shipping_query = $wpdb->get_results(
+"SELECT *
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
+WHERE tracking_number LIKE UPPER('%".WPPATT_EXT_SHIPPING_TERM."%')"
+);
+
+$shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
+$received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
+
+foreach ($shipping_query as $item) {
+
+$get_ticket_id = $item->ticket_id;
+$get_tracking_number = $item->tracking_number;
+
+//$status_id = Patt_Custom_Func::get_ticket_status($get_ticket_id); 
+
+$ticket = $wpscfunction->get_ticket($get_ticket_id);
+$status_id = $ticket['ticket_status']; 
+
+// IS IT A R3 REQUEST...IF R3 AND RECEIVED SET FLAG TO RECEIVED
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM_R3) && $status_id == $received_tag->term_id) {
+$wpdb->update( $table_name, array( 'delivered' => 1),array('ID'=>$item->id));
+}
+//GET STATUS OF REQUEST
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && $status_id == $shipped_tag->term_id) {
+$wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
+}
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && $status_id == $received_tag->term_id) {
+$wpdb->update( $table_name, array( 'delivered' => 1),array('ID'=>$item->id));
+}
+
+
+}
+
+    break;
+    
     case "usps":
 
 $shipping_query = $wpdb->get_results(
@@ -413,7 +463,7 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
         
 $get_unique_tickets = $wpdb->get_results(
 	"SELECT DISTINCT ticket_id
-FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE ticket_id != '-99999'"
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE tracking_number <> UPPER('".WPPATT_EXT_SHIPPING_TERM_R3."') AND ticket_id != '-99999'"
 );
 
 foreach ($get_unique_tickets as $item) {

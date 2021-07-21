@@ -33,7 +33,10 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
         //bootstrap
         wp_enqueue_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
         wp_enqueue_style('wpsc-bootstrap-select-css', WPPATT_PLUGIN_URL . 'asset/css/bootstrap-select.min.css');
-        wp_enqueue_script( 'bootstrap-cdn-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap.min.js' );
+        //wp_enqueue_script( 'bootstrap-cdn-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap.min.js' );
+        wp_enqueue_script( 'bootstrap-cdn-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap.min.js', array('jquery'), null, true );
+
+        
         wp_enqueue_script( 'bootstrap-multiselect-js', WPPATT_PLUGIN_URL . 'asset/js/bootstrap-select.min.js' );
         //Font-Awesom
         //wp_enqueue_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
@@ -441,11 +444,11 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     public function request_boxes_BeforeRequestID(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_boxes.php';    
     }
-    
-	public function pending_support_agents(){
+ 
+    public function pending_support_agents(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_pending_agents.php';    
     }
-	
+    
     public function request_hide_logs(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_hide_logs.php';    
     }
@@ -729,7 +732,15 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     public function set_recall_status(){
 	    include WPPATT_ABSPATH . 'includes/admin/pages/set_recall_status_settings.php';    
 	    die();
-    }  
+    } 
+    
+    // Add set ticket status 
+    public function set_ticket_status(){
+	    include WPPATT_ABSPATH . 'includes/ajax/set_ticket_status.php';    
+	    die();
+    } 
+    
+     
     
     // Add file to cancel recall on recall details page 
     public function recall_cancel(){
@@ -850,6 +861,14 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	    include WPPATT_ABSPATH . 'includes/admin/pages/scripts/recall_comments_submit_note.php'; 
 	    die();
     }
+    
+    // checks if boxes can change status based on request status  
+    public function determine_request_statuses(){
+	    include WPPATT_ABSPATH . 'includes/ajax/box_status_changable_due_to_request_status.php'; 
+	    die();
+    }
+    
+    
     
     // links ticket_id and attachment id in DB  
     public function link_ticket_attachment(){

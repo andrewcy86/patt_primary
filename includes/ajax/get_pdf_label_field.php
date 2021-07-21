@@ -8,6 +8,8 @@ global $current_user, $wpscfunction, $wpdb;
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 $ticket_id  = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ;
+$ticket_data = $wpscfunction->get_ticket($ticket_id);
+$status_id   	= $ticket_data['ticket_status'];
 
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
@@ -47,7 +49,7 @@ $total_box_count = $wpdb->get_row("SELECT COUNT(a.box_id) as box_count
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c on a.storage_location_id = c.id 
-WHERE ((c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666) AND a.box_destroyed = 0)
+WHERE ((c.digitization_center <> 666) AND a.box_destroyed = 0)
 AND b.id = " . $ticket_id);
 $box_count = $total_box_count->box_count;
 
@@ -72,7 +74,26 @@ if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrato
 <h3>Step 1</h3>
 <!--<p>Print box label and afix it to the side of the box.</p>-->
 <p>Print box label and attach the label on the inside of the box lid in each box. Box labels should not be placed on the exterior to prevent carrier labels from obscuring barcodes with their shipping labels.</p>
+
+<?php
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
+$tabled_term_id = $tabled_tag->term_id;
+
+
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet') && $tabled_term_id == $status_id) {
+    ?>
+<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>
+<?php
+} elseif(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester') && $tabled_term_id == $status_id)  {
+?>
+<strong>Label not avaible at this time.</strong>
+<?php
+} else {
+?>
 <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box Label</a></strong>
+<?php
+}
+?>
 
 <h3>Step 2</h3>
 <p>Print Box list and place it into the first box of earch record schedule series.</p>

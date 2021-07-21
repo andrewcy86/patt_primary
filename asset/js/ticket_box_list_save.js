@@ -1,12 +1,14 @@
 var theFile = {};
 var success = 0;
+var ellipsis_limit = 30;
 //console.log( 'nothing' );
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
+    console.log( 'ticket_box_list_save.js loaded' );
     
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	   
-
+		
 		//jQuery('#wpsc_create_ticket_submit').attr( 'disabled', 'disabled' );
 		//jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 		
@@ -20,124 +22,117 @@ jQuery(document).ready(function(){
 		}
 		
 		
-//         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data && superfund == 'no' ) {
-	if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
-			console.log( 'start' );
-            var dropzoneOptions = {
-                url: "test.php",
-                autoProcessQueue: false,
-                addRemoveLinks: true,
-                uploadMultiple: false,
-                maxFiles: 1,
-                acceptedFiles: '.xlsm',
-                accept: function (file, done) {
-                    
-                    console.log( 'ACCEPT' );
-                    console.log( 'this.files.length: ' + this.files.length );
-                    
-/*
-                    this.removeAllFiles()
-			        this.addFile(file);
-*/
-                    
-                    this.on("addedfile", function (file) {
-			            if (this.files.length > 1) {
-				            console.log( 'TOO LONG' );
-			                this.removeAllFiles()
-			                this.addFile(file);
-			            }
-			        });
-                    
-                    
-                    theFile.file = file;
-                    console.log({theFile:theFile});
-                    //jQuery('#file_upload_cr').val(1);
-                    wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
-                },
-                init: function () {
-                    console.log( 'INIT' );
-                    
-                    this.on( "maxfilesexceeded", function(file) {
-/*
-                        if (this.files[1]!=null){
-                            this.removeFile(this.files[0]);
-                        }
-*/
-						console.log( 'maxfilesexceeded' );
-                        this.removeAllFiles();
-						this.addFile(file);
-                    });
-                    
-                    this.on( "error", function (file) {
-                        console.log( 'error for maxfilesexceeded' );
-                        if (!file.accepted) this.removeFile(file);
-                    });
-                    
-                    this.on( "complete", function(file) {
-		                console.log( 'dropzone complete' );
-		                jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
-		            });
-		            
-		            this.on("addedfiles", function(files) {
-					    console.log(files.length + ' files added');
-					    console.log( files[0].name );
-					    console.log( files );
-					    
-					    let name_arr = files[0].name.split( '.' );
-					    console.log( name_arr );
-					    let extension = name_arr[ name_arr.length - 1 ];
-					    console.log( extension );
-					    
-					    if( !extension.includes( 'xls' ) ) {
-						    console.log( 'wrong type' );
-						    this.removeAllFiles();
-						    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
-						    reset_page();
-					    }
-					    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
-					    
-					});
-					
-					
-                }
-            };
-            var uploader = document.querySelector('#dzBoxUpload');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
-            
-            
-            
-            // SEMS Dropzone setup // no longer used. Dropzone unified.
-/*
-            dropzoneOptions = {
-                url: "test.php",
-                autoProcessQueue: false,
-                addRemoveLinks: true,
-                uploadMultiple: false,
-                maxFiles: 1,
-                acceptedFiles: '.xlsx',
-                accept: function (file, done) {
-                    jQuery('#file_upload_cr_SEMS').val(1);
-                    wpsc_spreadsheet_new_upload_SEMS('attach_SEMS','spreadsheet_attachment', file);
-                },
-                init: function () {
-                    this.on("maxfilesexceeded", function() {
-                        if (this.files[1]!=null){
-                            this.removeFile(this.files[0]);
-                        }
-                    });
-                    this.on("error", function (file) {
-                        if (!file.accepted) this.removeFile(file);
-                    });
-                }
-            };
-            var uploader = document.querySelector('#dzBoxUploadSEMS');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);
-*/   
-            
-            
-                  
+		console.log({settingss:settings});
+		
+		
+		//if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data ) {
+		if(Object.keys( settings ).includes('data')) {
+			console.log( 'includes data' );
+			console.log( {data:settings.data} );
+			
+			let page_href = window.location.href;
+			console.log( page_href );
+			//if( typeof settings.data === 'string' ) {
+				//console.log( 'settings.data is a string' );
+				
+				
+			
+			// commented out for use in production before Revisioning is production worthy.
+// 				if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data || ( settings.data.includes( 'action=wpsc_get_approval_details&ticket_id=' ) ) ) {	
+          if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data  )  {	
+					console.log( 'start' );
+		            var dropzoneOptions = {
+		                url: "test.php",
+		                autoProcessQueue: false,
+		                addRemoveLinks: true,
+		                uploadMultiple: false,
+		                maxFiles: 1,
+		                acceptedFiles: '.xlsm',
+		                accept: function (file, done) {
+		                    
+		                    console.log( 'ACCEPT' );
+		                    console.log( 'this.files.length: ' + this.files.length );
+		                    
+		/*
+		                    this.removeAllFiles()
+					        this.addFile(file);
+		*/
+		                    
+		                    this.on("addedfile", function (file) {
+					            if (this.files.length > 1) {
+						            console.log( 'TOO LONG' );
+					                this.removeAllFiles()
+					                this.addFile(file);
+					            }
+					        });
+		                    
+		                    
+		                    theFile.file = file;
+		                    console.log({theFile:theFile});
+		                    //jQuery('#file_upload_cr').val(1);
+		                    wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
+		                },
+		                init: function () {
+		                    console.log( 'INIT' );
+		                    
+		                    this.on( "maxfilesexceeded", function(file) {
+		/*
+		                        if (this.files[1]!=null){
+		                            this.removeFile(this.files[0]);
+		                        }
+		*/
+								console.log( 'maxfilesexceeded' );
+		                        this.removeAllFiles();
+								this.addFile(file);
+		                    });
+		                    
+		                    this.on( "error", function (file) {
+		                        console.log( 'error for maxfilesexceeded' );
+		                        if (!file.accepted) this.removeFile(file);
+		                    });
+		                    
+		                    this.on( "complete", function(file) {
+				                console.log( 'dropzone complete' );
+				                jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+				            });
+				            
+				            this.on("addedfiles", function(files) {
+							    console.log(files.length + ' files added');
+							    console.log( files[0].name );
+							    console.log( files );
+							    
+							    let name_arr = files[0].name.split( '.' );
+							    console.log( name_arr );
+							    let extension = name_arr[ name_arr.length - 1 ];
+							    console.log( extension );
+							    
+							    if( !extension.includes( 'xls' ) ) {
+								    console.log( 'wrong type' );
+								    this.removeAllFiles();
+								    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
+								    reset_page();
+							    }
+							    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+							    
+							});
+							
+							
+		                }
+	            	};
+		            var uploader = document.querySelector('#dzBoxUpload');
+		            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
+	                  
+	        	} else {
+		        	//alert( "Didn't grab dropzone files. Error." );
+		        	console.log( "Didn't grab dropzone files. Error." );
+	        	}
+	        //}
         } 
     });
+    
+    
+
+    
 });
 
 
@@ -552,16 +547,20 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         "scrollXInner": "110%",
                         columnDefs: [
 							{ orderable: false, targets: '_all' },
-/*
 							{
-						        targets: [ 2, 3, 6, 7, 9, 10 ],
+						        targets: [ 2, 3, 6, 7, 9, 10, 15, 17, 18, 26 ],
 						        render: function ( data, type, row ) {
-						            return type === 'display' && data.length > 30 ?
-								        data.substr( 0, 30 ) +'…' :
-								        data;
-						        }
+                        //console.log({data:data, type:type, row:row});
+                        if( data ) {
+                          return type === 'display' && data.length > ellipsis_limit ?
+                              data.substr( 0, ellipsis_limit ) +'…' :
+                              data;
+                        } else {
+                          return data;
+                        }
+                    }
+
 						    }
-*/
 						]
 
                         
@@ -585,6 +584,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                    var data = new Uint8Array(e.target.result);
 	                    
 	                    console.log( 'post Uint8Array' );
+	                    
+	                    // Checks if file is corrupt
 	                    
 	                    try {
 							var workbook = XLSX.read( data, {

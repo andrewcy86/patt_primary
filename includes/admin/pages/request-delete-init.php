@@ -91,6 +91,7 @@ Enter one or more Request IDs:<br />
 <?php
 //Request statuses
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 $initial_review_complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
 $shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
@@ -111,6 +112,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
         <select id='searchByStatus' aria-label="Search by Status">
            <option value=''>-- Select Status --</option>
 			<option value="<?php echo $new_request_tag->term_id; ?>">New Request</option>
+			<option value="<?php echo $tabled_tag->term_id; ?>">Tabled</option>
 			<option value="<?php echo $initial_review_complete_tag->term_id; ?>">Initial Review Complete</option>
 			<option value="<?php echo $initial_review_rejected_tag->term_id; ?>">Initial Review Rejected</option>
 			<option value="<?php echo $shipped_tag->term_id; ?>">Shipped</option>

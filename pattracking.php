@@ -66,6 +66,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         $this->define('WPPATT_PLUGIN_BASENAME', plugin_basename(__FILE__));
         $this->define('WPPATT_VERSION', $this->version);
         $this->define('WPPATT_DB_VERSION', $this->db_version);
+        $this->define('WPPATT_EXT_SHIPPING_TERM', 'external');
+        $this->define('WPPATT_EXT_SHIPPING_TERM_R3', 'r3 external');
 				
 		$upload_dir = wp_upload_dir();
         $this->define('WPPATT_UPLOADS', trailingslashit( $upload_dir['basedir'] ) );
@@ -93,7 +95,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-sems-background-processing.php' );
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
-        //add_shortcode('wppattquery', array($frontend, 'get_id_details'));
+        //add_shortcode('wppattquery', array($frontend, 'get_id_details'));        
         // Add Shipping CRON
         add_action( 'wppatt_shipping_cron', array($frontend, 'wppatt_shipping_cron_schedule'));
         // Add Recall Shipping CRON
@@ -180,10 +182,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));
- 
+
           // Add Pending Users on PATT Agents page
           add_action('wpsc_pending_support_agents', array($backend, 'pending_support_agents'));
-		  
+ 
           // Hide long logs on Request page
           add_action('wpsc_after_individual_ticket', array($backend, 'request_hide_logs'));
           
@@ -307,7 +309,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wppatt_get_edit_recall_status', array($backend, 'get_edit_recall_status')); 
           
           // Add Set Recall Status Settings via Modal
-          add_action('wp_ajax_wppatt_set_recall_status', array($backend, 'set_recall_status')); 
+          add_action('wp_ajax_wppatt_set_recall_status', array($backend, 'set_recall_status'));
+          
+          // Add set ticket status
+          add_action('wp_ajax_wppatt_set_ticket_status', array($backend, 'set_ticket_status')); 
                     
           // Add Return Edit Returned 
           //add_action('wp_ajax_wppatt_initiate_return', array($backend, 'ticket_initiate_return'));
@@ -392,6 +397,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		  
 		  add_action( 'wp_ajax_wppatt_link_ticket_and_attachment', array($backend, 'link_ticket_attachment' ));
 		  
+		  // checks if boxes can change status based on request status
+		  add_action('wp_ajax_wppatt_box_status_changable_due_to_request_status', array( $backend, 'determine_request_statuses' ) );
           
           
           function epa_admin_menu_items() {
@@ -606,6 +613,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         return $schedules;
     }
     
+    
+
     
     
   }

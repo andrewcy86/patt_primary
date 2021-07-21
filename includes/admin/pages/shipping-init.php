@@ -29,6 +29,9 @@ function create_nonce($optional_salt='')
 }
 
 $_SESSION['current_page'] = $_SERVER['SCRIPT_NAME'];
+
+//echo '<br><br>fun<br><br>';
+//print_r( $_SESSION );
 ?>
 
 
@@ -202,8 +205,10 @@ jQuery('[data-toggle="tooltip"]').tooltip();
     },
     'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
     'drawCallback': function (settings) { 
-        // Here the response
+        
         var response = settings.json;
+        
+        console.log( 'Shipping Response' );
         console.log(response);
 	},
     <?php		
@@ -236,7 +241,7 @@ jQuery('[data-toggle="tooltip"]').tooltip();
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-       { data: 'id' },
+       { data: 'id', 'title': 'Select All Checkbox' },
        <?php
         }
         ?>

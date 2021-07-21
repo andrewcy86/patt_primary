@@ -121,7 +121,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 				
 				<br /><br />
 				
-				<select id='searchByStatus'> 
+				<select id='searchByStatus' aria-label="Search by Status"> 
 					<option value=''>-- Select Status --</option>
 					<?php 
 						foreach( $box_statuses as $status ) {
@@ -152,7 +152,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
              </select>
     <br /><br />
 				
-				<select id='searchByDigitizationCenter'>
+				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
 					<option value='West'>West</option>
@@ -179,7 +179,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 		if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 		{
 		?>
-				<select id='searchByUser'>
+				<select id='searchByUser' aria-label="Search by User">
 					<option value=''>-- Select User --</option>
 					<option value='mine'>Mine</option>
 					<option value='not assigned'>Not Assigned</option>
@@ -248,7 +248,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
         <thead>
             <tr>
 <?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 {
 ?>
                 <th class="datatable_header"></th>
@@ -435,7 +435,7 @@ jQuery(document).ready(function(){
         'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
 		'fixedColumns': true,
 	<?php		
-	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
 		'columnDefs': [
@@ -467,10 +467,11 @@ jQuery(document).ready(function(){
 	?>
 		'columns': [
 	<?php		
-	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
-			{ data: 'box_id' }, 
+			{ data: 'box_id', 'title': 'Select All Checkbox'},
+
 	<?php
 	}
 	?>
@@ -594,14 +595,25 @@ jQuery(document).ready(function(){
 		dataTable.destroy();
 		location.reload();
 	});
+	
 
+	
 	//
 	// Agent Users
 	//
 	
 	// Code block for toggling edit buttons on/off when checkboxes are set
 	jQuery('#tbl_templates_boxes tbody').on('click', 'input', function () {        
-	// 	console.log('checked');
+
+		//let rows_selected = dataTable.column(0).checkboxes.selected();
+		let rows_selected = dataTable.column().checkboxes.selected();
+		console.log( rows_selected );
+		console.log( rows_selected.length );
+		
+		check_assign_box_status( rows_selected );
+		
+		
+		
 		setTimeout(toggle_button_display, 1); //delay otherwise 
 	});
 	
@@ -643,10 +655,12 @@ jQuery(document).ready(function(){
 	    let arr = [];
 	    
 	    let agent_type = '<?php echo $agent_permissions["label"] ?>';
-	
+		
+		console.log( rows_selected );
+		
 	    // Loop through array
-	    [].forEach.call(rows_selected, function(inst){
-	        //console.log('the inst: '+inst);
+	    [].forEach.call(rows_selected, function(inst) {
+	        console.log('the inst: '+inst);
 	        arr.push(inst);
 	    });
 		
@@ -704,7 +718,7 @@ jQuery(document).ready(function(){
 
 	<?php	
 	// BEGIN ADMIN BUTTONS
-	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
 	
@@ -726,11 +740,11 @@ jQuery(document).ready(function(){
 	
 	        
 	       if(response.indexOf(substring_false) >= 0) {
-	       alert('Cannot print box labels for boxes that have been destroyed or do not have an assigned location.');
+	       alert('Cannot print box labels for boxes that have been destroyed or not assigned a digitization center.');
 	       }
 	       
 	       if(response.indexOf(substring_warn) >= 0) {
-	       alert('One or more boxes that you selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
+	       alert('One or more boxes that you selected have been destroyed or not assigned a digitization center and it\'s label will not generate.');
 	       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+boxidinfo, "_blank");
 	       }
 	       
@@ -991,18 +1005,72 @@ function view_assigned_agents( box_id ) {
 
 function wpsc_help_filters(){
 
-		  wpsc_modal_open('Information on Filters');
-		  var data = {
-		    action: 'wpsc_help_alert',
-		    post_name: 'help-filters'
-		  };
-		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		    var response = JSON.parse(response_str);
-		    jQuery('#wpsc_popup_body').html(response.body);
-		    jQuery('#wpsc_popup_footer').html(response.footer);
-		    jQuery('#wpsc_cat_name').focus();
-		  });  
+	wpsc_modal_open('Information on Filters');
+	var data = {
+		action: 'wpsc_help_alert',
+		post_name: 'help-filters'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		var response = JSON.parse(response_str);
+		jQuery('#wpsc_popup_body').html(response.body);
+		jQuery('#wpsc_popup_footer').html(response.footer);
+		jQuery('#wpsc_cat_name').focus();
+	});  
+}
+		
+		
+function check_assign_box_status( id_array ) { 
+	
+	
+	let new_arr = [];
+	
+	
+	//id_array.forEach( function( item, index ) {
+	let i = 0;	
+	while( i < id_array.length ) {
+		new_arr.push( id_array[i] );
+		i++;
+	};
+	
+	var stuff = {
+	    action: 'wppatt_box_status_changable_due_to_request_status',
+	    id_array: new_arr
+	};
+	
+	
+	console.log({ id_array:id_array });
+	console.log({new_arr:new_arr });
+	console.log({stuff:stuff});
+	
+	jQuery.post( wpsc_admin.ajax_url, stuff, function( response_str ) {
+	    let response = JSON.parse(response_str);
+		console.log( response );
+		
+		if( response.in_restricted_status ) {
+			//jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
 		}
+	});
+	
+/*
+	jQuery.ajax({
+		type: "POST",
+		url: wpsc_admin.ajax_url,
+		data: data,
+		//dataType: "json",
+		//cache: false,
+		success: function( response ) {
+			
+			console.log('the response I care about');
+			console.log(response);
+			
+		}
+	});
+*/
+	
+	
+}	
+		
+		
 </script>
 
 
@@ -1029,3 +1097,6 @@ function wpsc_help_filters(){
   </div>
 </div>
 <!-- Pop-up snippet end -->
+
+
+

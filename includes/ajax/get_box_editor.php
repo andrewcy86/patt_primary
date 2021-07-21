@@ -36,14 +36,6 @@ $patt_box_id_arr = array();
 	FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 	INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif ON fdif.box_id = a.id 
 	WHERE a.id = '" . $box_id . "'");
-							
-/*	OLD: before moving validation to fdi_files table
-    $box_dc = $wpdb->get_row("SELECT a.box_destroyed, SUM(b.validation = 1) as validated, COUNT(b.validation) as validation_total
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo b ON a.id = b.box_id
-WHERE a.id = '" . $box_id . "'");
-*/
-
     $dc = $box_dc->box_destroyed;
     $validated = $box_dc->validated;
     $validation_total = $box_dc->validation_total;
@@ -118,6 +110,8 @@ if( ($validated == $validation_total) && ($status_id == $desruction_approval_ter
 <input type="hidden" id="dc" name="dc" value="<?php echo $dc; ?>">
 <?php } 
 
+
+/*
 if (($agent_permissions['label'] == 'Administrator')  || ($agent_permissions['label'] == 'Manager')) { 
 ?>
 <br /><br />
@@ -141,7 +135,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_program_office
 WHERE office_acronym  = '" . $value . "'");
     $program_office_id = $program_office->office_code;
     $program_office_name = $program_office->office_name;
-/*
+
     //Remove - if no characters after -
     $preg_replace_program_office = preg_replace("/\([^)]+\)/","",$value);
     if(substr($preg_replace_program_office, -1) == '-') {
@@ -149,7 +143,6 @@ WHERE office_acronym  = '" . $value . "'");
     } else {
         $new_program_office = $preg_replace_program_office;
     }
-*/
     ?>
         <option data-value='<?php echo $program_office_id; ?>' value='<?php echo $value . ' : ' . $program_office_name; ?>'></option>
      <?php } ?>
@@ -181,6 +174,7 @@ WHERE Schedule_Item_Number = '" . $value . "'");
 </div><!-- accordion end -->
 <?php 
 }
+*/
 ?>
  
 

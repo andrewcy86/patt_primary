@@ -1849,3 +1849,17 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 <?php
 endif;
 ?>
+
+
+
+
+
+
+
+
+
+	 
+	 
+
+	 
+	 

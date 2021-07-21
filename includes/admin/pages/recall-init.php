@@ -98,7 +98,7 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
      <?php } ?>
      </datalist>
 				<br><br>
-				<select id='searchByDigitizationCenter'>
+				<select id='searchByDigitizationCenter' aria-label='Search by Digitization Center'>
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
 					<option value='West'>West</option>
@@ -334,7 +334,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>	 	    
-	       { data: 'recall_id_flag' },
+	       { data: 'recall_id_flag', 'title': 'Select All Checkbox' },
 <?php
 }
 ?>	      

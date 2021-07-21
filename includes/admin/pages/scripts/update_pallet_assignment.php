@@ -37,10 +37,6 @@ $digitzation_center = $wpdb->get_row(
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
@@ -70,7 +66,7 @@ if( count(array_unique($digitization_center_array)) == 2 && in_array('East', $di
 $dc_check = 2;
 }
 
-echo array_search('', $digitization_center_array);
+//echo array_search('', $digitization_center_array);
 
 if( $type == 'yes' && $dc_check == 0) {
 	
@@ -196,10 +192,6 @@ $digitzation_center_reassign = $wpdb->get_row(
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"

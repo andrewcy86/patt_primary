@@ -178,6 +178,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
             $superfund = isset( $data['super_fund'] ) ? $data['super_fund'] : false;
             $superfund = $superfund == 'false' ? false : true;
             
+            // Get Update Flag
+            $update_flag = isset( $data['update_box_list'] ) ? $data['update_box_list'] : false;
+            $update_flag_txt = isset( $data['update_box_list'] ) ? 'true' : 'false';
+            
 			// Update request id
 			$wpdb->update( $wpdb->prefix . 'wpsc_ticket', array( 'request_id' => $request_id ), array( 'id' => $ticket_id ) );
 			
@@ -189,7 +193,12 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			$lan_id_obj_array = [];
 			$lan_id_box_array = [];
 			
+			// Create Restore array if this is a boxlist update. Not applicable for new Requests.
+			if( $update_flag ) {
+				$restore_arr = $this->create_restore_array( $ticket_id );
+			}
 			
+			// If statement can be altered to reduce code.
 			if( !$superfund ) {
 				// New BoxInfo Code.
 				$boxinfodata = stripslashes( $data['box_info'] );
@@ -234,7 +243,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					echo ': '   . '<br>';
 					//echo 'boxinfo_array: <pre>' . $boxinfo_array . '</pre><br>';
 					echo '<pre>';
-					print_r( $boxinfo_array );
+					print_r( $restore_arr );
 					echo '</pre>';
 					echo '<pre>';
 					print_r( $data );
@@ -365,29 +374,70 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						
 					}
 					
-										
-					
-					// Box information for insertion
-					$boxarray = array(
-						'box_id' => $box_id,
-						'ticket_id' => $ticket_id,
-						// 'location' => $boxinfo["Location"],
-						// 'bay' => '1',
-						'storage_location_id' => $this->get_new_storage_location_row_id(),
-						'location_status_id' => 1,
-						//'lan_id' => $lan_id, 
-						//'lan_id_details' => $lan_json,
-						'program_office_id' => $this->get_programe_office_id( $program_office_id ),
-						'record_schedule_id' => $this->get_record_schedule_id( $record_schedule_number ),
-						'date_created' => gmdate( 'Y-m-d H:i:s' ),
-						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
-					);
+					// Box Insertion or Update
+									
+					if( !$update_flag ) {
+						
+						// Box information for insertion
+						$boxarray = array(
+							'box_id' => $box_id,
+							'ticket_id' => $ticket_id,
+							// 'location' => $boxinfo["Location"],
+							// 'bay' => '1',
+							'storage_location_id' => $this->get_new_storage_location_row_id(),
+							'location_status_id' => 1,
+							//'lan_id' => $lan_id, 
+							//'lan_id_details' => $lan_json,
+							'program_office_id' => $this->get_programe_office_id( $program_office_id ),
+							'record_schedule_id' => $this->get_record_schedule_id( $record_schedule_number ),
+							'date_created' => gmdate( 'Y-m-d H:i:s' ),
+							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+						);
+	
+						//Create boxinfo record
+						$boxinfo_id = $this->create_new_boxinfo( $boxarray );
+						
+						// save box_id FK into array for targeting lan_id update after for loop
+						$lan_id_box_array[] = $boxinfo_id; 
+					} else {
+						
+						// Box information for updation
+						$boxarray = array(
+							'box_id' => $box_id,
+							'ticket_id' => $ticket_id,
+							// 'location' => $boxinfo["Location"],
+							// 'bay' => '1',
+							//'storage_location_id' => $this->get_new_storage_location_row_id(),
+							//'location_status_id' => 1,
+							//'lan_id' => $lan_id, 
+							//'lan_id_details' => $lan_json,
+							'program_office_id' => $this->get_programe_office_id( $program_office_id ),
+							'record_schedule_id' => $this->get_record_schedule_id( $record_schedule_number ),
+							//'date_created' => gmdate( 'Y-m-d H:i:s' ),
+							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+						);
+						
+						$where = array(
+							'box_id' => $box_id
+						);
+						
+						//Create boxinfo record
+						$num_rows = $this->update_boxinfo( $boxarray, $where );
+						
+						if( !$num_rows ) {
+							// some type of flag for error handling. 
+						}
+						
+						// Get the FK for the box
+						$boxinfo_id = Patt_Custom_Func::get_id_by_box_id( $box_id );
+						
+						// Need to use the new functions in the custom functions?
+						
+						// save box_id FK into array for targeting lan_id update after for loop
+						//$lan_id_box_array[] = $boxinfo_id; 
 
-					//Create boxinfo record
-					$boxinfo_id = $this->create_new_boxinfo( $boxarray );
-					
-					// save box_id FK into array for targeting lan_id update after for loop
-					$lan_id_box_array[] = $boxinfo_id; 
+						
+					}
 					
 					// tracking for new box
 					$box = $box_num;
@@ -456,7 +506,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 									print_r( $lan_json );
 									echo '</pre>';
 */
-								
+									echo 'update_flag: ' . $update_flag . '<br>';
+									echo 'update_flag_txt: ' . $update_flag_txt . '<br>';
 									echo '<pre>';
 									print_r( $boxarray );
 									echo '</pre>';
@@ -657,9 +708,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 				// Set superfund and ECMS defaults - edit: currently the same.
 				//if( !$superfund ) {
 
-					$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
-					$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
-					$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
+				$index_level = strtolower( $boxinfo['Index Level'] ) == 'file' ? 2 : 1;
+				$essential_record = 'Yes' == $boxinfo['Essential Record'] ? '1' : '0';
+				$docinfo_id = $request_id . '-' . $boxinfo['Box'] . '-' . str_pad( $index_level, 2, '0', STR_PAD_LEFT ) . '-' . $row_counter;
 					
 /*
 				} else {
@@ -1128,10 +1179,36 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						$folderdocfiles_info['freeze'] = 1;
 					}
 					
-					// Save in FDIF DB Table
- 					$table_name = $wpdb->prefix.'wpsc_epa_folderdocinfo_files';
-					$diditwork = $wpdb->insert( $table_name, $folderdocfiles_info ); 
-					$folderdocfiles_info_id = $wpdb->insert_id;
+					//
+					// Save or Update data in FDIF Tabld
+					//
+					
+					if( !$update_flag ) {
+						
+						// Save in FDIF DB Table
+	 					$table_name = $wpdb->prefix.'wpsc_epa_folderdocinfo_files';
+						$diditwork = $wpdb->insert( $table_name, $folderdocfiles_info ); 
+						$folderdocfiles_info_id = $wpdb->insert_id;
+					} else {
+						
+						// Update in FDIF DB Table
+						unset( $folderdocfiles_info[ 'date_created' ] );
+						//$fdif_array = [ 'date_updated' => gmdate( 'Y-m-d H:i:s' ) ];
+						
+						//$folder_file_sub_id = '0000024-1-02-1';
+						
+						$where = array(
+							'folderdocinfofile_id' => $folder_file_sub_id
+						);
+						
+						//Create boxinfo record
+						$num_rows = $this->update_fdif( $folderdocfiles_info, $where );
+						
+						if( !$num_rows ) {
+							// some type of flag for error handling. 
+						}
+						
+					}
 					
 					
 					
@@ -1347,10 +1424,43 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						$folderdocfiles_info['freeze'] = 1;
 					}
 					
-					// Insert into folderdocinfo_files for either ECMS or SEMS
- 					$table_name = $wpdb->prefix.'wpsc_epa_folderdocinfo_files';
-					$diditwork = $wpdb->insert( $table_name, $folderdocfiles_info ); 
-					$folderdocfiles_info_id = $wpdb->insert_id;
+					
+					
+					//
+					// Save or Update data in FDIF Table
+					//
+					
+					if( !$update_flag ) {
+						
+						
+						// Insert into folderdocinfo_files for either ECMS or SEMS
+	 					$table_name = $wpdb->prefix.'wpsc_epa_folderdocinfo_files';
+						$diditwork = $wpdb->insert( $table_name, $folderdocfiles_info ); 
+						$folderdocfiles_info_id = $wpdb->insert_id;
+						
+					} else {
+						
+						// Update in FDIF DB Table
+						unset( $folderdocfiles_info[ 'date_created' ] );
+						//$fdif_array = [ 'date_updated' => gmdate( 'Y-m-d H:i:s' ) ];
+
+						
+						//$folder_file_sub_id = '0000024-1-02-1';
+						
+						$where = array(
+							'folderdocinfofile_id' => $folder_file_sub_id
+						);
+						
+						//Create boxinfo record
+						$num_rows = $this->update_fdif( $folderdocfiles_info, $where );
+						
+						if( !$num_rows ) {
+							// some type of flag for error handling. 
+						}
+						
+					}
+					
+					
 					
 					
 					//
@@ -1609,13 +1719,13 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 			}
 */
 			
-
+/*
 			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
 			if( $superfund ) {				
 				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
-
+*/
 			
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
@@ -1775,6 +1885,65 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 			return $boxinfo_id;
 		}
 		
+		/**
+		 * Update a boxinfo record
+		 *
+		 * @param Array $boxarray box info as array.
+		 */
+		public function update_boxinfo( $boxarray, $where ) {
+			global $wpdb;
+			$num_rows = $wpdb->update( $wpdb->prefix . 'wpsc_epa_boxinfo', $boxarray, $where );
+			return $num_rows;
+		}
+		
+		/**
+		 * Update a FDIF record
+		 *
+		 * @param Array $fdif_array box info as array.
+		 */
+		public function update_fdif( $fdif_array, $where ) {
+			global $wpdb;
+			$num_rows = $wpdb->update( $wpdb->prefix . 'wpsc_epa_folderdocinfo_files', $fdif_array, $where );
+			return $num_rows;
+		}
+		
+		/**
+		 * Creates a Restore Array containing all the data needed to restore previous box list data on php error.
+		 *
+		 * @param $ticket_id is the id for the SupportCandy ticket
+		 */
+		public function create_restore_array( $ticket_id ) {
+			global $wpdb;
+			
+			$box_n_folder_restore_arr = [];
+			
+			$sql = "SELECT * FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id;
+			$boxinfo_restore_arr = $wpdb->get_results( $sql );
+			
+			$box_n_folder_restore_arr[ 'boxes' ] = $boxinfo_restore_arr;
+			
+			foreach( $boxinfo_restore_arr as $key => $box ) {
+				
+				$sql = "SELECT * FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = " . $box->id;
+				$folderfile_restore_arr = $wpdb->get_results( $sql );
+				
+				$box_n_folder_restore_arr[ 'boxes' ][ $key ]->folderfile_arr = $folderfile_restore_arr;
+					
+			}
+			
+			return $box_n_folder_restore_arr;
+		}
+
+		/**
+		 * Restore the previous box list
+		 *
+		 * @param 
+		 */
+		public function restore_previous_boxlist( $ticket_id, $restore_arr ) {
+			global $wpdb;
+			
+		}
+
 		
 		/**
 		 * SEMS form html

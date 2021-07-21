@@ -105,7 +105,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
      <?php } ?>
      </datalist>
 				<br><br>
-				<select id='searchByDigitizationCenter'>
+				<select id='searchByDigitizationCenter' aria-label='Search by Digitization Center'>
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
 					<option value='West'>West</option>
@@ -315,7 +315,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>	    
-	       { data: 'return_id_flag' },   
+	       { data: 'return_id_flag', 'title': 'Select All Checkbox' },   
 <?php
 }
 ?>       
@@ -653,7 +653,6 @@ function wppatt_return_editor() {
  
 
 </div>
-
 
 
 <!-- Pop-up snippet start from RFID.php-->

@@ -1056,6 +1056,9 @@ margin: 0px 0px 25px 15px;
 	// the validity of the ID requires a little time to confirm the ID
 	// as invalid then remove it. 
 	function wppatt_submit_return() {
+		
+		jQuery('#wpsc_create_return_submit').attr( 'disabled', 'disabled' );
+		
 		setTimeout(wppatt_submit_return2, 100);
 		return false;
 	}
@@ -1309,3 +1312,17 @@ margin: 0px 0px 25px 15px;
 <?php
 endif;
 ?>
+
+
+
+
+
+
+
+
+
+	 
+	 
+
+	 
+	 

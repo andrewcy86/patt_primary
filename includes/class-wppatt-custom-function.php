@@ -26,12 +26,6 @@ if (!class_exists('Patt_Custom_Func')) {
          * Truncate to the nearest word
          * @return truncated string with ellipsis
          */
-
-
-        /**
-         * Truncate to the nearest word
-         * @return truncated string with ellipsis
-         */
          
     public static function wholeWordTruncate($string, $your_desired_width,$delimiter = '...') {
   $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
@@ -213,7 +207,7 @@ if (!class_exists('Patt_Custom_Func')) {
 	static $tracking_urls = [
 		//UPS - UNITED PARCEL SERVICE
 		[
-			'url'=>	UPS_URL,
+			'url'=> UPS_URL,
 			'reg'=>'/\b(1Z ?[0-9A-Z]{3} ?[0-9A-Z]{3} ?[0-9A-Z]{2} ?[0-9A-Z]{4} ?[0-9A-Z]{3} ?[0-9A-Z]|T\d{3} ?\d{4} ?\d{3})\b/i'
 		],
 
@@ -300,6 +294,31 @@ switch (true) {
     return $shipping_carrier;
     
 }
+
+/**
+ * Determine if external shipping carrier is being used on a given ticket
+ */
+public static function using_ext_shipping( $ticket_id ) {
+  global $wpdb;
+  $table = $wpdb->prefix . "wpsc_epa_shipping_tracking";
+  $sql = "SELECT * FROM " . $table . " where ticket_id = " . $ticket_id;
+  $shipping_details = $wpdb->get_results( $sql );
+  
+  $is_ext = false;
+  
+  foreach( $shipping_details as $row ) {
+    $row->tracking_number = strtolower( $row->tracking_number );
+    if( $row->tracking_number == WPPATT_EXT_SHIPPING_TERM || $row->tracking_number == WPPATT_EXT_SHIPPING_TERM_R3 ) {
+      $is_ext = true;
+    }
+    
+  }
+  
+  return $is_ext;
+  
+
+}
+
 
 /**
  * Determine if pallet ID exists in scan_list, if not remove pallet_id from the boxinfo table
@@ -5813,20 +5832,31 @@ public static function agents_assigned_recall( $recall_id ) {
 
 public static function get_wp_user_id_by_ticket_id( $ticket_id ) {
 	global $wpdb;
-        $id = (int)$ticket_id;
-        $the_row = $wpdb->get_row("SELECT customer_email FROM {$wpdb->prefix}wpsc_ticket WHERE id = ".$id);
-        
-        //$the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
-        $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = '" . $the_row->customer_email . "'" );
-        
-        $user_obj = get_user_by( 'email', $the_row->customer_email );
-        
-        //$the_user_row->id;
-        $user_id_array = array($user_obj->ID);
-        //$user_agent_id = self::translate_user_id( $user_id_array, 'agent_term_id');
-        
-        return $user_obj->ID;
+    $id = (int)$ticket_id;
+    $the_row = $wpdb->get_row("SELECT customer_email FROM {$wpdb->prefix}wpsc_ticket WHERE id = ".$id);
+    
+    //$the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = " . $the_row->customer_email );
+    $the_user_row = $wpdb->get_row("SELECT id FROM {$wpdb->prefix}users WHERE user_email = '" . $the_row->customer_email . "'" );
+    
+    $user_obj = get_user_by( 'email', $the_row->customer_email );
+    
+    //$the_user_row->id;
+    $user_id_array = array($user_obj->ID);
+    //$user_agent_id = self::translate_user_id( $user_id_array, 'agent_term_id');
+    
+    return $user_obj->ID;
 }
+
+public static function get_box_list_post_id_by_ticket_id( $ticket_id ) {
+	global $wpdb;
+    $id = (int)$ticket_id;
+    
+    $the_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wpsc_ticketmeta WHERE ticket_id= %d AND meta_key = 'box_list_post_id'", $ticket_id ) );
+    
+    
+    return $the_row->meta_value;
+}
+
 
 // Outbound ECMS Email Notification Function
 	    public static function insert_ecms_notification( $folderfile_id, $comment, $object_ids ) {
@@ -6862,6 +6892,80 @@ if($type == 'comment') {
 
 		}
 		
+		/**
+         * Get an array of ids for the boxes in a given request
+         * Accepts $ticket_id in these formats: '0000008', 8. Note the quotes for padded ticket_id.
+         * @return array of box_id
+         */
+		public static function get_box_id_array_from_ticket_id( $ticket_id ) {
+			
+			global $wpdb;
+			$output = [];
+			
+			$sql = "SELECT 
+						id 
+					FROM 
+						".$wpdb->prefix."wpsc_epa_boxinfo 
+					WHERE 
+						ticket_id = " . $ticket_id;
+							    
+			$results = $wpdb->get_results( $sql );
+			
+			forEach( $results as $key => $val ) {
+				$output[$key] = $val->id;
+			}
+			
+ 			return $output;
+		}
+		
+		/**
+         * Get an array of ids for the Files in FDIF in a given box
+         * Accepts $box_id in these formats: '0000008', 8. 
+         * Note: $box_id here is the ID column from the boxinfo table. 
+         * @return array of ID for files that are in the given box's ID.
+         */
+		public static function get_fdif_id_array_from_box_id( $box_id ) {
+			
+			global $wpdb;
+			$output = [];
+			
+			$sql = "SELECT 
+						id 
+					FROM 
+						".$wpdb->prefix."wpsc_epa_folderdocinfo_files 
+					WHERE 
+						box_id = " . $box_id;
+							    
+			$results = $wpdb->get_results( $sql );
+			
+			forEach( $results as $key => $val ) {
+				$output[$key] = $val->id;
+			}
+			
+ 			return $output;
+		}
+		
+		/**
+         * Get a nested array of ids for the Boxes and Files in a given request
+         * Accepts $ticket_id in these formats: '0000008', 8. Note the quotes for padded ticket_id.
+         * Note: IDs are the ID column from the boxinfo and FDIF tables. 
+         * @return nested array of IDs for boxes and files that are in the given request
+         */
+		public static function get_box_and_fdif_id_array_from_ticket_id( $ticket_id ) {
+			
+			$box_arr = self::get_box_id_array_from_ticket_id( $ticket_id );
+			$output = [];
+			
+			foreach( $box_arr as $key => $val ) {
+				
+				
+				$output[ $val ] = self::get_fdif_id_array_from_box_id( $val );
+				
+				
+			}
+						
+ 			return $output;
+		}
 		
 		/**
          * Inserts a row into the wpqa_wpsc_epa_timestamps_recall table

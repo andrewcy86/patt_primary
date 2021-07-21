@@ -85,10 +85,6 @@ if (isset($_GET['id']))
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
@@ -125,38 +121,6 @@ if (isset($_GET['id']))
         return $array;
     }
     
-    //Function to obtain shelf from database
-    function fetch_aisle_bay_shelf_position()
-    {
-        global $wpdb;
-        $array = array();
-        //$request_shelf = $wpdb->get_results("SELECT aisle, bay, shelf, position FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
-
-$request_shelf = $wpdb->get_results("
-SELECT
-" . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
-" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, 
-" . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, 
-" . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, 
-" . $wpdb->prefix . "wpsc_epa_storage_location.position as position,
-(SELECT UPPER(" . $wpdb->prefix . "terms.slug) FROM " . $wpdb->prefix . "terms, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_storage_location WHERE " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as digitization_center
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
-INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status      
-WHERE 
-" . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
-" . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
-" . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
-
-        
-        foreach($request_shelf as $location)
-        {
-            array_push($array, strtoupper($location->aisle.'A_'.$location->bay.'B_'.$location->shelf.'S_'.$location->position.'P_'.$location->digitization_center));
-        }
-        
-        return $array;
-    }
     
     //Function to obtain create month and year from database
     function fetch_create_date()
@@ -301,7 +265,6 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         $box_array = fetch_box_id();
         $box_location = fetch_location();
         $box_program_office = fetch_program_office();
-        $box_location_position = fetch_aisle_bay_shelf_position();
         $box_date = fetch_create_date();
         $box_count = fetch_box_count();
         $box_ecms_sems = fetch_ecms_sems();
@@ -354,12 +317,6 @@ $not_assigned_flag = 1;
         $request_program_office = $wpdb->get_row("SELECT organization_acronym as acronym FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND box_id = '" . $box_array[$i] ."'");
         
         $box_program_office_a = $request_program_office->acronym;
-    
-        //$request_location_position = $wpdb->get_row("SELECT aisle, bay, shelf, position FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
-        $request_location_position = $wpdb->get_row("SELECT " . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, " . $wpdb->prefix . "wpsc_epa_storage_location.position as position,
-            UPPER(" . $wpdb->prefix . "terms.slug) as digitization_center FROM " . $wpdb->prefix . "wpsc_epa_storage_location, " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "wpsc_epa_program_office, " . $wpdb->prefix . "terms  WHERE " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center AND " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id = " . $wpdb->prefix . "wpsc_epa_program_office.office_code AND box_id =  '" . $box_array[$i] ."'");
-        
-        $request_location_position_a = $request_location_position->aisle.'A_'.$request_location_position->bay.'B_'.$request_location_position->shelf.'S_'.$request_location_position->position.'P_'.$request_location_position->digitization_center;
 
         $request_create_date = $wpdb->get_row( "SELECT date_created FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
         
@@ -602,12 +559,6 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
             $obj_pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 20);
-            
-            $determine_no_location = substr_count($box_location_position[$i], '0'); 
-            
-            if($determine_no_location != 4) {
-            $obj_pdf->Cell(105, 13, $box_location_position[$i], 1, 0, 'C', 1);
-            }
 
 }
 
@@ -616,12 +567,6 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
             $obj_pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 20);
-            
-            $determine_no_location = substr_count($request_location_position_a, '0'); 
-            
-            if($determine_no_location != 4) {
-            $obj_pdf->Cell(105, 13, $request_location_position_a, 1, 0, 'C', 1);
-            }
 
 }
             

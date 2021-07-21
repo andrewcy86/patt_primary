@@ -39,7 +39,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     RIGHT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location s ON a.storage_location_id = s.id
     INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
     WHERE ((c.index_level = 2 AND c.freeze = 1) OR 
-    (c.index_level = 2 AND s.aisle <> 0 AND s.bay <> 0 AND s.shelf <> 0 AND s.position <> 0 AND s.digitization_center <> 666 AND a.box_destroyed = 0)) 
+    (c.index_level = 2 AND s.digitization_center <> 666 AND a.box_destroyed = 0)) 
     AND a.ticket_id = " .$GLOBALS['id']);
 
 //print_r($box_ids);
@@ -135,7 +135,7 @@ $folderfile_info = $wpdb->get_row("SELECT d.folderdocinfofile_id, d.title
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo b
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.box_id = b.id
-WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0) OR 
+WHERE ((d.index_level = 2 AND c.digitization_center <> 666 AND b.box_destroyed = 0) OR 
 (d.index_level = 2 AND d.freeze = 1)) AND
 d.folderdocinfofile_id = '" .$item."'");
 

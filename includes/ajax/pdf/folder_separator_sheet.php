@@ -30,7 +30,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_boxinfo b
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.box_id = b.id
 WHERE ((d.index_level = 1 AND d.freeze = 1) OR 
-(d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
+(d.index_level = 1 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
 b.ticket_id = " . $GLOBALS['id']);
         
         foreach($request_folderdocinfo as $folderdocinfo)
@@ -53,7 +53,7 @@ b.ticket_id = " . $GLOBALS['id']);
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.box_id = b.id
         WHERE ((d.index_level = 1 AND d.freeze = 1) OR 
-        (d.index_level = 1 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
+        (d.index_level = 1 AND c.digitization_center <> 666 AND b.box_destroyed = 0)) AND 
         b.ticket_id = " .$GLOBALS['id']);
         
         foreach($request_title as $folder_title)
@@ -125,7 +125,7 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
         WHERE " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id AND 
         " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id AND
         ((" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.freeze = 1) OR
-        (" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0)) 
+        (" . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.index_level = 1 AND digitization_center <> 666 AND " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0)) 
         AND " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files.folderdocinfofile_id = '" .$folderdocinfo_array[$i]."'");
             $folderdoc_id = $folderdocinfo_new->folderdocinfofile_id;
         
