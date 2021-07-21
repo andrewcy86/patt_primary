@@ -387,7 +387,11 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             }
             $tbl .= '</td>';
             
+            if($boxlist_location != 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
+            } else {
+            $tbl .= '<td>' . $boxlist_dc_location . '</td>';
+            }
             
             } elseif ($boxlist_location == 'Currently Unassigned' && $boxlist_dc_location == 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . '</td>';   

@@ -79,8 +79,9 @@ ob_start();
       insertItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
-         console.log({item:item});
+         
           item.tracking_number = item.tracking_number.toLowerCase();
+          item.tracking_number = item.tracking_number.trim();
        return jQuery.ajax({
         type: "POST",
         url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
@@ -90,8 +91,9 @@ ob_start();
       updateItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo WPPATT_PLUGIN_URL; ?>';
-        console.log({item:item});
+        
         item.tracking_number = item.tracking_number.toLowerCase();
+        item.tracking_number = item.tracking_number.trim();
        return jQuery.ajax({
         type: "PUT",
         url: subfolder+"includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
