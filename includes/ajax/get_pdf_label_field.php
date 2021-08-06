@@ -80,11 +80,11 @@ $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 $tabled_term_id = $tabled_tag->term_id;
 
 
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet') && $tabled_term_id == $status_id) {
+if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $tabled_term_id == $status_id) {
     ?>
 <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>
 <?php
-} elseif(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester') && $tabled_term_id == $status_id)  {
+} elseif(($agent_permissions['label'] == 'Requester') && $tabled_term_id == $status_id)  {
 ?>
 <strong>Label not avaible at this time.</strong>
 <?php

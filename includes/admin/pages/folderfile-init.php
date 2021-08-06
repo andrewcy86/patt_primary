@@ -45,17 +45,17 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
         
         <?php		
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unathorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Labels"></i><span class="sr-only">Reprint Labels</span> Reprint Labels</button>
         <?php
         }
         ?>
@@ -64,8 +64,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#B3EFFF !important;color:#046B99 !important;"><i class="fas fa-check-circle"></i> Validate <a href="#" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle"></i></a></button>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="background-color:#B3EFFF !important;color:#046B99 !important;"><i class="fas fa-times-circle"></i> Re-scan <a href="#" aria-label="Re-scan button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle"></i></a></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-scan"></i><span class="sr-only">Re-scan</span> Re-scan <a href="#" aria-label="Re-scan button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php
         }
         ?>
@@ -78,7 +78,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a>
+					      <h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filter"></i><span class="sr-only">Filter</span> Filters <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</h4>
 								<hr class="widget_divider">
 
@@ -150,6 +150,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
   <div class="col-sm-8 col-md-9 wpsc_it_body">
 
 <style>
+
 input::-webkit-calendar-picker-indicator {
   display: none;
 }
@@ -181,7 +182,7 @@ div.dataTables_processing { z-index: 1; }
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br /><br />
 <table id="tbl_templates_folderfile" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
@@ -189,18 +190,23 @@ div.dataTables_processing { z-index: 1; }
                 <?php		
                 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
                 {
-                ?>
-                <th class="datatable_header"></th>
+                ?>                
+                
+                <!-- PATT BEGIN -->
+                <th class="datatable_header" scope="col" ></th>
                 <?php
                 }
                 ?>
-                <th class="datatable_header">Document/File ID</th>
-                <th class="datatable_header">DB ID</th>
-                <th class="datatable_header">Priority</th>
-                <th class="datatable_header">Request ID</th>
-                <th class="datatable_header">Digitization Center</th>
-                <th class="datatable_header">Program Office</th>
-                <th class="datatable_header">Validation</th>
+                
+
+                <th class="datatable_header" scope="col" >Document/File ID</th>
+                <th class="datatable_header" scope="col" >DB ID</th>
+                <th class="datatable_header" scope="col" >Priority</th>
+                <th class="datatable_header" scope="col" >Request ID</th>
+                <th class="datatable_header" scope="col" >Digitization Center</th>
+                <th class="datatable_header" scope="col" >Program Office</th>
+                <th class="datatable_header" scope="col" >Validation</th>
+                <!-- PATT END -->
             </tr>
         </thead>
     </table>
@@ -353,10 +359,10 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
        <?php
         }
         ?>
-       { data: 'folderdocinfo_id_flag' }, 
+       { data: 'folderdocinfo_id_flag', 'class' : 'text_highlight' }, 
 	   { data: 'dbid', visible: false},
        { data: 'ticket_priority' },
-       { data: 'request_id' },
+       { data: 'request_id', 'class' : 'text_highlight' },
        { data: 'location' },
        { data: 'acronym' },
        { data: 'validation' },

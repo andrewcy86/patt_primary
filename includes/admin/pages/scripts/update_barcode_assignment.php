@@ -37,12 +37,22 @@ $invalid_box_decline_check = 0;
 $invalid_box_recall_check = 0;
 $invalid_box_destroyed_check = 0;
 $invalid_box_active_check = 0;
+$invalid_box_request_status_check = 0;
 
 $box_decline_check_array = array();
 $box_recall_check_array = array();
 $box_destroyed_check_array = array();
 $box_active_check_array = array();
 $invalid_pallet_id_array = array();
+$invalid_request_check_array = array();
+
+$received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
+$in_progress_tag = get_term_by('slug', 'in-process', 'wpsc_statuses');
+$ecms_tag = get_term_by('slug', 'ecms', 'wpsc_statuses');
+$sems_tag = get_term_by('slug', 'sems', 'wpsc_statuses');
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses');
+//Boxes can only be scanned
+$request_array = array($received_tag->term_id, $in_progress_tag->term_id, $ecms_tag->term_id, $sems_tag->term_id, $completed_dispositioned_tag->term_id);
 
 ////////
 //Determine if location entered is valid
@@ -89,13 +99,14 @@ $invalid_pallet_items = implode(",", $invalid_pallet_id_array);
 //Determine if box is valid
  if(preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check)){
 $box_check = $wpdb->get_row(
-"SELECT a.id, b.active, a.box_destroyed
+"SELECT a.id, b.active, a.box_destroyed, b.ticket_status
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
 WHERE a.box_id = '" . $box_pallet_check . "'");
 $box_exist = $box_check->id;
 $box_active = $box_check->active;
 $box_destroyed = $box_check->box_destroyed;
+$box_request_status = $box_check->ticket_status;
 //echo $box_pallet_check;
 //Is box part of recall/decline?
   $type = 'box';
@@ -107,8 +118,8 @@ $box_destroyed = $box_check->box_destroyed;
  echo $request_recall_check.'recallc';
  echo $box_active.'bactive';
  echo $box_destroyed.'bdestroy';*/
- 
-if (!empty($box_exist) && $return_check != 1 && $request_recall_check != 1 && $box_active == 1 && $box_destroyed == 0) {
+
+if (!empty($box_exist) && $return_check != 1 && $request_recall_check != 1 && $box_active == 1 && $box_destroyed == 0 && in_array($box_request_status, $request_array)) {
 $pallet_box_exist++;
 }
 
@@ -127,6 +138,10 @@ if($box_destroyed == 1) {
 if($box_active == 0) {
     array_push($box_active_check_array, $box_pallet_check);
     $invalid_box_active_check = 1;
+}
+if(!in_array($box_request_status, $request_array)) {
+    array_push($invalid_request_check_array, $box_pallet_check);
+    $invalid_box_request_status_check = 1;
 }
 
 /*else {
@@ -189,6 +204,17 @@ if($invalid_box_active_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*
     }
     else {
        echo "<strong>Boxes have been archived/do not exist</strong>: [".$invalid_items_active."] <br /> <br />";
+    }
+    exit;
+}
+
+if($invalid_box_request_status_check == 1 && (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $box_pallet_check) || preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $box_pallet_check))) {
+    $invalid_items_active = implode(",", $invalid_request_check_array);
+    if(count($invalid_request_check_array) == 1) {
+        echo "<strong>Box is not able to be assigned a physical location at this request status</strong>: [".$invalid_items_active."] <br /> <br />";
+    }
+    else {
+       echo "<strong>Boxes are not able to be assigned a physical location at this request status</strong>: [".$invalid_items_active."] <br /> <br />";
     }
     exit;
 }

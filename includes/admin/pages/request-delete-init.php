@@ -26,9 +26,6 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 ?>
 
 <style>
-a:link, a:visited {
-  color:#107799;
-}
 
 div.dataTables_wrapper {
         width: 100%;
@@ -59,14 +56,14 @@ color: rgb(255, 255, 255) !important;
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-         <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-		 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>  margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-         <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn" id="btn_restore_tickets" style="<?php echo $action_default_btn_css?>"><i class="fa fa-window-restore"></i> <?php _e('Restore Request','supportcandy')?></button>
+         <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>  margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
+         <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn" id="btn_restore_tickets" style="<?php echo $action_default_btn_css?>"><i class="fa fa-window-restore" aria-hidden="true" title="Restore Request"></i><span class="sr-only">Restore Request</span> <?php _e('Restore Request','supportcandy')?></button>
 <?php
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-         <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn" id="btn_delete_permanently_bulk_ticket" style="<?php echo $action_default_btn_css?>"><i class="fa fa-trash"></i> <?php _e('Delete Tickets Permanently','supportcandy')?></button>
+         <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn" id="btn_delete_permanently_bulk_ticket" style="<?php echo $action_default_btn_css?>; background-color:#FF7A33 !important;color:black !important;"><i class="fa fa-trash" aria-hidden="true" title="Archive"></i><span class="sr-only">Archive</span> <?php _e('Delete Tickets Permanently','supportcandy')?></button>
 <?php
 }
 ?>	
@@ -79,7 +76,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters
+					      <h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i><span class="sr-only">Filters</span> Filters
 								</h4>
 								<hr class="widget_divider">
 
@@ -172,7 +169,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
 						?>
 												<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">
 													<div class="flex-container searched-user" style="padding:5px;font-size:1.0em;">
-														<?php echo htmlentities($agent_name)?><span class="remove-user"><i class="fa fa-times"></i></span>
+														<?php echo htmlentities($agent_name)?><span class="remove-user"><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>
 														  <input type="hidden" name="assigned_agent[]" value="<?php echo htmlentities($agent) ?>" />
 					<!-- 									  <input type="hidden" name="new_requestor" value="<?php echo htmlentities($agent) ?>" /> -->
 													</div>
@@ -219,18 +216,18 @@ color: rgb(255, 255, 255) !important;
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search..." aria-label="Search">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br /><br />
 <table id="tbl_templates_requests_delete" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
-                <th class="datatable_header"></th>
-                <th class="datatable_header">Request ID</th>
-                <th class="datatable_header">Priority</th>
-                <th class="datatable_header">Status</th>
-                <th class="datatable_header">Name</th>
-                <th class="datatable_header">Location</th>
-                <th class="datatable_header">Last Updated</th>
+                <th class="datatable_header" scope="col"></th>
+                <th class="datatable_header" scope="col">Request ID</th>
+                <th class="datatable_header" scope="col">Priority</th>
+                <th class="datatable_header" scope="col">Status</th>
+                <th class="datatable_header" scope="col">Name</th>
+                <th class="datatable_header" scope="col">Location</th>
+                <th class="datatable_header" scope="col">Last Updated</th>
             </tr>
         </thead>
     </table>
@@ -329,7 +326,7 @@ jQuery(document).ready(function(){
       'order': [[1, 'asc']],
     'columns': [
        { data: 'request_id' }, 
-       { data: 'request_id_flag' },
+       { data: 'request_id_flag', 'class' : 'text_highlight' },
        { data: 'ticket_priority' },
        { data: 'ticket_status' },
        { data: 'customer_name' },
@@ -612,7 +609,7 @@ function get_display_user_html(user_name, termmeta_user_val) {
 		var html_str = '<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">'
 						+'<div class="flex-container searched-user" style="padding:5px;font-size:1.0em;">'
 							+user_name
-							+'<span  class="remove-user" ><i class="fa fa-times"></i></span>'
+							+'<span  class="remove-user" ><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>'
 						+'<input type="hidden" name="assigned_agent[]" value="'+termmeta_user_val+'" />'
 						+'</div>'
 					+'</div>';	

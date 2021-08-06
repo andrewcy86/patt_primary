@@ -172,15 +172,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			
 			// Get Ticket ID
 			$ticket_id = $data['ticket_id'];
-            $request_id = Patt_Custom_Func::ticket_to_request_id( $ticket_id );
-            
-            // Get Superfund flag
-            $superfund = isset( $data['super_fund'] ) ? $data['super_fund'] : false;
-            $superfund = $superfund == 'false' ? false : true;
-            
-            // Get Update Flag
-            $update_flag = isset( $data['update_box_list'] ) ? $data['update_box_list'] : false;
-            $update_flag_txt = isset( $data['update_box_list'] ) ? 'true' : 'false';
+      $request_id = Patt_Custom_Func::ticket_to_request_id( $ticket_id );
+      
+      // Get Superfund flag
+      $superfund = isset( $data['super_fund'] ) ? $data['super_fund'] : false;
+      $superfund = $superfund == 'false' ? false : true;
+      
+      // Get Update Flag
+      $update_flag = isset( $data['update_box_list'] ) ? $data['update_box_list'] : false;
+      $update_flag_txt = isset( $data['update_box_list'] ) ? 'true' : 'false';
             
 			// Update request id
 			$wpdb->update( $wpdb->prefix . 'wpsc_ticket', array( 'request_id' => $request_id ), array( 'id' => $ticket_id ) );
@@ -341,7 +341,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 				if ( $box !== $box_num ) {
 					
-					//$box_validation = true;
+					$box_validation = true;
 					
 					// Disposition Schedule Number //old: Record Schedule Number
 					$record_schedule_number_break = explode( ':', $boxinfo['Disposition Schedule & Item Number'] );
@@ -394,8 +394,16 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'date_updated' => gmdate( 'Y-m-d H:i:s' ),
 						);
 	
-						//Create boxinfo record
+						// Create boxinfo record
 						$boxinfo_id = $this->create_new_boxinfo( $boxarray );
+						
+						// D E B U G
+						//$box_validation = false;
+						
+						// Error handling
+						if( $boxinfo_id === 0 ) {
+  						$box_validation = false;
+						}
 						
 						// save box_id FK into array for targeting lan_id update after for loop
 						$lan_id_box_array[] = $boxinfo_id; 
@@ -421,11 +429,15 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 							'box_id' => $box_id
 						);
 						
-						//Create boxinfo record
+						// Update boxinfo record
 						$num_rows = $this->update_boxinfo( $boxarray, $where );
 						
+						// D E B U G
+						$box_validation = false;
+						
+						// Error handling
 						if( !$num_rows ) {
-							// some type of flag for error handling. 
+							$box_validation = false;
 						}
 						
 						// Get the FK for the box
@@ -479,18 +491,70 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					
 					
 					//
-					// If Box not inserted properly, delete the ticket and abort ingestion
+					// If Box not inserted properly, delete the ticket and abort ingestion (or restore old data and abort)
 					//
 
-					if ( 0 === $boxinfo_id ) {
-						// if, Box not inserted, delete the ticket.
-						$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
-						
-						// Delete ticket meta
-
-						ob_start();
+// 					if ( $boxinfo_id === 0 ) {
+  				if( !$box_validation ) {
+    				
+    				// If this is for a NEW ingestion file
+    				if( !$update_flag ) {
+    				
+  						// if, Box not inserted, delete the ticket.
+  						$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
+  						
+            } else {
+              // ELSE this is for an existing file, and data must be restored.
+              $box_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+              $fdif_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+              $error_arr = [];
+              
+              foreach( $restore_arr["boxes"] as $box_key => $the_box ) {
+                
+                $pallet = $the_box->pallet_id == '' ? '' : $the_box->pallet_id;
+                
+                $box_update_arr = [
+                  'box_id' => $the_box->box_id,
+                  'box_status' => $the_box->box_status,
+                  'ticket_id' => $the_box->ticket_id,
+                  'storage_location_id' => $the_box->storage_location_id,
+                  'location_status_id' => $the_box->location_status_id,
+                  'program_office_id' => $the_box->program_office_id,
+                  'record_schedule_id' => $the_box->record_schedule_id,
+                  'box_destroyed' => $the_box->box_destroyed,
+                  'pallet_id' => $pallet,
+                  'scan_list_id' => $the_box->scan_list_id,
+                  'date_created' => $the_box->date_created,
+                  'date_updated' => $the_box->date_updated
+                ];
+                
+                $box_where = [
+                  'ID' => $the_box->id
+                ];
+                
+                
+                $error_check = $wpdb->update( $box_table, $box_update_arr, $box_where );
+                
+                if( !$error_check ) {
+                  $error_arr['box'][ $the_box->id ] = $the_box->id;
+                  //$error_arr[''][] = $the_box->pallet_id
+                }
+                
+                // ISSUE: not sure what $the_box->pallet_id is coming in as. Think this is the reason for inserts not working. 
+                
+                //$error_arr[] = $the_box->id;
+                //$error_arr[] = $box_update_arr;
+                
+              }
+              
+            }
+            
+            // Display the 
+            
+            ob_start();
 						?>
 						<div class="col-sm-12 ticket-error-msg">
+							<h3><?php esc_html_e( 'Error', 'pattracking' ); ?></h3>
 							<?php esc_html_e( 'Error entering box information. Ticket not generated.', 'pattracking' ); ?>
 							<?php esc_html_e( 'If this error persists, please copy this error message and the details below, and send them to the development team.', 'pattracking' ); ?>
 							<br><br>
@@ -508,14 +572,18 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 */
 									echo 'update_flag: ' . $update_flag . '<br>';
 									echo 'update_flag_txt: ' . $update_flag_txt . '<br>';
-									echo '<pre>';
-									print_r( $boxarray );
-									echo '</pre>';
+									echo 'test: ' . $restore_arr["boxes"][0]->id . '<br>';
 /*
 									echo '<pre>';
-									print_r( $boxinfo_array );
+									print_r( $restore_arr ); //$restore_arr //$boxarray
 									echo '</pre>';
-*/								
+*/
+									echo '<pre>';
+									print_r( $error_arr ); //$restore_arr //$boxarray //$error_arr //$restore_arr["boxes"]
+									echo '</pre>';
+									echo '<pre>';
+									print_r( $box_update_arr );
+									echo '</pre>';								
 								
 							?>
 							<br>							
@@ -530,6 +598,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 
 						echo json_encode( $response );
 						die();
+            
+            
 					} else { 
 					
 					//
@@ -1958,7 +2028,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 				?>
 				<div class="row">
 		          	<div  data-fieldtype="dropdown" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?> col-sm-4">
-						<label class="wpsc_ct_field_label" for="super_fund_flag">
+						<label class="wpsc_ct_field_label" for="super-fund">
 						Are these records part of SEMS? <span style="color:red;">*</span>
 						</label>
 						<?php 
@@ -1990,12 +2060,12 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 					<label class="wpsc_ct_field_label">Box List <span style="color:red;">*</span></label>
 
 					<!-- DropZone File Grag Drop Uploader -->
-					<div id="dzBoxUpload" class="dropzone">
+					<div id="dzBoxUpload" class="dropzone" tabindex="0">
 						<div class="fallback">
 							<input name="file" type="file" />
 						</div>
 						<div class="dz-default dz-message">
-							<button class="dz-button" type="button">Drop your file here to upload (only .xlsm files allowed)</button>
+							<button class="dz-button" type="button" tabindex="-1">Drop your file here to upload (only .xlsm files allowed)</button>
 						</div>
 					</div>
 					
@@ -2016,34 +2086,34 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						<table style="display:none;margin-bottom:0;" id="boxinfodatatable" class="table table-striped table-bordered nowrap">
 							<thead style="margin: 0 auto !important;">
 								<tr>
-									<th>Box</th>
-									<th>Folder Identifier</th>
-									<th>Title</th>
-									<th>Description of Record</th>
-									<th>Parent/Child</th>
-									<th>Creation Date</th>
-									<th>Creator</th>
-									<th>Addressee</th>
-									<th>Record Type</th>
-	<!-- 								<th>Record Schedule & Item Number</th> -->
-									<th>Disposition Schedule & Item Number</th>
-									<th>Site Name</th>
-									<th>Site ID # / OU</th>
-									<th>Close Date</th>
-									<th>EPA Contact</th>								
-									<th>Access Restrictions</th>
-									<th>Specific Access Restrictions</th>
-									<th>Use Restrictions</th>
-									<th>Specific Use Restrictions</th>
-									<th>Rights Holder</th>
-									<th>Source Type</th>
-									<th>Source Dimensions</th>
-									<th>Program Office</th>
-									<th>Program Area</th>
-									<th>Index Level</th>
-									<th>Essential Record</th>
-									<th>Folder/Filename</th>
-									<th>Tags</th>
+									<th scope="col" >Box</th>
+									<th scope="col" >Folder Identifier</th>
+									<th scope="col" >Title</th>
+									<th scope="col" >Description of Record</th>
+									<th scope="col" >Parent/Child</th>
+									<th scope="col" >Creation Date</th>
+									<th scope="col" >Creator</th>
+									<th scope="col" >Addressee</th>
+									<th scope="col" >Record Type</th>
+	<!-- 								<th scope="col" >Record Schedule & Item Number</th> -->
+									<th scope="col" >Disposition Schedule & Item Number</th>
+									<th scope="col" >Site Name</th>
+									<th scope="col" >Site ID # / OU</th>
+									<th scope="col" >Close Date</th>
+									<th scope="col" >EPA Contact</th>								
+									<th scope="col" >Access Restrictions</th>
+									<th scope="col" >Specific Access Restrictions</th>
+									<th scope="col" >Use Restrictions</th>
+									<th scope="col" >Specific Use Restrictions</th>
+									<th scope="col" >Rights Holder</th>
+									<th scope="col" >Source Type</th>
+									<th scope="col" >Source Dimensions</th>
+									<th scope="col" >Program Office</th>
+									<th scope="col" >Program Area</th>
+									<th scope="col" >Index Level</th>
+									<th scope="col" >Essential Record</th>
+									<th scope="col" >Folder/Filename</th>
+									<th scope="col" >Tags</th>
 								</tr>
 							</thead>
 						</table>
@@ -2081,16 +2151,16 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 					<table style="display:none;margin-bottom:0;" id="boxinfodatatableSEMS" class="table table-striped table-bordered nowrap">
 						<thead style="margin: 0 auto !important;">
 							<tr>
-								<th>DOC_REGID</th>
-								<th>DOC_ID</th>
-								<th>TITLE</th>
-								<th>DATE</th>
-								<th>DOC_CREATOR/EDITOR</th>
-								<th>PATT_BOX</th>
-<!-- 								<th>RECORD_SCHEDULE</th> -->
-<!-- 								<th>INDEX_LEVEL</th> -->
-								<th>LOCATION</th>
-								<th>EPA_ID</th>
+								<th scope="col" >DOC_REGID</th>
+								<th scope="col" >DOC_ID</th>
+								<th scope="col" >TITLE</th>
+								<th scope="col" >DATE</th>
+								<th scope="col" >DOC_CREATOR/EDITOR</th>
+								<th scope="col" >PATT_BOX</th>
+<!-- 								<th scope="col" >RECORD_SCHEDULE</th> -->
+<!-- 								<th scope="col" >INDEX_LEVEL</th> -->
+								<th scope="col" >LOCATION</th>
+								<th scope="col" >EPA_ID</th>
 							</tr>
 						</thead>
 					</table>
@@ -2115,23 +2185,46 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 					}
 					
 					#processing_notification_persistent {
-						color: #d45656;
+						color: white;
 						font-size: 1.1em;
 						font-weight: 700;
 					}
 					
 					.yellow_update {
-						background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%);
+/* 						background-image: linear-gradient(to bottom, #eaec50 0%, #b1b315 100%); */
+            background-color: #17505e;
 					}
 					
 					.green_update {
-						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%);
+/* 						background-image: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); */
+            background-color: #2f631d;
 					}
+					
+					.progress-bar {
+/*   					background-color: #17505e !important; */
+  					background-image: linear-gradient(to bottom, #17505e 0%, #17505e 100%) !important;
+					}
+					
+					.progress-bar-success {
+/*   					background-color: #2f631d !important; */
+  					background-image: linear-gradient(to bottom, #2f631d 0%, #2f631d 100%) !important;
+					}
+					
+					class="progress-bar progress-bar-success"
 					
 					.dropzone .dz-preview .dz-progress {
 						top: 70%;
 						display: none;
 					}
+					
+					.sorting_asc {
+  					background-image: none !important;
+					}
+					
+					#dzBoxUpload:focus {
+  					outline: 5px auto -webkit-focus-ring-color;
+					}
+					
 					
 					
 				</style>

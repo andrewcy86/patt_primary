@@ -493,9 +493,9 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		echo 'border-color:' . $wpsc_appearance_individual_ticket_page[ 'wpsc_ticket_widgets_border_color' ] . ' !important;';
 		echo '">';
 	
-		echo '<h4 class="widget_header"> <i class="fa fa-truck"></i> ' . $ticket_widget_name;
+		echo '<h4 class="widget_header"> <i class="fa fa-truck" aria-hidden="true" title="Shipping"></i><span class="sr-only">Shipping</span> ' . $ticket_widget_name;
 		if($is_active == 1) {
-		echo ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit"></i></button></h4>';
+		echo ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit" aria-hidden="true" title="Edit Shipping"></i><span class="sr-only">Edit Shipping</span></button></h4>';
 		} else {
 		echo ' </h4>';
 		}
@@ -519,28 +519,28 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		    $company_name = $row->company_name;
 		
 		    if ($row->shipped == 1) {
-		        $shipped_status = ' <i class="fa fa-check-circle" style="color:#008000;" title="Shipped"></i>';
+		        $shipped_status = ' <i class="fa fa-check-circle" style="color:#008000;" aria-hidden="true" title="Shipped"></i><span class="sr-only">Shipped</span>';
 		    } else {
 		        $shipped_status = '';
 		    }
 		    
 		    if ($row->delivered == 1) {
-		        $delivered_status = ' <i class="fas fa-truck-loading" style="color:#008000;" title="Received"></i>';
+		        $delivered_status = ' <i class="fas fa-truck-loading" style="color:#008000;" aria-hidden="true" title="Received"></i><span class="sr-only">Received</span>';
 		    } else {
 		        $delivered_status = '';
 		    }
 			switch ($company_name) {
 			    case "ups":
-			        echo '<li><i class="fab fa-ups fa-lg"></i> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-ups fa-lg" aria-hidden="true" title="UPS"></i><span class="sr-only">UPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "fedex":
-			        echo '<li><i class="fab fa-fedex fa-lg"></i> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-fedex fa-lg" aria-hidden="true" title="Fedex"></i><span class="sr-only">Fedex</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "usps":
-			        echo '<li><i class="fab fa-usps fa-lg"></i> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-usps fa-lg" aria-hidden="true" title="USPS"></i><span class="sr-only">USPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "dhl":
-			        echo '<li><i class="fab fa-dhl fa-lg"></i> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank">'. $dhl_tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-dhl fa-lg" aria-hidden="true" title="DHL"></i><span class="sr-only">DHL</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $dhl_tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    default:
 			        echo $tracking_num_display;
@@ -549,7 +549,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		    if (++$i == 10) break;
 	    }
 	    echo '</ul>';
-	    if ($get_shipping_count > 10) {echo '... <i class="fas fa-plus-square"></i> <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a><br /><br />';}
+	    if ($get_shipping_count > 10) {echo '... <i class="fas fa-plus-square" aria-hidden="true" title="View More"></i><span class="sr-only">View More</span> <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a><br /><br />';}
 	  } else {
 	    echo '<strong>No Tracking Numbers Assigned.</strong><br /><br />';
 	  }
@@ -960,7 +960,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 			    </select>
 			    <br />
 			    <?php if( $user_location == 'Not Assigned') {  ?>
-			    	<span class="description" style="color:red; padding-left: 1px;" ><?php _e("<b>Please select your Digitization Center.</b>", "supportcandy"); ?></span>
+			    	<span class="description" style="color: #A80000; padding-left: 1px;" ><?php _e("<b>Please select your Digitization Center.</b>", "supportcandy"); ?></span>
 			    <?php } ?>
 			</td>
 			</tr>

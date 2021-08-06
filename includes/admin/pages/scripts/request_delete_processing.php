@@ -263,19 +263,19 @@ $damaged_icon = '';
 $converted_to_request_id = Patt_Custom_Func::convert_request_db_id($row['request_id']);
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id,$type) == 1) {
-    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_damaged($converted_to_request_id,$type) == 1) {
-    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($converted_to_request_id,$type) == 1) {
-    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_box_destroyed($converted_to_request_id,'request') == 1) {
-    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+    $box_destroyed_icon = ' <span style="font-size: 1em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
 }
 
    $data[] = array(

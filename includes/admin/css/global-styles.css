@@ -1,3 +1,35 @@
+.alert .fas {
+  text-shadow: 0px 0px 1px black;
+}
+
+.bootstrap-iso .alert-warning {
+    background-color: #FAD980 !important;
+    background-image: none !important;
+    border-color: #DDD1AF !important;
+    color: #000 !important;
+}
+
+.bootstrap-iso .alert-danger {
+    background-color: #F9DEDE !important;
+    background-image: none !important;
+    border-color: #DDD3D3 !important;
+    color: #000 !important;
+}
+
+.bootstrap-iso .alert-success {
+    background-color: #94BFA2 !important;
+    background-image: none !important;
+    border-color: #DFDFDF !important;
+    color: #000 !important;
+}
+
+.bootstrap-iso .alert-info {
+    background-color: #dce4ef !important;
+    background-image: none !important;
+    border-color: #DFDFDF !important;
+    color: #000 !important;
+}
+
 .wpsc_loading_icon_submit_ticket {
 margin-top: 118px;
 display:none;

@@ -27,8 +27,10 @@ $ticket_status       = $wpscfunction->get_ticket_status($ticket_id);
 
 // Icons
 $icons = '';
-$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
 
+// PATT Begin
+$freeze_icon = ' <i aria-hidden="true" class="fas fa-snowflake" title="Freeze"></i><span class="sr-only">Freeze</span>';
+// PATT End
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
@@ -212,15 +214,17 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			// Set icons for shipping carriers
 			$shipping_carrier_icon = '';
 			if ($shipping_carrier == 'fedex' ) {
-				$shipping_carrier_icon = '<i class="padding fab fa-fedex fa-lg"></i>';
+			    
+			    // PATT BEGIN
+				$shipping_carrier_icon = '<i aria-hidden="true" class="padding fab fa-fedex fa-lg" title="FEDEX"></i><span class="sr-only">FEDEX</span>';
 			} elseif ($shipping_carrier == 'ups' ) {
-				$shipping_carrier_icon = '<i class="padding fab fa-ups fa-lg"></i>';
+				$shipping_carrier_icon = '<i aria-hidden="true" class="padding fab fa-ups fa-lg" title="UPS"></i><span class="sr-only">UPS</span>';
 			} elseif ($shipping_carrier == 'dhl' ) {
-				$shipping_carrier_icon = '<i class="padding fab fa-dhl fa-lg"></i>';
+				$shipping_carrier_icon = '<i aria-hidden="true" class="padding fab fa-dhl fa-lg"title="DHL"></i><span class="sr-only">DHL</span>';
 			} elseif ($shipping_carrier == 'usps' ) {
-				$shipping_carrier_icon = '<i class="padding fab fa-usps fa-lg"></i>';
+				$shipping_carrier_icon = '<i aria-hidden="true" class="padding fab fa-usps fa-lg"title="USPS"></i><span class="sr-only">USPS</span>';
 			}
-						
+				// PATT END		
 			// Role and user checks for editing restriciton
 			// Checks if current user is on this request.
 			$current_user_on_request = 0;
@@ -281,32 +285,34 @@ $cancel_recall_btn_css = $action_default_btn_css;
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
-  
+  <!-- PATT Begin -->
 	<div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recall';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> Recall List</button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recall';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i aria-hidden="true" class="fa fa-list-ul" title="Recall List"></i><span class="sr-only">Recall List</span> Recall List</button>
+<!-- PATT End -->
 <?php		
 	if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 	{
 ?>    	
-    	<button type="button" id="wppatt_recall_cancel" onclick="wppatt_cancel_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_recall_btn_css?>"><i class="fa fa-ban"></i> Cancel Recall</button>
-    	
+<!-- PATT Begin -->
+    	<button type="button" id="wppatt_recall_cancel" onclick="wppatt_cancel_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_recall_btn_css?>"><i aria-hidden="true" class="fa fa-ban" title="Cancel Recall"></i><span class="sr-only">Cancel Recall</span> Cancel Recall</button>
+    	<!--PATT End -->
     	
 <?php
 		if( $status == 'Recalled' ) 
 		{
 ?>			
-		
-    	<button type="button" id="wppatt_recall_approve" onclick="wppatt_approve_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css ?>"><i class="fas fa-thumbs-up"></i> Approve Recall</button>
-    	<button type="button" id="wppatt_recall_deny" onclick="wppatt_deny_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css ?>"><i class="fas fa-thumbs-down"></i> Deny Recall</button>
-
+		<!-- PATT Begin -->
+    	<button type="button" id="wppatt_recall_approve" onclick="wppatt_approve_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css ?>"><i aria-hidden="true" class="fas fa-thumbs-up" title="Approve Recall"></i><span class="sr-only">Approve Recall</span> Approve Recall</button>
+    	<button type="button" id="wppatt_recall_deny" onclick="wppatt_deny_recall();" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css ?>"><i aria-hidden="true" class="fas fa-thumbs-down" title="Deny Recall"></i><span class="sr-only">Deny Recall</span> Deny Recall</button>
+<!-- PATT End -->
 <?php		
 		}
 	}
 ?>
-
-<!-- <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="window.open('<?php echo $print_button_link ?>','_blank')"><i class="fas fa-tags"></i> Print Label</button> -->
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="print_label();"><i class="fas fa-tags"></i> Print Label</button>
-		
+<!-- PATT Begin -->
+<!-- <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="window.open('<?php echo $print_button_link ?>','_blank')"><i aria-hidden="true" class="fas fa-tags" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button> -->
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="print_label();"><i aria-hidden="true" class="fas fa-tags" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button>
+		<!-- PATT End -->
 		
 		
   </div>
@@ -334,7 +340,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 		</div>
 		<div class="">
 			<label class="wpsc_ct_field_label"><?php echo $recall_type; ?> ID: </label>
-			<span id="recall_type" class=""><?php echo $recall_item_id_link; ?></span> 
+			<span id="recall_type" class="text_highlight"><?php echo $recall_item_id_link; ?></span> 
 <!-- 			<span id="recall_type" class=""><?php echo $recall_item_id; ?></span>  -->
 		</div>
 		<div class="">
@@ -368,8 +374,9 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					{
 		
 			?>
-			
-			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i class="fas fa-edit"></i></a>
+			<!-- PATT Begin -->
+			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
+			<!-- PATT End -->
 			<?php
 					}
 				}
@@ -408,7 +415,10 @@ $cancel_recall_btn_css = $action_default_btn_css;
 						if ( $agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager'  ) { 	
 							if( $status_cancelled == 0 ) 
 							{
-								echo '<a href="#" onclick="wppatt_get_recall_requestor_editor()"><i class="fas fa-edit"></i></a>';
+							    // PATT Begin
+								echo '<a href="#" onclick="wppatt_get_recall_requestor_editor()"><i aria-hidden="true" class="fas fa-edit" title="Recall Requestor Editor"></i><span class="sr-only">Recall Request Editor</span></a>';
+							// PATT End
+							    
 							}
 						}
 					}
@@ -420,7 +430,11 @@ $cancel_recall_btn_css = $action_default_btn_css;
 <!--
 			<span id="recall_requestor" class="requestor_name"><?php echo $requestor; ?></span>
 			<span id="requestor_email" class="requestor_email">[<?php echo $requestor_email; ?>]</span>
-			<a href="#" onclick="wppatt_get_recall_requestor_editor()"><i class="fas fa-edit"></i></a>
+			
+			// PATT Begin
+			<a href="#" onclick="wppatt_get_recall_requestor_editor()" title="Recall Requestor Editor"><i aria-hidden="true" class="fas fa-edit"></i><span class="sr-only">Recall Requestor Editor</span></a>
+			// PATT End
+			
 			<br>
 			<span id="recall_requestor" class="requestor_name">Capt. John Yossarian</span>
 			<span id="requestor_email" class="requestor_email">[Yossarian@epa.gov]</span>
@@ -450,7 +464,9 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					if( $status_cancelled == 0 ) 
 					{
 			?>
-<!-- 			<a href="#" onclick="wppatt_get_date_editor('request_date')"><i class="fas fa-edit"></i></a> -->
+			<!-- PATT Begin -->
+<!-- 			<a href="#" onclick="wppatt_get_date_editor('request_date')" ><i aria-hidden="true" class="fas fa-edit" title="Date Editor"></i><span class="sr-only">Date Editor</span></a> -->
+			<!-- PATT End -->
 			<div id="request_date_editor" class="calendar"></div>
 			<?php
 					}
@@ -472,8 +488,9 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					if( $status_cancelled == 0 ) 
 					{
 			?>
-<!-- 					<a href="#" onclick="wppatt_get_date_editor('received_date')"><i class="fas fa-edit"></i></a> -->
-
+			<!-- PATT Begin -->
+<!-- 					<a href="#" onclick="wppatt_get_date_editor('received_date')"><i aria-hidden="true"  class="fas fa-edit" title="Received Date"></i><span class="sr-only">Received Date</span></a> -->
+            <!-- PATT End -->
 			<?php
 					}
 				}
@@ -494,8 +511,12 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					if ( $status == 'Shipped Back' ) 
 					{
 			?>
-						<a href="#" onclick="wppatt_get_date_editor('returned_date')"><i class="fas fa-edit"></i></a>	
+			            <!-- PATT Begin -->
+						<a href="#" onclick="wppatt_get_date_editor('returned_date')"><i aria-hidden="true" class="fas fa-edit" title="Return Date"></i><span class="sr-only">Return Date</span></a>	
+						<!-- PATT End -->
+						
 						<div id="returned_date_editor" class="calendar"></div>	
+						
 			<?php
 					}
 				}
@@ -572,15 +593,15 @@ $cancel_recall_btn_css = $action_default_btn_css;
 											<small><?php echo $customer_email?></small>
 										<?php }?>
 										<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) && $ticket_status):?>
-											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" title="<?php _e('Delete this thread','supportcandy');?>"></i>
-											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i>
-<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i> -->
+											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" aria-hidden="true" title="<?php _e('Delete this thread','supportcandy');?>"></i><span class="sr-only">Delete this thread</span>
+											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  aria-hidden="true" title="<?php _e('Edit this thread','supportcandy');?>"></i><span class="sr-only">Edit this thread</span>
+<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i><span class="sr-only">Edit this thread</span> -->
 										<?php endif;?>
 										<?php if($current_user->has_cap('wpsc_agent')): ?>
 										<!--PATT BEGIN
-											<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>
+											<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i><span class="sr-only">Create new ticket from this thread</span>
 										PATT END-->
-											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" aria-hidden="true" title="<?php _e('Thread Info','supportcandy');?>"></i><span class="sr-only">Thread Info</span>
 											
 										<?php endif;?>
 									</div>
@@ -639,7 +660,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 																<a class="wpsc_attachment_link" href="<?php echo $download_url?>" target="_blank">
 															  <span class="wpsc_attachment_file_name" style="padding: 7px;"><?php echo $attach['filename'];?></span></a>
 															  <?php if ($current_user->has_cap('edit_published_posts')) { ?>
-																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i>
+																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i><span class="sr-only">Delete attachment</span>
 																<?php } ?>
 		
 															</td>
@@ -654,7 +675,11 @@ $cancel_recall_btn_css = $action_default_btn_css;
 											<div>
 												<?php 
 												if( $seen && $seen != 'null' ){ ?>
-													<i class="fas fa-check-circle wpsc_seen_info" title="<?php _e("Seen: ". $wpscfunction->time_elapsed_timestamp($seen),"supportcandy");?>"></i>
+												
+												<!-- PATT Begin -->
+													<i aria-hidden="true"  class="fas fa-check-circle wpsc_seen_info" title="<?php _e("Seen: ". $wpscfunction->time_elapsed_timestamp($seen),"supportcandy");?>"></i><span class="sr-only">Elapsed Time</span>
+													
+												<!-- PATT End -->
 													<?php
 												} ?>
 											</div>
@@ -689,14 +714,14 @@ $cancel_recall_btn_css = $action_default_btn_css;
 											<small><?php echo $customer_email ?></small> 
 										<?php }?>
 										<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) /* && $ticket_status */):?>
-											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" title="<?php _e('Delete this thread','supportcandy');?>"></i>
-											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread recall_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i>
-<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i> -->
+											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" aria-hidden="true" title="<?php _e('Delete this thread','supportcandy');?>"></i><span class="sr-only">Delete this thread</span>
+											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread recall_edit_thread"  aria-hidden="true" title="<?php _e('Edit this thread','supportcandy');?>"></i><span class="sr-only">Edit this thread</span>
+<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i><span class="sr-only">Edit this thread</span> -->
 										<?php endif;?>
 										<?php if($current_user->has_cap('wpsc_agent')): ?>
 										    <!--removes button from admin/staff role-->
-											<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>-->
-											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+											<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i><span class="sr-only">Create new ticket from this thread</span>-->
+											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" aria-hidden="true" title="<?php _e('Thread Info','supportcandy');?>"></i><span class="sr-only">Thread Info</span>
 										<?php endif;?>
 									</div>
 									<div class="thread_messege">
@@ -755,7 +780,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 																<a class="wpsc_attachment_link" href="<?php echo $download_url?>" target="_blank">
 																<span class="wpsc_attachment_file_name" style="padding: 7px;"><?php echo $attach['filename'];?></span></a>
 																<?php if ($current_user->has_cap('edit_published_posts')) { ?>
-																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i>
+																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i><span class="sr-only">Delete attachment</span>
 																<?php } ?>
 		
 															</td>
@@ -769,7 +794,11 @@ $cancel_recall_btn_css = $action_default_btn_css;
 											<div>
 												<?php 
 												if( $seen && $seen != 'null' ){ ?>
-													<i class="fas fa-check-circle wpsc_seen_info" title="<?php _e("Seen: " .$wpscfunction->time_elapsed_timestamp($seen),"supportcandy");?>"></i><?php 
+												
+												<!-- PATT Begin -->
+													<i aria-hidden="true"  class="fas fa-check-circle wpsc_seen_info" title="<?php _e("Seen: " .$wpscfunction->time_elapsed_timestamp($seen),"supportcandy");?>"></i><span class="sr-only">Timestamp</span><?php 
+												// PATT End 
+												
 												} ?>
 											</div>
 										<?php } ?>
@@ -798,15 +827,20 @@ $cancel_recall_btn_css = $action_default_btn_css;
 											<small><?php echo $customer_email?></small>
 										<?php }?>
 										<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) && $ticket_status):?>
-											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread"></i>
-											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"  class="fa fa-edit thread_action_btn wpsc_edit_thread"></i>
-<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"  class="fa fa-edit thread_action_btn wpsc_edit_thread"></i> -->
+										<!-- PATT Begin -->
+										
+											<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" aria-hidden="true" title="Delete thread button"></i><span class="sr-only">Delete thread button</span>
+											<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"  class="fa fa-edit thread_action_btn wpsc_edit_thread" aria-hidden="true" title="Edit thread button"></i><span class="sr-only">Edit thread button</span>
+<!-- 												<i onclick="wppatt_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"  class="fa fa-edit thread_action_btn wpsc_edit_thread" title="Edit thread button"></i><span class="sr-only">Edit thread button</span> -->
+
+                                        <!-- PATT End -->
+                                        
 										<?php endif;?>
 										<?php if($current_user->has_cap('wpsc_agent')): ?>
-											<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>-->
+											<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i><span class="sr-only">Create new ticket from this thread</span>-->
 										<?php endif;?>
 										<?php if($current_user->has_cap('wpsc_agent')):?>
-											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+											<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" aria-hidden="true" title="<?php _e('Thread Info','supportcandy');?>"></i><span class="sr-only">Thread Info</span>
 											
 								        <?php endif;?>
 		
@@ -868,7 +902,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 																<a class="wpsc_attachment_link" href="<?php echo $download_url?>" target="_blank">
 															  <span class="wpsc_attachment_file_name" style="padding: 7px;"><?php echo $attach['filename'];?></span></a>
 															  <?php if ($current_user->has_cap('edit_published_posts')) { ?>
-																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i>
+																	<i onclick="wpsc_thread_attachment_remove(this,<?php echo $attachment; ?>,<?php echo $thread->ID; ?>,<?php echo $ticket_id; ?>); " class="fa fa-times thread_action_btn" style="padding-top:3px;" aria-hidden="true" title="<?php _e('Delete attachment','supportcandy');?>"></i><span class="sr-only">Delete attachment</span>
 																<?php } ?>
 		
 															</td>
@@ -1019,6 +1053,11 @@ jQuery(document).ready(function() {
 			remove_script_host : false,
 			convert_urls : true
 		});
+    //508 Fix
+	var ed = tinymce.activeEditor;
+    var ifr = tinymce.DOM.get(ed.id + '_ifr');
+    ed.dom.setAttrib(ifr, 'aria-label', 'Text Editor for Reply');
+    //508 Fix
 	}
 	     
 	        

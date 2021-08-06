@@ -327,10 +327,10 @@ echo "<br>";
 			    <?php
 			    if($status->name == 'QA/QC') {
 			    ?>
-			    <label class="wpsc_ct_field_label"><?php echo $status->name; ?> <a href="#" aria-label="QA/QC" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-staff-qa-qc'); ?>"><i class="far fa-question-circle"></i></a></label>
+			    <label class="wpsc_ct_field_label"><?php echo $status->name; ?> <a href="#" aria-label="QA/QC" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-staff-qa-qc'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></label>
 				<?php }
 				elseif($status->name == 'Validation') { ?>
-				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> <a href="#" aria-label="Validation" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-staff-validation'); ?>"><i class="far fa-question-circle"></i></a></label>
+				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> <a href="#" aria-label="Validation" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-staff-validation'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></label>
 				<?php }
 				else { ?>
 				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> </label>
@@ -343,7 +343,7 @@ echo "<br>";
 				<form id="frm_get_ticket_assign_agent">
 					<div id="assigned_agent">
 						<div class="form-group wpsc_display_assign_agent ">
-						    <input class="form-control  wpsc_assign_agents ui-autocomplete-input term-<?php echo $status->term_id; ?>" name="assigned_agent"  type="text" autocomplete="off" placeholder="<?php _e('Search agent ...','supportcandy')?>" />
+						    <input class="form-control  wpsc_assign_agents ui-autocomplete-input term-<?php echo $status->term_id; ?>" name="assigned_agent"  type="text" autocomplete="off" aria-label="Search agent ..." placeholder="<?php _e('Search agent ...','supportcandy')?>" />
 							<ui class="wpsp_filter_display_container"></ui>
 						</div>
 					</div>
@@ -360,7 +360,7 @@ echo "<br>";
 							?>
 													<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">
 														<div class="flex-container staff-badge" style="">
-															<?php echo htmlentities($agent_name)?><span class="staff-close" onclick="wpsc_remove_filter(this);remove_user(<?php echo $status->term_id; ?>);"><i class="fa fa-times"></i></span>
+															<?php echo htmlentities($agent_name)?><span class="staff-close" onclick="wpsc_remove_filter(this);remove_user(<?php echo $status->term_id; ?>);"><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>
 															  <input type="hidden" name="assigned_agent[<?php echo $status->term_id; ?>]" value="<?php echo htmlentities($agent) ?>" />
 						<!-- 									  <input type="hidden" name="new_requestor" value="<?php echo htmlentities($agent) ?>" /> -->
 														</div>
@@ -440,10 +440,6 @@ echo "<br>";
 
 
 <style>
-#wpsc_popup_body {
-	max-height: 450px;
-}	
-
 .zebra {
 	padding: 7px 0px 7px 0px;
 }
@@ -542,9 +538,12 @@ jQuery(document).ready(function(){
  				var save_enabled = '<?php echo $save_enabled ?>';
 				if( !save_enabled ) {
 					console.log('save disabled');
+					//jQuery("#button_agent_submit").hide();
+					jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 					jQuery("#button_agent_submit").hide();
 				} else {
-					jQuery("#button_agent_submit").show();	
+					//jQuery("#button_agent_submit").show();	
+					jQuery("#button_agent_submit").removeAttr( 'disabled' );
 				}
 				
 				// Enable / Disable Save based on js save enabled which denotes if all of the fields are filled in
@@ -601,7 +600,7 @@ jQuery(document).ready(function(){
 	var subfolder_path = '<?php echo $subfolder_path ?>';
 	let box_link_start = '<a href="'+subfolder_path+'/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=';
 	let request_link_start = '<a href="'+subfolder_path+'/wp-admin/admin.php?page=wpsc-tickets&id=';	
-	let link_mid = '" target="_blank">';
+	let link_mid = '" style="text-decoration: underline;" target="_blank">';
 	let link_end = '</a>';
 	
 	//check and display error for digitization center and assigned location
@@ -677,6 +676,8 @@ jQuery(document).ready(function(){
 	console.log('save enabled');
 	if( !save_enabled ) {
 		console.log('save disabled');
+		//jQuery("#button_agent_submit").hide();
+		jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 		jQuery("#button_agent_submit").hide();
 	}
 
@@ -799,7 +800,7 @@ function get_display_user_html(user_name, termmeta_user_val, term_id, is_wp_user
 		var html_str = '<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">'
 						+'<div class="flex-container staff-badge" style="">'
 							+user_name
-							+'<span class="staff-close" onclick="wpsc_remove_filter(this);remove_user('+term_id+');"><i class="fa fa-times"></i></span>'
+							+'<span class="staff-close" onclick="wpsc_remove_filter(this);remove_user('+term_id+');"><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>'
 						+'<input type="hidden" name="assigned_agent['+term_id+']" value="'+termmeta_user_val+'" />'
 						+'</div>'
 					+'</div>';	
@@ -910,9 +911,11 @@ function remove_user(term_id) {
 // 		if( requestor_list.length > 0 && save_enabled) {
 		if( save_enabled ) {
 			console.log('show');
-			jQuery("#button_agent_submit").show();
+			//jQuery("#button_agent_submit").show();
+			jQuery("#button_agent_submit").removeAttr( 'disabled' );
 		} else {
-			jQuery("#button_agent_submit").hide();
+			//jQuery("#button_agent_submit").hide();
+			jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 		}
 	}
 }
@@ -929,10 +932,11 @@ ob_start();
 
 ?>
 <button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
-<button type="button" id="button_agent_submit" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_agents();"><?php _e('Save','supportcandy');?></button>
+<button type="button" id="button_agent_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_agents();"><?php _e('Save','supportcandy');?></button>
 
 <script>
-jQuery("#button_agent_submit").hide();
+//jQuery("#button_agent_submit").hide();
+jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 
 function wppatt_set_agents(){
 	let item_ids = <?php echo json_encode($item_ids); ?>;	

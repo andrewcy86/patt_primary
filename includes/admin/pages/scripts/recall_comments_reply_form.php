@@ -84,7 +84,8 @@ if($allow_reply){
 							(in_array('agents',$wpsc_allow_attach_reply_form) && $current_user->has_cap('wpsc_agent')) || $current_user->has_cap('edit_published_posts') ){
 								$notice_flag = true;
 						?>
-						<span onclick="wpsc_attachment_upload('<?php echo 'attach_'.$term_id?>','desc_attachment');"><?php _e('Attach file','supportcandy')?></span>
+<!-- 						<span onclick="wpsc_attachment_upload('<?php echo 'attach_'.$term_id?>','desc_attachment');"><?php _e('Attach file','supportcandy')?></span> -->
+              <a href="#" style="text-decoration: underline !important;color:#1d4289 !important;" onclick="wpsc_attachment_upload('<?php echo 'attach_'.$term_id?>','desc_attachment');"><?php _e('Attach file','supportcandy')?></a>
 						<?php
 					} ?>
 	        <?php if ($wpscfunction->has_permission('add_note',$ticket_id)):?>
@@ -114,7 +115,7 @@ if($allow_reply){
 				<?php if ($wpscfunction->has_permission('reply_ticket',$ticket_id)):?>
 								<button type="button" id="wpsc_individual_submit_reply_btn" onclick="javascript:wppatt_submit_reply('reply');" class="btn" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_submit_reply_btn_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_submit_reply_btn_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_submit_reply_btn_border_color']?> !important;">
 									<!--PATT BEGIN-->
-                                    <i class="fa fa-reply"></i> <?php _e('Submit','supportcandy')?> 
+                                    <i class="fa fa-reply" aria-hidden="true" title="Submit"></i><span class="sr-only">Submit</span> <?php _e('Submit','supportcandy')?> 
                                     <!--PATT END-->	
 								</button>
 	      <?php endif;?>

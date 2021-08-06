@@ -346,12 +346,12 @@ WHERE c.box_id = a.id
 a.box_destroyed > 0 
 
 
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a>')
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important;\">',a.box_id,'</a>')
 
 WHEN a.box_destroyed > 0 
 
 
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a>')
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.box_id,'</a>')
 
 
 ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
@@ -481,7 +481,7 @@ while ($row = mysqli_fetch_assoc($boxRecords)) {
 	//$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(666)" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
 
 if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){	
-	$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
+	$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>';
 } else {
     $assigned_agents_icon = '';
 }
@@ -495,27 +495,27 @@ $damaged_icon = '';
 $type = 'box';
 
 if(Patt_Custom_Func::id_in_return($row['box_id'],$type) == 1){
-$decline_icon = '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$decline_icon = '<span style="font-size: 1em; color: #B4081A;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($row['box_id'],$type) == 1){
-$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['box_id'],$type) == 1) {
-    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_damaged($row['box_id'],$type) == 1) {
-    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($row['box_id'],$type) == 1) {
-    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_box_destroyed($row['box_id'],$type) == 1) {
-    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+    $box_destroyed_icon = ' <span style="font-size: 1em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
 }
 
 $get_file_count = $wpdb->get_row("SELECT COUNT(c.id) as total
@@ -529,13 +529,13 @@ INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = a.id
 WHERE a.box_id = '" .  $row['box_id'] . "'");
 
 if(Patt_Custom_Func::id_in_validation($row['box_id'],$type) == 1) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ';
+    $validation_icon = '<span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ';
 }
 else if( ($get_validation_count->val_count > 0) && ($get_validation_count->val_count < $get_file_count->total) ) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ';
+    $validation_icon = '<span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ';
 }
 else {
-    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ';
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ';
 }
 
 if ($row['pallet_id'] == ''){

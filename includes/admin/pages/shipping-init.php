@@ -38,16 +38,38 @@ $_SESSION['current_page'] = $_SERVER['SCRIPT_NAME'];
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>">
+    	    <i aria-hidden="true" class="fa fa-list-ul" title="Request List"></i>
+            <span class="sr-only">Request List</span>
+
+    	    <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help">
+    	    <i aria-hidden="true" class="far fa-question-circle" title="Help"></i>
+            <span class="sr-only">Help</span>
+    	        </a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;">
+    	    <i aria-hidden="true" class="fas fa-retweet" title="Refresh"></i>
+            <span class="sr-only">Refresh</span>
+		    <?php _e('Reset Filters','supportcandy')?></button>
         
         <?php		
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-            <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="background-color:#B3EFFF !important;color:#046B99 !important;"><i class="fa fa-truck"></i> Change Shipping Tracking Number <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle" style="color: #046B99;"></i></a></button>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_shipped_btn" style="background-color:#B3EFFF !important;color:#046B99 !important;"><i class="fas fa-check-circle"></i> Shipped</button></button>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_delivered_btn" style="background-color:#B3EFFF !important;color:#046B99 !important;"><i class="fas fa-truck-loading"></i> Received</button></button>
+            <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="background-color:#FF7A33 !important;color:black !important;">
+            <i aria-hidden="true" class="fa fa-truck" title="Change Tracking Number"></i>
+            <span class="sr-only">Change Tracking Number</span>
+            Change Shipping Tracking Number <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>">
+            <i aria-hidden="true" class="far fa-question-circle" title="Help" style="color: black !important"></i>
+            <span class="sr-only">Help</span>
+            </a></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_shipped_btn" style="background-color:#FF7A33 !important;color:black !important;">
+            <i aria-hidden="true" class="fas fa-check-circle" title="Shipped"></i>
+            <span class="sr-only">Shipped</span>
+                Shipped</button></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_delivered_btn" style="background-color:#FF7A33 !important;color:black !important;">
+            <i aria-hidden="true" class="fas fa-truck-loading" title="Received"></i>
+            <span class="sr-only">Shipped</span>
+                Received</button></button>
         <?php
         }
         ?>
@@ -60,7 +82,13 @@ $_SESSION['current_page'] = $_SERVER['SCRIPT_NAME'];
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a>
+					      <h4 class="widget_header">
+					          <i aria-hidden="true" class="fa fa-filter" title="Filter"></i>
+                              <span class="sr-only">Filter</span>
+					          Filters <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>">
+					              <i aria-hidden="true" class="far fa-question-circle" title="Help"></i>
+                                  <span class="sr-only">Help</span>
+                                </a>
 								</h4>
 								<hr class="widget_divider">
 
@@ -68,13 +96,13 @@ $_SESSION['current_page'] = $_SERVER['SCRIPT_NAME'];
 Enter one or more Tracking Numbers:<br />
          <input type='text' id='searchByTN' class="form-control" data-role="tagsinput">
 <br />
-        <select id='searchByShipped'>
+        <select id='searchByShipped' aria-label="Filter by Shipped">
            <option value=''>-- Shipped --</option>
            <option value='1'>Yes</option>
            <option value='0'>No</option>
          </select>
 <br /><br />
-        <select id='searchByDelivered'>
+        <select id='searchByDelivered' aria-label="Filter by Received">
 <!--            <option value=''>-- Delivered --</option> -->
            <option value=''>-- Received --</option>
            <option value='1'>Yes</option>
@@ -124,7 +152,10 @@ color: rgb(255, 255, 255) !important;
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i aria-hidden="true" class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" title="Search"></i>
+<span class="sr-only">Search</span>
+
+
 <br /><br />
 <table id="tbl_templates_shipping" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
@@ -133,16 +164,16 @@ color: rgb(255, 255, 255) !important;
                 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
                 {
                 ?>
-                <th class="datatable_header"></th>
+                <th class="datatable_header" scope="col" ></th>
                 <?php
                 }
                 ?>
-                <th class="datatable_header">ID</th>
-                <th class="datatable_header">Shipping Tracking Number</th>
-                <th class="datatable_header">Shipping Company</th>
-                <th class="datatable_header">Status</th>
-                <th class="datatable_header">Shipped</th>
-                <th class="datatable_header">Received</th>
+                <th class="datatable_header" scope="col" >ID</th>
+                <th class="datatable_header" scope="col" >Shipping Tracking Number</th>
+                <th class="datatable_header" scope="col" >Shipping Company</th>
+                <th class="datatable_header" scope="col" >Status</th>
+                <th class="datatable_header" scope="col" >Shipped</th>
+                <th class="datatable_header" scope="col" >Received</th>
             </tr>
         </thead>
     </table>
@@ -245,8 +276,8 @@ jQuery('[data-toggle="tooltip"]').tooltip();
        <?php
         }
         ?>
-       { data: 'item_id' },
-       { data: 'tracking_number' }, 
+       { data: 'item_id', 'class' : 'text_highlight' },
+       { data: 'tracking_number', 'class' : 'text_highlight' }, 
        { data: 'company_name' },
        { data: 'status' },
        { data: 'shipped' },

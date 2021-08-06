@@ -41,7 +41,7 @@ if($flag_btn):
     if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
     {
     ?>
-	<button type="button" class="btn btn-sm wpsc_action_btn" id="wppatt_assign_staff_btn" style="<?php echo $action_default_btn_css ?>" ><i class="fas fa-user-plus"></i> Assign Staff</button>
+	<button type="button" class="btn btn-sm wpsc_action_btn" id="wppatt_assign_staff_btn" style="<?php echo $action_default_btn_css ?>" ><i class="fas fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
 	<?php
     }
     ?>
@@ -49,7 +49,7 @@ if($flag_btn):
     <?php
     if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))  && $is_active == 1) {
     ?>
-    <button type="button" class="btn btn-sm wpsc_action_btn" id="wppatt_change_status_btn" style="<?php echo $action_default_btn_css ?>" ><i class="fas fa-heartbeat"></i> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle"></i></a></button>
+    <button type="button" class="btn btn-sm wpsc_action_btn" id="wppatt_change_status_btn" style="<?php echo $action_default_btn_css ?>" ><i class="fas fa-heartbeat" aria-hidden="true" title="Assign Box Status"></i><span class="sr-only">Assign Box Status</span> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     <?php } ?>
 	<?php
 endif;

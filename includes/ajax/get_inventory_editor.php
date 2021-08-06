@@ -52,7 +52,7 @@ $patt_ticket_id = $box_details->request_id;
 <div id="wrapper">
   <div id="content">
 <span id="aisle_tag"><strong>Aisle</strong></span>
-<select id="aisle_selector" name="aisle_selector" class="form-control">    
+<select id="aisle_selector" name="aisle_selector" class="form-control" aria-label="Aisle Selector">    
 <option value="0">--Select Aisle--</option>
 <?php
 $digitization_center_aisle_total = 50;
@@ -78,7 +78,7 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
 <br /><br />
 <div id="bay_div">
 <strong>Bay</strong>
-<select name="bay_selector" class="form-control" id="bay_selector">
+<select name="bay_selector" class="form-control" id="bay_selector" aria-label="Bay Selector">
 </select>
 <br /><br />
   </div>

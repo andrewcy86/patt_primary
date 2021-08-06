@@ -38,9 +38,10 @@ jQuery(document).ready(function(){
 				
 			
 			// commented out for use in production before Revisioning is production worthy.
-// 				if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data || ( settings.data.includes( 'action=wpsc_get_approval_details&ticket_id=' ) ) ) {	
-          if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data  )  {	
-					console.log( 'start' );
+//  				if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data || ( settings.data.includes( 'action=wpsc_get_approval_details&ticket_id=' ) ) ) {	
+         if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data  )  {	
+//          if( true ) {
+					  console.log( 'start' );
 		            var dropzoneOptions = {
 		                url: "test.php",
 		                autoProcessQueue: false,
@@ -50,71 +51,68 @@ jQuery(document).ready(function(){
 		                acceptedFiles: '.xlsm',
 		                accept: function (file, done) {
 		                    
-		                    console.log( 'ACCEPT' );
-		                    console.log( 'this.files.length: ' + this.files.length );
+	                    console.log( 'ACCEPT' );
+	                    console.log( 'this.files.length: ' + this.files.length );
 		                    
-		/*
-		                    this.removeAllFiles()
-					        this.addFile(file);
-		*/
+
 		                    
-		                    this.on("addedfile", function (file) {
-					            if (this.files.length > 1) {
-						            console.log( 'TOO LONG' );
+		                  this.on("addedfile", function (file) {
+  					            if (this.files.length > 1) {
+  						            console.log( 'TOO LONG' );
 					                this.removeAllFiles()
 					                this.addFile(file);
-					            }
-					        });
+  					            }
+  					            console.log('Do the image');
+  					            jQuery(".dz-image").attr('id', "document-image" );
+  					          });
 		                    
 		                    
-		                    theFile.file = file;
-		                    console.log({theFile:theFile});
+		                  theFile.file = file;
+		                  console.log({theFile:theFile});
 		                    //jQuery('#file_upload_cr').val(1);
-		                    wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
+		                  wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
 		                },
 		                init: function () {
-		                    console.log( 'INIT' );
-		                    
-		                    this.on( "maxfilesexceeded", function(file) {
-		/*
-		                        if (this.files[1]!=null){
-		                            this.removeFile(this.files[0]);
-		                        }
-		*/
-								console.log( 'maxfilesexceeded' );
-		                        this.removeAllFiles();
-								this.addFile(file);
-		                    });
-		                    
-		                    this.on( "error", function (file) {
-		                        console.log( 'error for maxfilesexceeded' );
-		                        if (!file.accepted) this.removeFile(file);
-		                    });
-		                    
-		                    this.on( "complete", function(file) {
-				                console.log( 'dropzone complete' );
-				                jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
-				            });
-				            
-				            this.on("addedfiles", function(files) {
-							    console.log(files.length + ' files added');
-							    console.log( files[0].name );
-							    console.log( files );
-							    
-							    let name_arr = files[0].name.split( '.' );
-							    console.log( name_arr );
-							    let extension = name_arr[ name_arr.length - 1 ];
-							    console.log( extension );
-							    
-							    if( !extension.includes( 'xls' ) ) {
-								    console.log( 'wrong type' );
-								    this.removeAllFiles();
-								    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
-								    reset_page();
-							    }
-							    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
-							    
-							});
+	                    console.log( 'INIT' );
+	                    
+	                    this.on( "maxfilesexceeded", function(file) {
+							          console.log( 'maxfilesexceeded' );
+	                      this.removeAllFiles();
+                        this.addFile(file);
+	                    });
+	                    
+	                    this.on( "error", function (file) {
+	                      console.log( 'error for maxfilesexceeded' );
+	                      if (!file.accepted) this.removeFile(file);
+	                    });
+	                    
+	                    this.on( "complete", function(file) {
+			                  console.log( 'dropzone complete' );
+                        jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+			                });
+			            
+                      this.on("addedfiles", function(files) {
+      							    console.log(files.length + ' files added');
+      							    console.log( files[0].name );
+      							    console.log( files );
+      							    
+      							    let name_arr = files[0].name.split( '.' );
+      							    console.log( name_arr );
+      							    let extension = name_arr[ name_arr.length - 1 ];
+      							    console.log( extension );
+      							    
+      							    if( !extension.includes( 'xls' ) ) {
+      								    console.log( 'wrong type' );
+      								    this.removeAllFiles();
+      								    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
+      								    reset_page();
+      							    }
+      							    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+      							    
+  					            jQuery( ".dz-image img" ).attr( 'id', "spreadsheet-thumbnail" );
+  					            jQuery( ".dz-image img" ).attr( 'aria-label', "thumbnail for uploaded spreadsheet" );
+      							    
+      							  });
 							
 							
 		                }

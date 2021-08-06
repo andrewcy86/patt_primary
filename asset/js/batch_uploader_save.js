@@ -510,7 +510,7 @@ function batch_spreadsheet_new_upload(id, name, fileSS) {
                 
                 // Show the DataTable
                 jQuery( '#batchlistdatatable' ).show();
-                //jQuery( '#spreadsheet_dt_row' ).append( '<th>Pods</th>' );
+
                 
                 spreadsheetMetaData.col_names.forEach( function( colName ) {
 	            	jQuery( '#spreadsheet_dt_row' ).append( '<th>' + colName + '</th>' );

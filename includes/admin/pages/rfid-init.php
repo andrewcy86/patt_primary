@@ -28,6 +28,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
     $rfid_count_num = $rfid_count->count;
 ?>
 <style>
+
 .wpsc_loading_icon {
 margin-top: 0px !important;
 }
@@ -36,10 +37,10 @@ margin-top: 0px !important;
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_clear_rfid_btn" onclick="wpsc_clear_rfid();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-eraser"></i> Clear by RFID Reader ID</button>-->
-        <button type="button" class="btn btn-sm wpsc_action_btn" id="editselectedbox"><i class="fas fa-edit"></i> Edit</button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
+		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_clear_rfid_btn" onclick="wpsc_clear_rfid();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-eraser" aria-hidden="true" title="Clear RFID Reader"></i><span class="sr-only">Clear RFID Reader</span> Clear by RFID Reader ID</button>-->
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="editselectedbox"><i class="fas fa-edit" aria-hidden="true" title="Edit"></i><span class="sr-only">Edit</span> Edit</button>
   </div>
 
 </div>
@@ -49,7 +50,7 @@ margin-top: 0px !important;
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a>
+					      <h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i><span class="sr-only">Filters</span> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</h4>
 								<hr class="widget_divider">
 
@@ -108,18 +109,18 @@ color: rgb(255, 255, 255) !important;
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br /><br />
 <form id="frm-example" method="POST">
 <table id="tbl_rfid" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
-                <th class="datatable_header"></th>
-                <th class="datatable_header">Reader ID</th>
-                <th class="datatable_header">Box ID</th>
-                <th class="datatable_header">Request ID</th>
-                <th class="datatable_header">EPC</th>
-                <th class="datatable_header">Date Added</th>
+                <th class="datatable_header" scope="col"></th>
+                <th class="datatable_header" scope="col">Reader ID</th>
+                <th class="datatable_header" scope="col">Box ID</th>
+                <th class="datatable_header" scope="col">Request ID</th>
+                <th class="datatable_header" scope="col">EPC</th>
+                <th class="datatable_header" scope="col">Date Added</th>
             </tr>
         </thead>
     </table>
@@ -202,10 +203,10 @@ jQuery('#searchByReaderID').val(term);
       },
       'order': [[1, 'asc']],
     'columns': [
-       { data: 'box_id' },
+       { data: 'box_id'},
        { data: 'Reader_Name' }, 
-       { data: 'box_id' },
-       { data: 'request_id' },
+       { data: 'box_id', 'class' : 'text_highlight' },
+       { data: 'request_id', 'class' : 'text_highlight' },
        { data: 'epc' },
        { data: 'DateAdded' },
     ]

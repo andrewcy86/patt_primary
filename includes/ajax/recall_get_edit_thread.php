@@ -66,6 +66,11 @@ if( $rich_editing ){
 	  setup: function (editor) {
     }
   });
+  	//508 Fix
+	var ed = tinymce.activeEditor;
+    var ifr = tinymce.DOM.get(ed.id + '_ifr');
+    ed.dom.setAttrib(ifr, 'aria-label', 'Text Editor for Reply');
+    //508 Fix
   </script>
   <?php } ?>
 <?php 

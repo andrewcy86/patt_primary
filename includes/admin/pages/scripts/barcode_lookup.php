@@ -11,6 +11,11 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 	background-color: rgb(66, 73, 73) !important; 
 	color: rgb(255, 255, 255) !important;
 }
+
+.text_link {
+  color:#1d4289;
+  text-decoration: underline;
+}
 </style>
 
 <?php
@@ -57,37 +62,37 @@ if(!empty($request_info->id) && $request_info->active == 1) {
             $status_icon = '';
             //Status icons
             if(Patt_Custom_Func::id_in_box_destroyed($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #a80000;"><i class="fas fa-ban" aria-hidden="true" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
             }
             
             if(Patt_Custom_Func::id_in_unauthorized_destruction($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
             }
             
             if(Patt_Custom_Func::id_in_damaged($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
             
              if(Patt_Custom_Func::id_in_freeze($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_return($requestid,$type) == 1){
-            $status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+            $status_icon .= '<span style="font-size: 1em; color: #A80000;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
             }
             
             if(Patt_Custom_Func::id_in_recall($requestid,$type) == 1){
-            $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+            $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
             }
 			$request_url = admin_url( 'admin.php?page=wpsc-tickets', 'https' );
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
-			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$requestid."' target='_blank'>" . $requestid . "</a>" . $status_icon . "<br />";
+			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$requestid."' class='text_link' target='_blank'>" . $requestid . "</a>" . $status_icon . "<br />";
 			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
 			echo "<strong>Requestor Email:</strong> " . $request_info->customer_email . "<br />";
-			echo "<strong>Request Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle'></i></span>
+			echo "<strong>Request Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle' aria-hidden='true' title='Request Status Color'></i><span class='sr-only'>Request Status Color</span></span>
 <br />";
-			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "  <span style='color: ".$priority_color." ;margin: 0px;'><i class='fas fa-asterisk'></i></span><br />";
+			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "  <span style='color: ".$priority_color." ;margin: 0px;'><i class='fas fa-asterisk' aria-hidden='true' title='Request Priority Color'></i></span><span class='sr-only'>Request Priority Color</span><br />";
 			echo "<strong>Date Created:</strong> " . date("m-d-Y", strtotime($request_info->date_created));
 
 $box_details = $wpdb->get_results(
@@ -149,7 +154,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
                 
 			$tbl .= '<tr>
             <td  width="35px" height="50px"></td>
-            <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" target="_blank">' . $boxlist_id . '</a></td>';
+            <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" class="text_link" target="_blank">' . $boxlist_id . '</a></td>';
             
             $type = 'box';
             $loc_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
@@ -247,31 +252,31 @@ if (!empty($box_details_id) && $is_active == 1) {
 			$status_icon = '';
 			
             if(Patt_Custom_Func::id_in_box_destroyed($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #a80000;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
             }
             
             if(Patt_Custom_Func::id_in_unauthorized_destruction($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
             }
             
             if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
             
              if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
 if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){
-$status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$status_icon .= '<span style="font-size: 1em; color: #A80000;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($barcode,$type) == 1){
-$status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 
 	
-			echo "<strong>Box ID:</strong> <a href='".$boxdetails_url."&id=" . $barcode . "' target='_blank'>" . $barcode . "</a>".$status_icon."<br />";
+			echo "<strong>Box ID:</strong> <a href='".$boxdetails_url."&id=" . $barcode . "' class='text_link' target='_blank'>" . $barcode . "</a>".$status_icon."<br />";
 			echo "<strong>Program Office:</strong> " . $box_details->program_office . "<br />";
 			echo "<strong>Record Schedule:</strong> " . $box_details->rsnum . "<br />";
 			echo "<strong>Digitization Center:</strong> " . $box_details->location . "</strong><br />";
@@ -288,7 +293,7 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 			
 			$box_status_color = get_term_meta($box_details->box_status_id, 'wpsc_box_status_background_color', true);
 
-			echo "<strong>Box Status:</strong> " . $box_details->box_status. " <span style='color: ".$box_status_color." ;margin: 0px;'><i class='fas fa-circle'></i></span>";
+			echo "<strong>Box Status:</strong> " . $box_details->box_status. " <span style='color: ".$box_status_color." ;margin: 0px;'><i class='fas fa-circle' aria-hidden='true' title='Box Status Color'></i><span class='sr-only'>Box Status Color</span></span>";
 
 			$tbl = '<br /><br /><strong>Box Contents:</strong><br /><br />
 <table id="dataTable" class="stripe" width="100%">
@@ -316,13 +321,13 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 				
 				if(Patt_Custom_Func::id_in_validation($info->folderdocinfofile_id,'folderfile') == 1) {
 				    $boxcontent_validation_user = Patt_Custom_Func::get_validation_user($info->folderdocinfofile_id);
-                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ['. $boxcontent_validation_user .'] ';
+                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ['. $boxcontent_validation_user .'] ';
                 }
                 else if (Patt_Custom_Func::id_in_validation($info->folderdocinfofile_id,'folderfile') != 1 && Patt_Custom_Func::id_in_rescan($info->folderdocinfofile_id,'folderfile') == 1) {
-                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> <span style="color: #FF0000;"><strong>[Re-scan]</strong></span>';
+                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> <span style="color: #A80000;"><strong>[Re-scan]</strong></span>';
                 }
                 else {
-                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
+                    $boxcontent_validation_icon = '<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
                 }
 
 				
@@ -331,7 +336,7 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 				$tbl .= '
     <tr>
             <td width="35px" height="50px"></td>
-            <td data-order="'. $boxcontent_dbid .'"><a href="'.$folderfile_url.'&id=' . $boxcontent_id . '" target="_blank">' . $boxcontent_id . '</a></td>
+            <td data-order="'. $boxcontent_dbid .'"><a href="'.$folderfile_url.'&id=' . $boxcontent_id . '" class="text_link" target="_blank">' . $boxcontent_id . '</a></td>
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>
@@ -410,39 +415,39 @@ $folderfile_details = $wpdb->get_row(
 	$status_icon = '';
 	
     if(Patt_Custom_Func::id_in_box_destroyed($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #a80000;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
     }
     
     if(Patt_Custom_Func::id_in_unauthorized_destruction($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
     }
     
     if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
     }
     
      if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
     }
 
     if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){
-    $status_icon .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+    $status_icon .= '<span style="font-size: 1em; color: #A80000;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
     }
     
     if(Patt_Custom_Func::id_in_recall($barcode,$type) == 1){
-    $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+    $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
     }
     
     //Validation check
     if(Patt_Custom_Func::id_in_validation($barcode,$type) == 1) {
 	    $boxcontent_validation_user = Patt_Custom_Func::get_validation_user($barcode);
-        $status_icon .= ' <span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ['. $boxcontent_validation_user .'] ';
+        $status_icon .= ' <span style="font-size: 1em; color: #008000;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ['. $boxcontent_validation_user .'] ';
     }
     else if (Patt_Custom_Func::id_in_validation($barcode,$type) != 1 && Patt_Custom_Func::id_in_rescan($barcode,$type) == 1) {
-        $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> <span style="color: #FF0000;"><strong>[Re-scan]</strong></span>';
+        $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> <span style="color: #A80000;"><strong>[Re-scan]</strong></span>';
     }
     else {
-        $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
+        $status_icon .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
     }
    
 $folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );

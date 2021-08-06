@@ -371,29 +371,29 @@ $type = 'request';
 
 if(Patt_Custom_Func::id_in_return($row['patt_request_id'],$type) == 1){
 //$decline_icon = '<span style="margin-left:4px;"><img src="'.WPPATT_PLUGIN_URL.'asset/images/decline.gif" alt="Declined"/></span>';
-$decline_icon = '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$decline_icon = '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($row['patt_request_id'],$type) == 1){
 //$recall_icon = '<span style="margin-left:4px;"><img src="'.WPPATT_PLUGIN_URL.'asset/images/recall.gif" alt="Recall"/></span>';
-$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 $full_name = '<span style="display: none;" aria-label="'.$row['full_name'].'"></span>';
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['patt_request_id'],$type) == 1) {
-    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_damaged($row['patt_request_id'],$type) == 1) {
-    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($row['patt_request_id'],$type) == 1) {
-    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
-    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+    $box_destroyed_icon = ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
 }
 
 

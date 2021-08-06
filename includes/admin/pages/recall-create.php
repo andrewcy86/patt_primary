@@ -286,15 +286,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 							if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 							{
 							?>
-							                <th class="datatable_header"></th>
+							                <th class="datatable_header" scope="col" ></th>
 							<?php
 							}
 							?>
-				                <th class="datatable_header">Box/Folder/File ID</th>
-				                <th class="datatable_header">Title</th>
-				                <th class="datatable_header">Record Schedule</th>
-				                <th class="datatable_header">Program Office</th>
-<!-- 				                <th class="datatable_header">Validation</th> -->
+				                <th class="datatable_header" scope="col" >Box/Folder/File ID</th>
+				                <th class="datatable_header" scope="col" >Title</th>
+				                <th class="datatable_header" scope="col" >Record Schedule</th>
+				                <th class="datatable_header" scope="col" >Program Office</th>
+<!-- 				                <th class="datatable_header" scope="col" >Validation</th> -->
 				            </tr>
 				        </thead>
 				    </table>

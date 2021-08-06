@@ -108,8 +108,8 @@ ob_start();
                 $date->setTimezone(new DateTimeZone('America/New_York'));
 
                 ?>
-               <li><a href="<?php echo WPPATT_UPLOADS_URL."backups/audit/".$filename[2] ?>" target="_blank">Audit log archived on <?php echo $date->format('m-d-Y h:i:s a'); ?> EST
-                <i class="fas fa-download" title="Download Archived Request Log"></i></a></li>
+               <li><a href="<?php echo WPPATT_UPLOADS_URL."backups/audit/".$filename[2] ?>" style="color:#1d4289;text-decoration: underline;" target="_blank">Audit log archived on <?php echo $date->format('m-d-Y h:i:s a'); ?> EST
+                <i class="fas fa-download" title="Download Archived Request Log" aria-hidden="true"></i><span class="sr-only">Download Archived Request Log</span></a></li>
             <?php }
             }
 		    ?>
@@ -118,7 +118,7 @@ ob_start();
 		    <?php 
 		    if ($is_active == 1) {
 		    ?>
-		    <div class="wpsc_thread_audit logtitle"><h4>Request History: <a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/print_log.php?id=' . htmlentities($ticket_id); ?>" target="_blank"><i class="fas fa-print" title="Print Request Log"></i></a></h4></div>
+		    <div class="wpsc_thread_audit logtitle"><h4>Request History: <a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/print_log.php?id=' . htmlentities($ticket_id); ?>" target="_blank"><i class="fas fa-print" aria-hidden="true" title="Print Request Log" style="color:#1D4289"></i><span class="sr-only">Print Request Log</span></a></h4></div>
 
 			<?php
 			$order = $reply_form_position ? 'ASC' : 'DESC';
@@ -174,7 +174,7 @@ ob_start();
 		</div>
 		<?php } ?>
 <div class="wpsc_thread_audit load">
-<a href="#" id="loadMore"><i class="fas fa-sync"></i> Load More</a>
+<a href="#" id="loadMore"><i class="fas fa-sync" aria-hidden="true" title="Load More"></i><span class="sr-only">Load More</span> Load More</a>
 </div>
 			<?php 
             }
@@ -184,7 +184,6 @@ ob_start();
 </div>
 
 <style>
-
 .wpsc_thread_audit {
     display: table;
     width: 75%;

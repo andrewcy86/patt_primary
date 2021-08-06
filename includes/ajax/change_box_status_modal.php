@@ -241,10 +241,6 @@ print_r($status_list_assignable);
 
 
 <style>
-#wpsc_popup_body {
-	max-height: 450px;
-}	
-
 .zebra {
 	padding: 7px 0px 7px 0px;
 }

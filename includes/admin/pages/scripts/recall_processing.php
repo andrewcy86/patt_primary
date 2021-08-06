@@ -19,7 +19,7 @@ if (!$con) {
 
 // Variables
 $icons = '';
-$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
+$freeze_icon = ' <i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span>';
 
 ## Read value
 $draw = $_POST['draw'];

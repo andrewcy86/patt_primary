@@ -205,8 +205,8 @@ canvas {
 <!-- 		<p>Upload digitized files for transfer to ECMS here.</p> -->
 		
 		<label class="col-sm-2 control-label">Upload Single File<span style="color:red;">*</span> </label>
-		<div class="col-sm-10">
-			<fieldset id='uploadForm' >
+		<div class="col-sm-10 tom">
+			<fieldset id='uploadForm' tabindex="0">
 			<form>
 			   
 			    <span class="button fileinput-button">

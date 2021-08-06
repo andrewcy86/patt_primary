@@ -33,6 +33,7 @@ canvas {
   direction: ltr;
   cursor: pointer;
 }
+
 .progress {
 	position:relative;
 	height: 20px;
@@ -128,7 +129,7 @@ canvas {
 	
 	position:relative;
 	left: 40%;
-	color: #7a7a7a;
+	color: #000000;
 }
 
 #upload_alert_status_modal {
@@ -138,6 +139,16 @@ canvas {
 #upload-alert {
 	margin-bottom: 0px !important;
 }
+
+.fileinput-button > #fileInput:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
+/*
+.fileinput-button > #fileInput:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+}
+*/
 
 </style>
 
@@ -153,13 +164,22 @@ canvas {
 		<label class="col-sm-2 control-label">Upload File<span style="color:red;">*</span> </label>
 		<div class="col-sm-10">
 			<fieldset id='uploadForm' >
-			<form>
+			<form >
 			   
-			    <span class="button fileinput-button">
-			        <i class="fas fa-plus"></i>
-			        <span>Select File...</span>
-			        <input id="fileInput" type="file" name="file" accept="*"/>
-			    </span>
+<!--
+		    <span class="button fileinput-button" >
+	        <i class="fas fa-plus"></i>
+	        <span>Select File...</span>
+	        <input id="fileInput" type="file" name="file" accept="*"  >
+		    </span>
+-->
+		    
+		    <label for="fileInput" class="button fileinput-button" tabindex="0">
+          <i class="fas fa-plus"></i>
+	        <span>Select File...</span>
+        </label>
+        <input id="fileInput" type="file" name="file" accept="*" style="display:none" tabindex="-1" /> 
+		    			    
 			 	<span class="button cancel-button" style='display:none;'>
 			        <i class="fas fa-minus"></i>
 			        <a href='#' id='cancel' style="color:inherit;text-decoration: none;">Cancel</a>

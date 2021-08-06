@@ -47,7 +47,7 @@ if($flag_btn):
 <?php
 if($is_active == 1) {
 ?>
-	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="<?php echo $action_default_btn_css ?>" onclick="wpsc_get_pdf_label_field(<?php echo $ticket_id?>)"><i class="fas fa-tags"></i> Print Label</button>
+	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="<?php echo $action_default_btn_css ?>" onclick="wpsc_get_pdf_label_field(<?php echo $ticket_id?>)"><i class="fas fa-tags" aria-hidden="true" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button>
 	<?php } ?>
 		<script>
 		function wpsc_get_pdf_label_field(ticket_id){

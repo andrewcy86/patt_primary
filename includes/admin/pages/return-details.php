@@ -284,7 +284,10 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 				$months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
 				$days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
 				
-				$expiration_message = '<span style="font-size: 1em;"><i class="fas fa-hourglass-half" title="Expiration Alert"></i></span>';
+				// PATT Begin
+				$expiration_message = '<span style="font-size: 1em;"><i aria-hidden="true" class="fas fa-hourglass-half" title="Expiration Alert"></i><span class="sr-only">Expiration Alert</span></span>';
+				// PATT End
+				
 				$expiration_message .= ' <strong>Time until expiration:</strong> ';
 				
 				if ($days >= 0 && $year == 0 && $months == 1 ) {
@@ -340,14 +343,20 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
 	<div class="col-sm-12">
-<!--     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=return';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> Decline List</button> -->
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=decline';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> Decline List</button>
+	    <!-- PATT Begin -->
+<!--     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=return';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i aria-hidden="true" class="fa fa-list-ul" title="Decline List"></i><span class="sr-only" >Decline List</span> Decline List</button> -->
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=decline';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i aria-hidden="true" class="fa fa-list-ul" title="Decline List"></i><span class="sr-only" >Decline List</span> Decline List</button>
+        <!-- PATT End -->
 <?php		
 	if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') )
 	{
 ?>       	
-    	<button type="button" id="wppatt_return_cancel" onclick="wppatt_cancel_return();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_return_btn_css?>"><i class="fa fa-ban"></i> Cancel Decline</button>
-    	<button type="button" id="wppatt_return_expiration_extend" onclick="wppatt_extend_return_expiration();" class="btn btn-sm wpsc_action_btn" style="<?php echo $extend_expiration_return_btn_css?>"><i class="fa fa-ban"></i> Extend Decline Expiration</button>
+
+    <!-- PATT Begin -->
+    	<button type="button" id="wppatt_return_cancel" onclick="wppatt_cancel_return();" class="btn btn-sm wpsc_action_btn" style="<?php echo $cancel_return_btn_css?>"><i aria-hidden="true" class="fa fa-ban" title="Cancel Decline"></i><span class="sr-only">Cancel Decline</span> Cancel Decline</button>
+    	<button type="button" id="wppatt_return_expiration_extend" onclick="wppatt_extend_return_expiration();" class="btn btn-sm wpsc_action_btn" style="<?php echo $extend_expiration_return_btn_css?>"><i aria-hidden="true" class="fa fa-ban" title="Extend Decline Expiration"></i><span class="sr-only">Extend Decline Expirtion</span> Extend Decline Expiration</button>
+    <!-- PATT End -->
+
 <?php		
 	}
 ?>    
@@ -401,7 +410,10 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 		
 			?>
 			
-			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i class="fas fa-edit"></i></a>
+			<!-- PATT Begin -->
+			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
+			<!-- PATT End -->
+			
 			<?php
 					}
 				}
@@ -415,7 +427,10 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 		
 			?>
 			
-			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i class="fas fa-edit"></i></a>
+			<!-- PATT Begin -->
+			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
+			<!-- PATT End -->
+			
 			<?php
 					}
 				}
@@ -455,7 +470,11 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 						if ( $agent_permissions['label'] == 'Administrator' || $current_user_on_request ) { 
 							if( $status_cancelled == 0 ) 
 							{
-								echo '<a href="#" onclick="wppatt_get_return_requestor_editor()"><i class="fas fa-edit"></i></a>';
+							    
+							    // PATT Begin
+								echo '<a href="#" onclick="wppatt_get_return_requestor_editor()"><i aria-hidden="true" class="fas fa-edit" title="Return Requestor Editor"></i><span class="sr-only">Return Requestor Editor</span></a>';
+							    // PATT End
+							    
 							}
 						}
 					}
@@ -508,15 +527,15 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 					if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 					{
 					?>
-<!-- 					                <th class="datatable_header"></th> -->
+<!-- 					                <th class="datatable_header" scope="col" ></th> -->
 					<?php
 					}
 					?>
-		                <th class="datatable_header">Box ID</th>
-		                <th class="datatable_header">Title</th>
-		                <th class="datatable_header">Request ID</th>
-		                <th class="datatable_header">Program Office</th>
-<!-- 		                <th class="datatable_header">Validation</th> -->
+		                <th class="datatable_header" scope="col" >Box ID</th>
+		                <th class="datatable_header" scope="col" >Title</th>
+		                <th class="datatable_header" scope="col" >Request ID</th>
+		                <th class="datatable_header" scope="col" >Program Office</th>
+<!-- 		                <th class="datatable_header" scope="col" >Validation</th> -->
 		            </tr>
 		        </thead>
 		    </table>
@@ -627,9 +646,9 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 		<?php
 		}
 		?>
-		   { data: 'box_id_flag' }, 
+		   { data: 'box_id_flag', 'class' : 'text_highlight' }, 
 		   { data: 'title' },
-		   { data: 'request_id' },
+		   { data: 'request_id', 'class' : 'text_highlight' },
 		   { data: 'program_office' },
 // 		   { data: 'validation' },
 		]

@@ -255,6 +255,13 @@ WHERE a.id ='" . $folderfile_boxid . "'");
 	$box_physical_location = $location->locations;
 ?>
 <style>
+
+#doc_relationship {
+    background-color: transparent !important;
+    border-width: 0px;
+    padding: 0px;
+}
+
 div.dataTables_wrapper {
         width: 100%;
         margin: 0;
@@ -293,7 +300,7 @@ div.dataTables_wrapper {
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
 	<div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" aria-label="Request Help Button" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" aria-label="Request Help Button" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     	
     	<?php	
     	
@@ -306,11 +313,11 @@ div.dataTables_wrapper {
         <!-- language of buttons change based on 0 or 1 -->
         <?php
         if($folderfile_validation == 0) { ?>
-        <button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle"></i> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle"></i></a></button>
+        <button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php
         }
         else { ?>
-        <button type="button" aria-label="Help Invalidate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle"></i> Un-Validate</button>
+        <button type="button" aria-label="Help Invalidate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Un-Validate"></i><span class="sr-only">Un-Validate</span> Un-Validate</button>
         <?php
         }
         ?>
@@ -328,10 +335,10 @@ div.dataTables_wrapper {
         ?>        
         <?php
         if($folderfile_rescan == 0) { ?>
-        <button type="button" aria-label="Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle"></i> Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle"></i></a></button>
+        <button type="button" aria-label="Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span> Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
        	<?php }
        	else { ?>
-       	<button type="button" aria-label="Undo Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle"></i> Undo Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle"></i></a></button>
+       	<button type="button" aria-label="Undo Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Undo Re-Scan"></i><span class="sr-only">Undo Re-Scan</span> Undo Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php } ?>
         <?php 
         }
@@ -339,26 +346,26 @@ div.dataTables_wrapper {
         
        	<?php
        	if($folderfile_destruction == 0) { ?>
-       	<button type="button" aria-label="Unauthorized Destruction Help Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
+       	<button type="button" aria-label="Unauthorized Destruction Help Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     	<?php }
     	else { ?>
-    	<button type="button" aria-label="Unauthorized Destruction Help Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag"></i> Undo Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-undo-unauthorized-destruction-button'); ?>" aria-label="Undo Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
+    	<button type="button" aria-label="Unauthorized Destruction Help Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag" aria-hidden="true" title="Undo Unauthorized Destruction"></i><span class="sr-only">Undo Unauthorized Destruction</span> Undo Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-undo-unauthorized-destruction-button'); ?>" aria-label="Undo Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     	<?php } ?>
     	
     	<?php 
     	if($folderfile_damaged == 0) { ?>
-    	<button type="button" aria-label="Damaged Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt"></i> Damaged</button>
+    	<button type="button" aria-label="Damaged Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged</button>
         <?php }
         else { ?>
-    	<button type="button" aria-label="Undo Damaged Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt"></i> Undo Damaged</button>
+    	<button type="button" aria-label="Undo Damaged Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt" aria-hidden="true" title="Undo Damaged"></i><span class="sr-only">Undo Damaged</span> Undo Damaged</button>
         <?php } ?>
     	
     	<?php 
     	if($folderfile_freeze == 0) { ?>
-    	<button type="button" aria-label="Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake"></i> Freeze  <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
+    	<button type="button" aria-label="Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze  <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php }
         else { ?>
-        <button type="button" aria-label="Undo Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake"></i> Un-Freeze</button>
+        <button type="button" aria-label="Undo Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake" aria-hidden="true" title="Un-Freeze"></i><span class="sr-only">Un-Freeze</span> Un-Freeze</button>
         <?php } ?>
         <?php
         }
@@ -368,7 +375,7 @@ div.dataTables_wrapper {
 //REVIEW
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($folderdocinfofileid)) {
 ?>
-<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
+<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Box Details"></i><span class="sr-only">Back to Box Details</span> Back to Box Details</button>
 <?php
 }
 ?>
@@ -376,7 +383,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $
 //REVIEW
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch' && !empty($folderdocinfofileid)) {
 ?>
-<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
+<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Box Details"></i><span class="sr-only">Back to Box Details</span> Back to Box Details</button>
 <?php
 }
 ?>
@@ -384,7 +391,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $
 //REVIEW
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch' && !empty($folderdocinfofileid)) {
 ?>
-<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></i> Back to Folder/File Dashboard</button>
+<button type="button" aria-label="Back to Box Details Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Folder/File Dashboard"></i><span class="sr-only">Back to Folder/File Dashboard</span> Back to Folder/File Dashboard</button>
 <?php
 }
 ?>   	
@@ -407,7 +414,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $
 if($folderfile_destruction > 0){
 ?>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> This 
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span> This 
 <?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is flagged as unauthorized destruction.
 </div>
@@ -420,7 +427,7 @@ is flagged as unauthorized destruction.
 if(Patt_Custom_Func::id_in_damaged($folderfile_folderdocinfofile_id, $type) == 1){
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> This 
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> This 
 <?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is marked as damaged.
 </div>
@@ -433,7 +440,7 @@ is marked as damaged.
 if($folderfile_freeze > 0){
 ?>
 <div class="alert alert-info" role="alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> This 
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> This 
 <?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is marked as frozen.
 </div>
@@ -445,19 +452,19 @@ is marked as frozen.
 if($folderfile_validation > 0 && $folderfile_rescan == 0){
 echo '
 <div class="alert alert-success" role="alert">
-<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
+<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span>';
 if ($folderfile_index_level == '1') { echo' Folder validated ['. $user->display_name. ']'; }else{ echo' File validated ['.$user->display_name.'].'; }
 echo '</div>';
 } elseif ($folderfile_rescan == 1) {
 echo '
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Re-scan Needed"></i></span>';
+<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan Needed"></i><span class="sr-only">Re-Scan Needed</span></span>';
 if ($folderfile_index_level == '1') { echo' Folder requires re-scanning.'; }else{ echo' File requires re-scanning.'; }
 echo '</div>';
 } else {
 echo '
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="not validated"></i></span>';
+<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
 if ($folderfile_index_level == '1') { echo' Folder not validated.'; }else{ echo' File not validated.'; }
 echo '</div>';    
 }
@@ -466,21 +473,23 @@ echo '</div>';
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
 	 	 <?php if($box_destruction > 0 && $folderfile_freeze == 0){?>
-	 	 <span style="color: #FF0000 !important; text-decoration: line-through;">
+	 	 <span style="color: #B4081A !important; text-decoration: line-through;">
 	 	 <?php } ?>
         	<?php 
         	//If a file is electronic it should always be a file
         	if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
             echo $GLOBALS['id'];
-            ?>]<?php if($box_destruction > 0 && $folderfile_freeze == 0){?></span> <span style="font-size: .8em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span><?php } ?>
+            ?>]<?php if($box_destruction > 0){?> 
+            </span> <span style="font-size: .8em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>
+            <?php } ?>
 		  <?php } ?>		
 
 <?php
 if($is_active == 0){
 if ($folderfile_index_level == '1') {
-echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This folder is archived</span>';
+echo '<br /><span style="font-size: .8em; color:#B4081A;"><i class="fas fa-archive" aria-hidden="true" title="This folder is archived"></i><span class="sr-only">This folder is archived</span> This folder is archived</span>';
 } else {
-echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This file is archived</span>';
+echo '<br /><span style="font-size: .8em; color:#B4081A;"><i class="fas fa-archive" aria-hidden="true" title="This file is archived"></i><span class="sr-only">This file is archived</span> This file is archived</span>';
 }
 }
 ?>
@@ -489,11 +498,11 @@ $decline_icon = '';
 $recall_icon = '';
 
 if(Patt_Custom_Func::id_in_return($GLOBALS['id'],$type) == 1){
-$decline_icon = '<span style="color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$decline_icon = '<span style="color: #B4081A;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Decline"></i><span class="sr-only">Decline</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($GLOBALS['id'],$type) == 1){
-$recall_icon = '<span style="color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$recall_icon = '<span style="color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 echo $decline_icon.$recall_icon;
 		  ?>
@@ -703,7 +712,7 @@ if( $folderfile_details->source_file_location == null || $folderfile_details->so
 // Display Upload File Section
 if($is_active == 1) {
 
-echo '<div id="upload-file-section" >';
+echo '<div id="upload-file-section" class="focus-section">';
 echo '<hr>';
 echo '<h3>Upload File</h3>';
 echo '</div>';
@@ -711,7 +720,7 @@ echo '</div>';
 //echo 'check: ' . ($folderfile_details->attachment == '0') ? 'true' : 'false';
 //echo '<br>';
 
-echo '<div id="single-file-uploader-details" >';
+echo '<div id="single-file-uploader-details" class="focus-section">';
 echo '<span class="details-name" >File Name: </span><span class="" >' . $file_name . '</span><br>';
 echo '<span class="details-name" >File Location: </span><span class="" >' . $source_file_location . '</span><br>';
 echo '<span class="details-name" >File Size: </span><span class="" >' . $file_size . '</span>' . $file_message . '<br>';
@@ -742,7 +751,7 @@ if ($folderfile_details->object_key != '') {
 		// Get the actual presigned-url
 		$presignedUrl = (string)$request->getUri();
 		
-		echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" title="AWS"></i> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
+		echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" aria-hidden="true" title="Download file from temporary s3 bucket"></i><span class="sr-only">Download file from temporary s3 bucket</span> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
 		
 		// TEST metadata
 		
@@ -835,6 +844,11 @@ echo '</pre>';
 
 ?>
 <style>
+
+.focus-section:focus {
+  background-color: pink; /* Something to get the user's attention */
+}
+
 .normal_p {
     display: inline;
 }
@@ -856,7 +870,7 @@ echo '</pre>';
 	}
 	
 	.red-alert {
-		color: red;
+		color: #a80000;
 		font-weight: bold;
 	}
 	
@@ -892,7 +906,7 @@ echo '</pre>';
 if ($folderfile_sems_reg_id != '' || $folderfile_folderdocinfofile_id != '') {
 ?>
 
-<h3 style="display: inline;">Links to Electronic Records in SEMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle"></i></a></h3>
+<h3 style="display: inline;">Links to Electronic Records in SEMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></h3>
 
 <br /><br />
 <div id="wpsc_raised_extra_info">
@@ -902,15 +916,14 @@ if ($folderfile_sems_reg_id != '' || $folderfile_folderdocinfofile_id != '') {
 			<td style="width:200px;"><strong>Date</strong></td>
 			<td><?php echo $folderfile_date; ?></td>
 		</tr>-->
-		<tr>
-						<td><strong>Title</strong></td>
-					<td><a href="https://semspub.epa.gov/work/<?php echo $folderfile_sems_reg_id; ?>/<?php echo $folderfile_folderdocinfofile_id; ?>.pdf" target="_blank"><?php echo $folderfile_title; ?></a></td>
-		</tr>
-		<tr>
-			<td><strong>Doc ID</strong></td>
-			<td><?php echo $folderfile_folderdocinfofile_id; ?></td>
-		</tr>
-	</tbody></table>
+    		<th scope="col"><strong>Title</strong></th>
+    		<th scope="col"><strong>Doc ID</strong></th>
+    		<tr>
+    			<td class="text_highlight"><a href="https://semspub.epa.gov/work/<?php echo $folderfile_sems_reg_id; ?>/<?php echo $folderfile_folderdocinfofile_id; ?>.pdf" target="_blank"><?php echo $folderfile_title; ?></a></td>
+    			<td><?php echo $folderfile_folderdocinfofile_id; ?></td>
+    		</tr>
+    	    </tbody>
+	</table>
 </div>
 
 <?php
@@ -936,13 +949,13 @@ if (count($get_all_ecms_attachments)> 0 && (($agent_permissions['label'] == 'Adm
     color: rgb(255, 255, 255) !important;
 }
 </style>
-<h3 style="display: inline;">Links to Electronic Records in ECMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle"></i></a>
+<h3 style="display: inline;">Links to Electronic Records in ECMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 </h3>
 <div class="table-responsive" style="overflow-x:auto;">
 <br />
 <?php
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) {
-echo '<button type="button" class="button" id="wpsc_ecms_delete_btn"><i class="fa fa-trash"></i> Submit ECMS Removal Request </button><br /><br />';
+echo '<button type="button" class="button" id="wpsc_ecms_delete_btn"><i class="fa fa-trash" aria-hidden="true" title="Submit ECMS Removal Request"></i><span class="sr-only">Submit ECMS Removal Request</span> Submit ECMS Removal Request </button><br /><br />';
 }
 //class="table table-striped table-bordered"
 $tbl = '
@@ -1349,14 +1362,14 @@ function wpsc_get_epa_contact_editor(folderdocinfofile_id) {
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-user"></i> EPA Contact
+      <h4 class="widget_header"><i class="fa fa-user" aria-hidden="true" title="EPA Contact"></i><span class="sr-only">EPA Contact</span> EPA Contact
       <!--only admins/agents have the ability to edit epa contact-->
 	<?php
 	    $agent_permissions = $wpscfunction->get_current_agent_permissions();
         $agent_permissions['label'];
         if ( !in_array($box_ticket_status, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
-          echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor(\''.$folderfile_folderdocinfofile_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
+          echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor(\''.$folderfile_folderdocinfofile_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit EPA Contact"></i><span class="sr-only">Edit EPA Contact</span></button>';
         } 
 	?>
 	</h4>
@@ -1388,18 +1401,18 @@ echo '<div class="wpsp_sidebar_labels"><strong>Office Phone Number: </strong> '.
 echo '<div class="wpsp_sidebar_labels"><strong>Organization: </strong> '.$program_office_code. '</div>';
 }
 else {
-echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending update...</strong></div>';
+echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending update...</strong></div>';
 }
 ?>
 	</div>
 	
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-info-circle"></i> Information/Location
+					      <h4 class="widget_header"><i class="fa fa-info-circle" aria-hidden="true" title="Information/Location"></i><span class="sr-only">Information/Location</span> Information/Location
 					      </h4>
 								<hr class="widget_divider">
 								<div class="wpsp_sidebar_labels"><strong>Request ID:</strong><br /> 
 	                            <?php 
-	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
+	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "' style='color:#1d4289; text-decoration: underline;'>" . $box_requestid . "</a>";
 	                            ?>
 	                            </div>
 	                            
@@ -1419,13 +1432,13 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 	                            <?php
 	                            if (!empty($box_boxid)) {
 	                                if ($GLOBALS['pid'] == 'requestdetails') {
-	                                echo "<a href='admin.php?pid=requestdetails&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                echo "<a href='admin.php?pid=requestdetails&page=boxdetails&id=" . $box_boxid . "' style='color:#1d4289; text-decoration: underline;'>" . $box_boxid . "</a>";
 	                                }
 	                                if ($GLOBALS['pid'] == 'boxsearch') {
-	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "' style='color:#1d4289; text-decoration: underline;'>" . $box_boxid . "</a>";
 	                                }
 	                                if ($GLOBALS['pid'] == 'docsearch') {
-	                                echo "<a href='admin.php?pid=docsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                echo "<a href='admin.php?pid=docsearch&page=boxdetails&id=" . $box_boxid . "' style='color:#1d4289; text-decoration: underline;'>" . $box_boxid . "</a>";
 	                                }
 	                                } ?>
 	                             </div>
@@ -1455,15 +1468,15 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 	                                   $parent_child = 'Parent with no child documents';
 	                               }
 	                               else if($child_count == 1) {
-	                                    $parent_child = 'Parent to ' . $child_count . ' child document <i id="doc_relationship" class="fab fa-buffer fa-lg" title="Document Relationship"></i>';
+	                                    $parent_child = 'Parent to ' . $child_count . ' child document <button id="doc_relationship"><i id="doc_relationship_icon" class="fab fa-buffer fa-lg" aria-hidden="true" title="Document Relationship"></i><span class="sr-only">Document Relationship</span></button>';
 	                               }
 	                               else {
-	                                   $parent_child = 'Parent to ' . $child_count . ' child documents <i id="doc_relationship" class="fab fa-buffer fa-lg" title="Document Relationship"></i>';
+	                                   $parent_child = 'Parent to ' . $child_count . ' child documents <button id="doc_relationship"><i id="doc_relationship_icon" class="fab fa-buffer fa-lg" aria-hidden="true" title="Document Relationship"></i><span class="sr-only">Document Relationship</span></button>';
 	                               }
 	                           }
 	                           else {
 	                               $get_parent_of_child = Patt_Custom_Func::get_parent_of_child($folderfile_folderdocinfofile_id, $type);
-	                               $parent_child = 'Child document of <a href="'. $subfolder_path . '/wp-admin/admin.php?pid='.$GLOBALS['pid'].'&page=filedetails&id='.$get_parent_of_child.'">'. $get_parent_of_child . '</a> <i id="doc_relationship" class="fab fa-buffer fa-lg" title="Document Relationship"></i>';
+	                               $parent_child = 'Child document of <a href="'. $subfolder_path . '/wp-admin/admin.php?pid='.$GLOBALS['pid'].'&page=filedetails&id='.$get_parent_of_child.'">'. $get_parent_of_child . '</a> <button id="doc_relationship"><i id="doc_relationship_icon" class="fab fa-buffer fa-lg" aria-hidden="true" title="Document Relationship"></i><span class="sr-only">Document Relationship</span></button>';
 	                           }
 	                           ?>
 	                           <div class="wpsp_sidebar_labels"><strong>Parent/Child Relationship: </strong><br /> <?php echo $parent_child; ?></div>

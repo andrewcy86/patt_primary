@@ -180,10 +180,10 @@ $docRecords = mysqli_query($con, $docQueryWrapped);
 $data = array();
 
 //$shipped_html_yes = '<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Shipped\"></i></span>';
-$shipped_html_yes = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Shipped"></i></span>';
-$shipped_html_no = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Shipped"></i></span>';
-$delivered_html_yes = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Delivered"></i></span>';
-$delivered_html_no = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Delivered"></i></span>';
+$shipped_html_yes = '<span style="font-size: 1.3em; color: #2F631D;"><i class="fas fa-check-circle" aria-hidden="true" title="Shipped" aria-label="Shipped"></i><span class="sr-only">Shipped</span></span>';
+$shipped_html_no = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Shipped" aria-label="Not Shipped"></i><span class="sr-only">Not Shipped</span></span>';
+$delivered_html_yes = '<span style="font-size: 1.3em; color: #2F631D;"><i class="fas fa-check-circle" aria-hidden="true" title="Delivered" aria-label="Delivered"></i><span class="sr-only">Delivered</span></span>';
+$delivered_html_no = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Delivered" aria-label="Not Delivered"></i><span class="sr-only">Not Delivered</span></span>';
 
 while ($row = mysqli_fetch_assoc($docRecords)) {
 
@@ -302,3 +302,4 @@ if (check_nonce($_POST['nonce'], $_SESSION['current_page'])) {
 */
 
 exit;
+

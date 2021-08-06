@@ -15,7 +15,21 @@ $timelapse_query = $wpdb->get_results(
 FROM " . $wpdb->prefix . "wpsc_ticketmeta
 WHERE meta_key = 'review_complete_timestamp'"
 );
+
+$complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses'); //4
+$complete_term_id = $complete_tag->term_id;
+
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$cancelled_term_id = $cancelled_tag->term_id;
+
 foreach ($timelapse_query as $item) {
+//Remove timestamp metadata if ticket is not in the Initial Review Complete status
+$get_ticket_status = $wpdb->get_row("SELECT ticket_status FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '".$item->ticket_id."'");
+$get_ticket_status_val = $get_ticket_status->ticket_status;
+
+if($get_ticket_status_val != $complete_term_id) {
+$wpscfunction->delete_ticket_meta($item->ticket_id,'review_complete_timestamp');
+}
 
 $t=time();
 $timestamp = $item->meta_value;
@@ -29,11 +43,12 @@ $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24))
 
 //$days_remaining = abs($days-14);
 
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
-
 if($days >= 14) {
 // Change Request Status
-$wpscfunction->change_status($item->ticket_id, $cancelled_tag->term_id);
+// Perform additional check to ensure cancelled status does not continue to be applied every 5 minutes
+if($get_ticket_status_val != $cancelled_term_id) {
+$wpscfunction->change_status($item->ticket_id, $cancelled_term_id);
+}
 
 // Change Box Status
 $data_update = array('box_status' => 1057);

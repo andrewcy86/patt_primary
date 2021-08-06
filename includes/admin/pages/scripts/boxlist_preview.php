@@ -55,33 +55,35 @@ max-height: 85% !important;
   <table id="headersArea">
     <thead>
       <tr>
-                <th>*Box</th>
-                <th>*Folder Identifier</th>
-                <th>*Title</th>
-                <th>*Description of Record</th>                
-                <th>*Parent/Child</th>                
-                <th>*Creation Date</th>
-                <th>*Creator</th>
-                <th>Addressee</th>
-                <th>*Record Type</th>
-                <th>*Disposition Schedule & Item Number</th>
-                <th>Site Name</th>                
-                <th>Site ID # / OU</th>
-                <th>Close Date</th>               
-                <th>*EPA Contact</th>
-                <th>*Access Restrictions</th>
-                <th>**Specific Access Restrictions</th>
-                <th>*Use Restrictions</th>
-                <th>**Specific Use Restrictions</th>
-                <th>**Rights Holder</th>
-                <th>*Source Type</th>
-                <th>*Source Dimensions</th>
-                <th>*Program Office</th>
-                <th>**Program Area</th>
-                <th>*Index Level</th>
-                <th>*Essential Records</th>
-                <th>**Folder/Filename</th>
-                <th>Tags</th>
+          <!-- PATT BEGIN -->
+                <th scope="col" >*Box</th>
+                <th scope="col" >*Folder Identifier</th>
+                <th scope="col" >*Title</th>
+                <th scope="col" >*Description of Record</th>                
+                <th scope="col" >*Parent/Child</th>                
+                <th scope="col" >*Creation Date</th>
+                <th scope="col" >*Creator</th>
+                <th scope="col" >Addressee</th>
+                <th scope="col" >*Record Type</th>
+                <th scope="col" >*Disposition Schedule & Item Number</th>
+                <th scope="col" >Site Name</th>                
+                <th scope="col" >Site ID # / OU</th>
+                <th scope="col" >Close Date</th>               
+                <th scope="col" >*EPA Contact</th>
+                <th scope="col" >*Access Restrictions</th>
+                <th scope="col" >**Specific Access Restrictions</th>
+                <th scope="col" >*Use Restrictions</th>
+                <th scope="col" >**Specific Use Restrictions</th>
+                <th scope="col" >**Rights Holder</th>
+                <th scope="col" >*Source Type</th>
+                <th scope="col" >*Source Dimensions</th>
+                <th scope="col" >*Program Office</th>
+                <th scope="col" >**Program Area</th>
+                <th scope="col" >*Index Level</th>
+                <th scope="col" >*Essential Records</th>
+                <th scope="col" >**Folder/Filename</th>
+                <th scope="col" >Tags</th>
+                <!-- PATT END -->
       </tr>
     </thead>
   </table>
@@ -90,38 +92,44 @@ max-height: 85% !important;
     <table class="datacontent">
         <thead>
       <tr>
-                <th>*Box</th>
-                <th>*Folder Identifier</th>
-                <th>*Title</th>
-                <th>*Description of Record</th>                
-                <th>*Parent/Child</th>                
-                <th>*Creation Date</th>
-                <th>*Creator</th>
-                <th>Addressee</th>
-                <th>*Record Type</th>
-                <th>*Disposition Schedule & Item Number</th>
-                <th>Site Name</th>                
-                <th>Site ID # / OU</th>
-                <th>Close Date</th>               
-                <th>*EPA Contact</th>
-                <th>*Access Restrictions</th>
-                <th>**Specific Access Restrictions</th>
-                <th>*Use Restrictions</th>
-                <th>**Specific Use Restrictions</th>
-                <th>**Rights Holder</th>
-                <th>*Source Type</th>
-                <th>*Source Dimensions</th>
-                <th>*Program Office</th>
-                <th>**Program Area</th>
-                <th>*Index Level</th>
-                <th>*Essential Records</th>
-                <th>**Folder/Filename</th>
-                <th>Tags</th>
+          <!-- PATT BEGIN -->
+                <th scope="col" >*Box</th>
+                <th scope="col" >*Folder Identifier</th>
+                <th scope="col" >*Title</th>
+                <th scope="col" >*Description of Record</th>                
+                <th scope="col" >*Parent/Child</th>                
+                <th scope="col" >*Creation Date</th>
+                <th scope="col" >*Creator</th>
+                <th scope="col" >Addressee</th>
+                <th scope="col" >*Record Type</th>
+                <th scope="col" >*Disposition Schedule & Item Number</th>
+                <th scope="col" >Site Name</th>                
+                <th scope="col" >Site ID # / OU</th>
+                <th scope="col" >Close Date</th>               
+                <th scope="col" >*EPA Contact</th>
+                <th scope="col" >*Access Restrictions</th>
+                <th scope="col" >**Specific Access Restrictions</th>
+                <th scope="col" >*Use Restrictions</th>
+                <th scope="col" >**Specific Use Restrictions</th>
+                <th scope="col" >**Rights Holder</th>
+                <th scope="col" >*Source Type</th>
+                <th scope="col" >*Source Dimensions</th>
+                <th scope="col" >*Program Office</th>
+                <th scope="col" >**Program Area</th>
+                <th scope="col" >*Index Level</th>
+                <th scope="col" >*Essential Records</th>
+                <th scope="col" >**Folder/Filename</th>
+                <th scope="col" >Tags</th>
+                <!-- PATT END -->
       </tr>
     </thead>
     
       <tbody id="contentArea" class="clusterize-content">
         <tr class="clusterize-no-data">
+            <!-- PATT BEGIN -->
+            <th scope="col" ></th>
+            <!-- PATT END -->
+            
           <td>Loading data…</td>
         </tr>
       </tbody>

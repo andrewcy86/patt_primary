@@ -11,6 +11,17 @@ include($path.'wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
+//Send all Cancelled requests to the Archive
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$cancelled_term_id = $cancelled_tag->term_id;
+
+//Send all Completed/Dispositioned requests to the Archive
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses');
+$completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
+
+$box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
+$box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
+
 //Move a request to the recycle bin when a request is Completed/Dispositioned or Cancelled
 
 //get all active requests
@@ -22,24 +33,13 @@ foreach($get_total_request_count as $item) {
     $ticket_id = $item->ticket_id;
     $request_id = $item->request_id;
     $ticket_status = $item->ticket_status;
-    echo $ticket_id;
+    //echo $ticket_id;
     $recall_decline = 0;
     $status = 0;
     
     if(Patt_Custom_Func::id_in_recall($request_id, 'request') == 1 || Patt_Custom_Func::id_in_return($request_id, 'request') == 1) {
         $recall_decline = 1;
     }
-    
-    //Send all Cancelled requests to the Archive
-    $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-    $cancelled_term_id = $cancelled_tag->term_id;
-    
-    //Send all Completed/Dispositioned requests to the Archive
-    $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses');
-    $completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
-    
-    $box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
-    $box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
     
     $get_box_status = $wpdb->get_results("SELECT box_status FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE ticket_id = '".$ticket_id."'");
     $get_box_status_array = array();

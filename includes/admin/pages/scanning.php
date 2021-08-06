@@ -48,22 +48,10 @@
     
     jQuery(document).ready(function() {
 
-        
           jQuery("textarea#boxid-textarea").focus();
  
             jQuery('#submitbtn').css('border', '');
             jQuery('#submitbtn').css('box-shadow', '');
-
-            
-            /* 
-                 $('#element').donetyping(callback[, timeout=1000])
-                 Fires callback when a user has finished typing. This is determined by the time elapsed
-                 since the last keystroke and timeout parameter or the blur event--whichever comes first.
-                   @callback: function to be called when even triggers
-                   @timeout:  (default=1000) timeout, in ms, to to wait before triggering event if not
-                              caused by blur.
-                 Requires jQuery 1.7+
-            */
 
             ;(function(jQuery){
                 (jQuery).fn.extend({
@@ -635,8 +623,7 @@ echo ' <div class="row" style="background-color:#FFFFFF !important;color:#000000
     							
     						echo '</div>'; 	
     						    echo '<br/>';
-    					/*	echo '<div id="dvconfirmation" class="confirmation">'; */
-    					/* 9/15/2020 - Adding See more button functionality  */
+
     						echo '<div id="dvconfirmation col-md-8 col-md-offset-2 load" class="confirmation wpsc_thread_log">';
     						
     						
@@ -646,7 +633,7 @@ echo ' <div class="row" style="background-color:#FFFFFF !important;color:#000000
     				echo '</div>';
 	            echo '</div>';
 	        echo '</div>'; 
-	        // JM - 9/23/20 - Added closing Div tag
+
 	    echo '</div>';   
 	echo '</form>';
 echo '</div>';

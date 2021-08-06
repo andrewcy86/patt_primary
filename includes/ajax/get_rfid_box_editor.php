@@ -36,8 +36,8 @@ array_push($box_loc_array,$box_details->Reader_Name);
 $results = array_unique($box_loc_array);
 if(count($results) == 1){
 
-echo '<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_completed_btn" onclick="wppatt_barcode_assignment_update();" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-map-marker-alt"></i> Set location to: '.$box_loc_array[0].'</button>';
-echo '<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="wppatt_remove_rfid_boxes();" style="background-color:#e31c3d !important;color:#FFFFFF !important; margin-right: 30px !important;"><i class="far fa-trash-alt"></i> Remove Selected Box(es) From List</button>';
+echo '<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_completed_btn" onclick="wppatt_barcode_assignment_update();" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-map-marker-alt" aria-hidden="true" title="Set Location"></i><span class="sr-only">Set Location</span> Set location to: '.$box_loc_array[0].'</button>';
+echo '<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="wppatt_remove_rfid_boxes();" style="background-color:#e31c3d !important;color:#FFFFFF !important; margin-right: 30px !important;"><i class="far fa-trash-alt" aria-hidden="true" title="Remove Selected Box(es) From List"></i><span class="sr-only">Remove Selected Box(es) From List</span> Remove Selected Box(es) From List</button>';
 } else {
 
 echo '<span style="color: red;"><strong>Location cannot be set: Multiple locations have been selected.</strong></span><br /><br />';
@@ -46,7 +46,7 @@ echo '<span style="color: red;"><strong>Location cannot be set: Multiple locatio
 }
 
 ?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.open('<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id=<?php echo $box_ids; ?>');" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-tags"></i> Regenerate Box Labels</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.open('<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id=<?php echo $box_ids; ?>');" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-tags" aria-hidden="true" title="Regenerate Box Labels"></i><span class="sr-only">Regenerate Box Labels</span> Regenerate Box Labels</button>
 <?php
 $body = ob_get_clean();
 ob_start();

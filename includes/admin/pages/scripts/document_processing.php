@@ -202,8 +202,9 @@ $docQuery = "SELECT DISTINCT
 a.id as dbid,
 a.folderdocinfofile_id as folderdocinfo_id,
 CONCAT(
-CASE WHEN d.box_destroyed > 0  AND a.freeze <> 1
-THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+CASE 
+WHEN d.box_destroyed > 0 AND a.freeze <> 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #B4081A;\"></span>')
+WHEN d.box_destroyed > 0 AND a.freeze = 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
 ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
 END) as folderdocinfo_id_flag,
 CONCAT(
@@ -292,46 +293,51 @@ while ($row = mysqli_fetch_assoc($docRecords)) {
 
 $decline_icon = '';
 $recall_icon = '';
+$box_destroyed_icon = '';
 $unauthorized_destruction_icon = '';
 $freeze_icon = '';
 $damaged_icon = '';
 $type = 'folderfile';
 
 if(Patt_Custom_Func::id_in_return($row['folderdocinfo_id'],$type) == 1){
-$decline_icon = '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$decline_icon = '<span style="font-size: 1em; color: #B4081A;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($row['folderdocinfo_id'],$type) == 1){
-$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
+}
+
+if(Patt_Custom_Func::id_in_box_destroyed($row['folderdocinfo_id'], $type) == 1) {
+    $box_destroyed_icon = ' <i class="fas fa-ban" aria-hidden="true" title="Box Destroyed" style="color: #B4081A"></i><span class="sr-only">Box Destroyed</span>';
 }
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['folderdocinfo_id'],$type) == 1) {
-    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+    $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_damaged($row['folderdocinfo_id'],$type) == 1) {
-    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($row['folderdocinfo_id'],$type) == 1) {
-    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ';
+    $validation_icon = '<span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ';
 }
 else if (Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) != 1 && Patt_Custom_Func::id_in_rescan($row['folderdocinfo_id'],$type) == 1) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> <span style="color: #FF0000;"><strong>[Re-scan]</strong></span>';
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> <span style="color: #B4081A;"><strong>[Re-scan]</strong></span>';
 }
 else {
-    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
 }
 
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
      "dbid"=>$row['dbid'],
      //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
-	 "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
+	 "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$row['ticket_priority'],
 //      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
      "request_id"=>$row['request_id'],

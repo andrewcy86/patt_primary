@@ -40,25 +40,30 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recallcreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fa fa-plus"></i> New Recall</button>
-      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recall';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> Recall List</button>
-      <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=boxdetails';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-cloud-download-alt"></i> Export</button> -->
+      
+      <!-- PATT Begin -->
+      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recallcreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fa fa-plus" aria-hidden="true" title="New Recall"></i><span class="sr-only">New Recall</span> New Recall</button>
+      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recall';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Recall List"></i><span class="sr-only">Recall List</span> Recall List</button>
+      <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
+<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=boxdetails';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-cloud-download-alt" title="Export"></i><span class="sr-only">Export</span> Export</button> -->
+
+        <!--PATT End -->
 <?php		
 if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>      
+<!-- PATT Begin -->
+      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck" aria-hidden="true" title="Change Shipping Tracking Number"></i> Change Shipping Tracking Number <a href="#" aria-label="Change shipping tracking number" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Question"></i><span class="sr-only">Question</span></a></button>
 
-      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck"></i> Change Shipping Tracking Number <a href="#" aria-label="Change shipping tracking number" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle"></i></a></button>
 <?php
 }
 ?>	      
-<!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet"></i> Change Status</button>       -->
+<!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet"></i><span class="sr-only" title="Change Status">Change Status</span> Change Status</button>       -->
   
-<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recalldetails&id=R-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-vial"></i> Recall Details: R-0000001 </button> -->
+<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recalldetails&id=R-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-vial" title="Recall Details"></i><span class="sr-only">Recall Details</span> Recall Details: R-0000001 </button> -->
       
-<!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-truck-loading"></i> Return </button> -->
-      
+<!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-truck-loading" title="Recall"></i><span class="sr-only">Recall </span> Recall </button> -->
+<!-- PATT End -->      
       
   </div>
 
@@ -69,7 +74,12 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
     	<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-			<h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a></h4> 
+			
+			<!-- PATT Begin -->
+			<h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i><span class="sr-only">Filters</span> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help Tooltip"></i><span class="sr-only">Help Tooltip</span></a></h4> 
+            
+            <!-- PATT End -->
+            
             <hr class="widget_divider">
 			<div class="wpsp_sidebar_labels">Enter one or more Recall IDs:<br>
 				<input type='text' id='searchByRecallID' class="form-control" data-role="tagsinput"><br>
@@ -127,7 +137,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	<div class="col-sm-8 col-md-9 wpsc_it_body">
 
 	<style>
-	
+
 	div.dataTables_processing { 
         z-index: 1; 
     }
@@ -163,7 +173,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+
+<!-- PATT Begin -->
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search Button"></i><span class="sr-only">Search Button</span>
+<!-- PATT End -->
+
 <br /><br />
 <form id="frm-example" method="POST">
 <table id="tbl_templates_recall" class="display nowrap" cellspacing="5" cellpadding="5">
@@ -173,18 +187,18 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>
-                <th class="datatable_header"></th>
+                <th class="datatable_header" scope="col" ></th>
 <?php
 }
 ?>
-	  			<th class="datatable_header">Recall ID</th>
-	  			<th class="datatable_header">Status</th>
-	  			<th class="datatable_header">Date Update</th>
-	  			<th class="datatable_header">Request Date</th>
-	  			<th class="datatable_header">Shipped Date</th>  <!-- Received Date -->
-	  			<th class="datatable_header">Received Date</th>  <!-- Returned Date -->
-<!-- 	  			<th class="datatable_header">Notification</th> -->
-	  			<th class="datatable_header">Shipping Tracking Number</th>	  			
+	  			<th class="datatable_header" scope="col" >Recall ID</th>
+	  			<th class="datatable_header" scope="col" >Status</th>
+	  			<th class="datatable_header" scope="col" >Date Update</th>
+	  			<th class="datatable_header" scope="col" >Request Date</th>
+	  			<th class="datatable_header" scope="col" >Shipped Date</th>  <!-- Received Date -->
+	  			<th class="datatable_header" scope="col" >Received Date</th>  <!-- Returned Date -->
+<!-- 	  			<th class="datatable_header" scope="col" >Notification</th> -->
+	  			<th class="datatable_header" scope="col" >Shipping Tracking Number</th>	  			
             </tr>
         </thead>
     </table>
@@ -338,7 +352,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php
 }
 ?>	      
-	       { data: 'recall_id' },	
+	       { data: 'recall_id', 'class' : 'text_highlight' },	
 	              
 	       { data: 'status' }, 
 	       { data: 'updated_date' },
@@ -346,7 +360,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	       { data: 'request_receipt_date' },
 	       { data: 'return_date' },
 // 	       { data: 'expiration_date' },
-	       { data: 'tracking_number' },
+	       { data: 'tracking_number', 'class' : 'text_highlight' },
 
 	    ]
 	});

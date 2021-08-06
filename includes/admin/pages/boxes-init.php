@@ -63,27 +63,27 @@ array_values($box_statuses);
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban"></i> Destruction Completed</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban" aria-hidden="true" title="Destruction Completed"></i><span class="sr-only">Destruction Completed</span> Destruction Completed</button>
 <?php } 
 if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
 ?>
-        <button type="button" id="wppatt_assign_staff_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-user-plus"></i> Assign Staff</button>
+        <button type="button" id="wppatt_assign_staff_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
 <?php } ?>
 
 <?php
 if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-		<button type="button" id="wppatt_change_status_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-heartbeat"></i> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle"></i></a></button>
+		<button type="button" id="wppatt_change_status_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-heartbeat" aria-hidden="true" title="Assign Box Status"></i><span class="sr-only">Assign Box Status</span> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
 <?php } ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Box Labels</button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Pallet Labels</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Box Labels"></i><span class="sr-only">Reprint Box Labels</span> Reprint Box Labels</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Pallet Labels"></i><span class="sr-only">Reprint Pallet Labels</span> Reprint Pallet Labels</button>
   </div>
 
 </div>
@@ -96,7 +96,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 	
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-			<h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a>
+			<h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i><span class="sr-only">Filters</span> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 			</h4>
 			<hr class="widget_divider">
 			
@@ -205,7 +205,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 												<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">
 <!-- 													<div class="flex-container searched-user" style="padding:10px;font-size:1.0em;"> -->
 													<div class="flex-container searched-user staff-badge" style="">														
-														<?php echo htmlentities($agent_name)?><span class="remove-user staff-close"><i class="fa fa-times"></i></span>
+														<?php echo htmlentities($agent_name)?><span class="remove-user staff-close"><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>
 <!-- 														<?php echo htmlentities($agent_name)?><span class="staff-close"><i class="fa fa-times"></i></span>														 -->
 														  <input type="hidden" name="assigned_agent[]" value="<?php echo htmlentities($agent) ?>" />
 					<!-- 									  <input type="hidden" name="new_requestor" value="<?php echo htmlentities($agent) ?>" /> -->
@@ -242,7 +242,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br /><br />
 <table id="tbl_templates_boxes" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
@@ -251,25 +251,26 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 {
 ?>
-                <th class="datatable_header"></th>
+                <th class="datatable_header" scope="col" ></th>
 <?php
 }
 ?>
-                <th class="datatable_header">Box ID</th>
-                <th class="datatable_header">DB ID</th>
-                <th class="datatable_header">Pallet ID</th>
-                <th class="datatable_header">Priority</th>
-                <th class="datatable_header">Request ID</th>
-                <th class="datatable_header">Status</th>                
-                <th class="datatable_header">Digitization Center</th>
-                <th class="datatable_header">Program Office</th>
-                <th class="datatable_header">Validation</th>
+                <th class="datatable_header" scope="col" >Box ID</th>
+                <th class="datatable_header" scope="col" >DB ID</th>
+                <th class="datatable_header" scope="col" >Pallet ID</th>
+                <th class="datatable_header" scope="col" >Priority</th>
+                <th class="datatable_header" scope="col" >Request ID</th>
+                <th class="datatable_header" scope="col" >Status</th>                
+                <th class="datatable_header" scope="col" >Digitization Center</th>
+                <th class="datatable_header" scope="col" >Program Office</th>
+                <th class="datatable_header" scope="col" >Validation</th>
             </tr>
         </thead>
     </table>
 <br /><br />
 
 <style>
+
 input::-webkit-calendar-picker-indicator {
   display: none;
 }
@@ -476,11 +477,11 @@ jQuery(document).ready(function(){
 	}
 	?>
 
-			{ data: 'box_id_flag'},
+			{ data: 'box_id_flag', 'class' : 'text_highlight'},
 			{ data: 'dbid', visible: false},
 			{ data: 'pallet_id' },
 			{ data: 'ticket_priority' },
-			{ data: 'request_id' },
+			{ data: 'request_id', 'class' : 'text_highlight' },
 			{ data: 'status' },       
 			{ data: 'location' },
 			{ data: 'acronym' },
@@ -939,7 +940,7 @@ function get_display_user_html(user_name, termmeta_user_val) {
 		var html_str = '<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">'
 						+'<div class="flex-container searched-user staff-badge" style="">'
 							+user_name
-							+'<span  class="remove-user staff-close" ><i class="fa fa-times"></i></span>'
+							+'<span  class="remove-user staff-close" ><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>'
 						+'<input type="hidden" name="assigned_agent[]" value="'+termmeta_user_val+'" />'
 						+'</div>'
 					+'</div>';		

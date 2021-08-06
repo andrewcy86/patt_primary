@@ -63,7 +63,7 @@ $restriction_reason = $status_list['restriction_reason']; // string with warning
 <div id='alert_status' class=''></div> 
 <strong>Box Status: <a href="#" aria-label="Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-box-status'); ?>"><i class="far fa-question-circle"></i></a></strong><br />
 
-		<select id="box_status" name="box_status">
+		<select id="box_status" name="box_status" aria-label="Box Status">
 			<?php
 // Register Box Status Taxonomy
 if( !taxonomy_exists('wpsc_box_statuses') ) {

@@ -41,35 +41,46 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=returncreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fa fa-plus"></i> New Decline</button> -->
+      <!-- PATT Begin -->
+<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=returncreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fa fa-plus" title="New Decline"></i><span class="sr-only">New Decline</span> New Decline</button> -->
+        <!-- PATT End -->
+
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>  
-      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=declinecreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fa fa-plus"></i> New Decline</button>
+<!-- PATT Begin -->
+      <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=declinecreate';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fa fa-plus" aria-hidden="true" title="New Decline"></i><span class="sr-only">New Decline</span> New Decline</button>
+<!-- PATT End -->
 <?php
 }
 ?>       
-
-<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=decline';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> Decline List</button>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+<!-- PATT Begin -->
+<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=decline';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Decline List"></i><span class="sr-only">Decline List</span> Decline List</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
   
       
-<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=boxdetails';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-cloud-download-alt"></i> Export</button> -->
+<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=boxdetails';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-cloud-download-alt" title="Export Button"></i><span class="sr-only">Export Button</span> Export</button> -->
+<!-- PATT End -->
+
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>        
-      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck"></i> Change Shipping Tracking Number <a href="#" aria-label="Change shipping tracking number" data-toggle="tooltip"  data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle"></i></a></button>
+<!-- PATT Begin -->
+      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck" aria-hidden="true" title="Change Shipping Tracking Number"></i><span class="sr-only">Change Shipping Tracking Number</span> Change Shipping Tracking Number <a href="#" aria-label="Change shipping tracking number" data-toggle="tooltip"  data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help Tooltip"></i><span class="sr-only">Help Tooltip</span></a></button>
+<!-- PATT End -->
+
 <?php
 }
 ?>      
-<!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet"></i> Change Status</button>       -->
+<!-- PATT Begin -->
+<!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet" title="Change Status"></i><span class="sr-only">Change Status</span> Change Status</button>       -->
       
-<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=returndetails&id=RTN-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fas fa-vial"></i> Return Details: RTN-0000001 </button> -->
+<!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=returndetails&id=RTN-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fas fa-vial" title="Return Details"></i><span class="sr-only">Return Details</span> Return Details: RTN-0000001 </button> -->
       
-<!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fas fa-truck-loading"></i> Return </button> -->
-      
+<!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_return_btn_css?>"><i class="fas fa-truck-loading" title="Return button"></i><span class="sr-only">Return button</span> Return </button> -->
+      <!-- PATT End -->
       
   </div>
 
@@ -80,7 +91,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
     	<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-			<h4 class="widget_header"><i class="fa fa-filter"></i> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle"></i></a></h4>
+			
+			<!-- PATT Begin -->
+			<h4 class="widget_header"><i class="fa fa-filter" aria-hidden="true" title="Filters"></i><span class="sr-only">Filters</span> Filters <a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-filters'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help Tooltip"></i><span class="sr-only">Help Tooltip</span></a></h4>
+           <!-- PATT End --> 
+            
             <hr class="widget_divider">
 			<div class="wpsp_sidebar_labels">Enter one or more Decline IDs:<br>
 				<input type='text' id='searchByReturnID' class="form-control" data-role="tagsinput"><br>
@@ -159,7 +174,11 @@ color: rgb(255, 255, 255) !important;
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+
+<!-- PATT Begin -->
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search Button"></i><span class="sr-only">Search Button</span>
+<!-- PATT End -->
+
 <br /><br />
 <form id="frm-example" method="POST">
 <table id="tbl_templates_return" class="display nowrap" cellspacing="5" cellpadding="5">
@@ -169,17 +188,17 @@ color: rgb(255, 255, 255) !important;
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>	            
-                <th class="datatable_header"></th>      
+                <th class="datatable_header" scope="col" ></th>      
 <?php
 }
 ?>	                         
-	  			<th class="datatable_header">Decline ID</th>
-	  			<th class="datatable_header">Status</th>
-	  			<th class="datatable_header">Date Update</th>
-	  			<th class="datatable_header">Request Date</th>
-	  			<th class="datatable_header">Shipped Date</th>	  			
-	  			<th class="datatable_header">Returned Date</th>
-	  			<th class="datatable_header">Shipping Tracking Number</th>	  			
+	  			<th class="datatable_header" scope="col" >Decline ID</th>
+	  			<th class="datatable_header" scope="col" >Status</th>
+	  			<th class="datatable_header" scope="col" >Date Update</th>
+	  			<th class="datatable_header" scope="col" >Request Date</th>
+	  			<th class="datatable_header" scope="col" >Shipped Date</th>	  			
+	  			<th class="datatable_header" scope="col" >Returned Date</th>
+	  			<th class="datatable_header" scope="col" >Shipping Tracking Number</th>	  			
             </tr>
         </thead>
     </table>
@@ -319,14 +338,14 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php
 }
 ?>       
-	       { data: 'return_id' },
+	       { data: 'return_id', 'class' : 'text_highlight' },
        		       	       
 	       { data: 'status' }, 
 	       { data: 'updated_date' },
 	       { data: 'request_date' },	
 	       { data: 'return_receipt_date' },
 	       { data: 'received_date' },	       
-	       { data: 'tracking_number' }
+	       { data: 'tracking_number', 'class' : 'text_highlight' }
 
 	    ]
 	});

@@ -68,6 +68,7 @@ ob_start();
 ?>
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <button type="button" id="digitization_submit" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_get_digitization_editor(<?php echo htmlentities($box_id)?>);"><?php _e('Save','supportcandy');?></button>
+
 <script>
 jQuery("#digitization_submit").hide();
 
@@ -129,6 +130,7 @@ function wpsc_get_digitization_editor(box_id){
    });
 } 
 </script>
+
 <?php 
 $footer = ob_get_clean();
 

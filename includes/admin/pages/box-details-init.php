@@ -49,41 +49,40 @@ $status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle"></i></a></button>
-        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Refresh"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
         
         <?php
         //Disable editing capabilities on certain request statuses
         if ( !in_array($request_status_id, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
-		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button>-->
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle"></i></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt"></i> Damaged </button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit"></i> Bulk Edit EPA Contact </button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit EPA Contact"></i><span class="sr-only">Bulk Edit EPA Contact</span> Bulk Edit EPA Contact </button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Labels"></i><span class="sr-only">Reprint Labels</span> Reprint Labels</button>
 
 <?php
 }
 
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($box_id_error_check)) {
 ?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Request</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Request"></i><span class="sr-only">Back to Request</span> Back to Request</button>
 <?php
 }
 ?>
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch' && !empty($box_id_error_check)) {
 ?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxes';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Dashboard</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxes';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Box Dashboard"></i><span class="sr-only">Back to Box Dashboard</span> Back to Box Dashboard</button>
 <?php
 }
 ?>
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch' && !empty($box_id_error_check)) {
 ?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></i> Back to Folder/File Dashboard</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Folder/File Dashboard"></i><span class="sr-only">Back to Folder/File Dashboard</span> Back to Folder/File Dashboard</button>
 <?php
 }
 ?>
@@ -151,18 +150,18 @@ $priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$prior
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){
 	 	 ?>
 	 	 <?php if($box_destroyed > 0) { ?>
-        	<span style="color:#FF0000 !important;<?php if($box_destroyed > 0 && $box_freeze == 0) { ?>text-decoration: line-through;<?php } ?>">
+        	<span style="color:#B4081A !important;<?php if($box_destroyed > 0 && $box_freeze == 0) { ?>text-decoration: line-through;<?php } ?>">
         <?php } ?>
         	[Box ID # <?php
             echo $GLOBALS['id']; ?>]<?php if($box_destroyed > 0) { ?></span> 
-            <span style="font-size: .8em; color:#FF0000;"> <i class="fas fa-ban" title="Box Destroyed"></i></span>
+            <span style="font-size: .8em; color:#B4081A;"> <i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>
             <?php } ?>
   
 		  <?php } ?>	
 		  
 		  <?php
 if($is_active == 0){
-echo '<br /><span style="font-size: .8em; color:#FF0000;"><i class="fas fa-archive"></i> This box is archived</span><br />';
+echo '<br /><span style="font-size: .8em; color:#B4081A;"><i class="fas fa-archive" aria-hidden="true" title="This box is archived"></i><span class="sr-only">This box is archived</span> This box is archived</span><br />';
 }
 ?>
       </h3>
@@ -203,20 +202,20 @@ div.dataTables_wrapper {
 </style>
 
 <div class="alert alert-danger" role="alert" id="ud_alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents within this box contains an unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span> One or more documents within this box contains an unauthorized destruction flag.
 </div>
 
 <div class="alert alert-warning" role="alert" id="damaged_alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> One or more documents within this box contains a damaged folder/file.
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents within this box contains a damaged folder/file.
 </div>
 
 <div class="alert alert-info" role="alert" id="freeze_alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents within this box contains a frozen folder/file.
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents within this box contains a frozen folder/file.
 </div>
 
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br />
 <form id="frm-example" method="POST">
 <table id="tbl_templates_box_details" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
@@ -226,16 +225,20 @@ div.dataTables_wrapper {
                         if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                     {
                     ?>
-                    <th class="datatable_header"></th>
+                    <th class="datatable_header" scope="col" ></th>
                     <?php
                     }
                     ?>
-    	  			<th class="datatable_header">ID</th>
-                    <th class="datatable_header">DB ID</th>
-    	  			<th class="datatable_header">Title</th>
-    	  			<th class="datatable_header">Creation Date</th>
-    	  			<th class="datatable_header">EPA Contact</th>
-    	  			<th class="datatable_header">Validation</th>
+                    
+                    <!-- PATT BEGIN -->
+    	  			<th class="datatable_header" scope="col" >ID</th>
+              <th class="datatable_header" scope="col" >DB ID</th>
+    	  			<th class="datatable_header" scope="col" >Title</th>
+    	  			<th class="datatable_header" scope="col" >Creation Date</th>
+    	  			<th class="datatable_header" scope="col" >EPA Contact</th>
+    	  			<th class="datatable_header" scope="col" >Validation</th>
+    	  			
+    	  			<!-- PATT END -->
             </tr>
         </thead>
     </table>
@@ -365,7 +368,7 @@ jQuery(document).ready(function(){
        <?php
         }
         ?>
-       { data: 'folderdocinfo_id_flag' },
+       { data: 'folderdocinfo_id_flag', 'class' : 'text_highlight' },
        { data: 'dbid', visible: false},
        { data: 'title' }, 
        { data: 'date' },
@@ -836,7 +839,7 @@ $lan_id_count = $lan_id->count;
 if ($lan_id_count >=1) {
 ?>
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-user"></i> EPA Contact(s)</h4>
+      <h4 class="widget_header"><i class="fa fa-user" aria-hidden="true" title="EPA Contact(s)"></i><span class="sr-only">EPA Contact(s)</span> EPA Contact(s)</h4>
 			<hr class="widget_divider">
 <?php
 $lan_id = $wpdb->get_results("SELECT DISTINCT lan_id, lan_id_details FROM ".$wpdb->prefix."wpsc_epa_folderdocinfo_files WHERE lan_id != '' AND box_id = '" . $box_id . "'");
@@ -859,7 +862,7 @@ echo '<ul style="list-style-type: disc !important; padding-left: 15px;">';
 echo $contact_details;
 echo '</ul>';
 } else {
-echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending update...</strong></div>';
+echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending update...</strong></div>';
 }
 ?>
 	</div>
@@ -870,14 +873,14 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 	
 <!-- 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget"> -->
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Edit Box Details
+      <h4 class="widget_header"><i class="fa fa-arrow-circle-right" aria-hidden="true" title="Edit Box Details"></i><span class="sr-only">Box Details</span> Edit Box Details
 			<!--only admins/agents have the ability to edit box details-->
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
                 if ( !in_array($request_status_id, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
-                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
+                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_box_editor('.$box_id.');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit Box Details"></i><span class="sr-only">Edit Box Details</span></button>';
                 } 
 			?>
 			
@@ -887,7 +890,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 			<?php 
 				
             if(!empty($location_request_id)) {
-                echo "<div class='wpsp_sidebar_labels'><strong>Request ID: </strong><br /> <a href='admin.php?page=wpsc-tickets&id=" . $location_request_id . "'>" . $location_request_id . "</a></div>";
+                echo "<div class='wpsp_sidebar_labels'><strong>Request ID: </strong><br /> <a href='admin.php?page=wpsc-tickets&id=" . $location_request_id . "' style='color:#1d4289; text-decoration: underline;'>" . $location_request_id . "</a></div>";
             }
             
             if(!empty($request_status)) {
@@ -982,20 +985,20 @@ echo '<div class="wpsp_sidebar_labels" style="color: red;"><strong>Pending updat
 	
 <!-- 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget"> -->
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-user-plus"></i> Assigned Staff
+      <h4 class="widget_header"><i class="fa fa-user-plus"  aria-hidden="true" title="Assigned Staff"></i><span class="sr-only">Assigned Staff</span> Assigned Staff
 			<!--only admins/agents have the ability to edit box details-->
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
                 if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
-                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit"></i></button>';
+                  echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit Assigned Staff"></i><span class="sr-only">Edit Assigned Staff</span></button>';
                 } 
 			?>
 			
 			</h4>
 			<hr class="widget_divider">
-			<div style="font-size: 1.0em; color: #1d1f1d;" onclick="view_assigned_agents( '<?php echo $the_real_box_id ?>' )" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i>    View Assigned Staff</div>
+			<a href="#" onclick="view_assigned_agents( '<?php echo $the_real_box_id ?>' )"><div style="font-size: 1.0em; color: #1d1f1d;" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents" aria-hidden="true"></i><span class="sr-only">Assigned Agents</span>    View Assigned Staff</div></a>
 			<!--error handling implemented, will not display a field if it is empty/null-->
 <!--
 			<?php 

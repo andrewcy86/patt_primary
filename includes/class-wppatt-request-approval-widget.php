@@ -75,12 +75,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 			?>
 			<div id="wpsc_approval_widget" class="row" style="'background-color:'<?php echo esc_attr( $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color'] ); ?>' !important; color:'<?php echo esc_attr( $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color'] ); ?>' !important; border-color:'<?php echo esc_attr( $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color'] ); ?>' !important;">
 				<h4 class='widget_header'>
-					<i class="far fa-folder"></i> 
+					<i class="far fa-folder" aria-hidden="true" title="Folder"></i><span class="sr-only">Folder</span> 
 					<?php esc_html_e( 'Assoc. Documents', 'pattracking' ); ?> 
 					<?php 
 					if($is_active == 1) {
 					?>
-					<button id="wpsc_individual_change_agent_fields" aria-label="Associated Documents edit button" onclick="wpsc_get_approval_details('<?php echo esc_attr( $post_id ); ?>')" class="btn btn-sm wpsc_action_btn" style="<?php echo esc_attr( $edit_btn_css ); ?>" ><i class="fas fa-edit"></i></button>
+					<button id="wpsc_individual_change_agent_fields" aria-label="Associated Documents edit button" onclick="wpsc_get_approval_details('<?php echo esc_attr( $post_id ); ?>')" class="btn btn-sm wpsc_action_btn" style="<?php echo esc_attr( $edit_btn_css ); ?>" ><i class="fas fa-edit" aria-hidden="true" title="Edit Associated Documents"></i><span class="sr-only">Edit Associated Documents</span></button>
 				    <?php } ?>
 				</h4>
 				<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">
@@ -113,22 +113,22 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 								$num = count( $postid_rev_arr ) - 1;
 								$get_attachment_url_rev = wp_get_attachment_url( $postid_rev_arr[$num] );
 								
-								$display_rev_str = '<strong><a href="' . $get_attachment_url_rev .
-													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+								$display_rev_str = '<strong class="text_highlight"><a href="' . $get_attachment_url_rev .
+													 '"><i class="fas fa-file-download fa-lg" aria-hidden="true" title="Download Box List"></i><span class="sr-only">Download Box List</span></a> ';
 								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
 													'?id=' . $postid_rev_arr[$num] .'" target="_blank" rel="noopener">View Box List</a></strong>';
-								$display_rev_str .= ' <span id="show-revs" data-open="0">Show Revisions<i class="fas fa-caret-up"></i></span>';
+								$display_rev_str .= ' <span id="show-revs" data-open="0"><button class="show_revs_btn">Show Revisions</button><i class="fas fa-caret-up" aria-hidden="true" title="Show Revisions"></i><span class="sr-only">Show Revisions</span></span>';
 								
-								$display_rev_str .= '<br><div class="box-list-rev-display">';
+								$display_rev_str .= '<br><div class="box-list-rev-display text_highlight">';
 								$display_rev_str .= '<strong><a href="' . $get_attachment_url .
-													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+													 '"><i class="fas fa-file-download fa-lg" aria-hidden="true" title="Download Box List"></i><span class="sr-only">Download Box List</span></a> ';
 								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
 													'?id=' . $get_postid[0] .'" target="_blank" rel="noopener">Original</a></strong> | ';
 								
 								
 								foreach( $postid_rev_arr as $rev => $postid ) {
 									$get_attachment_url_rev = wp_get_attachment_url( $postid );
-									$display_rev_str .= '<strong><a href="' . $get_attachment_url_rev . '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+									$display_rev_str .= '<strong><a href="' . $get_attachment_url_rev . '"><i class="fas fa-file-download fa-lg" aria-hidden="true" title="Download Box List"></i><span class="sr-only">Download Box List</span></a> ';
 									$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . '?id=' . $postid .'" target="_blank" rel="noopener">R' . ( $rev + 1 ) . '</a></strong> | ';
 									
 								}
@@ -137,9 +137,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 								
 							} else {
 								$display_rev_str = '<strong><a href="' . $get_attachment_url .
-													 '"><i class="fas fa-file-download fa-lg" title="Download Box List"></i></a> ';
+													 '"><i class="fas fa-file-download fa-lg" aria-hidden="true" title="Download Box List"></i><span class="sr-only">Download Box List</span></a> ';
 								$display_rev_str .= '<a href="'. WPPATT_PLUGIN_URL . 'includes/admin/pages/scripts/boxlist_preview.php' . 
-													'?id=' . $get_postid[0] .'" target="_blank" rel="noopener">View Box List</a></strong>';
+													'?id=' . $get_postid[0] .'" target="_blank" rel="noopener" style="color:#1d4289; text-decoration: underline;">View Box List</a></strong>';
 
 							}
 							
@@ -183,7 +183,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							$has_file = true;
 							?>
 								<li>
-									<strong><?php esc_html_e( 'Destruction Authorization', 'pattracking' ); ?></strong> <a href="#" aria-label="Destruction Authorization" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-destruction-authorization-tab'); ?>"><i class="far fa-question-circle"></i></a>
+									<strong><?php esc_html_e( 'Destruction Authorization', 'pattracking' ); ?></strong> <a href="#" aria-label="Destruction Authorization" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-destruction-authorization-tab'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</li>
 								<?php echo $dest_content; // phpcs:ignore ?>
 							<?php
@@ -205,7 +205,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						if ( '' !== $litigation_content ) {
 							$has_file = true;
 							?>
-								<li><strong><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></strong> <a href="#" aria-label="Litigation Letter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-litigation-letter-tab'); ?>"><i class="far fa-question-circle"></i></a>
+								<li><strong><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></strong> <a href="#" aria-label="Litigation Letter" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-litigation-letter-tab'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</li>
 								<?php echo $litigation_content; // phpcs:ignore ?>
 							<?php
@@ -227,7 +227,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						if ( '' !== $congressional_content ) {
 							$has_file = true;
 							?>
-								<li><strong><?php esc_html_e( 'Congressional', 'pattracking' ); ?></strong> <a href="#" aria-label="Congressional" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-congressional-tab'); ?>"><i class="far fa-question-circle"></i></a>
+								<li><strong><?php esc_html_e( 'Congressional', 'pattracking' ); ?></strong> <a href="#" aria-label="Congressional" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-congressional-tab'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</li>
 								<?php echo $congressional_content; // phpcs:ignore ?>
 							<?php
@@ -249,7 +249,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						if ( '' !== $foia_content ) {
 							$has_file = true;
 							?>
-								<li><strong><?php esc_html_e( 'FOIA', 'pattracking' ); ?></strong> <a href="#" aria-label="FOIA" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-foia-tab'); ?>"><i class="far fa-question-circle"></i></a>
+								<li><strong><?php esc_html_e( 'FOIA', 'pattracking' ); ?></strong> <a href="#" aria-label="FOIA" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-foia-tab'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
 								</li>
 								<?php echo $foia_content; // phpcs:ignore ?>
 							<?php
@@ -294,6 +294,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				</ul>
 			</div>
 			<style>
+			    .show_revs_btn {
+			        background-color: transparent !important;
+                    border-width: 0px;
+                    padding: 0px;
+			    }
+			    
 				.box-list-rev-display {
 					margin-top: 5px;
 					line-height: 2;
@@ -313,6 +319,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				#show-revs {
 					
 				}
+				
+				.ticket-error-msg {
+        	margin-top:20px;
+        	color: red;
+        }
+        
 			</style> 
 			<script>
 				jQuery(document).ready(function(){
@@ -324,13 +336,13 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							jQuery( '.box-list-rev-display' ).css( 'visibility', 'visible');
 							jQuery( '.box-list-rev-display' ).css( 'max-height', '1000px');
 							jQuery( '#show-revs' ).data( 'open', '1' );
-							jQuery( '#show-revs' ).html( 'Show Revisions<i class="fas fa-caret-down">' );
+							jQuery( '#show-revs' ).html( '<button class="show_revs_btn">Show Revisions</button><i class="fas fa-caret-down" aria-hidden="true" title="Show Revisions">' );
 						} else {
 							//jQuery( '.box-list-rev-display' ).hide();
 							jQuery( '.box-list-rev-display' ).css( 'visibility', 'hidden');
 							jQuery( '.box-list-rev-display' ).css( 'max-height', '0px');
 							jQuery( '#show-revs' ).data( 'open', '0' );
-							jQuery( '#show-revs' ).html( 'Show Revisions<i class="fas fa-caret-up">' );
+							jQuery( '#show-revs' ).html( '<button class="show_revs_btn">Show Revisions</button><i class="fas fa-caret-up" aria-hidden="true" title="Show Revisions">' );
 							
 						}
 					});
@@ -427,7 +439,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
 										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_destruction_authorization', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash" aria-hidden="true" title="Delete"></i><span class="sr-only">Delete</span>
 										</span>
 									</div>
 									<?php
@@ -459,7 +471,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
 										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_litigation_letter', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash" aria-hidden="true" title="Delete"></i><span class="sr-only">Delete</span>
 										</span>
 									</div>
 									<?php
@@ -491,7 +503,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
 										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_congressional', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash" aria-hidden="true" title="Delete"></i><span class="sr-only">Delete</span>
 										</span>
 									</div>
 									<?php
@@ -523,7 +535,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
 										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_foia', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash" aria-hidden="true" title="Delete"></i><span class="sr-only">Delete</span>
 										</span>
 									</div>
 									<?php
@@ -578,7 +590,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 									<div class="preview-image image_<?php echo esc_attr( $key ); ?>">
 										<a href="<?php echo $value; ?>" target="_blank"><?php echo __( 'File ', 'pattracking' ) . ' ' . $counter; ?></a>
 										<span class="delete-image" title="Delete Image" onclick="wpsc_delete_approval_widget( 'wpsc_delete_box_list', <?php echo esc_attr( $ticket_id ); ?> , <?php echo esc_attr( $key ); ?> );">
-											<i class="fa fa-trash"></i>
+											<i class="fa fa-trash" aria-hidden="true" title="Delete"></i><span class="sr-only">Delete</span>
 										</span>
 									</div>
 									<?php

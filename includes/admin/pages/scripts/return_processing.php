@@ -19,8 +19,8 @@ if (!$con) {
 
 // Icons
 $icons = '';
-$freeze_icon = ' <i class="fas fa-snowflake" title="Freeze"></i>';
-$unauth_dest_icon = ' <i class="fas fa-flag" title="Unauthorized Destruction"></i>';
+$freeze_icon = ' <i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span>';
+$unauth_dest_icon = ' <i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span>';
 
 ## Read value
 $draw = $_POST['draw'];

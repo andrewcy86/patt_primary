@@ -44,7 +44,9 @@ ob_start();
 
 <script>
  jQuery(document).ready(function() {
+
     jsGrid.ControlField.prototype.insertButtonClass = "jsgrid-update-button";
+                            
     let ext_shipping_term = "<?php echo WPPATT_EXT_SHIPPING_TERM; ?>";
     ext_shipping_term = ext_shipping_term.toLowerCase( );
     let ext_shipping_term_r3 = "<?php echo WPPATT_EXT_SHIPPING_TERM_R3; ?>";
@@ -52,7 +54,7 @@ ob_start();
     let shipping_term_id = "<?php echo get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses')->term_id ?>";
     
     jQuery('#grid_table').jsGrid({
-
+  
      width: "auto",
      height: "auto",
 
@@ -199,7 +201,10 @@ ob_start();
       }
      ]
 
+
     });
+jQuery('.jsgrid-insert-mode-button').attr('aria-label', 'Add New');
+
                  });
                  
                  

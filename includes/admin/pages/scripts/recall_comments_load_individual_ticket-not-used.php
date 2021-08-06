@@ -950,6 +950,11 @@ $directionality = $wpscfunction->check_rtl();
 	  remove_script_host : false,
 	  convert_urls : true
 	});
+	//508 Fix
+	var ed = tinymce.activeEditor;
+    var ifr = tinymce.DOM.get(ed.id + '_ifr');
+    ed.dom.setAttrib(ifr, 'aria-label', 'Text Editor for Reply');
+    //508 Fix
 	</script>
 <?php } ?>
 

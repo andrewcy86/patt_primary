@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly 
+	exit; // Exit if accessed directly
 }
 
 $subfolder_path = site_url( '', 'relative'); 
@@ -134,7 +134,7 @@ $converted_to_request_id = Patt_Custom_Func::convert_request_db_id($ticket_id);
 if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span> One or more documents related to this request contains a unauthorized destruction flag.
 </div>
 <?php
 }
@@ -142,7 +142,7 @@ if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id, $r
 if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span> One or more documents related to this request contains a damaged folder/file.
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents related to this request contains a damaged folder/file.
 </div>
 <?php
 }
@@ -157,7 +157,7 @@ $status_name = $get_request_status_name->name;
 if( in_array($status_id, $status_id_arr) ) {
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" title="Alert"></i></span> Editing is disabled and cannot be completed in the <?php echo $status_name; ?> status.
+<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" aria-hidden="true" title="Alert"></i><span class="sr-only">Alert</span></span> Editing is disabled and cannot be completed in the <?php echo $status_name; ?> status.
 </div>
 <?php
 }
@@ -168,7 +168,7 @@ if( in_array($status_id, $status_id_arr) ) {
 if(Patt_Custom_Func::id_in_freeze($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-info" role="alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents related to this request contains a frozen folder/file.
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents related to this request contains a frozen folder/file.
 </div>
 <?php
 }
@@ -243,26 +243,26 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
 //END REVIEW
 			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
-	<table id="tbl_templates_request_details" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
+	<table id="tbl_templates_request_details" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
   <tr>';
   
   
 if ( !(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
-$tbl .=  '<th class="datatable_header"></th>';
+$tbl .=  '<th class="datatable_header" scope="col"></th>';
 }     
-                    
-         $tbl .=   '<th class="datatable_header">Box ID</th>
-    	  			<th class="datatable_header">Box Status</th>
-    	  		    <th class="datatable_header">Pallet</th>
-    	  			<th class="datatable_header">Physical Location</th>
-    	  			<th class="datatable_header">Assigned Location</th>
-    	  			<th class="datatable_header">Digitization Center</th>
-    	  		    <th class="datatable_header">Validation</th>
+                    // PATT BEGIN
+         $tbl .=   '<th class="datatable_header" scope="col">Box ID</th>
+    	  			<th class="datatable_header" scope="col">Box Status</th>
+    	  		    <th class="datatable_header" scope="col">Pallet</th>
+    	  			<th class="datatable_header" scope="col">Physical Location</th>
+    	  			<th class="datatable_header" scope="col">Assigned Location</th>
+    	  			<th class="datatable_header" scope="col">Digitization Center</th>
+    	  		    <th class="datatable_header" scope="col">Validation</th>
   </tr>
  </thead><tbody>
 ';
-
+                    // PATT END
 			foreach ($box_details as $info) {
 			    $boxlist_dbid = $info->id;
 			    $boxlist_id = $info->box_id;
@@ -320,11 +320,11 @@ $tbl .=  '<th class="datatable_header"></th>';
 
             if(Patt_Custom_Func::id_in_box_destroyed($boxlist_id,$type) == 1 && Patt_Custom_Func::id_in_freeze($boxlist_id,$type) != 1) {
                  $tbl .= '
-            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important; text-decoration: line-through;">' . $boxlist_id . '</a>';
+            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#B4081A !important; text-decoration: line-through;">' . $boxlist_id . '</a>';
 
             } else if (Patt_Custom_Func::id_in_box_destroyed($boxlist_id,$type) == 1 && Patt_Custom_Func::id_in_freeze($boxlist_id,$type) == 1){
                 $tbl .= '
-            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a>';
+            <td data-order="'.$boxlist_dbid.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#B4081A !important;">' . $boxlist_id . '</a>';
                 
             } else {
                 $tbl .= '
@@ -333,31 +333,31 @@ $tbl .=  '<th class="datatable_header"></th>';
             }
             
             if(Patt_Custom_Func::id_in_box_destroyed($boxlist_id, $type) == 1) {
-            $tbl .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+            $tbl .= ' <span style="font-size: 1em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_unauthorized_destruction($boxlist_id, $type) == 1) {
-            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
+            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_damaged($boxlist_id, $type) == 1) {
-            $tbl .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" title="Damaged"></i></span>';
+            $tbl .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_freeze($boxlist_id, $type) == 1) {
-                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
 if(Patt_Custom_Func::id_in_return($boxlist_id,$type) == 1){
-$tbl .= '<span style="font-size: 1em; color: #FF0000;margin-left:4px;"><i class="fas fa-undo" title="Declined"></i></span>';
+$tbl .= '<span style="font-size: 1em; color: #B4081A;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_recall($boxlist_id,$type) == 1){
-$tbl .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" title="Recall"></i></span>';
+$tbl .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 
 if(Patt_Custom_Func::display_box_user_icon($boxlist_dbid) == 1){
-$tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''. $boxlist_id .'\')" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
+$tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''. $boxlist_id .'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>';
 }
 
             $tbl .= '</td>';
@@ -383,13 +383,13 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Not Unassigned') {
             $tbl .= '<td>' . $boxlist_location;
             if ($boxlist_dc_location != 'Not Assigned' && $boxlist_location != 'Currently Unassigned') {
-            $tbl .= ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a>';
+            $tbl .= ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit" aria-hidden="true" title="Edit Assigned Shelf Location"></i><span class="sr-only">Edit Assigned Shelf Location</span></a>';
             }
             $tbl .= '</td>';
             
             $tbl .= '<td>' . $boxlist_dc_location;
             if($boxlist_location != 'Currently Unassigned') {
-            $tbl .= ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
+            $tbl .= ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt" aria-hidden="true" title="Edit Digitization Center"></i><span class="sr-only">Edit Digitization Center</span></a></td>';
             }
             $tbl .= '</td>';
             
@@ -405,11 +405,11 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             if($boxlist_doc_total == 0){
             $tbl .= '<td data-sort="4">-</td>';
             } else if($boxlist_val_sum != 0 && $boxlist_val_sum < $boxlist_doc_total){
-            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == 0 && $boxlist_val_sum < $boxlist_doc_total){
-            $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == $boxlist_doc_total){
-            $tbl .= '<td data-sort="3"><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="3"><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             }
 
             
@@ -465,28 +465,32 @@ if($rescan_count > 0) {
 ?>
 </br></br>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Re-Scan"></i></span> <strong>The following folder(s)/file(s) require re-scanning</strong>
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span></span> The following folder(s)/file(s) require re-scanning
 </div>
 		 <?php
 		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) {
         ?>
-<button type="button" class="button" id="wppatt_undo_rescan_btn"><i class="fas fa-times-circle"></i> Undo Re-Scan </button><br /><br />
+<button type="button" class="button" id="wppatt_undo_rescan_btn"><i class="fas fa-times-circle" aria-hidden="true" title="Undo Re-Scan"></i><span class="sr-only">Undo Re-Scan</span> Undo Re-Scan </button><br /><br />
         <?php 
             }
         ?>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_rescan" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_rescan" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
         <?php
 		  if (  ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') ) {
         ?>
-    <th class="datatable_header"></th>
+        
+    <!-- PATT BEGIN -->
+    <th class="datatable_header" scope="col"></th>
     <?php } ?>
-    <th class="datatable_header">Box ID</th>
-    <th class="datatable_header">Folder/File ID</th>
-    <th class="datatable_header">Title</th>
+    <th class="datatable_header" scope="col">Box ID</th>
+    <th class="datatable_header" scope="col">Folder/File ID</th>
+    <th class="datatable_header" scope="col">Title</th>
+    
+    <!-- PATT END -->
 </tr>
 </thead>
 <tbody>
