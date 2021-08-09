@@ -206,11 +206,11 @@ div.dataTables_wrapper {
 </div>
 
 <div class="alert alert-warning" role="alert" id="damaged_alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents within this box contains a damaged folder/file.
+<span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents within this box contains a damaged folder/file.
 </div>
 
 <div class="alert alert-info" role="alert" id="freeze_alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents within this box contains a frozen folder/file.
+<span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents within this box contains a frozen folder/file.
 </div>
 
 <div class="table-responsive" style="overflow-x:auto;">

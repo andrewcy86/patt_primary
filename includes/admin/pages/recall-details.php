@@ -1535,7 +1535,7 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 	}
 	
 	.fa-snowflake {
-		color: #009ACD;
+		color: #005C7A;
 	}
 	
 </style>

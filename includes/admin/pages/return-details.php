@@ -968,11 +968,11 @@ To be added to a css file later
 	}
 	
 	.fa-snowflake {
-		color: #009ACD;
+		color: #005C7A;
 	}
 	
 	.fa-flag {
-		color: #8b0000;
+		color: #B4081A;
 	}
 	
 	.wpsc_loading_icon {

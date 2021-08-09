@@ -427,7 +427,7 @@ is flagged as unauthorized destruction.
 if(Patt_Custom_Func::id_in_damaged($folderfile_folderdocinfofile_id, $type) == 1){
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> This 
+<span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> This 
 <?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is marked as damaged.
 </div>
@@ -440,7 +440,7 @@ is marked as damaged.
 if($folderfile_freeze > 0){
 ?>
 <div class="alert alert-info" role="alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> This 
+<span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> This 
 <?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is marked as frozen.
 </div>

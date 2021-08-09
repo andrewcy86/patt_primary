@@ -267,11 +267,11 @@ if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id,$ty
 }
 
 if(Patt_Custom_Func::id_in_damaged($converted_to_request_id,$type) == 1) {
-    $damaged_icon = ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
+    $damaged_icon = ' <span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_freeze($converted_to_request_id,$type) == 1) {
-    $freeze_icon = ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
+    $freeze_icon = ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
 if(Patt_Custom_Func::id_in_box_destroyed($converted_to_request_id,'request') == 1) {

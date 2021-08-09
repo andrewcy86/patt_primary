@@ -144,7 +144,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 							}
 							
 							echo $display_rev_str;
-							
+							 
 							// D E B U G
 							//echo '<br><pre>' . $get_postid_rev . '</pre>';
 						?>
@@ -420,12 +420,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_destruction_authorization" class="tab_content visible"> 
 						<h4><?php esc_html_e( 'Destruction Authorization', 'pattracking' ); ?> </h4>
 						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo esc_attr( $total_require_file . ' Files needed for Destruction Authorization.' ); ?></div></span>
-						<div class="dropzone" id="destr-autho-dropzone">
+						<div class="dropzone" id="destr-autho-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="destruction_authorization_files" type="file" id="destruction_authorization_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 
@@ -453,12 +453,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_litigation_letter" class="tab_content hidden">
 						<h4><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="litigation-letter-dropzone">
+						<div class="dropzone" id="litigation-letter-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="litigation_letter_files" type="file" id="litigation_letter_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 
@@ -485,12 +485,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_congressional" class="tab_content hidden">
 						<h4><?php esc_html_e( 'Congressional', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="congressional-dropzone">
+						<div class="dropzone" id="congressional-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="congressional_files" type="file" id="congressional_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 
@@ -517,12 +517,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_foia" class="tab_content hidden">
 						<h4><?php esc_html_e( 'FOIA', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="foia-dropzone">
+						<div class="dropzone" id="foia-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="foia_files" type="file" id="foia_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
 							</div>
 						</div>
 
@@ -621,6 +621,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					display: none;
 				}
 				
+				.dropzone:focus {
+					outline: 5px auto -webkit-focus-ring-color;
+				}
 				
 			</style>
 			<?php

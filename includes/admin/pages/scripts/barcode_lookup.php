@@ -70,11 +70,11 @@ if(!empty($request_info->id) && $request_info->active == 1) {
             }
             
             if(Patt_Custom_Func::id_in_damaged($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
             
              if(Patt_Custom_Func::id_in_freeze($requestid, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_return($requestid,$type) == 1){
@@ -260,11 +260,11 @@ if (!empty($box_details_id) && $is_active == 1) {
             }
             
             if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
             
              if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
-            $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
+            $status_icon .= ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
 if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){
@@ -423,11 +423,11 @@ $folderfile_details = $wpdb->get_row(
     }
     
     if(Patt_Custom_Func::id_in_damaged($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
     }
     
      if(Patt_Custom_Func::id_in_freeze($barcode, $type) == 1) {
-    $status_icon .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
+    $status_icon .= ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
     }
 
     if(Patt_Custom_Func::id_in_return($barcode,$type) == 1){

@@ -383,15 +383,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 }
 
 .fa-snowflake {
-	color: #009ACD;
+	color: #005C7A;
 }
 
 .fa-flag {
-	color: #8b0000;
+	color: #B4081A;
 }
 
 .fa-ban {
-	color: #FF0000;
+	color: #B4081A;
 }
 
 .create_return_form_submit {

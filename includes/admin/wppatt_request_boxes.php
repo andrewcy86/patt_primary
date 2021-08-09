@@ -142,7 +142,7 @@ if(Patt_Custom_Func::id_in_unauthorized_destruction($converted_to_request_id, $r
 if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-warning" role="alert">
-<span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents related to this request contains a damaged folder/file.
+<span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span> One or more documents related to this request contains a damaged folder/file.
 </div>
 <?php
 }
@@ -168,7 +168,7 @@ if( in_array($status_id, $status_id_arr) ) {
 if(Patt_Custom_Func::id_in_freeze($converted_to_request_id, $request_type) == 1) {
 ?>
 <div class="alert alert-info" role="alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents related to this request contains a frozen folder/file.
+<span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span> One or more documents related to this request contains a frozen folder/file.
 </div>
 <?php
 }
@@ -341,11 +341,11 @@ $tbl .=  '<th class="datatable_header" scope="col"></th>';
             }
 
             if(Patt_Custom_Func::id_in_damaged($boxlist_id, $type) == 1) {
-            $tbl .= ' <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
+            $tbl .= ' <span style="font-size: 1em; color: #000000;"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span></span>';
             }
 
             if(Patt_Custom_Func::id_in_freeze($boxlist_id, $type) == 1) {
-                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
+                $tbl .= ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
             }
 
 if(Patt_Custom_Func::id_in_return($boxlist_id,$type) == 1){
@@ -405,7 +405,7 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             if($boxlist_doc_total == 0){
             $tbl .= '<td data-sort="4">-</td>';
             } else if($boxlist_val_sum != 0 && $boxlist_val_sum < $boxlist_doc_total){
-            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #b55000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == 0 && $boxlist_val_sum < $boxlist_doc_total){
             $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == $boxlist_doc_total){

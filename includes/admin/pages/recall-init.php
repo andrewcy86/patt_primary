@@ -165,7 +165,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	}
 	
 	.fa-snowflake {
-		color: #009ACD;
+		color: #005C7A;
 	}
 	
 	</style>

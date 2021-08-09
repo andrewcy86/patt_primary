@@ -162,11 +162,11 @@ color: rgb(255, 255, 255) !important;
 }
 
 .fa-snowflake {
-	color: #009ACD;
+	color: #005C7A;
 }
 
 .fa-flag {
-	color: #8b0000;
+	color: #B4081A;
 }
 
 </style>
