@@ -413,13 +413,13 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						<li role="presentation" class="tab" id="wpsc_recall_sla_chan_litigation_letter" onclick="wpsc_change_tab(this,'approval_litigation_letter');"><a href="javascript:void(0);"><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_congressional');"><a href="javascript:void(0);"><?php esc_html_e( 'Congressional', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_foia');"><a href="javascript:void(0);"><?php esc_html_e( 'FOIA', 'pattracking' ); ?></a></li>
-<!-- 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'add_box_list');"><a href="javascript:void(0);"><?php esc_html_e( 'Update Box List', 'pattracking' ); ?></a></li> -->
+						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'add_box_list');"><a href="javascript:void(0);"><?php esc_html_e( 'Update Box List', 'pattracking' ); ?></a></li>
 					</ul>
 
 
 					<div id="approval_destruction_authorization" class="tab_content visible"> 
 						<h4><?php esc_html_e( 'Destruction Authorization', 'pattracking' ); ?> </h4>
-						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo esc_attr( $total_require_file . ' Files needed for Destruction Authorization.' ); ?></div></span>
+						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo esc_attr( $total_require_file . ' File(s) needed for Destruction Authorization.' ); ?></div></span>
 						<div class="dropzone" id="destr-autho-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="destruction_authorization_files" type="file" id="destruction_authorization_files" />
