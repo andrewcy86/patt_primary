@@ -98,9 +98,9 @@ $email = 1;
 
 Patt_Custom_Func::insert_new_notification('email-epa-contact-updated-box',$pattagentid_array,$pattboxid,$data,$email);
 
-do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $box_id);
+do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
 
-echo "Multiple EPA contacts have been updated to " . $lanid . ". Box ID: ". $box_id;
+echo "Multiple EPA contacts have been updated to " . $lanid . ". Box ID: ". $pattboxid;
 
 } else {
 
