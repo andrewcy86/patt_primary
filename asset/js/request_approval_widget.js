@@ -33,7 +33,7 @@ function wpsc_get_approval_details(ticket_id){
 
 Dropzone.autoDiscover = false;
 jQuery(document).ajaxComplete(function (event, xhr, settings) {
-
+    
     var action_var = '';
     if( settings.data != '' && settings.data != undefined ) {
         var explode_str = settings.data.toString().split("&ticket_id");
@@ -167,7 +167,15 @@ function wpsc_set_approval_widget(){
     var congressional_element = document.querySelector("#congressional-dropzone").dropzone.files;
     var foia_element = document.querySelector("#foia-dropzone").dropzone.files;
     //var box_list_element = document.querySelector("#add-box-list-dropzone").dropzone.files;
-    var box_list_element = document.querySelector("#dzBoxUpload").dropzone.files;
+    var box_list_element;
+    
+    try{
+      box_list_element = document.querySelector("#dzBoxUpload").dropzone.files;
+    }
+    catch(err) {
+      console.log(err.message);
+    }
+    //var box_list_element = document.querySelector("#dzBoxUpload").dropzone.files;
     var box_list_path = jQuery("#box_list_path").val();
     var box_list_post_id = jQuery("#post_id").val();
 
@@ -249,80 +257,87 @@ function wpsc_set_approval_widget(){
     // Check and Save new Box List
     console.log({box_list_element:box_list_element});
     
-    if( box_list_element.length > 0 ) {
-	    console.log( 'inside the box_list_element' );
-        box_list_element.forEach( function( _file ) {
-            dataform.append( 'box_list_files[]', _file );
-            console.log( 'foreach box_list_element');
-        } )
-        
-        dataform.append( 'box_list_path', box_list_path );
-        dataform.append( 'box_list_post_id', box_list_post_id );
-        
-        
-        //
-        // Copied directly from ticket_box_list_save.js in #wpsc_create_ticket_submit
-        //
-        
-        //jQuery('.wpsc_loading_icon_submit_ticket').css('display','block');
-		//jQuery('.create_ticket_fields_container').css('display','none');
-		//jQuery('.create_ticket_frm_submit').css('display','none');
-		
-	    let superfundx = jQuery('#super-fund').val();
-	    console.log({superfund:superfundx});
-	    
-	    if( superfundx == '' ) {
-			alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
-		    return false;
-			
-		} else if( superfundx == 'no' ) {
-	    
-		    if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
-		        alert('Please upload the Box List excel sheet');
-		        return false;
-		    }
-		} else if( superfundx == 'yes' ) {
-			
-			if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
-		        alert('Please upload the Box List excel sheet');
-		        return false;
-		    }
-			
-		}
-		
-/*
-		var form_data = new FormData();
-	        form_data.append('file', theFile.file);
-	        form_data.append('action', 'move_excel_file');
-	        console.log('The Form Data');
-	        console.log( form_data );
-	        console.log( {file:theFile.file} );
-	        jQuery.ajax({
-	            url: wpsc_admin.ajax_url,
-	            type: 'post',
-	            contentType: false,
-	            processData: false,
-	            data: form_data,
-	            success: function (response) {
-	                
-	                console.log("Excel uploaded successfully");
-	                console.log(response);
-	                let obj = JSON.parse( response );
-	                console.log( obj.attachment_id );
-	                
-	                jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
-	                
-	            },  
-	            error: function (response) {
-	                console.log("Excel did not upload successfully");
-	            }
-	        });
-*/
-
-        //
-        // END copy
-        //
-        
+    // Try Catch for Box List Updater code additions.
+    // When Box List Updater is turned off, this catches the error and allows the rest to run. 
+    try{
+      if( box_list_element.length > 0 ) {
+  	    console.log( 'inside the box_list_element' );
+          box_list_element.forEach( function( _file ) {
+              dataform.append( 'box_list_files[]', _file );
+              console.log( 'foreach box_list_element');
+          } )
+          
+          dataform.append( 'box_list_path', box_list_path );
+          dataform.append( 'box_list_post_id', box_list_post_id );
+          
+          
+          //
+          // Copied directly from ticket_box_list_save.js in #wpsc_create_ticket_submit
+          //
+          
+          //jQuery('.wpsc_loading_icon_submit_ticket').css('display','block');
+  		//jQuery('.create_ticket_fields_container').css('display','none');
+  		//jQuery('.create_ticket_frm_submit').css('display','none');
+  		
+  	    let superfundx = jQuery('#super-fund').val();
+  	    console.log({superfund:superfundx});
+  	    
+  	    if( superfundx == '' ) {
+  		  	alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
+    		    return false;
+    			
+    		} else if( superfundx == 'no' ) {
+    	    
+    		    if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+    		        alert('Please upload the Box List excel sheet');
+    		        return false;
+    		    }
+    		} else if( superfundx == 'yes' ) {
+    			
+    			if( 0 === jQuery('#file_upload_cr').val() || "0" === jQuery('#file_upload_cr').val()){
+    		        alert('Please upload the Box List excel sheet');
+    		        return false;
+    		    }
+    			
+    		}
+  		
+          /*
+  		var form_data = new FormData();
+  	        form_data.append('file', theFile.file);
+  	        form_data.append('action', 'move_excel_file');
+  	        console.log('The Form Data');
+  	        console.log( form_data );
+  	        console.log( {file:theFile.file} );
+  	        jQuery.ajax({
+  	            url: wpsc_admin.ajax_url,
+  	            type: 'post',
+  	            contentType: false,
+  	            processData: false,
+  	            data: form_data,
+  	            success: function (response) {
+  	                
+  	                console.log("Excel uploaded successfully");
+  	                console.log(response);
+  	                let obj = JSON.parse( response );
+  	                console.log( obj.attachment_id );
+  	                
+  	                jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
+  	                
+  	            },  
+  	            error: function (response) {
+  	                console.log("Excel did not upload successfully");
+  	            }
+  	        });
+  */
+  
+          //
+          // END copy
+          //
+          
+      } 
+    } //end try
+    catch(err) {
+      console.log(err.message);
     }
 	
 	console.log({dataform_raw:dataform});
@@ -356,16 +371,12 @@ function wpsc_set_approval_widget(){
         }
 		
 		// D E B U G - commented out for debugging.
-/*
         setTimeout(function(){ jQuery('#approval_widget_noti_message').slideUp('fast',function(){
             wpsc_get_approval_details(request_id);
             console.log({location:location});
-			//jQuery("#wpsc_approval_widget").load(location + "#wpsc_approval_widget");
-// 			jQuery("#wpsc_approval_widget").load("https://086.info/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=0000001" + "#wpsc_approval_widget");
             wpsc_modal_close();
             location.reload();
         }); }, 3000);
-*/
 
     });
 }

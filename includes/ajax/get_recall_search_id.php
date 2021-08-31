@@ -73,8 +73,8 @@ if( $details_array2['search_error'] == false ) {
 		
 	} else {
 		$the_id = $details_array2['box_id']; 
-		$link_str_ff = "<a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=".
-								$details_array2['box_id']."' target='_blank' >".$details_array2['box_id']."</a>";
+		$link_str_ff = "<span class='text_highlight'><a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=".
+								$details_array2['box_id']."' target='_blank' >".$details_array2['box_id']."</a></span>";
 		
 		$title = '[Boxes do not have Titles]';	
 		

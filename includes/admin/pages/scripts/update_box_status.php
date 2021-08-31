@@ -11,6 +11,13 @@ $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 //$recall_ids = $_REQUEST['recall_ids']; 
 //$ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 
+//Get Statuses to check against when saving box_previous_status
+$bs_waiting_shelved_obj = get_term_by('slug', 'waiting-shelved', 'wpsc_box_statuses'); //816
+$bs_waiting_rlo_obj = get_term_by('slug', 'waiting-on-rlo', 'wpsc_box_statuses'); // 1056
+
+$bs_waiting_shelved = $bs_waiting_shelved_obj->term_id;
+$bs_waiting_rlo = $bs_waiting_rlo_obj->term_id;
+
 
 if( $type == 'box_status' ) {
 
@@ -53,6 +60,7 @@ if( $type == 'box_status' ) {
 	
 	
 	// DEBUG INFO
+/*
 	echo 'Test 1: '.PHP_EOL;
 	print_r($test_item_1);	
 	echo PHP_EOL.'Test 2: '.PHP_EOL;
@@ -77,6 +85,7 @@ if( $type == 'box_status' ) {
 	//print_r($old_recall_requestors);	
 	//echo 'Requestor String: '.$recall_requestors_string.PHP_EOL;
 // 	echo 'Requestor Value: '.$new_requestor_value.PHP_EOL;
+*/
 	
 	// Update the Users associated with the Recall. 
 /*
@@ -122,23 +131,55 @@ if( $type == 'box_status' ) {
 		do_action('wpppatt_after_box_status_update', $ticket_id['ticket_id'], $status_str, $id);
 		
 		// Debug
+/*
 		echo 'id: ';
 		print_r($id);
 		echo '<br>ticket_id: ';
 		print_r($ticket_id['ticket_id']);
 		echo '<br>status string: '.$status_str;
+*/
 	}
 
 
 	// Update Each Status in DB
 	if( $is_single_item ) {
+		
+		
+		
+		// Update previous box status
+		$box_id = Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->Box_id_FK;	
+		$old_status_obj = get_term_by( 'id', Patt_Custom_Func::get_box_file_details_by_id( $item_ids[0] )->box_status, 'wpsc_box_statuses');
+		$old_status = $old_status_obj->term_id;
+		
+		// don't update box_previous_status if waiting on rlo or waiting shevled. 
+		if( $old_status != $bs_waiting_shelved && $old_status != $bs_waiting_rlo ) {
+  		$data_where = array( 'id' => $box_id );
+  		$data_old_status = array( 'box_previous_status' => $old_status );
+  		$wpdb->update( $table_name, $data_old_status, $data_where);
+    }
+		
+		// Update Box status
 		$box_id = Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->Box_id_FK;	
 		$data_where = array('id' => $box_id);
 		$wpdb->update($table_name, $data_update, $data_where);
 		
 	} else {
 		foreach( $item_ids as $id ) {
-			$box_id = Patt_Custom_Func::get_box_file_details_by_id($id)->Box_id_FK;	
+			
+			// Update previous box status
+  		$box_id = Patt_Custom_Func::get_box_file_details_by_id( $id )->Box_id_FK;	
+  		$old_status_obj = get_term_by( 'id', Patt_Custom_Func::get_box_file_details_by_id( $id )->box_status, 'wpsc_box_statuses');
+  		$old_status = $old_status_obj->term_id;
+  		
+  		// don't update box_previous_status if waiting on rlo or waiting shevled. 
+  		if( $old_status != $bs_waiting_shelved && $old_status != $bs_waiting_rlo ) {
+    		$data_where = array( 'id' => $box_id );
+    		$data_old_status = array( 'box_previous_status' => $old_status );
+    		$wpdb->update( $table_name, $data_old_status, $data_where);
+      }
+			
+			// Update Box status
+			$box_id = Patt_Custom_Func::get_box_file_details_by_id( $id )->Box_id_FK;	
 			$data_where = array('id' => $box_id);
 			$wpdb->update($table_name, $data_update, $data_where);
 		}

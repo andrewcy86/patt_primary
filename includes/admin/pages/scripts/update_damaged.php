@@ -31,7 +31,7 @@ $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'w
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
 //REVIEW
@@ -126,7 +126,14 @@ echo "<strong>".$key."</strong> : Damaged has been updated.<br />";
 elseif($unauthorized_destruction > 0) {
 echo " A folder/file flagged as unauthorized destruction has been selected and cannot be flagged as damaged.<br />Please unselect the folder/file flagged as unauthorized destruction. ";
 } elseif($ticket_box_status > 0) {
-echo " A folder/file is in a status that cannot be flagged as damaged.<br /> Please review the folder/files that you have selected. ";
+echo " A folder/file is in the:
+    <ol>
+        <li>New Request</li>
+        <li>Tabled</li>
+        <li>Initial Review Rejected or</li>
+        <li>Completed/Dispositioned</li>
+    </ol>
+    request status and cannot be flagged as damaged.<br /> Please review the folder/files that you have selected. ";
 }
 
 if( ($page_id == 'filedetails') && $ticket_box_status == 0 && $unauthorized_destruction == 0) {

@@ -21,6 +21,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_damaged', array($this,'damaged_document'), 10, 2 );
       add_action( 'wpppatt_after_damaged_unflag', array($this,'reverse_damaged_document'), 10, 2 );
       add_action( 'wpppatt_after_box_destruction', array($this,'box_destruction'), 10, 2 );
+      add_action( 'wpppatt_after_reset_box_completion_status', array($this,'reset_box_completion_status'), 10, 2 );
       add_action( 'wpppatt_after_box_destruction_unflag', array($this,'unflag_box_destruction'), 10, 2 );
            
       add_action( 'wpppatt_after_unauthorized_destruction', array($this,'unauthorized_destruction'), 10, 2 );
@@ -167,6 +168,23 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $wpscfunction->submit_ticket_thread($args);
     }
 
+    // Reset Box Completion Status
+    function reset_box_completion_status ( $ticket_id, $box_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s has reset the box completion status for Box ID: %2$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box completion status has been reset for Box ID: %1$s','supportcandy'), '<strong>'.$box_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
     // Destroy Box
     function box_destruction ( $ticket_id, $box_id ){
       global $wpscfunction, $current_user;

@@ -988,7 +988,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				break;		
 		}
 		jQuery('#alert_status').show();
- 		jQuery('#alert_status').html('<div id="alert-' + hash + '" class=" alert '+alert_style+'">'+message+'</div>'); //badge badge-danger
+ 		jQuery('#alert_status').html('<div id="alert-' + hash + '" class="text_highlight alert '+alert_style+'">'+message+'</div>'); //badge badge-danger
 		//jQuery('#alert_status').append('<div id="alert-' + hash + '" class=" alert '+alert_style+'">'+message+'</div>'); // shows more notificaitons than desired. 
 		jQuery('#alert_status').addClass('alert_spacing');
 		
@@ -1029,7 +1029,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		var folderdoc_fk;
 		var folderdoc_files_fk;
 		var db_null = -99999;
-		var icon_freeze = '<i class="fas fa-snowflake" title="Freeze"></i>';
+		var icon_freeze = '<i class="fas fa-snowflake" style="color:#1d4289 !important;" title="Freeze"></i>';
 		var icon_ua_destruction = '<i class="fas fa-flag" title="Unauthorized Destruction"></i>';
 		var icon_box_destroyed = '<i class="fas fa-ban" title="Box Destroyed"></i>';
 		

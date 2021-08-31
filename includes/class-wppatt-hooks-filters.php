@@ -433,7 +433,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 						$num_rows = $this->update_boxinfo( $boxarray, $where );
 						
 						// D E B U G
-						$box_validation = false;
+						//$box_validation = false;
 						
 						// Error handling
 						if( !$num_rows ) {
@@ -505,14 +505,19 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
   						
             } else {
               // ELSE this is for an existing file, and data must be restored.
+              
+              //restore_previous_boxlist( $ticket_id, $restore_arr ); 
+              
+              //OLD
               $box_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
               $fdif_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
               $error_arr = [];
               
               foreach( $restore_arr["boxes"] as $box_key => $the_box ) {
                 
-                $pallet = $the_box->pallet_id == '' ? '' : $the_box->pallet_id;
-                
+                //$pallet = $the_box->pallet_id == '' ? 'x' : $the_box->pallet_id;
+                $pallet = $the_box->pallet_id;
+                                
                 $box_update_arr = [
                   'box_id' => $the_box->box_id,
                   'box_status' => $the_box->box_status,
@@ -523,6 +528,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
                   'record_schedule_id' => $the_box->record_schedule_id,
                   'box_destroyed' => $the_box->box_destroyed,
                   'pallet_id' => $pallet,
+//                   'pallet_id' => 'x',
                   'scan_list_id' => $the_box->scan_list_id,
                   'date_created' => $the_box->date_created,
                   'date_updated' => $the_box->date_updated
@@ -535,13 +541,14 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
                 
                 $error_check = $wpdb->update( $box_table, $box_update_arr, $box_where );
                 
+                // D E B U G
+                $error_check_text = $error_check === false ? 'false' : 'true';
+                
                 if( !$error_check ) {
                   $error_arr['box'][ $the_box->id ] = $the_box->id;
                   //$error_arr[''][] = $the_box->pallet_id
                 }
-                
-                // ISSUE: not sure what $the_box->pallet_id is coming in as. Think this is the reason for inserts not working. 
-                
+                                
                 //$error_arr[] = $the_box->id;
                 //$error_arr[] = $box_update_arr;
                 
@@ -549,7 +556,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
               
             }
             
-            // Display the 
+            // Display the message
             
             ob_start();
 						?>
@@ -573,6 +580,10 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 									echo 'update_flag: ' . $update_flag . '<br>';
 									echo 'update_flag_txt: ' . $update_flag_txt . '<br>';
 									echo 'test: ' . $restore_arr["boxes"][0]->id . '<br>';
+									echo 'error_check: ' . $error_check . '<br>';
+									echo 'error_check_text: ' . $error_check_text . '<br>';
+									echo 'pallet: ' . $pallet . '<br>';
+									
 /*
 									echo '<pre>';
 									print_r( $restore_arr ); //$restore_arr //$boxarray
@@ -1003,10 +1014,70 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 				
 				if( !$validation ) {
 					
-					// delete the ticket.
-					$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
-
-					ob_start();
+					// If NOT update, delete ticket. 
+					// Else, restore previous ticket
+					if( !$update_flag ) {
+					
+  					// delete the ticket.
+  					$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
+  
+  					
+  					
+  				} else { 
+    				// Else, restore previous ticket
+  				  
+  				  // ELSE this is for an existing file, and data must be restored.
+/*
+            $box_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+            $fdif_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+            $error_arr = [];
+            
+            foreach( $restore_arr["boxes"] as $box_key => $the_box ) {
+              
+              //$pallet = $the_box->pallet_id == '' ? 'x' : $the_box->pallet_id;
+              $pallet = $the_box->pallet_id;
+                              
+              $box_update_arr = [
+                'box_id' => $the_box->box_id,
+                'box_status' => $the_box->box_status,
+                'ticket_id' => $the_box->ticket_id,
+                'storage_location_id' => $the_box->storage_location_id,
+                'location_status_id' => $the_box->location_status_id,
+                'program_office_id' => $the_box->program_office_id,
+                'record_schedule_id' => $the_box->record_schedule_id,
+                'box_destroyed' => $the_box->box_destroyed,
+                'pallet_id' => $pallet,
+//                   'pallet_id' => 'x',
+                'scan_list_id' => $the_box->scan_list_id,
+                'date_created' => $the_box->date_created,
+                'date_updated' => $the_box->date_updated
+              ];
+              
+              $box_where = [
+                'ID' => $the_box->id
+              ];
+              
+              
+              $error_check = $wpdb->update( $box_table, $box_update_arr, $box_where );
+              
+              // D E B U G
+              $error_check_text = $error_check === false ? 'false' : 'true';
+              
+              if( !$error_check ) {
+                $error_arr['box'][ $the_box->id ] = $the_box->id;
+                //$error_arr[''][] = $the_box->pallet_id
+              }
+                              
+              //$error_arr[] = $the_box->id;
+              //$error_arr[] = $box_update_arr;
+              
+            }
+*/
+  				  
+				  } // else
+				  
+				  
+				  ob_start();
 					?>
 					<div class="col-sm-12 ticket-error-msg">
 						<?php echo '<h3>Validation Failed. Ticket not generated.</h3>' ?>
@@ -1092,8 +1163,9 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 
 					echo json_encode( $response );
 					die();
-				}
-				
+				  
+				  
+				} 
 				
 				// Prep more Data
 				
@@ -2007,10 +2079,161 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 		/**
 		 * Restore the previous box list
 		 *
-		 * @param 
+		 * @param ticket_id, restore_arr is the returned array from function create_restore_array( $ticket_id )
 		 */
 		public function restore_previous_boxlist( $ticket_id, $restore_arr ) {
 			global $wpdb;
+			
+			$box_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
+      $fdif_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+      $error_arr = [];
+      
+      // Update the box table.
+      foreach( $restore_arr["boxes"] as $box_key => $the_box ) {
+        
+        //$pallet = $the_box->pallet_id == '' ? 'x' : $the_box->pallet_id;
+        $pallet = $the_box->pallet_id;
+                        
+        $box_update_arr = [
+          'box_id' => $the_box->box_id,
+          'box_status' => $the_box->box_status,
+          'ticket_id' => $the_box->ticket_id,
+          'storage_location_id' => $the_box->storage_location_id,
+          'location_status_id' => $the_box->location_status_id,
+          'program_office_id' => $the_box->program_office_id,
+          'record_schedule_id' => $the_box->record_schedule_id,
+          'box_destroyed' => $the_box->box_destroyed,
+          'pallet_id' => $pallet,
+//                   'pallet_id' => 'x',
+          'scan_list_id' => $the_box->scan_list_id,
+          'date_created' => $the_box->date_created,
+          'date_updated' => $the_box->date_updated
+        ];
+        
+        $box_where = [
+          'ID' => $the_box->id
+        ];
+        
+        
+        $error_check = $wpdb->update( $box_table, $box_update_arr, $box_where );
+        
+        // D E B U G
+        $error_check_text = $error_check === false ? 'false' : 'true';
+        
+        if( !$error_check ) {
+          $error_arr['box'][ $the_box->id ] = $the_box->id;
+          //$error_arr[''][] = $the_box->pallet_id
+        }
+                        
+        //$error_arr[] = $the_box->id;
+        //$error_arr[] = $box_update_arr;
+        
+        foreach( $the_box->folderfile_arr as $the_folder ) {
+          
+          
+          
+          $fdif_update_arr = [
+						//'parent_id' => $parent_id,
+						//'box_id' => $boxinfo_id,
+						//'folderdocinfofile_id'   => $folder_file_sub_id,
+						'doc_regid' => $region_id,
+						//'attachment' => ( isset( $boxinfo['Folder/Filename'] ) && '' !== $boxinfo['Folder/Filename'] ) ? 1 : 0,
+						'file_name'  => $file_name,
+						'source_file_location' => $boxinfo['Folder/Filename'],
+						'title'  => $boxinfo['Title'],
+						'date' => $newdatetimeformat,
+						'tags' => $boxinfo['Tags'],
+						'source_format' => $source_format,
+						'index_level' => $index_level,
+						'description' => $boxinfo['Description of Record'],
+						'access_restriction' => $boxinfo['Access Restrictions'],
+						'specific_access_restriction' => $SAR,
+						'use_restriction' => $boxinfo['Use Restrictions'],
+						'specific_use_restriction' => $SUR,
+						'rights_holder' => $RH,
+						'source_dimensions' => $boxinfo['Source Dimensions'],
+						'relation_part' => $x_of,
+						'relation_part_of' => $of_y,
+						'record_type' => $boxinfo['Record Type'],
+						'author' => "{$boxinfo['Creator']}",
+						'addressee' => "{$boxinfo['Addressee']}",
+						'site_name' => "{$boxinfo['Site Name']}",
+						'siteid' => "{$boxinfo['Site ID # / OU']}",
+						'close_date' => $new_date,
+						'folder_identifier' => "{$boxinfo['Folder Identifier']}",	
+						'essential_record' => "{$essential_record}",
+						'program_area' => $boxinfo['Program Area'],
+						'lan_id' => $lan_id,
+						'lan_id_details' => $lan_json,
+						//'date_created' => gmdate( 'Y-m-d H:i:s' ),
+						'date_updated' => gmdate( 'Y-m-d H:i:s' ),
+					];
+          
+          $fdif_where = [
+            'ID' => $the_folder->id
+          ];
+          
+          $error_check_fdif = $wpdb->update( $fdif_table, $fdif_update_arr, $fdif_where );
+        
+          // D E B U G
+          $error_check_text_fdif = $error_check_fdif === false ? 'false' : 'true';
+          
+          if( !$error_check_fdif ) {
+            $error_arr['fdif'][ $the_folder->id ] = $the_folder->id;
+          }
+
+          
+          
+        }
+        
+      }
+      
+      // CHANGE THIS
+      // Update the FDIF table.
+/*
+      foreach( $restore_arr["boxes"] as $box_key => $the_box ) {
+        
+        //$pallet = $the_box->pallet_id == '' ? 'x' : $the_box->pallet_id;
+        $pallet = $the_box->pallet_id;
+                        
+        $box_update_arr = [
+          'box_id' => $the_box->box_id,
+          'box_status' => $the_box->box_status,
+          'ticket_id' => $the_box->ticket_id,
+          'storage_location_id' => $the_box->storage_location_id,
+          'location_status_id' => $the_box->location_status_id,
+          'program_office_id' => $the_box->program_office_id,
+          'record_schedule_id' => $the_box->record_schedule_id,
+          'box_destroyed' => $the_box->box_destroyed,
+          'pallet_id' => $pallet,
+//                   'pallet_id' => 'x',
+          'scan_list_id' => $the_box->scan_list_id,
+          'date_created' => $the_box->date_created,
+          'date_updated' => $the_box->date_updated
+        ];
+        
+        $box_where = [
+          'ID' => $the_box->id
+        ];
+        
+        
+        $error_check = $wpdb->update( $box_table, $box_update_arr, $box_where );
+        
+        // D E B U G
+        $error_check_text = $error_check === false ? 'false' : 'true';
+        
+        if( !$error_check ) {
+          $error_arr['box'][ $the_box->id ] = $the_box->id;
+          //$error_arr[''][] = $the_box->pallet_id
+        }
+                        
+        //$error_arr[] = $the_box->id;
+        //$error_arr[] = $box_update_arr;
+        
+      }
+			
+			return $error_arr;
+*/
 			
 		}
 
@@ -2210,7 +2433,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
   					background-image: linear-gradient(to bottom, #2f631d 0%, #2f631d 100%) !important;
 					}
 					
-					class="progress-bar progress-bar-success"
+/* 					class="progress-bar progress-bar-success" */
 					
 					.dropzone .dz-preview .dz-progress {
 						top: 70%;

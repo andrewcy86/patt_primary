@@ -26,12 +26,17 @@ $save_enabled = true;
 //
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $item_ids = $_REQUEST['item_ids']; 
-$agent_type = isset($_POST['agent_type']) ? sanitize_text_field($_POST['agent_type']) : ''; // Administrator, Agent
+
+$agent_permissions = $wpscfunction->get_current_agent_permissions(); 
+$agent_permissions['label']; 
+$agent_type = $agent_permissions['label']; // Administrator, Agent, Manager
+
+//$agent_type = isset($_POST['agent_type']) ? sanitize_text_field($_POST['agent_type']) : ''; // Administrator, Agent
+
 //$is_single_item = isset($_POST['is_single_item']) ? sanitize_text_field($_POST['is_single_item']) : '';
 $num_of_items = count($item_ids);
-$ticket_id = '0000001';
 $is_single_item = ($num_of_items == 1) ? true : false;
-$old_status = Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->box_status;
+$old_status = Patt_Custom_Func::get_box_file_details_by_id( $item_ids[0] )->box_status;
 
 
 
@@ -49,14 +54,64 @@ $old_status = Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->box_st
 
 // Add if (!Administrator) to this new code. 
 
+// Check ticket status and restrict based on status. 
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
+$tabled_request_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
+$comp_disp_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses');
+
+$new_request_term = $new_request_tag->term_id;
+$tabled_request_term = $tabled_request_tag->term_id;
+$initial_review_rejected_term = $initial_review_rejected_tag->term_id;
+$cancelled_term = $cancelled_tag->term_id;
+$comp_disp_term = $comp_disp_tag->term_id;
+
+$request_restrictions = [ $new_request_term, $tabled_request_term, $initial_review_rejected_term, $cancelled_term, $comp_disp_term ];
 
 
-// Multi: Check if all status the same. 
+// get ticket_id from items.
+// check if different ticket_ids (error check)
+// if status matches, restrict. 
+// get in js 
+// set alert. 
+$ticket_arr = [];
+
+// get array of ticket_ids
+foreach( $item_ids as $key => $item ) {
+  $where = [ 'box_folder_file_id' => $item ];
+  $ticket_res = Patt_Custom_Func::get_ticket_id_from_box_folder_file( $where );          
+  $ticket_arr[] = $ticket_res[ 'ticket_id' ];
+}
+
+// make unique
+$ticket_arr_unique = array_unique( $ticket_arr );
+$ticket_status_arr = [];
+
+// default state
+$request_restriction_bool = false;
+
+// get status of tickets into an array
+foreach( $ticket_arr_unique as $ticket ) {
+  $ticket_status_arr[] = Patt_Custom_Func::get_ticket_status( $ticket );
+}
+
+// compare the statuses of the tickets and restrict if in a restricted status.
+foreach( $ticket_status_arr as $status ) {
+  if( in_array($status, $request_restrictions) ) {
+    $request_restriction_bool = true;
+  }
+}
+
+
+
+// Multi: Check if all statuses the same. 
+// if not, restrict saving
 
 if( !$is_single_item ) {
 	$items_status_array = [];
 	foreach( $item_ids as $item ) {
-		$items_status_array[$item] = Patt_Custom_Func::get_box_file_details_by_id($item)->box_status;  
+		$items_status_array[$item] = Patt_Custom_Func::get_box_file_details_by_id($item)->box_status;   
 	}
 	
 	$item_count_array = array_count_values($items_status_array);
@@ -72,10 +127,10 @@ if( !$is_single_item ) {
 // New Section - End
 
 
-
+// If save enabled, 
+// get all restrictions on the boxes listed.
 if( $save_enabled ) {
-// 	$status_list = Patt_Custom_Func::get_restricted_box_status_list( $item_ids ); 
-// 	$status_list = Patt_Custom_Func::get_restricted_box_status_list( $item_ids, $agent_type );
+
 	$status_list = Patt_Custom_Func::get_restricted_box_status_list_2( $item_ids, $agent_type ); 
 	$box_statuses = $status_list[ 'box_statuses' ];
 	$restriction_reason = $status_list[ 'restriction_reason' ];
@@ -84,10 +139,17 @@ if( $save_enabled ) {
 	
 	
 } else {
+	
+	// If save not enabled, list the restriction reason as: C5 - statuses of the selected Boxes are not all the same
 	$box_statuses = [];
 	$restriction_reason = $restriction_reason_C5;
+	
+	foreach( $item_ids as $key => $item ) {
+	  $restricted_reason_array[ $item ] = $restriction_reason_C5;
+  }
 }
 
+$all_statuses_list = Patt_Custom_Func::get_all_status();
 			
 
 
@@ -97,24 +159,35 @@ ob_start();
 /*
 echo '<br>';
 echo 'type: '.$type.'<br>';
+echo 'request_restriction_bool: '. $request_restriction_bool .'.<br>';
+$request_restriction_bool_text = $request_restriction_bool ? 'true' : 'false';
+echo 'request_restriction_bool_text: '. $request_restriction_bool_text .'.<br>';
 echo 'item ids: <br>';
 print_r($item_ids);
 echo '<br>';
+echo 'request_restrictions: <br><pre>';
+print_r( $request_restrictions ); 
+echo '</pre><br>';
+echo 'ticket_status_arr: <br><pre>';
+print_r( $ticket_status_arr ); 
+echo '</pre><br>';
 echo 'old status: '.$old_status.'<br>';
 echo 'agent type: '.$agent_type.'<br>';
 echo 'item status array: <br>';
-print_r($items_status_array);
+print_r($items_status_array); // blank if single
 echo '<br>';
 echo 'item count array: <br>';
 print_r($item_count_array); 
 echo 'box_statuses: <br><pre>';
 // print_r($box_statuses); Patt_Custom_Func::get_all_status()
-//print_r(Patt_Custom_Func::get_all_status()); 
+print_r(Patt_Custom_Func::get_all_status()); 
 echo '</pre><br>';
 echo '$num_of_statuses: '.$num_of_statuses.'<br>';
 
-echo 'debug_restricted_status_list: <br><pre>';
-print_r($status_list['debug_restricted_status_list']);
+echo 'restricted_status_list: <br><pre>';
+// print_r($status_list['debug_restricted_status_list']);
+print_r($status_list['restricted_status_list']);
+
 echo '</pre><br>';
 
 echo 'box_statuses: <br><pre>';
@@ -132,9 +205,9 @@ echo '</pre><br>';
 echo 'restricted_reason_array: <br><pre>';
 print_r( $restricted_reason_array );
 echo '</pre><br>';
-*/
 
 	
+*/
 	
 
 	
@@ -203,7 +276,7 @@ print_r($status_list_assignable);
 ?>
 
 
-
+<div id='request_alert_status' class='col-lg-12'></div> 
 <div id='alert_status' class='col-lg-12'></div> 
 
 <div class="row">
@@ -215,12 +288,22 @@ print_r($status_list_assignable);
 		<select id='new_box_status'> 
 					<option value=''>-- Select Status --</option>
 					<?php 
-//						foreach( $box_statuses as $status ) {
-//							echo "<option value='".$status->term_id."'>".$status->name."</option>";
-//						}
-						foreach( $box_statuses as $term=>$status ) {
-							echo "<option value='".$term."'>".$status."</option>";
-						}
+
+						
+						foreach( $all_statuses_list as $term=>$status ) {
+        
+              $selected = ''; 
+              
+              if( in_array( $status, $box_statuses) ) {
+                $disabled = '';
+              } else {
+                $disabled = 'disabled';
+              }
+              
+              echo '<option '.$selected. ' '. $disabled .' value="'.$term.'">'.$status.'</option>';
+              			
+            }
+
 
 					?>
 				</select>
@@ -350,26 +433,28 @@ print_r($status_list_assignable);
 
 <script>
 	jQuery(document).ready(function(){
-		
+		//console.log( 'The JAVA has SCRIPTED' );
 		//
 		// Accordion code
 		//
 		
 // 		let current_status = '<?php echo Patt_Custom_Func::get_box_file_details_by_id($item_ids[0])->box_status ?>';
+		let request_restriction_bool = <?php echo json_encode($request_restriction_bool); ?>;		
 		let current_status = '<?php echo $old_status ?>';		
 		let is_single_item = <?php echo json_encode($is_single_item); ?>;
 		let restriction_reason = '<?php echo $restriction_reason ?>';
 		//let restricted_reason_array = <?php echo json_encode( $restricted_reason_array ); ?>;
 		let restricted_reason_obj = <?php echo json_encode( $restricted_reason_array ); ?>;
+		console.log({restricted_reason_obj:restricted_reason_obj});
 		let accordion_notification = '';
 		const restricted_reason_array = Object.entries( restricted_reason_obj );
 		
 		
 		// Construct accordion style notification for each box. 
-		console.log( 'yo' );
-		console.log( restricted_reason_array );
+		//console.log( 'yo' );
+		//console.log( restricted_reason_array );
 		
-		let accordion_pre_message = '<div class="" id="alert-message"><b>Saving disabled.</b> Click the Box number to view the restrictions.</div>';
+		let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong><br />';
 		let accordion_start = '<div class="accordion" id="the-accordion">';
 
 		//let accordion_item_start = '<div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">';
@@ -432,7 +517,9 @@ print_r($status_list_assignable);
 			if( jQuery('#new_box_status').val() == '' ) {
 				jQuery("#button_box_status_submit").hide();
 			} else {
-				jQuery("#button_box_status_submit").show();
+				if( !request_restriction_bool ) {
+				  jQuery("#button_box_status_submit").show();
+				}
 			}
 				
 		});
@@ -452,6 +539,17 @@ print_r($status_list_assignable);
 		
 		//console.log( Array.isArray(entries) );
 		//console.log({entries_length:entries.length});
+		
+		// If one of the request statuses is in a restricted status, alert user and hide submit button.
+		if( request_restriction_bool ) {
+  		const request_status_restriction = 'One of the boxes selected is in one of the following request statuses: New Request, Tabled, Initial Review Rejected, Cancelled, or Completed/ Dispositioned. <strong>Saving is disabled</strong>.';
+  		jQuery('#request_alert_status').html( request_status_restriction ); 
+			jQuery('#request_alert_status').addClass('alert_spacing');
+			jQuery('#request_alert_status').addClass('alert');
+			jQuery('#request_alert_status').addClass('alert-danger');	
+			
+			jQuery("#button_box_status_submit").hide();
+		}
 		
 		if( restricted_reason_array.length > 0 ) {
 			console.log('in');
@@ -536,6 +634,7 @@ function alert_dismiss( hash ) {
 }
 
 </script>
+
 
 <?php
 

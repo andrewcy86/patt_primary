@@ -6,6 +6,7 @@ jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     console.log( 'ticket_box_list_save.js loaded' );
     
+    
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	   
 		
@@ -32,93 +33,107 @@ jQuery(document).ready(function(){
 			
 			let page_href = window.location.href;
 			console.log( page_href );
-			//if( typeof settings.data === 'string' ) {
-				//console.log( 'settings.data is a string' );
-				
-				
-			
+      
 			// commented out for use in production before Revisioning is production worthy.
 //  				if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data || ( settings.data.includes( 'action=wpsc_get_approval_details&ticket_id=' ) ) ) {	
          if ( 'action=wpsc_tickets&setting_action=create_ticket' == settings.data  )  {	
 //          if( true ) {
 					  console.log( 'start' );
-		            var dropzoneOptions = {
-		                url: "test.php",
-		                autoProcessQueue: false,
-		                addRemoveLinks: true,
-		                uploadMultiple: false,
-		                maxFiles: 1,
-		                acceptedFiles: '.xlsm',
-		                accept: function (file, done) {
-		                    
-	                    console.log( 'ACCEPT' );
-	                    console.log( 'this.files.length: ' + this.files.length );
-		                    
+					  
+					  
+            var dropzoneOptions = {
+                url: "test.php",
+                autoProcessQueue: false,
+                addRemoveLinks: true,
+                uploadMultiple: false,
+                dictResponseError: 'Error while uploading file.',
+                maxFiles: 1,
+                acceptedFiles: '.xlsm',
 
-		                    
-		                  this.on("addedfile", function (file) {
-  					            if (this.files.length > 1) {
-  						            console.log( 'TOO LONG' );
-					                this.removeAllFiles()
-					                this.addFile(file);
-  					            }
-  					            console.log('Do the image');
-  					            jQuery(".dz-image").attr('id', "document-image" );
-  					          });
-		                    
-		                    
-		                  theFile.file = file;
-		                  console.log({theFile:theFile});
-		                    //jQuery('#file_upload_cr').val(1);
-		                  wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
-		                },
-		                init: function () {
-	                    console.log( 'INIT' );
-	                    
-	                    this.on( "maxfilesexceeded", function(file) {
-							          console.log( 'maxfilesexceeded' );
-	                      this.removeAllFiles();
-                        this.addFile(file);
-	                    });
-	                    
-	                    this.on( "error", function (file) {
-	                      console.log( 'error for maxfilesexceeded' );
-	                      if (!file.accepted) this.removeFile(file);
-	                    });
-	                    
-	                    this.on( "complete", function(file) {
-			                  console.log( 'dropzone complete' );
-                        jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
-			                });
-			            
-                      this.on("addedfiles", function(files) {
-      							    console.log(files.length + ' files added');
-      							    console.log( files[0].name );
-      							    console.log( files );
-      							    
-      							    let name_arr = files[0].name.split( '.' );
-      							    console.log( name_arr );
-      							    let extension = name_arr[ name_arr.length - 1 ];
-      							    console.log( extension );
-      							    
-      							    if( !extension.includes( 'xls' ) ) {
-      								    console.log( 'wrong type' );
-      								    this.removeAllFiles();
-      								    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
-      								    reset_page();
-      							    }
-      							    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
-      							    
-  					            jQuery( ".dz-image img" ).attr( 'id', "spreadsheet-thumbnail" );
-  					            jQuery( ".dz-image img" ).attr( 'aria-label', "thumbnail for uploaded spreadsheet" );
-      							    
-      							  });
-							
-							
-		                }
-	            	};
-		            var uploader = document.querySelector('#dzBoxUpload');
-		            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
+                accept: function (file, done) {
+                    
+                  console.log( 'ACCEPT' );
+                  
+                  //this.on( 'error', function( file, errorMessage ) {
+                    //alert( 'error' );
+                    //if ( errorMessage.indexOf( 'Error 404' ) !== -1 ) {
+                      //var errorDisplay = document.querySelectorAll('[data-dz-errormessage]');
+                      //errorDisplay[errorDisplay.length - 1].innerHTML = 'Error: The upload page was not found on the server';
+                    //}
+                 //});
+                  
+                  console.log( 'this.files.length: ' + this.files.length );
+                    
+                  jQuery( '#super-fund' ).attr("disabled", true);
+                    
+                  this.on("addedfile", function (file) {
+				            if (this.files.length > 1) {
+					            console.log( 'TOO LONG' );
+			                this.removeAllFiles()
+			                this.addFile(file);
+				            }
+				            console.log('Do the image');
+				            jQuery(".dz-image").attr('id', "document-image" );
+				          });
+                    
+                    
+                  theFile.file = file;
+                  console.log({theFile:theFile});
+                    //jQuery('#file_upload_cr').val(1);
+                  wpsc_spreadsheet_new_upload('attach_16','spreadsheet_attachment', file);
+                },
+                init: function () {
+                  
+                  console.clear();
+                  
+                  console.log( 'INIT' );
+                  
+                  this.on( "maxfilesexceeded", function(file) {
+					          console.log( 'maxfilesexceeded' );
+                    this.removeAllFiles();
+                    this.addFile(file);
+                  });
+                  
+                  this.on( "error", function (file) {
+                    console.log( 'error for maxfilesexceeded' );
+                    if (!file.accepted) this.removeFile(file);
+                  });
+                  
+                  this.on( "complete", function(file) {
+	                  console.log( 'dropzone complete' );
+                    jQuery(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+	                });
+	            
+                  this.on("addedfiles", function(files) {
+  							    console.log(files.length + ' files added');
+  							    console.log( files[0].name );
+  							    console.log( files );
+  							    
+  							    let name_arr = files[0].name.split( '.' );
+  							    console.log( name_arr );
+  							    let extension = name_arr[ name_arr.length - 1 ];
+  							    console.log( extension );
+  							    
+  							    if( !extension.includes( 'xls' ) ) {
+  								    console.log( 'wrong type' );
+  								    this.removeAllFiles();
+  								    alert( 'Invalid File Type. Accepted file extensions: .xlsx, .xlsm \n\nProvided file extension: ' + extension );
+  								    reset_page();
+  							    }
+  							    jQuery(".dz-remove").attr('onclick', "remove_link_clicked()");
+  							    
+				            jQuery( ".dz-image img" ).attr( 'id', "spreadsheet-thumbnail" );
+				            jQuery( ".dz-image img" ).attr( 'aria-label', "thumbnail for uploaded spreadsheet" );
+  							    
+  							  });
+					
+					
+                }
+          	};
+          	
+          	
+            var uploader = document.querySelector('#dzBoxUpload');
+            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
 	                  
 	        	} else {
 		        	//alert( "Didn't grab dropzone files. Error." );
@@ -128,7 +143,7 @@ jQuery(document).ready(function(){
         } 
     });
     
-    
+  
 
     
 });
@@ -494,7 +509,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
         }
 */
         
-
+        // try catch
         // Read file and provide json response
         jQuery.ajax({
             type: 'post',
@@ -1654,7 +1669,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                     jQuery(attachment).find('.progress-bar').addClass('progress-bar-danger');
                     //alert('Something went wrong. Please try again.');
                 }
-            }
+            },
+            error: function(xhr, status, error){
+            alert('File upload failed. Please ensure the box list is not open in Excel.');
+            wpsc_get_create_ticket();
+     }
         });
 
     }

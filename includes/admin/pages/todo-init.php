@@ -57,6 +57,98 @@ foreach( $box_statuses as $key=>$box ) {
 	}
 }
 array_values($box_statuses);
+
+
+## Form List of Active To-Do Boxes for User
+
+$scanning_preparation_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-preparation' );	 //672
+$scanning_digitization_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-digitization' );	 //671
+$qa_qc_term_id = Patt_Custom_Func::get_term_by_slug( 'q-a' );	 //65					
+$digitized_not_validated_term_id = Patt_Custom_Func::get_term_by_slug( 'closed' );	 //6
+$validation_term_id = Patt_Custom_Func::get_term_by_slug( 'verification' );	 //674
+$destruction_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-approval' );	 //68
+$destruction_of_source_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-of-source' );	 //1272
+$re_scan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );	 //743
+
+function findZero($var){
+    // returns whether the input is non zero
+    return($var == 0);
+}
+
+$user_id = get_current_user_id();
+
+// $get_completion_status = $wpdb->get_results("SELECT 
+// id,
+// scanning_preparation,
+// scanning_digitization,
+// qa_qc,
+// digitized_not_validated,
+// validation,
+// destruction_approved,
+// destruction_of_source,
+// re_scan
+// FROM  wpqa_wpsc_epa_storage_location
+// WHERE scanning_preparation <> 0 OR scanning_digitization <> 0 OR qa_qc <> 0 OR digitized_not_validated <> 0 OR validation <> 0 OR destruction_approved <> 0 OR destruction_of_source <> 0 OR re_scan <> 0");
+
+$get_completion_status = $wpdb->get_results("SELECT id, scanning_preparation, scanning_digitization, qa_qc, validation, destruction_approved, destruction_of_source
+FROM  " . $wpdb->prefix . "wpsc_epa_storage_location
+WHERE scanning_preparation <> 0 OR scanning_digitization <> 0 OR qa_qc <> 0 OR validation <> 0 OR destruction_approved <> 0 OR destruction_of_source <> 0");
+
+$todo_boxes_array = array();
+
+foreach ($get_completion_status as $data) {
+// $sum = $data->sum;
+// echo $sum;
+
+$storage_location_id = $data->id;
+$scanning_preparation = $data->scanning_preparation;
+$scanning_digitization = $data->scanning_digitization;
+$qa_qc = $data->qa_qc;
+// $digitized_not_validated = $data->digitized_not_validated;
+$validation = $data->validation;
+$destruction_approved = $data->destruction_approved;
+$destruction_of_source = $data->destruction_of_source;
+// $re_scan = $data->re_scan;
+
+$box_complete_array = array(
+    $scanning_preparation_term_id=>$scanning_preparation,
+    $scanning_digitization_term_id=>$scanning_digitization,
+    $qa_qc_term_id=>$qa_qc,
+    // $digitized_not_validated_term_id=>$digitized_not_validated,
+    $validation_term_id=>$validation,
+    $destruction_approved_term_id=>$destruction_approved,
+    $destruction_of_source_term_id=>$destruction_of_source,
+    // $re_scan_term_id=>$re_scan
+    );
+    
+//print_r($box_complete_array);
+
+
+$newPair = array_filter($box_complete_array, "findZero");
+//print_r($newPair); //Contains array of zero values
+
+$first_key = key($newPair); // First element's key
+
+$get_box_id = $wpdb->get_row("SELECT 
+id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE storage_location_id = ".$storage_location_id);
+
+$box_id = $get_box_id->id;
+
+$get_todo_boxes = $wpdb->get_row("SELECT box_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus 
+WHERE box_id = ".$box_id." AND user_id = ".$user_id." AND status_id = ".$first_key);
+
+$todo_boxes = $get_todo_boxes->box_id;
+
+if($todo_boxes != '') {
+array_push($todo_boxes_array, $todo_boxes);
+}
+
+}
+
+$boxcommaList = implode(', ', $todo_boxes_array);
+
 ?>
 
 
@@ -69,7 +161,7 @@ array_values($box_statuses);
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban" aria-hidden="true" title="Destruction Completed"></i><span class="sr-only">Destruction Completed</span> Destruction Completed</button>
+		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_completion_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-clipboard-check" aria-hidden="true" title="Completion"></i><span class="sr-only">Box Status Completion</span> Box Status Completion</button>-->
 <?php } 
 if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
 ?>
@@ -82,8 +174,8 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 ?>
 		<button type="button" id="wppatt_change_status_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-heartbeat" aria-hidden="true" title="Assign Box Status"></i><span class="sr-only">Assign Box Status</span> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
 <?php } ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Box Labels"></i><span class="sr-only">Reprint Box Labels</span> Reprint Box Labels</button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Pallet Labels"></i><span class="sr-only">Reprint Pallet Labels</span> Reprint Pallet Labels</button>
+		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Box Labels"></i><span class="sr-only">Reprint Box Labels</span> Reprint Box Labels</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Pallet Labels"></i><span class="sr-only">Reprint Pallet Labels</span> Reprint Pallet Labels</button>-->
   </div>
 
 </div>
@@ -101,26 +193,33 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 			<hr class="widget_divider">
 			
 			<div class="wpsp_sidebar_labels">
-				Enter a series of either Box IDs or Pallet IDs:<br />
+				Enter a series of Box IDs:<br />
 				<input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
-				<br />
-				
-				<?php
-					$po_array = Patt_Custom_Func::fetch_program_office_array(); 
-				?>
-				<input type="search" list="searchByProgramOfficeList" aria-label="Enter program office" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
-				<datalist id='searchByProgramOfficeList'>
-					<?php foreach($po_array as $key => $value) { ?>
-					<?php 
-					    $program_office = $wpdb->get_row("SELECT office_name FROM " . $wpdb->prefix . "wpsc_epa_program_office WHERE office_acronym  = '" . $value . "'");
-					    $office_name = $program_office->office_name;
-					?>
-					<option data-value='<?php echo $value; ?>' value='<?php echo $value . ' : ' . $office_name; ?>'></option>
-					<?php } ?>
-				</datalist>
 				
 				<br /><br />
+
+    			<?php
+				//Box Status slugs
+                $scanning_preparation_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-preparation' );	 //672
+                $scanning_digitization_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-digitization' );	 //671
+                $qa_qc_term_id = Patt_Custom_Func::get_term_by_slug( 'q-a' );	 //65					
+                $validation_term_id = Patt_Custom_Func::get_term_by_slug( 'verification' );	 //674
+                $destruction_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-approval' );	 //68
+                $destruction_of_source_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-of-source' );	 //1272
+				?>
 				
+               <select id='searchByAction' aria-label='Search by Action'>
+               <option value=''>-- Select Action Type --</option>
+               <option value='<?php echo $scanning_preparation_term_id; ?>'>Scanning Preparation</option>
+               <option value='<?php echo $scanning_digitization_term_id; ?>'>Scanning/Digitization</option>
+               <option value='<?php echo $qa_qc_term_id; ?>'>QA/QC</option>
+               <option value='<?php echo $validation_term_id; ?>'>Validation</option>
+               <option value='<?php echo $destruction_approved_term_id; ?>'>Destruction Approved</option>
+               <option value='<?php echo $destruction_of_source_term_id; ?>'>Destruction of Source</option>
+             </select>
+				
+	<br /><br />
+
 				<select id='searchByStatus' aria-label="Search by Status"> 
 					<option value=''>-- Select Box Status --</option>
 					<?php 
@@ -131,9 +230,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 					?>
 
 				</select>
-				
-				<br><br>
-				
+    <br /><br />         
 				
 				<?php
 				//Priority slugs
@@ -152,16 +249,6 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
              </select>
     <br /><br />
 				
-				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
-					<option value=''>-- Select Digitization Center --</option>
-					<option value='East'>East</option>
-					<option value='West'>West</option>
-					<option value='Not Assigned'>Not Assigned</option>
-				</select>
-				
-				<br><br>
-				
-				
 			   <select id='searchByRecallDecline' aria-label='Search by Recall or Decline'>
                <option value=''>-- Select Recall or Decline --</option>
                <option value='Recall'>Recall</option>
@@ -174,60 +261,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
                <option value='ECMS'>ECMS</option>
                <option value='SEMS'>SEMS</option>
              </select>
-<br /><br />
-		<?php		
-		if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
-		{
-		?>
-				<select id='searchByUser' aria-label="Search by User">
-					<option value=''>-- Select User --</option>
-					<option value='mine'>Mine</option>
-					<option value='not assigned'>Not Assigned</option>
-					<option value='search for user'>Search for User</option>
-				</select>		
-
-				<br><br>				
-				<form id="frm_get_ticket_assign_agent">
-					<div id="assigned_agent">
-						<div class="form-group wpsc_display_assign_agent ">
-						    <input class="form-control  wpsc_assign_agents_filter ui-autocomplete-input " name="assigned_agent"  type="text" autocomplete="off" placeholder="<?php _e('Search agent ...','supportcandy')?>" />
-							<ui class="wpsp_filter_display_container"></ui>
-						</div>
-					</div>
-					<div id="assigned_agents" class="form-group col-md-12 ">
-						<?php
-						$is_single_item = '';
-						    if($is_single_item) {
-							    foreach ( $assigned_agents as $agent ) {
-									$agent_name = get_term_meta( $agent, 'label', true);
-										if($agent && $agent_name):
-						?>
-												<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">
-<!-- 													<div class="flex-container searched-user" style="padding:10px;font-size:1.0em;"> -->
-													<div class="flex-container searched-user staff-badge" style="">														
-														<?php echo htmlentities($agent_name)?><span class="remove-user staff-close"><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>
-<!-- 														<?php echo htmlentities($agent_name)?><span class="staff-close"><i class="fa fa-times"></i></span>														 -->
-														  <input type="hidden" name="assigned_agent[]" value="<?php echo htmlentities($agent) ?>" />
-					<!-- 									  <input type="hidden" name="new_requestor" value="<?php echo htmlentities($agent) ?>" /> -->
-													</div>
-												</div>
-						<?php
-										endif;
-								}
-							}
-						?>
-				  </div>
-						<input type="hidden" name="action" value="wpsc_tickets" />
-						<input type="hidden" name="setting_action" value="set_change_assign_agent" />
-						<input type="hidden" name="recall_id" value="<?php echo htmlentities($recall_id) ?>" />
-				</form>
-				
-		<?php		
-		} // End $agent_permissions for search user
-		?>
-				
-				
-				
+             
 			</div>
 		</div>
 
@@ -244,7 +278,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
 <br /><br />
-<table id="tbl_templates_boxes" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
 <?php		
@@ -257,17 +291,124 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 ?>
                 <th class="datatable_header" scope="col" >Box ID</th>
                 <th class="datatable_header" scope="col" >DB ID</th>
-                <th class="datatable_header" scope="col" >Pallet ID</th>
-                <th class="datatable_header" scope="col" >Priority</th>
+                <th class="datatable_header" scope="col" >Action</th>
                 <th class="datatable_header" scope="col" >Request ID</th>
-                <th class="datatable_header" scope="col" >Box Status</th>                
-                <th class="datatable_header" scope="col" >Digitization Center</th>
-                <th class="datatable_header" scope="col" >Program Office</th>
+                <th class="datatable_header" scope="col" >Physical Location</th>
+                <th class="datatable_header" scope="col" >Priority</th>
+                <th class="datatable_header" scope="col" >Box Status</th>
                 <th class="datatable_header" scope="col" >Validation</th>
             </tr>
         </thead>
     </table>
+
+<?php
+$subfolder_path = site_url( '', 'relative'); 
+
+$get_current_user_id = get_current_user_id();
+$re_scan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );   //743
+
+$box_rescan = $wpdb->get_row("SELECT count(b.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus c ON c.box_id = a.id
+
+WHERE b.rescan = 1 AND c.status_id = ".$re_scan_term_id." AND c.user_id = '" . $get_current_user_id . "'");
+$rescan_count = $box_rescan->count;
+
+if ($rescan_count > 0) {
+?>
+<h3>Files assigned to <?php echo esc_html( $current_user->user_login ); ?> requiring re-scan:</h3>
+
+<div class="table-responsive" style="overflow-x:auto;">
+<table id="tbl_templates_rescan" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<thead>
+<tr>
+    <th class="datatable_header" scope="col">Folder/File ID</th>
+    <th class="datatable_header" scope="col">Title</th>
+    <th class="datatable_header" scope="col">Box ID</th>
+    <th class="datatable_header" scope="col">Request ID</th>
+    <th class="datatable_header" scope="col">Physical Location</th>    
+    <th class="datatable_header" scope="col">Priority</th> 
+</tr>
+</thead>
+<tbody>
+<?php
+$rescan_details = $wpdb->get_results("SELECT 
+b.title as title, 
+b.folderdocinfofile_id as folderdocinfo_id , 
+b.id as id,
+a.box_id,
+CASE
+WHEN d.scanning_id IS NOT NULL
+THEN d.scanning_id
+WHEN d.stagingarea_id IS NOT NULL
+THEN d.stagingarea_id
+WHEN d.cart_id IS NOT NULL
+THEN d.cart_id
+WHEN d.shelf_location IS NOT NULL
+THEN d.shelf_location
+    ELSE '-'
+END as physical_location,
+e.request_id,
+f.name,
+e.ticket_priority,
+CASE 
+WHEN e.ticket_priority = 621
+THEN
+1
+WHEN e.ticket_priority = 9
+THEN
+2
+WHEN e.ticket_priority = 8
+THEN
+3
+WHEN e.ticket_priority = 7
+THEN
+4
+ELSE
+999
+END
+ as ticket_priority_order
+
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus c ON c.box_id = a.id
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list d ON d.box_id = a.box_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket e ON e.id = a.ticket_id
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.ticket_priority 
+
+WHERE b.rescan = 1 AND c.status_id = ".$re_scan_term_id." AND c.user_id = '" . $get_current_user_id . "'");
+
+
+foreach ($rescan_details as $info) {
+
+$priority_background = get_term_meta($info->ticket_priority, 'wpsc_priority_background_color', true);
+$priority_color = get_term_meta($info->ticket_priority, 'wpsc_priority_color', true);
+$priority_style = "background-color:".$priority_background.";color:".$priority_color.";";
+
+
+$tbl = '<tr>';
+$tbl .= '<td data-order="'.$info->id.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a></td>';
+$tbl .= '<td>'.$info->title.'</td>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=wpsc-tickets&id=' . $info->request_id . '">'.$info->request_id.'</a></td>';
+$priority_name = $info->name;
+$priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$priority_name."</span>";
+
+$tbl .= '<td>'.$info->physical_location.'</td>';
+$tbl .= '<td data-order="'.$info->ticket_priority_order.'">'.$priority.'</td>';
+$tbl .= '</tr>';
+
+echo $tbl;
+
+}
+
+}
+?>
+</tbody>
+</table>
 <br /><br />
+</div>
 
 <style>
 
@@ -301,10 +442,6 @@ color: rgb(255, 255, 255) !important;
 	cursor: pointer;
 }
 
-#searchByProgramOffice {
-	width: 83%;
-}
-
 
 .staff-badge {
 	padding: 3px 3px 3px 5px;
@@ -326,7 +463,28 @@ color: rgb(255, 255, 255) !important;
 <script>
 
 jQuery(document).ready(function(){
-  
+ 
+<?php 
+//DISPAY IF RESCAN
+if($rescan_count > 0) {
+?>
+     	 var rescan = jQuery('#tbl_templates_rescan').DataTable({
+	     "autoWidth": true,
+	     //"scrollX" : true,
+	     "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  },
+         "paging" : true,
+         "bDestroy": true,
+		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
+          'order': [[5, 'desc']],
+
+		});
+<?php 
+//END DISPAY IF NOT RESCAN
+}
+?>
+
  jQuery('[data-toggle="tooltip"]').tooltip();
 /*
 	if( typeof data == 'undefined' ) {
@@ -344,8 +502,7 @@ jQuery(document).ready(function(){
 	}
 	
 	
-	var dataTable = jQuery('#tbl_templates_boxes').DataTable({
-	    
+	var dataTable = jQuery('#tbl_templates_todo').DataTable({
 	    'autoWidth': true,
 		'processing': true,
 		'serverSide': true,
@@ -353,32 +510,28 @@ jQuery(document).ready(function(){
 		//'scrollX' : true,
 		
 		"initComplete": function (settings, json) {
-		    jQuery("#tbl_templates_boxes").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		    jQuery("#tbl_templates_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
 		},
 		'paging' : true,
 		'stateSaveParams': function(settings, data) {
 			data.sg = jQuery('#searchGeneric').val();
 			data.bid = jQuery('#searchByBoxID').val();
-			data.po = jQuery('#searchByProgramOffice').val();
-			data.dc = jQuery('#searchByDigitizationCenter').val(); 
 			data.sp = jQuery('#searchByPriority').val();
 			data.sbs = jQuery('#searchByStatus').val();
 			data.rd = jQuery('#searchByRecallDecline').val();
 			data.es = jQuery('#searchByECMSSEMS').val();
-			data.sbu = jQuery('#searchByUser').val(); 
+			data.ac = jQuery('#searchByAction').val();
 			data.aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
 			data.aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get();                   
 		},
 		'stateLoadParams': function(settings, data) {
 			jQuery('#searchGeneric').val(data.sg);
 			jQuery('#searchByBoxID').val(data.bid);
-			jQuery('#searchByProgramOffice').val(data.po);
-			jQuery('#searchByDigitizationCenter').val(data.dc);
 			jQuery('#searchByPriority').val(data.sp);
 			jQuery('#searchByRecallDecline').val(data.rd);
 			jQuery('#searchByECMSSEMS').val(data.es);
-			jQuery('#searchByStatus').val(data.sbs); 
-			jQuery('#searchByUser').val(data.sbu); 
+			jQuery('#searchByAction').val(data.ac);
+			jQuery('#searchByStatus').val(data.sbs);
 			
 			// If data values aren't defined then set them as blank arrays.
 			if( typeof data.aaVal == 'undefined' ) {
@@ -397,34 +550,27 @@ jQuery(document).ready(function(){
 		'serverMethod': 'post',
 		'searching': false, // Remove default Search Control
 		'ajax': {
-			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_processing.php',
+			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_processing.php',
 			'data': function(data){
 				// Read values
-				var po_value = jQuery('#searchByProgramOffice').val();
-				var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
 				var sg = jQuery('#searchGeneric').val();
 				var boxid = jQuery('#searchByBoxID').val();
-				var dc = jQuery('#searchByDigitizationCenter').val();
 				var sp = jQuery('#searchByPriority').val();
 				var rd = jQuery('#searchByRecallDecline').val();
 				var es = jQuery('#searchByECMSSEMS').val();
+				var ac = jQuery('#searchByAction').val();
 				var sbs = jQuery('#searchByStatus').val(); 
-				var sbu = jQuery('#searchByUser').val();  
-				var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
-				var aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get(); 
+				var sbu = '<?php echo get_current_user_id();?>';
 				//console.log({is_requester:is_requester});
 				// Append to data
 				data.searchGeneric = sg;
 				data.searchByBoxID = boxid;
-				data.searchByProgramOffice = po;
-				data.searchByDigitizationCenter = dc;
 				data.searchByPriority = sp;
 				data.searchByRecallDecline = rd;
 				data.searchByECMSSEMS = es;
+				data.searchByAction = ac;
 				data.searchByStatus = sbs;
 				data.searchByUser = sbu;
-				data.searchByUserAAVal = aaVal;
-				data.searchByUserAAName = aaName;
 				data.is_requester = is_requester;
 			
 			}
@@ -457,13 +603,12 @@ jQuery(document).ready(function(){
             'visible': false,
             'searchable': false
         },
-		{ 'width': '100%', 'targets': 4 },
 		{ 'width': '5%', 'targets': 6 }
 		],
 		'select': {	
 			'style': 'multi'
 		},
-		'order': [[1, 'asc']],
+		'order': [[5, 'desc']],
 // 		'order': [[1, 'desc']],
 	<?php
 	}
@@ -481,12 +626,11 @@ jQuery(document).ready(function(){
 
 			{ data: 'box_id_flag', 'class' : 'text_highlight'},
 			{ data: 'dbid', visible: false},
-			{ data: 'pallet_id' },
-			{ data: 'ticket_priority' },
+			{ data: 'action', 'class' : 'text_highlight' },
 			{ data: 'request_id', 'class' : 'text_highlight' },
-			{ data: 'status' },       
-			{ data: 'location' },
-			{ data: 'acronym' },
+			{ data: 'physical_location' },
+			{ data: 'ticket_priority' },
+			{ data: 'status' },
 			{ data: 'validation' },
 		]
 	});
@@ -505,16 +649,6 @@ jQuery(document).ready(function(){
 		}
 	});
 	
-	jQuery("#searchByProgramOffice").change(function(){
-		dataTable.state.save();
-		dataTable.draw();
-	});
-	
-	jQuery("#searchByDigitizationCenter").change(function(){
-		dataTable.state.save();
-		dataTable.draw();
-	});
-	
 	jQuery("#searchByPriority").change(function(){
         dataTable.state.save();
         dataTable.draw();
@@ -529,13 +663,13 @@ jQuery(document).ready(function(){
         dataTable.state.save();
         dataTable.draw();
     });
+    
+    jQuery("#searchByAction").change(function(){
+        dataTable.state.save();
+        dataTable.draw();
+    });
 
 	jQuery("#searchByStatus").change(function(){
-		dataTable.state.save();
-		dataTable.draw();
-	});
-	
-	jQuery("#searchByUser").change(function(){
 		dataTable.state.save();
 		dataTable.draw();
 	});
@@ -585,12 +719,10 @@ jQuery(document).ready(function(){
 
 	jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 	    jQuery('#searchGeneric').val('');
-	    jQuery('#searchByProgramOffice').val('');
-	    jQuery('#searchByDigitizationCenter').val('');
 	    jQuery('#searchByPriority').val('');
 	    jQuery('#searchByRecallDecline').val('');
 	    jQuery('#searchByECMSSEMS').val('');
-	    jQuery('#searchByUser').val('');
+	    jQuery('#searchByAction').val('');
         jQuery('#searchByStatus').val('');
 	    jQuery('#searchByBoxID').importTags('');
 	    dataTable.column(0).checkboxes.deselectAll();
@@ -606,7 +738,7 @@ jQuery(document).ready(function(){
 	//
 	
 	// Code block for toggling edit buttons on/off when checkboxes are set
-	jQuery('#tbl_templates_boxes tbody').on('click', 'input', function () {        
+	jQuery('#tbl_templates_todo tbody').on('click', 'input', function () {        
 
 		//let rows_selected = dataTable.column(0).checkboxes.selected();
 		let rows_selected = dataTable.column().checkboxes.selected();
@@ -626,6 +758,7 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery('#wpsc_box_destruction_btn').attr('disabled', 'disabled'); 
+	jQuery('#wpsc_box_completion_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled'); 
 	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
@@ -637,13 +770,15 @@ jQuery(document).ready(function(){
 		console.log({checks:dataTable.column(0)});
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
-		    jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');	
+		    jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');
+		    jQuery('#wpsc_box_completion_btn').removeAttr('disabled');
 			jQuery('#wppatt_assign_staff_btn').removeAttr('disabled');	
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
-			jQuery('#wpsc_individual_label_btn').removeAttr('disabled');	
+			jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_pallet_label_btn').removeAttr('disabled');
 	  	} else {
 	  	    jQuery('#wpsc_box_destruction_btn').attr('disabled', 'disabled'); 
+	  		jQuery('#wpsc_box_completion_btn').attr('disabled', 'disabled');
 	    	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled');    	
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');    
 	    	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
@@ -689,16 +824,50 @@ jQuery(document).ready(function(){
 	jQuery('#wppatt_assign_staff_btn').click( function() {	
 	
 		var rows_selected = dataTable.column(0).checkboxes.selected();
-    var arr = [];
-
-    // Loop through array
-    [].forEach.call(rows_selected, function(inst){
-        //console.log('the inst: '+inst);
-        arr.push(inst);
-    });
+	    var arr = [];
+	
+	    // Loop through array
+	    [].forEach.call(rows_selected, function(inst){
+	        //console.log('the inst: '+inst);
+	        arr.push(inst);
+	    });
+	    
+	    console.log('arr: '+arr);
+	    console.log(arr);
+		
+		wpsc_modal_open('Edit Assigned Staff');
+		
+		var data = {
+		    action: 'wppatt_assign_agents',
+		    item_ids: arr,
+		    page: 'todo',
+		    type: 'edit'
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+	// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+		dataTable.column(0).checkboxes.deselectAll();
+	});
     
-    console.log('arr: '+arr);
-    console.log(arr);
+    /*
+	// Box Status Completion Button Click
+	jQuery('#wpsc_box_completion_btn').click( function() {	
+	
+		var rows_selected = dataTable.column(0).checkboxes.selected();
+	    var arr = [];
+	
+	    // Loop through array
+	    [].forEach.call(rows_selected, function(inst){
+	        //console.log('the inst: '+inst);
+	        arr.push(inst);
+	    });
+	    
+	    console.log('arr: '+arr);
+	    console.log(arr);
 		
 		wpsc_modal_open('Edit Assigned Staff');
 		
@@ -717,8 +886,8 @@ jQuery(document).ready(function(){
 		}); 
 		dataTable.column(0).checkboxes.deselectAll();
 	});
-
-
+	*/
+	
 	<?php	
 	// BEGIN ADMIN BUTTONS
 	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
@@ -824,100 +993,7 @@ jQuery(document).ready(function(){
 	      //}
 	   });
 	});
-
-	// User Seach
-	jQuery('#frm_get_ticket_assign_agent').hide();
 	
-	jQuery('#searchByUser').change( function() {
-		if(jQuery(this).val() == 'search for user') {
-			jQuery('#frm_get_ticket_assign_agent').show();
-		} else {
-			jQuery('#frm_get_ticket_assign_agent').hide();
-		}
-	});
-	
-	// Show search box on page load - from save state
-	if( jQuery('#searchByUser').val() == 'search for user' ) {
-		jQuery('#frm_get_ticket_assign_agent').show();
-	}
-
-
-	// Autocomplete for user search
-	jQuery( ".wpsc_assign_agents_filter" ).autocomplete({
-		minLength: 0,
-		appendTo: jQuery('.wpsc_assign_agents_filter').parent(),
-		source: function( request, response ) {
-			var term = request.term;
-			//console.log('term: ');
-			//console.log(term);
-			request = {
-				action: 'wpsc_tickets',
-				setting_action : 'filter_autocomplete',
-				term : term,
-				field : 'assigned_agent',
-				no_requesters : true,
-			}
-			jQuery.getJSON( wpsc_admin.ajax_url, request, function( data, status, xhr ) {
-				response(data);
-			});
-		},
-		select: function (event, ui) {
-			//console.log('label: '+ui.item.label+' flag_val: '+ui.item.flag_val); 							
-			html_str = get_display_user_html(ui.item.label, ui.item.flag_val);
-// 			jQuery('#assigned_agents').append(html_str);	
-			
-			// when adding new item, event listener functon must be added. 
-			jQuery('#assigned_agents').append(html_str).on('click','.remove-user',function(){	
-				//console.log('This click worked.');
-				wpsc_remove_filter(this);
-				dataTable.state.save();
-				dataTable.draw();
-			});
-			
-			dataTable.state.save();
-			dataTable.draw();
-
-			
-			jQuery("#button_agent_submit").show();
-		    jQuery(this).val(''); return false;
-		}
-	}).focus(function() {
-			jQuery(this).autocomplete("search", "");
-	});
-	
-	
-
-
-	jQuery('.searched-user').on('click','.remove-user', function(e){
-		//console.log('Removed a user 1');
-		wpsc_remove_filter(this);
-		dataTable.state.save();
-		dataTable.draw();
-	}); 
-
-
-/*
-	jQuery('.remove-user').on('click', function(e){
-		console.log('Removed a user 1');
-		wpsc_remove_filter(this);
-		dataTable.state.save();
-		dataTable.draw();
-	}); 
-*/
-
-	
-/*
-	jQuery('.remove-user').click( function(x){
-		console.log('Removed a user 2');
-		console.log(x);
-		wpsc_remove_filter(this);
-		dataTable.state.save();
-		dataTable.draw();
-	});
-*/
-	
-
-
 	<?php
 	}
 	// END ADMIN BUTTONS
@@ -1003,32 +1079,6 @@ function view_assigned_agents( box_id ) {
 	    action: 'wppatt_assign_agents',
 	    item_ids: arr,
 	    type: 'view'
-	};
-	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-	    var response = JSON.parse(response_str);
-// 		    jQuery('#wpsc_popup_body').html(response_str);		    
-	    jQuery('#wpsc_popup_body').html(response.body);
-	    jQuery('#wpsc_popup_footer').html(response.footer);
-	    jQuery('#wpsc_cat_name').focus();
-	}); 
-// });
-}
-
-// Open Modal for editting todo items
-function edit_to_do( box_id ) {	
-	
-	//console.log('Icon!');
-    var arr = [box_id];
-    
-    //console.log('arr: '+arr);
-    //console.log(arr);
-	
-	wpsc_modal_open('Edit To-Do List');
-	
-	var data = {
-	    action: 'wppatt_assign_agents',
-	    item_ids: arr,
-	    type: 'todo'
 	};
 	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 	    var response = JSON.parse(response_str);

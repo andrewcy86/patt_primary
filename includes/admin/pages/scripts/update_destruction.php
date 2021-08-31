@@ -13,21 +13,54 @@ $boxid_string = $_POST['postvarsboxid'];
 $boxid_arr = explode (",", $boxid_string);  
 $page_id = $_POST['postvarpage'];
 
+$destruction_flag = 0;
+$destruction_box_array = array();
+$dc_array = array();
+$dc_set = '';
+
 $box_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
 // Define current time
 $date_time = date('Y-m-d H:i:s');
 
 $destruction_reversal = 0;
-
 $counter = 0;
+
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+
+$box_destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); //1272
+
+//Raised By, Staff Only Fields, Recipients
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+
+foreach($boxid_arr as $key) {    
+
+$get_dc = $wpdb->get_row("SELECT a.ticket_category, a.id
+FROM " . $wpdb->prefix . "wpsc_ticket a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+WHERE b.box_id = '".$key."'");
+$get_dc_val = $get_dc->ticket_category;
+$get_ticket_id_val = $get_dc->id;
+
+array_push($dc_array,$get_dc_val);
+
+}
+
+$dc_array_count = count(array_unique($dc_array));
 
 foreach($boxid_arr as $key) {    
 $counter++;
 
-
-$get_box_db_id = $wpdb->get_row("select id from " . $wpdb->prefix . "wpsc_epa_boxinfo where box_id = '".$key."'");
+$get_box_db_id = $wpdb->get_row("select id, storage_location_id from " . $wpdb->prefix . "wpsc_epa_boxinfo where box_id = '".$key."'");
 $box_db_id = $get_box_db_id->id;
+$storage_location_id = $get_box_db_id->storage_location_id;
+
+array_push($destruction_box_array,$storage_location_id);
+
 
 //REVIEW
 $get_sum_total = $wpdb->get_row("select count(b.id) as sum_total_count 
@@ -46,11 +79,12 @@ from " . $wpdb->prefix . "wpsc_epa_boxinfo
 where id = '".$box_db_id."'");
 $box_status_id = $get_status->status;
 
-$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da
+$get_destruction_auth_status = $wpdb->get_row("select a.destruction_approval as da, a.ticket_status
 from " . $wpdb->prefix . "wpsc_ticket a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.id = b.ticket_id
 where b.id = '".$box_db_id."'");
 $destruction_auth_status = $get_destruction_auth_status->da;
+$status_id = $get_destruction_auth_status;
 
 $get_storage_id = $wpdb->get_row("
 SELECT id, storage_location_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo 
@@ -88,11 +122,19 @@ $box_storage_status_occupied = $box_storage_status->occupied;
 $box_storage_status_remaining = $box_storage_status->remaining;
 $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
-$desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
-
-if(($sum_total_val != $sum_validation) || ($box_status_id != $desruction_approval_tag->term_id) || ($destruction_auth_status == 0)) {
+if( (($sum_total_val != $sum_validation) || ($box_status_id != $box_destruction_of_source_tag->term_id) || ($destruction_auth_status == 0)) && !in_array($status_id, $status_id_arr)) {
     echo '<strong>'.$key.'</strong> : ';
-    echo 'Please ensure all documents are validated, the box status is approved for destruction, and the destruction approval has been recevied before destroying the box.';
+    echo 'Please ensure all documents are validated, the request status is not:
+    <ol>
+        <li>New Request</li>
+        <li>Tabled</li>
+        <li>Initial Review Rejected</li>
+        <li>Cancelled or</li>
+        <li>Completed/Dispositioned</li>
+    </ol>
+    the box status is in Destruction of Source, and the destruction approval form has been recevied before destroying the box.';
+
+
 if ($counter > 0) {
 echo '<br />';
 echo '<br />';
@@ -110,7 +152,8 @@ FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
-if ($get_destruction_val == 1){
+if ($get_destruction_val == 1 && $dc_array_count == 1){
+
 $destruction_reversal = 1;
 $box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999');
 $box_data_where = array('box_id' => $key);
@@ -164,14 +207,20 @@ $wpdb->update($box_table_name, $data_update, $data_where);
 
 }
 
-if ($destruction_reversal == 1) {
+if ($dc_array_count > 1) {
+echo '<strong>'.$key.'</strong> : ';
+echo "Boxes that belong to multiple digitzation centers cannot be selected.";
+if ($counter > 0) {
+echo '<br />';
+echo '<br />';
+}
+} elseif($destruction_reversal == 1 && $dc_array_count == 1) {
 echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated. A box destruction has been reversed.";
 if ($counter > 0) {
 echo '<br />';
 echo '<br />';
 }
-
 } else {
 echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated";
@@ -183,6 +232,21 @@ echo '<br />';
 
 }
 
+}
+
+//Determine if all files belong to same digitization center
+if($dc_array_count == 1) {
+$dc_set = reset($dc_array);
+}
+
+if(count($destruction_box_array) == 1 && $dc_array_count == 1 && $destruction_reversal == 1){
+        // Call Auto Assignment Function
+        $destruction_flag = 1;
+        
+        $destruction_boxes = implode(",", $destruction_box_array);
+        //echo $destruction_boxes;
+        //print_r($destruction_box_array);
+        $execute_auto_assignment = Patt_Custom_Func::auto_location_assignment(0,$dc_set,$destruction_flag,$destruction_boxes);
 }
 
 } else {

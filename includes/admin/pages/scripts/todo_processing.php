@@ -4,7 +4,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
 
 global $wpdb, $current_user, $wpscfunction;
 
-$agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */
@@ -34,59 +33,125 @@ $columnName = 'box_status_order';
 $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 }
 ## Custom Field value
-$searchByProgramOffice = $_POST['searchByProgramOffice'];
-$searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
 $searchByECMSSEMS = $_POST['searchByECMSSEMS'];
+$searchByAction = $_POST['searchByAction'];
 $searchGeneric = $_POST['searchGeneric'];
 $searchByStatus = $_POST['searchByStatus'];
 $searchByUser = $_POST['searchByUser'];
-$searchByUserAAVal = $_REQUEST['searchByUserAAVal'];
-$searchByUserAAName = $_REQUEST['searchByUserAAName'];
 $is_requester = $_POST['is_requester'];
 
+## Form List of Active To-Do Boxes for User
+
+$scanning_preparation_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-preparation' );	 //672
+$scanning_digitization_term_id = Patt_Custom_Func::get_term_by_slug( 'scanning-digitization' );	 //671
+$qa_qc_term_id = Patt_Custom_Func::get_term_by_slug( 'q-a' );	 //65					
+$validation_term_id = Patt_Custom_Func::get_term_by_slug( 'verification' );	 //674
+$destruction_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-approval' );	 //68
+$destruction_of_source_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-of-source' );	 //1272
+
+function findZero($var){
+    // returns whether the input is non zero
+    return($var == 0);
+}
+
+$todo_boxes_array = array();
+
+// ADD all the scanning prep boxes assigned to the user.
+
+$get_scanning_prep = $wpdb->get_results("SELECT 
+a.box_id
+FROM  " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON b.storage_location_id =c.id
+WHERE b.id <> '-99999' AND c.id <> '-99999' AND c.scanning_preparation = 0 AND a.user_id = ".$searchByUser." AND a.status_id = ".$scanning_preparation_term_id);
+
+foreach ($get_scanning_prep as $data) {
+$scanning_prep_box_id = $data->box_id;
+array_push($todo_boxes_array, $scanning_prep_box_id);
+}
+
+// ADD all other boxes assigned to the user ONLY when previous status is marked as completed.
+
+$get_completion_status = $wpdb->get_results("SELECT 
+id,
+scanning_preparation,
+scanning_digitization,
+qa_qc,
+validation,
+destruction_approved,
+destruction_of_source
+FROM  " . $wpdb->prefix . "wpsc_epa_storage_location
+WHERE id <> '-99999' AND scanning_preparation <> 0 OR scanning_digitization <> 0 OR qa_qc <> 0 OR validation <> 0 OR destruction_approved <> 0 OR destruction_of_source <> 0");
+
+foreach ($get_completion_status as $data) {
+$storage_location_id = $data->id;
+$scanning_preparation = $data->scanning_preparation;
+$scanning_digitization = $data->scanning_digitization;
+$qa_qc = $data->qa_qc;
+$validation = $data->validation;
+$destruction_approved = $data->destruction_approved;
+$destruction_of_source = $data->destruction_of_source;
+
+$box_complete_array = array(
+    $scanning_preparation_term_id=>$scanning_preparation,
+    $scanning_digitization_term_id=>$scanning_digitization,
+    $qa_qc_term_id=>$qa_qc,
+    $validation_term_id=>$validation,
+    $destruction_approved_term_id=>$destruction_approved,
+    $destruction_of_source_term_id=>$destruction_of_source
+    );
+    
+//print_r($box_complete_array);
+
+
+$newPair = array_filter($box_complete_array, "findZero");
+//print_r($newPair); //Contains array of zero values
+
+$first_key = key($newPair); // First element's key
+
+$get_box_id = $wpdb->get_row("SELECT 
+id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id <> '-99999' AND storage_location_id = ".$storage_location_id);
+
+$box_id = $get_box_id->id;
+
+$get_todo_boxes = $wpdb->get_row("SELECT box_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus WHERE box_id = ".$box_id." AND user_id = ".$searchByUser." AND status_id = ".$first_key);
+
+$todo_boxes = $get_todo_boxes->box_id;
+
+if($todo_boxes != '') {
+array_push($todo_boxes_array, $todo_boxes);
+}
+
+}
+
+$boxcommaList = implode(', ', array_unique($todo_boxes_array));
 
 ## Search 
 $searchQuery = " ";
 
-//Add Pallet Support
-//Extract ID and determine if it is Box or Pallet
 //$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
 
 $BoxID_arr = explode(",", $_POST['searchByBoxID']);  
 
 $newBoxID_arr = array();
-$newPalletID_arr = array();
 
 foreach($BoxID_arr as $key => $value) {
 //Check if Box ID
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $value)) {
 array_push($newBoxID_arr,$value);
 }
-//Check if Pallet ID
-if (preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $value)) {
-array_push($newPalletID_arr,$value);
-}
 }
 
 $newBoxID_str = str_replace(",", "|", implode(',', $newBoxID_arr));
-$newPalletID_str = str_replace(",", "|", implode(',', $newPalletID_arr));
 
+$searchQuery .= " and a.id IN (".$boxcommaList.") ";
+ 
 if($newBoxID_str != ''){
    $searchQuery .= " and (a.box_id REGEXP '^(".$newBoxID_str.")$' ) ";
-}
-
-if($newPalletID_str != ''){
-   $searchQuery .= " and (a.pallet_id REGEXP '^(".$newPalletID_str.")$' ) ";
-}
-
-if($searchByProgramOffice != ''){
-   $searchQuery .= " and (c.office_acronym='".$searchByProgramOffice."') ";
-}
-
-if($searchByDigitizationCenter != ''){
-   $searchQuery .= " and (e.name ='".$searchByDigitizationCenter."') ";
 }
 
 if($searchByPriority != ''){
@@ -133,6 +198,27 @@ if($searchByECMSSEMS != ''){
     }
 }
 
+if($searchByAction != ''){
+    if($searchByAction == $scanning_preparation_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 0";
+    }
+    if($searchByAction == $scanning_digitization_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 1";
+    }
+    if($searchByAction == $qa_qc_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 2";
+    }
+    if($searchByAction == $validation_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 3";
+    }
+    if($searchByAction == $destruction_approved_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 4";
+    }
+    if($searchByAction == $destruction_of_source_term_id) {    
+    $searchQuery .= " and (SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id)= 5";
+    }
+}
+
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
 	$user_name = $current_user->display_name;
@@ -140,183 +226,23 @@ if( $is_requester == 'true' ){
 }
 
 
-// Search by User code
-if($searchByUser != ''){
-	if( $searchByUser == 'mine' ) {
-		$box_ids_for_user = '';
-		$mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id = ".$current_user->ID;
-		$mini_records = mysqli_query($con, $mini_query);
-		while ($rox = mysqli_fetch_assoc($mini_records)) {
-			$box_ids_for_user .= $rox['box_id'].", ";
-		}
-		$box_ids_for_user = substr($box_ids_for_user, 0, -2);
-		
-		if( $box_ids_for_user == null ) {
-			$searchQuery .= " and (a.id IN (-99999)) ";
-		} else {
-			$searchQuery .= " and (a.id IN (".$box_ids_for_user.")) ";
-		}
-		
-		
-	} elseif( $searchByUser == 'not assigned' ) {
-		
-		// Register Box Status Taxonomy
-		if( !taxonomy_exists('wpsc_box_statuses') ) {
-			$args = array(
-				'public' => false,
-				'rewrite' => false
-			);
-			register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
-		}
-		
-		// Get List of Box Statuses
-		$box_statuses = get_terms([
-			'taxonomy'   => 'wpsc_box_statuses',
-			'hide_empty' => false,
-			'orderby'    => 'meta_value_num',
-			'order'    	 => 'ASC',
-			'meta_query' => array('order_clause' => array('key' => 'wpsc_box_status_load_order')),
-		]);
-		
-		// List of box status that do not need agents assigned.
-		$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
-// 		$ignore_box_status = []; //show all box status
-		
-		$term_id_array = array();
-		foreach( $box_statuses as $key=>$box ) {
-			if( in_array( $box->name, $ignore_box_status ) ) {
-				unset($box_statuses[$key]);
-				
-			} else {
-				$term_id_array[] = $box->term_id;
-			}
-		}
-		array_values($box_statuses);
-		
-		$search_in_box_statuses = '';
-		foreach( $box_statuses as $status ) {
-			$search_in_box_statuses .= $status->term_id.', ';
-		}
-		$search_in_box_statuses = substr($search_in_box_statuses, 0, -2);
-		
-		$box_ids_for_user = '';
-		
-		//Box status slugs
-		$digitized_not_validated_tag = get_term_by('slug', 'closed', 'wpsc_box_statuses'); //6
-		$qa_qc_tag = get_term_by('slug', 'q-a', 'wpsc_box_statuses'); //65
-		$destruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
-		$scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); //671
-		$scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
-		$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
-		$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
-		
-		// Get all distinct box_id that have been assigned.
-		$mini_query = "select box_id 
-						from 
-							" . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus 
-						where 
-							status_id IN (".$digitized_not_validated_tag->term_id.", ".$qa_qc_tag->term_id.", ".$destruction_approval_tag->term_id.", '".$scanning_digitization_tag->term_id."', ".$scanning_preparation_tag->term_id.", ".$validation_tag->term_id.", ".$rescan_tag->term_id.") 
-						group by 
-							box_id 
-						having count(distinct status_id) = 7 ";
-		$mini_records = mysqli_query($con, $mini_query); 
-		while ($rox = mysqli_fetch_assoc($mini_records)) {
-			$box_ids_for_user .= $rox['box_id'].", ";
-		}
-		$box_ids_for_user = substr($box_ids_for_user, 0, -2);
-		
-		$searchQuery .= " and (a.id NOT IN (".$box_ids_for_user.")) ";
-	} elseif( $searchByUser == 'search for user' ) {
-		$search_true = (isset($searchByUserAAVal) ) ? true : false;
-		$array_of_wp_user_id = Patt_Custom_Func::translate_user_id($searchByUserAAVal, 'wp_user_id');
-		$user_id_str = '';
- 		if( $search_true ) {
-			foreach( $array_of_wp_user_id as $id ) {
-				$user_id_str .= $id.', ';
-			}
-			$user_id_str = substr($user_id_str, 0, -2);
-			
-			$box_ids_for_users = '';
-			$mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id IN (".$user_id_str.")";
-			$mini_records = mysqli_query($con, $mini_query);
-			while ($rox = mysqli_fetch_assoc($mini_records)) {
-				$box_ids_for_users .= $rox['box_id'].", ";
-			}
-			$box_ids_for_users = substr($box_ids_for_users, 0, -2);
-			
-			if( $user_id_str == '' ) {
-				
-			} else {
-				if( $box_ids_for_users == null ) {
-					$searchQuery .= " and (a.id IN (-99999)) ";
-				} else {
-					$searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";
-				}
-				
-				//$searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";	
-			}
-		
-		}
-		
-
-	}
-	
-
-}
-
-//IF Search Generic Contains Commas
-
-$searchForValue = ',';
-
 if($searchGeneric != ''){
-    
-if(strpos($searchGeneric, $searchForValue) !== false){
-    
-//Strip spaces, breaks, tabs
-$search_request_ids = preg_replace('/\s+/', '', $searchGeneric);
-
-//Determine if ALL values are request IDs
-   $var=explode(',',$search_request_ids);
-   
-   $count_var = count($var);
-   
-   $count_match = 0;
-   foreach($var as $data)
-    {
-
-    $get_request = $wpdb->get_row("SELECT COUNT(id) as count
-FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = ".$data);
-
-    $request_id_match = $get_request->count;
-    
-    if($request_id_match != 0) {
-    $count_match++;
-    }
-    
-    if($count_var == $count_match) {
-    
-    $searchQuery .= " and b.request_id IN (".$search_request_ids.") ";
-    
-    } else {
-    $searchQuery .= "";
-    }
-    
-}
-
-} else {
-
-   $searchQuery .= " and (a.box_id like '%".$searchGeneric."%' or 
-      (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
+   $searchQuery .= " and (a.box_id like '%".$searchGeneric."%' or
       b.request_id like '%".$searchGeneric."%' or
-      c.office_acronym like '%".$searchGeneric."%') ";
-}
+      h.scanning_id like '%".$searchGeneric."%' or
+      h.stagingarea_id like '%".$searchGeneric."%' or
+      h.cart_id like '%".$searchGeneric."%' or
+      h.shelf_location like '%".$searchGeneric."%'
+      ) ";
 }
 
 if($searchValue != ''){
    $searchQuery .= " and (a.box_id like '%".$searchValue."%' or
-      (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
       b.request_id like '%".$searchValue."%' or
-      c.office_acronym like '%".$searchValue."%') ";
+      h.scanning_id like '%".$searchGeneric."%' or
+      h.stagingarea_id like '%".$searchGeneric."%' or
+      h.cart_id like '%".$searchGeneric."%' or
+      h.shelf_location like '%".$searchGeneric."%') ";
 }
 
 ## Total number of records without filtering
@@ -325,9 +251,8 @@ from " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS f ON (f.box_id = a.id)
@@ -350,9 +275,8 @@ FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS f ON (f.box_id = a.id)
@@ -371,7 +295,49 @@ $totalRecordwithFilter = $records['allcount'];
 //REVIEW
 $boxQuery = "
 SELECT DISTINCT
-a.box_id, a.id as dbid, f.name as box_status, a.box_previous_status as box_previous_status, f.term_id as term,
+a.box_id, a.id as dbid, a.box_previous_status as box_previous_status,
+CASE
+WHEN h.scanning_id IS NOT NULL
+THEN h.scanning_id
+WHEN h.stagingarea_id IS NOT NULL
+THEN h.stagingarea_id
+WHEN h.cart_id IS NOT NULL
+THEN h.cart_id
+WHEN h.shelf_location IS NOT NULL
+THEN h.shelf_location
+    ELSE '-'
+END as physical_location,
+
+CASE
+
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 0
+THEN '<strong>Scanning Preparation</strong>'
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 1
+THEN '<strong>Scanning/Digitization</strong>'
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 2
+THEN '<strong>QA/QC</strong>'
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 3
+THEN '<strong>Validation</strong>'
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 4
+THEN '<strong>Destruction Approved</strong>'
+WHEN (
+SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
+) = 5
+THEN '<strong>Destruction of Source</strong>'
+    ELSE 'Error'
+END as action,
+
+f.name as box_status, f.term_id as term,
 CONCAT(
 
 CASE WHEN 
@@ -394,7 +360,7 @@ THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\"
 ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
 END) as box_id_flag,
 
-a.pallet_id as pallet_id,
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
 
 CONCAT(
 '<span class=\"wpsp_admin_label\" style=\"background-color:',
@@ -464,10 +430,6 @@ ELSE
 999
 END
  as box_status_order,
-
-CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
-e.name as location, 
-c.office_acronym as acronym,
 CONCAT(
 CASE 
 WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = a.id) != 0
@@ -485,9 +447,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
 LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
@@ -499,7 +459,9 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-   
+
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
+
 WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
@@ -536,16 +498,13 @@ if ($status_term_id == $waiting_shelved_term_id && $row['box_previous_status'] !
 	//$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(666)" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
 
 if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){	
-	$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>';
-    
-    if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){	
-	    $assigned_agents_icon .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_to_do(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>';
-    }
-    
+	$assigned_agents_icon = '
+	<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>
+	<span style="font-size: 1.0em; color: #1d1f1d;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>
+	';
 } else {
     $assigned_agents_icon = '';
 }
-
 
 $decline_icon = '';
 $recall_icon = '';
@@ -599,27 +558,20 @@ else {
     $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> ';
 }
 
-if ($row['pallet_id'] == ''){
-$pallet_id = 'Unassigned';
-} else {
-$pallet_id = $row['pallet_id'];
-}
-
 	$data[] = array(
 		"box_id"=>$row['box_id'],
 		"box_id_flag"=>$row['box_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
 		"dbid"=>$row['dbid'],
 	    //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
 		//"ticket_priority"=>$row['ticket_priority_text'],
-		"pallet_id"=>$pallet_id,
+	    "action"=>$row['action'],
+		"request_id"=>$row['request_id'],
 		"ticket_priority"=>$row['ticket_priority'],
 		"status"=>$box_status,
-		"request_id"=>$row['request_id'],
-		"location"=>$row['location'],
-		"acronym"=>$row['acronym'],
 // 		"acronym"=>$searchQuery,
 // 		"acronym"=>$searchByUserAAVal,
 		"validation"=>$validation_icon . ' ' . $row['validation'],
+		"physical_location"=>$row['physical_location'],
 	);
 }
 ## Response
@@ -642,8 +594,6 @@ $response = array(
   "searchByUser" => $searchByUser,
   "box_ids_for_user" => $box_ids_for_user,
   "is_requester" => $is_requester,
-  
-		"test111"=>$boxQuery,
 "test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php'
 );
 

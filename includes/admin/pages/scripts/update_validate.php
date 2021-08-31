@@ -12,7 +12,7 @@ if(
 
 $folderdocid_string = $_POST['postvarsfolderdocid'];
 $get_userid = $_POST['postvarsuserid'];
-$folderdocid_arr = explode (",", $folderdocid_string);  
+$folderdocid_arr = explode (",", $folderdocid_string);
 $page_id = $_POST['postvarpage'];
 
 $table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
@@ -20,6 +20,8 @@ $table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
 $date_time = date('Y-m-d H:i:s');
 
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+$storage_location_table = $wpdb->prefix . 'wpsc_epa_storage_location';
+$boxinfo_table = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
 $validation_reversal = 0;
 $destroyed = 0;
@@ -34,7 +36,11 @@ $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'w
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+//Box statuses
+$box_scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
+$box_destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
+
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
 
@@ -83,7 +89,7 @@ $rescan++;
 if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $rescan == 0 && $ticket_box_status == 0) {
 
 foreach($folderdocid_arr as $key) {
-    
+
 $get_validation = $wpdb->get_row("SELECT validation FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_validation_val = $get_validation->validation;
 
@@ -92,6 +98,37 @@ $get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket
 $ticket_id = $get_ticket_id->id;
 
 if ($get_validation_val == 1){
+
+//Get total count of files in a box and compare with validation count
+$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.folderdocinfofile_id = '".$key."'");
+
+foreach($get_box_ids as $item) {
+    $get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE box_id = " . $item->id);
+    $total_files = $get_total_files->total_count;
+    
+    $get_total_validation = $wpdb->get_row("SELECT COUNT(validation) as total_validation
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE validation = 1 AND box_id = " . $item->id);
+    $total_validation = $get_total_validation->total_validation;
+    
+    //Update all flags in the storage_location table
+    if( ($total_files - $total_validation) == 0) {
+        $data_update = array('scanning_preparation' => 0, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
+        $data_where = array('id' => $item->storage_location_id);
+        $wpdb->update($storage_location_table, $data_update, $data_where);
+        
+        $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
+        $data_where_box_status = array('id' => $item->id);
+        $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+        //TODO Add Validation do_action for audit log
+    }
+}    
+
 $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfofile_id' => $key);
@@ -116,10 +153,41 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 
 if ($get_validation_val == 0){
+
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_validate_document', $ticket_id, $key);
+
+//Get total count of files in a box and compare with validation count
+$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.folderdocinfofile_id = '".$key."'");
+
+foreach($get_box_ids as $item) {
+    $get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE box_id = " . $item->id);
+    $total_files = $get_total_files->total_count;
+    
+    $get_total_validation = $wpdb->get_row("SELECT COUNT(validation) as total_validation
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE validation = 1 AND box_id = " . $item->id);
+    $total_validation = $get_total_validation->total_validation;
+    
+    //Update all flags in the storage_location table
+    if( ($total_files - $total_validation) == 0) {
+        $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 1, 'qa_qc' => 1, 'validation' => 1);
+        $data_where = array('id' => $item->storage_location_id);
+        $wpdb->update($storage_location_table, $data_update, $data_where);
+        
+        $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id);
+        $data_where_box_status = array('id' => $item->id);
+        $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+        //TODO Add Validation do_action for audit log
+    }
+}
 
 //PATT BEGIN FOR REPORTING
 // Check to see if timestamp exists
@@ -148,7 +216,15 @@ echo "A folder/file flagged as unauthorized destruction has been selected and ca
 echo "A folder/file has been selected that has been flagged as requiring a re-scan.<br />Please unselect the folder/file flagged as re-scan before validating.";
 }
 elseif($ticket_box_status > 0) {
-echo "A folder/file is in a status that cannot be flagged as validated.<br /> Please review the folder/files that you have selected.";
+echo "A folder/file is in the:
+    <ol>
+        <li>New Request</li>
+        <li>Tabled</li>
+        <li>Initial Review Rejected</li>
+        <li>Cancelled or </li>
+        <li>Completed/Dispositioned</li>
+    </ol>
+    request status and cannot be flagged as validated.<br /> Please review the folder/files that you have selected.";
 }
 
 if($page_id == 'filedetails') {
@@ -164,6 +240,35 @@ $get_rescan = $wpdb->get_row("SELECT rescan FROM " . $wpdb->prefix . "wpsc_epa_f
 $get_rescan_val = $get_rescan->rescan;
 
 if ($get_validation_val == 1 && $get_rescan_val == 0){
+
+//Get total count of files in a box and compare with validation count
+$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
+
+$get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE box_id = " . $get_box_ids->id);
+$total_files = $get_total_files->total_count;
+
+$get_total_validation = $wpdb->get_row("SELECT COUNT(validation) as total_validation
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE validation = 1 AND box_id = " . $get_box_ids->id);
+$total_validation = $get_total_validation->total_validation;
+
+//Update all flags in the storage_location table
+if( ($total_files - $total_validation) == 0) {
+    $data_update = array('scanning_preparation' => 0, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
+    $data_where = array('id' => $get_box_ids->storage_location_id);
+    $wpdb->update($storage_location_table, $data_update, $data_where);
+    
+    $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
+    $data_where_box_status = array('id' => $get_box_ids->id);
+    $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+    //TODO Add Validation do_action for audit log
+}
+    
 $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
@@ -193,6 +298,34 @@ $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_validate_document', $ticket_id, $folderdocid_string);
 
+//Get total count of files in a box and compare with validation count
+$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
+
+$get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE box_id = " . $get_box_ids->id);
+$total_files = $get_total_files->total_count;
+
+$get_total_validation = $wpdb->get_row("SELECT COUNT(validation) as total_validation
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+WHERE validation = 1 AND box_id = " . $get_box_ids->id);
+$total_validation = $get_total_validation->total_validation;
+
+//Update all flags in the storage_location table
+if( ($total_files - $total_validation) == 0) {
+    $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 1, 'qa_qc' => 1, 'validation' => 1);
+    $data_where = array('id' => $get_box_ids->storage_location_id);
+    $wpdb->update($storage_location_table, $data_update, $data_where);
+    
+    $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id);
+    $data_where_box_status = array('id' => $get_box_ids->id);
+    $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+    //TODO Add Validation do_action for audit log
+}
+
 //PATT BEGIN FOR REPORTING
 // Check to see if timestamp exists
 $type = 'Validated';
@@ -212,6 +345,7 @@ if ($get_rescan_val == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
 echo " You must unflag document from re-scanning before validating. ";
 } elseif ($validation_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0 && $ticket_box_status == 0) {
 //print_r($folderdocid_arr);
+
 echo " Validation has been updated. A validation has been reversed. ";
 } elseif ($validation_reversal == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $ticket_box_status == 0) {
 echo " Validation has been updated. ";

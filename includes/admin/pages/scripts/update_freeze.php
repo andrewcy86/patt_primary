@@ -26,29 +26,39 @@ $unathorized_destroy = 0;
 $freeze_reversal = 0;
 $freeze_approval = 0;
 
+$ticket_request_status = 0;
 $ticket_box_status = 0;
 
+//Box Statuses
+$box_pending_tag = get_term_by('slug', 'pending', 'wpsc_box_statuses'); //748
+$box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
+$box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
+
 //Request statuses
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+$box_status_id_arr = array($box_pending_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
 
-$get_statuses = $wpdb->get_row("SELECT a.ticket_status
-FROM wpqa_wpsc_ticket a
-INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+$get_statuses = $wpdb->get_row("SELECT a.ticket_status, b.box_status
+FROM " . $wpdb->prefix . "wpsc_ticket a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
 WHERE c.folderdocinfofile_id = '".$key."'");
 $get_ticket_status_val = $get_statuses->ticket_status;
+$get_box_status_val = $get_statuses->box_status;
 
-//Documents cannot be marked as Freeze in these statuses
+//Documents cannot be marked as Freeze in these request statuses
 if( in_array($get_ticket_status_val, $status_id_arr) ) {
-   $ticket_box_status++; 
+   $ticket_request_status++; 
+}
+
+//Documents cannot be marked as Freeze in these box statuses
+if( in_array($get_box_status_val, $box_status_id_arr)) {
+    $ticket_box_status++;
 }
 
 // AY FIX JOIN
@@ -92,7 +102,7 @@ $freeze_approval++;
 $folderdocid_arr_count = count($folderdocid_arr);
 
 
-if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $ticket_box_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
+if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $ticket_request_status == 0 && $ticket_box_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
 foreach($folderdocid_arr as $key) {    
 $get_freeze = $wpdb->get_row("SELECT freeze FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_freeze_val = $get_freeze->freeze;
@@ -151,8 +161,22 @@ echo " A folder/file flagged as unauthorized destruction has been selected and c
 } elseif($freeze_approval == 0) {
 echo " A folder/file flagged does not contain a litigation approval letter.<br />Please unselect the folder/file flagged as not containing a litigiation approval letter. ";
 }
+elseif($ticket_request_status > 0) {
+    echo " A folder/file is in the:
+    <ol>
+        <li>Initial Review Rejected or</li>
+        <li>Completed/Dispositioned</li>
+    </ol>
+    request status and cannot be flagged as freeze.<br /> Please review the folder/files that you have selected. ";
+}
 elseif($ticket_box_status > 0) {
-    echo " A folder/file is in a status that cannot be flagged as freeze.<br /> Please review the folder/files that you have selected. ";
+    echo " A folder/file is in the:
+    <ol>
+        <li>Pending</li>
+        <li>Completed/Dispositioned or</li>
+        <li>Cancelled</li>
+    </ol>
+    box status and cannot be flagged as freeze.<br /> Please review the folder/files that you have selected. ";
 }
 
 if($page_id == 'filedetails') {
@@ -212,9 +236,9 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 }
 
-if ($freeze_reversal == 1 && $ticket_box_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
+if ($freeze_reversal == 1 && $ticket_request_status == 0 && $ticket_box_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
 echo " Freeze has been updated. A Freeze flag has been reversed. ";
-} elseif ($freeze_reversal == 0 && $ticket_box_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
+} elseif ($freeze_reversal == 0 && $ticket_box_status == 0 && $ticket_request_status == 0 && $destroyed == 0 && $unathorized_destroy == 0 && $freeze_approval == $folderdocid_arr_count) {
 echo " Freeze has been updated. ";
 }
 

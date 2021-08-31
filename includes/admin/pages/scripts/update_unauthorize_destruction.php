@@ -9,11 +9,17 @@ if(
 !empty($_POST['postvarsfolderdocid'])
 ){
 
+//To-do add a do action when all the boxes are flaged as unauthorized destruction.
 
 $folderdocid_string = $_POST['postvarsfolderdocid'];
 $folderdocid_arr = explode (",", $folderdocid_string);  
 $page_id = $_POST['postvarpage'];
 $box_id = $_POST['boxid'];
+$destruction_flag = 0;
+$destruction_box_array = array();
+$dc_array = array();
+$dc_set = '';
+$dc_fail_message = 0;
 
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
@@ -34,14 +40,25 @@ $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'w
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
-    
+//Set digitzation center array
+$get_dc = $wpdb->get_row("SELECT a.ticket_category, a.id
+FROM " . $wpdb->prefix . "wpsc_ticket a 
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+WHERE c.folderdocinfofile_id = '".$key."'");
+
+$get_dc_val = $get_dc->ticket_category;
+$get_ticket_id_val = $get_dc->id;
+
+array_push($dc_array,$get_dc_val);
+
 $get_statuses = $wpdb->get_row("SELECT a.ticket_status
-FROM wpqa_wpsc_ticket a
-INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
-INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+FROM " . $wpdb->prefix . "wpsc_ticket a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
 WHERE c.folderdocinfofile_id = '".$key."'");
 $get_ticket_status_val = $get_statuses->ticket_status;
 
@@ -62,6 +79,16 @@ if($get_damaged_val == 1) {
     $get_damaged_val++;
 }
 }
+
+//Determine if all files belong to same digitization center
+if(count(array_unique($dc_array)) == 1) {
+$dc_set = reset($dc_array);
+} else {
+$dc_fail_message = 1;
+}
+
+// print_r($dc_array);
+// print_r($dc_set);
 
 $return_array = array();
 $recall_array = array();
@@ -102,10 +129,10 @@ $destruction_violation = 1;
 
 }
 
-//echo $destruction_violation;
-
 if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $frozen == 0 && $ticket_box_status == 0) {
+
 foreach($folderdocid_arr as $key) {    
+
 $get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
 $get_destruction_val = $get_destruction->unauthorized_destruction;
 
@@ -178,9 +205,36 @@ WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 $destruction_count_sum = $destruction_count->sum;
 
 if ($get_destruction_val == 1 && $destruction_violation == 0){
+
+//Get total count of files in a box and compare with unauthorized_destruction count
+$get_box_ids = $wpdb->get_results("SELECT count(b.id) as count, b.id, b.ticket_id, b.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.folderdocinfofile_id = '".$key."'");
+
+foreach($get_box_ids as $item) {
+    
+    $get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE box_id = " . $item->id);
+    $total_files = $get_total_files->total_count;
+    
+    $get_total_unauthorized_destruction = $wpdb->get_row("SELECT COUNT(unauthorized_destruction) as total_unauthorized_destruction
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE unauthorized_destruction = 1 AND box_id = " . $item->id);
+    $total_unauthorized_destruction = $get_total_unauthorized_destruction->total_unauthorized_destruction;
+    
+    //Update all flags in the storage_location table
+    if( ($total_files - $total_unauthorized_destruction) == 0) {
+        array_push($destruction_box_array,$item->storage_location_id);
+    }
+ 
+}    
+
+
 $destruction_reversal = 1;
 
-if($folder_file_count_sum == $destruction_count_sum) {
+if($folder_file_count_sum == $destruction_count_sum && $dc_fail_message == 0) {
 $data_update = array('unauthorized_destruction' => 0);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
@@ -192,6 +246,7 @@ $data_where_d = array('id' => $box_id);
 $wpdb->update($table_box_name, $data_update_d, $data_where_d);
 
 //Reset the physical location
+// TODO determine what to do with this
 $data_update_pl = array('location_status_id' => -99999);
 $data_where_pl = array('id' => $box_id);
 $wpdb->update($table_box_name, $data_update_pl, $data_where_pl);
@@ -298,11 +353,29 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 
 }
+
+//Update all flags in the storage_location table
+if(count($destruction_box_array) == 1 && $dc_fail_message == 0){
+        // Call Auto Assignment Function
+        $destruction_flag = 1;
+        
+        $destruction_boxes = implode(",", $destruction_box_array);
+        //echo $destruction_boxes;
+        //print_r($destruction_box_array);
+        $execute_auto_assignment = Patt_Custom_Func::auto_location_assignment(0,$dc_set,$destruction_flag,$destruction_boxes);
+}
+
+
 } elseif($frozen > 0) {
 echo " A frozen folder/file has been selected and cannot be flagged as unauthorized destruction. Please unselect the frozen folder/file. ";
 }
 elseif($ticket_box_status > 0) {
-echo " A folder/file is in a status that cannot be flagged as unauthorized destruction. Please review the folder/files that you have selected. ";
+echo " A folder/file is in the:
+        1. New Request
+        2. Tabled
+        3. Initial Review Rejected or
+        4. Completed/Dispositioned
+request status and cannot be flagged as unauthorized destruction. Please review the folder/files that you have selected. ";
 }
 
 if($page_id == 'filedetails') {
@@ -332,7 +405,8 @@ WHERE box_id = '" . $box_id . "'"
 
 $folder_file_count_sum = $folder_file_count->sum;
 
-if ($get_destruction_val == 1 && $destruction_violation == 0){
+if ($get_destruction_val == 1 && $destruction_violation == 0 && $dc_fail_message == 0){
+    
 $destruction_reversal = 1;
 
 $data_update = array('unauthorized_destruction' => 0);
@@ -471,18 +545,20 @@ echo " Unauthorized destruction has been updated. ";
 }
 
 if ( ($page_id == 'filedetails' || $page_id == 'folderfile') && $frozen == 0 && $ticket_box_status == 0) {
+
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
 echo " A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. Please check your selection. ";
 } else {
 
-if ($destruction_reversal == 1 && $destruction_violation == 0) {
+if ($destruction_reversal == 1 && $destruction_violation == 0 && $dc_fail_message == 0) {
     //print_r($recall_array);
     //print_r($return_array);
 echo " Unauthorized destruction has been updated. A unauthorized destruction has been reversed. ";
+} elseif ($dc_fail_message == 1 && $destruction_reversal == 1) {
+echo "Files that belong to multiple digitzation centers cannot be selected.";
 } else {
-
 echo " Unauthorized destruction has been updated. ";
 }
 }

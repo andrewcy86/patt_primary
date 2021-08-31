@@ -46,11 +46,6 @@ if($is_active == 1) {
 else {
     $type = 'folderfile_archive';
 }
-//echo $GLOBALS['id'];
-
-//Box statuses
-$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
-$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
 
 //Request statuses
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
@@ -59,7 +54,23 @@ $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'w
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+//Box statuses
+$box_pending_tag = get_term_by('slug', 'pending', 'wpsc_box_statuses'); //748
+$box_scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
+$box_destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
+$box_destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); //1272
+$box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
+$box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
+
+$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
+$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
+
+$status_id_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$request_freeze_status_id_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$box_freeze_arr = array($box_pending_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
+$damaged_unauthorized_destruction_status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$rescan_validate_status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+$box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag->term_id, $box_destruction_approved_tag->term_id, $box_destruction_of_source_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
 ?>
 
 
@@ -304,11 +315,11 @@ div.dataTables_wrapper {
     	
     	<?php	
     	
-        if ( ($box_ticket_status != $new_request_tag->term_id && $box_ticket_status != $tabled_tag->term_id && $box_ticket_status != $initial_review_rejected_tag->term_id && $box_ticket_status != $cancelled_tag->term_id) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
         <?php 
-        if ($box_status == $validation_tag->term_id || $box_status == $rescan_tag->term_id) {
+        if ( ($box_status == $validation_tag->term_id || $box_status == $rescan_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
         ?>
         <!-- language of buttons change based on 0 or 1 -->
         <?php
@@ -326,12 +337,8 @@ div.dataTables_wrapper {
         ?>
 
         <?php 
-        $completed_tag = get_term_by('slug', 'completed', 'wpsc_box_statuses'); //66
-        $dispositioned_tag = get_term_by('slug', 'stored', 'wpsc_box_statuses'); //67
-        $destruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
-        //$status_array = array(66, 67, 68);
-        $status_array = array($completed_tag->term_id, $dispositioned_tag->term_id, $destruction_approval_tag->term_id);
-        if (!in_array($box_status, $status_array)){
+
+        if ( !in_array($box_status, $box_rescan_arr) && !in_array($box_ticket_status,$rescan_validate_status_id_arr)){
         ?>        
         <?php
         if($folderfile_rescan == 0) { ?>
@@ -345,6 +352,7 @@ div.dataTables_wrapper {
         ?>
         
        	<?php
+       	if(!in_array($box_ticket_status, $damaged_unauthorized_destruction_status_id_arr)) {
        	if($folderfile_destruction == 0) { ?>
        	<button type="button" aria-label="Unauthorized Destruction Help Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($box_destruction == 1 || $folderfile_freeze == 1)? "disabled" : ""; ?>><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     	<?php }
@@ -358,9 +366,12 @@ div.dataTables_wrapper {
         <?php }
         else { ?>
     	<button type="button" aria-label="Undo Damaged Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-bolt" aria-hidden="true" title="Undo Damaged"></i><span class="sr-only">Undo Damaged</span> Undo Damaged</button>
-        <?php } ?>
+        <?php } 
+       	}
+        ?>
     	
     	<?php 
+    	if(!in_array($box_ticket_status, $request_freeze_status_id_arr) && !in_array($box_status, $box_freeze_arr)) {
     	if($folderfile_freeze == 0) { ?>
     	<button type="button" aria-label="Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze  <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php }
@@ -368,7 +379,8 @@ div.dataTables_wrapper {
         <button type="button" aria-label="Undo Freeze Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-snowflake" aria-hidden="true" title="Un-Freeze"></i><span class="sr-only">Un-Freeze</span> Un-Freeze</button>
         <?php } ?>
         <?php
-        }
+    	}
+    	}
         ?>	
 <?php
 // originally /^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/
@@ -710,7 +722,7 @@ if( $folderfile_details->source_file_location == null || $folderfile_details->so
 
 
 // Display Upload File Section
-if($is_active == 1) {
+if($is_active == 1 && !in_array($box_ticket_status, $rescan_validate_status_id_arr) ) {
 
 echo '<div id="upload-file-section" class="focus-section">';
 echo '<hr>';
@@ -905,7 +917,7 @@ echo '</pre>';
 
 if ($folderfile_sems_reg_id != '' || $folderfile_folderdocinfofile_id != '') {
 ?>
-
+<br /><br />
 <h3 style="display: inline;">Links to Electronic Records in SEMS <a href="#" aria-label="Help" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-links-to-ecms'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></h3>
 
 <br /><br />
@@ -1367,6 +1379,7 @@ function wpsc_get_epa_contact_editor(folderdocinfofile_id) {
 	<?php
 	    $agent_permissions = $wpscfunction->get_current_agent_permissions();
         $agent_permissions['label'];
+
         if ( !in_array($box_ticket_status, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
           echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor(\''.$folderfile_folderdocinfofile_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit EPA Contact"></i><span class="sr-only">Edit EPA Contact</span></button>';

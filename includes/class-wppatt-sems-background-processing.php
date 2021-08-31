@@ -323,7 +323,7 @@ $file_details_array = array(
 
 $curl = curl_init();
 
-        $url = 'http://adrast.rtpnc.epa.gov:8011/sems-ws/rm/saveDocuments';
+        $url = SEMS_ENDPOINT_SAVE;
 
         $payload = json_encode($batch);
         curl_setopt($curl,CURLOPT_URL, $url);

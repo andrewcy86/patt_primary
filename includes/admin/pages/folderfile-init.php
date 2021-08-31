@@ -459,11 +459,11 @@ postvarsfolderdocid : rows_selected.join(",")
        var substring_true = "true";
 
        if(response.indexOf(substring_false) >= 0) {
-       alert('Cannot print folder/file labels for documents that have been destroyed or are not assigned to a location.');
+       alert('Cannot print folder/file labels for documents that are part of a request(s) in the following statuses: New Request, Initial Review Rejected, Cancelled, Completed/ Dispositioned or have been destroyed/not assigned to a location.');
        }
        
        if(response.indexOf(substring_warn) >= 0) {
-       alert('One or more documents that you have selected have been destroyed or do not have an assigned location and it\'s label will not generate.');
+       alert('One or more documents that you have selected are part of a request(s) in the following statuses: New Request, Initial Review Rejected, Cancelled, Completed/ Dispositioned or have been destroyed/ not assigned location and it\'s label will not generate.');
            // Loop through array
     [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);

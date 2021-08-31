@@ -16,6 +16,7 @@ $page_id = $_POST['postvarpage'];
 $pid = $_POST['pid'];
 $box_id = $_POST['boxid'];
 
+
 ob_start();
 
 ?>
@@ -27,6 +28,7 @@ ob_start();
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_submit_unauthorized_destruction();">Submit</button>
 <script>
+
 function wpsc_submit_unauthorized_destruction(){		
     jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{

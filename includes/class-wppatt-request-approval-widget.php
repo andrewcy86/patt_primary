@@ -67,6 +67,14 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
             global $current_user, $wpscfunction, $wpdb;
 
             $is_active = Patt_Custom_Func::ticket_active( $post_id );
+            $status_id =  Patt_Custom_Func::get_ticket_status( $post_id );
+
+            $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+            $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+            $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+            
+            //Associated Documents
+            $status_id_arr = array($initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
             
 			$wpsc_appearance_individual_ticket_page = get_option( 'wpsc_individual_ticket_page' );
 			$edit_btn_css = 'background-color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'] . ' !important;color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'] . ' !important;border-color:' . $wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'] . '!important';
@@ -78,7 +86,7 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<i class="far fa-folder" aria-hidden="true" title="Folder"></i><span class="sr-only">Folder</span> 
 					<?php esc_html_e( 'Assoc. Documents', 'pattracking' ); ?> 
 					<?php 
-					if($is_active == 1) {
+					if($is_active == 1 && !in_array($status_id, $status_id_arr)) {
 					?>
 					<button id="wpsc_individual_change_agent_fields" aria-label="Associated Documents edit button" onclick="wpsc_get_approval_details('<?php echo esc_attr( $post_id ); ?>')" class="btn btn-sm wpsc_action_btn" style="<?php echo esc_attr( $edit_btn_css ); ?>" ><i class="fas fa-edit" aria-hidden="true" title="Edit Associated Documents"></i><span class="sr-only">Edit Associated Documents</span></button>
 				    <?php } ?>
@@ -400,8 +408,9 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 			$congressional_file = self::get_approval_attached_image( $ticket_id, 'congressional_file' );
 			$foia_file = self::get_approval_attached_image( $ticket_id, 'foia_file' );
 
-			$total_require_file = intval( Patt_Custom_Func::get_accession_count( $ticket_id ) );
-
+			//$total_require_file = intval( Patt_Custom_Func::get_accession_count( $ticket_id ) );
+            $get_destruction_approval_flag = Patt_Custom_Func::get_associated_document($ticket_id, 'destruction_approval');
+            
 			ob_start();
 			?>
 			<form id="approval_widget_form" method="post" action="javascript:wpsc_set_approval_widget();" enctype="multipart/form-data">
@@ -413,13 +422,17 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						<li role="presentation" class="tab" id="wpsc_recall_sla_chan_litigation_letter" onclick="wpsc_change_tab(this,'approval_litigation_letter');"><a href="javascript:void(0);"><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_congressional');"><a href="javascript:void(0);"><?php esc_html_e( 'Congressional', 'pattracking' ); ?></a></li>
 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'approval_foia');"><a href="javascript:void(0);"><?php esc_html_e( 'FOIA', 'pattracking' ); ?></a></li>
-						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'add_box_list');"><a href="javascript:void(0);"><?php esc_html_e( 'Update Box List', 'pattracking' ); ?></a></li>
+<!-- 						<li role="presentation" class="tab" onclick="wpsc_change_tab(this,'add_box_list');"><a href="javascript:void(0);"><?php esc_html_e( 'Update Box List', 'pattracking' ); ?></a></li> -->
 					</ul>
 
 
 					<div id="approval_destruction_authorization" class="tab_content visible"> 
 						<h4><?php esc_html_e( 'Destruction Authorization', 'pattracking' ); ?> </h4>
-						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo esc_attr( $total_require_file . ' File(s) needed for Destruction Authorization.' ); ?></div></span>
+						<?php
+						if($get_destruction_approval_flag == 0) {
+						?>
+						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo '1 or more files needed for Destruction Authorization.'; ?></div></span>
+						<?php } ?>
 						<div class="dropzone" id="destr-autho-dropzone" tabindex="0">
 							<div class="fallback">
 								<input name="destruction_authorization_files" type="file" id="destruction_authorization_files" />
@@ -692,8 +705,10 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 			}
 
 			$destruction_approval_warning = '';
-			if ( count( $attach_ids ) !== intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ) {
-				$destruction_approval_warning = 'Destruction Authorization ' . intval( Patt_Custom_Func::get_accession_count( $request_id ) ) . ' files required, ' . count( $attach_ids ) . ' files found.';
+// 			if ( count( $attach_ids ) !== intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ) {
+      if ( count( $attach_ids ) == 0 ) {
+				//Not working
+				//$destruction_approval_warning = 'Destruction Authorization 1 or more files required, ' . count( $attach_ids ) . ' files found.';
 			}
 
 			if ( is_array( $destruction_authorization_files ) && count( $destruction_authorization_files ) > 0 ) {
@@ -716,11 +731,15 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					}
 				}
 
-				$destruction_approval_status = ( count( $attach_ids ) === intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ? 1 : 0 );
+// 				$destruction_approval_status = ( count( $attach_ids ) === intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ? 1 : 0 );
+          //$destruction_approval_status = ( count( $attach_ids ) >= intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ? 1 : 0 );
+          $destruction_approval_status = ( count( $attach_ids ) > 0 ? 1 : 0 );
+          
 				$wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'destruction_approval' => $destruction_approval_status ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
 
-				if ( 0 === $destruction_approval_status ) {
-					$destruction_approval_warning = 'Destruction Authorization ' . intval( Patt_Custom_Func::get_accession_count( $request_id ) ) . ' files required, ' . count( $attach_ids ) . ' files found.';
+				if ( $destruction_approval_status === 0 ) {
+					//Not working
+					//$destruction_approval_warning = 'Destruction Authorization 1 or more files required, ' . count( $attach_ids ) . ' files found.';
 				}
 
 				if ( empty( $ticket_field ) && ! isset( $ticket_field->id ) ) {
@@ -1019,7 +1038,13 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				'sucess_status' => 1,
 				'messege'       => 'Saved Successfully.',
 				'destruction_approval_warning' => $destruction_approval_warning,
-				'FILES' => $old_files
+				'FILES' => $old_files,
+				'destruction_approval_status' => $destruction_approval_status,
+				'request_id' => $request_id,
+				'attach_ids' => $attach_ids,
+				'count_attach_ids' => count( $attach_ids ),
+				'accession_count' => Patt_Custom_Func::get_accession_count( $request_id ),
+				'intval_accession_count' => intval( Patt_Custom_Func::get_accession_count( $request_id ))
 			);
 
 			echo wp_json_encode( $response );

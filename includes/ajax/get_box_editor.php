@@ -22,6 +22,12 @@ ob_start();
 
 $patt_box_id_arr = array();
 
+    $get_request_status = $wpdb->get_row("SELECT b.ticket_status 
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
+    WHERE a.id = '" . $box_id . "'");
+    $ticket_status = $get_request_status->ticket_status;
+
     $box_patt_id = $wpdb->get_row("SELECT box_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
     $patt_box_id = $box_patt_id->box_id;
     array_push($patt_box_id_arr,$patt_box_id);
@@ -56,36 +62,72 @@ $patt_box_id_arr = array();
 <form autocomplete='off'>
     
 <?php
-$status_list = Patt_Custom_Func::get_restricted_box_status_list( $patt_box_id_arr, $agent_type );
+// $status_list = Patt_Custom_Func::get_restricted_box_status_list( $patt_box_id_arr, $agent_type );
+$status_list = Patt_Custom_Func::get_restricted_box_status_list_2( $patt_box_id_arr, $agent_type );
 $restriction_reason = $status_list['restriction_reason']; // string with warnings (multiple lines)
+
+$all_statuses_list = Patt_Custom_Func::get_all_status();
+// D E B U G
 //echo $restriction_reason;
+/*
+echo '<pre>';
+print_r( $status_list );
+echo '</pre>';
+echo '<pre>';
+print_r( $all_statuses_list );
+echo '</pre>';
+*/
+
 ?>
 <div id='alert_status' class=''></div> 
 <strong>Box Status: <a href="#" aria-label="Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-box-status'); ?>"><i class="far fa-question-circle"></i></a></strong><br />
 
 		<select id="box_status" name="box_status" aria-label="Box Status">
 			<?php
-// Register Box Status Taxonomy
-if( !taxonomy_exists('wpsc_box_statuses') ) {
-	$args = array(
-		'public' => false,
-		'rewrite' => false
-	);
-	register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
-}
-
-$box_statuses = $status_list['box_statuses']; // list of acceptable statuses
-
-      foreach ( $box_statuses as $term=>$status ) :
-
-if ($status_id == $term ) {
-    $selected = 'selected'; 
-} else {
-    $selected = ''; 
-}
-
-echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
-			endforeach;
+        
+        // Register Box Status Taxonomy
+        if( !taxonomy_exists('wpsc_box_statuses') ) {
+        	$args = array(
+        		'public' => false,
+        		'rewrite' => false
+        	);
+        	register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
+        }
+        
+        $box_statuses = $status_list['box_statuses']; // list of acceptable statuses
+        
+        foreach( $all_statuses_list as $term=>$status ) {
+        
+          if ( $status_id == $term ) {
+              $selected = 'selected'; 
+          } else {
+              $selected = ''; 
+          }
+          
+          if( in_array( $status, $box_statuses) ) {
+            $disabled = '';
+          } else {
+            $disabled = 'disabled';
+          }
+          
+          
+          
+          echo '<option '.$selected. ' '. $disabled .' value="'.$term.'">'.$status.'</option>';
+          			
+        }
+        
+/*
+        foreach ( $box_statuses as $term=>$status ) :
+        
+        if ($status_id == $term ) {
+            $selected = 'selected'; 
+        } else {
+            $selected = ''; 
+        }
+        
+        echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
+        			endforeach;
+*/
 			?>
 		</select>
 
@@ -93,7 +135,15 @@ echo '<option '.$selected.' value="'.$term.'">'.$status.'</option>';
 $desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
 $desruction_approval_term_id = $desruction_approval_tag->term_id;
 
-if( ($validated == $validation_total) && ($status_id == $desruction_approval_term_id) && ($destruction_approval == 1) ) {
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+
+if( ($validated == $validation_total) && ($status_id == $desruction_approval_term_id) && ($destruction_approval == 1) && !in_array($ticket_status, $status_id_arr)) {
 ?>
 <br /><br />
 <strong>Destruction Completed:</strong><br />

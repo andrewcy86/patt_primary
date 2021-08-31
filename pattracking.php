@@ -168,7 +168,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           $backend  = new wppatt_Admin();
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'box_status_assignment_btnAfterClone'));
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pallet_btnAfterClone'));
-          add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
+          add_action('wpsc_after_indidual_ticket_static_action_btn', array($backend, 'pdflabel_btnAfterClone'));
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
  
            // Add Location Instant CRON
@@ -403,6 +403,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           function epa_admin_menu_items() {
             //add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            
+            add_submenu_page( '', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo-init', 'todo_init_page' );
+            add_submenu_page( 'wpsc-tickets', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo', 'todo_page' );
+
             add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
@@ -506,6 +510,16 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function rfid_settings_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid-settings.php'
+            );
+            }
+            
+            function todo_init_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/todo-init.php'
+            );
+            }
+            
+            function todo_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/todo.php'
             );
             }
             

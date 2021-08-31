@@ -17,12 +17,25 @@ if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 $subfolder_path = site_url( '', 'relative'); 
 
 //
-// Originals. May be possible to delete.
+// Originals. 
 //
 $ticket_id   = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ; 
 $current_requestor = isset($_POST['requestor']) ? sanitize_text_field($_POST['requestor']) : '' ;
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 $recall_id = isset($_POST['recall_id']) ? sanitize_text_field($_POST['recall_id']) : '';
+
+$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$initial_review_complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses'); //4
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+
+// Digitization Center not assigned
+$dc_not_assigned_obj = get_term_by('slug', 'not-assigned-digi-center', 'wpsc_categories'); //666
+$dc_not_assigned = $dc_not_assigned_obj->term_id;
+
+$status_id_arr = array( $new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
 
 //
 // Get items
@@ -34,6 +47,97 @@ $num_of_items = count($item_ids);
 //$ticket_id = '0000001';
 $is_single_item = ( $num_of_items == 1 ) ? true : false;
 $alerts_disabled = ( $type == 'view' ) ? true : false;
+
+
+//
+// Prep data for To-Do list
+//
+
+// get all pertinent term_ids
+//Box status slugs
+$scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); 
+$scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); 
+$qa_qc_tag = get_term_by('slug', 'q-a', 'wpsc_box_statuses'); 
+$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); 
+$destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); 
+$destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); 
+
+$scanning_preparation_term = $scanning_preparation_tag->term_id;
+$scanning_digitization_term = $scanning_digitization_tag->term_id;
+$qa_qc_term = $qa_qc_tag->term_id;
+$validation_term = $validation_tag->term_id;
+$destruction_approved_term = $destruction_approved_tag->term_id;
+$destruction_of_source_term = $destruction_of_source_tag->term_id;
+
+// Grab all info needed for the box
+$sql = 'SELECT
+            *
+        FROM
+            ' . $wpdb->prefix . 'wpsc_epa_boxinfo AS box
+        INNER JOIN ' . $wpdb->prefix . 'wpsc_epa_storage_location AS location
+        ON
+            location.id = box.storage_location_id
+        WHERE
+            box.box_id = "' . $item_ids[0] . '"';
+$todo_obj = $wpdb->get_row( $sql );
+
+// Flags for statuses
+$todo_scanning_preparation = $todo_obj->scanning_preparation;
+$todo_scanning_digitization = $todo_obj->scanning_digitization;
+$todo_qa_qc = $todo_obj->qa_qc;
+$todo_validation = $todo_obj->validation;
+$todo_destruction_approved = $todo_obj->destruction_approved;
+$todo_destruction_of_source = $todo_obj->destruction_of_source;
+
+// used for HTML checkbox checks
+$todo_scanning_preparation_check = $todo_scanning_preparation == 1 ? 'checked' : '';
+$todo_scanning_digitization_check = $todo_scanning_digitization == 1 ? 'checked' : '';
+$todo_qa_qc_check = $todo_qa_qc == 1 ? 'checked' : '';
+$todo_validation_check = $todo_validation == 1 ? 'checked' : '';
+$todo_destruction_approved_check = $todo_destruction_approved == 1 ? 'checked' : '';
+$todo_destruction_of_source_check = $todo_destruction_of_source == 1 ? 'checked' : '';
+
+// used for HTML checkbox disabled
+$todo_scanning_preparation_disabled = $scanning_preparation_term == $todo_obj->box_status ? '' : 'disabled';
+$todo_scanning_digitization_disabled = $scanning_digitization_term == $todo_obj->box_status ? '' : 'disabled';
+$todo_qa_qc_disabled = $qa_qc_term == $todo_obj->box_status ? '' : 'disabled';
+$todo_validation_disabled = $validation_term == $todo_obj->box_status ? '' : 'disabled';
+$todo_destruction_approved_disabled = $destruction_approved_term == $todo_obj->box_status ? '' : 'disabled';
+$todo_destruction_of_source_disabled = $destruction_of_source_term == $todo_obj->box_status ? '' : 'disabled';
+
+// Get ticket id from first or single box
+$where['box_folder_file_id'] = $item_ids[0]; 
+$ticket_id_obj = Patt_Custom_Func::get_ticket_id_from_box_folder_file( $where ); 
+$ticket_id = $ticket_id_obj['ticket_id'];
+
+// Get destruction approval from ticket table
+$box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM ".$wpdb->prefix."wpsc_ticket WHERE id='".$ticket_id."'");				
+$todo_ticket_destruction_approval = $box_destruction_approval->destruction_approval;
+
+$destruction_approval_allowed;
+
+$current_box_status = $todo_obj->box_status;
+
+// Sets a flag for a js alert if box status is at destruction approval AND does not have destruction approval
+// only for type == todo. 
+// false sets the alert.
+if( $todo_obj->box_status == $destruction_approved_term ) {
+  if( $todo_ticket_destruction_approval === 1 && $use_type == 'todo' ) {
+    $destruction_approval_allowed = true;
+  } else {
+    $destruction_approval_allowed = false;
+  }
+}
+
+
+// get current status - DONE
+// set all other statuses to disabled
+// turn on save button
+// set up save for flag, status, and previous status.
+// audit log
+
+
+
 
 /*
 function get_tax() {
@@ -70,7 +174,7 @@ $box_statuses = get_terms([
 ]);
 
 // List of box status that do not need agents assigned.
-$ignore_box_status = ['Pending', 'Waiting/Shelved', 'Ingestion', 'Completed Permanent Records', 'Completed/Dispositioned', 'Waiting on RLO', 'Cancelled'];
+$ignore_box_status = ['Pending', 'Waiting/Shelved', 'Ingestion', 'Completed Permanent Records', 'Completed/Dispositioned', 'Waiting on RLO', 'Cancelled']; 
 
 $term_id_array = array();
 foreach( $box_statuses as $key=>$box ) {
@@ -173,18 +277,22 @@ foreach( $assigned_agents['status'] as $key=>$val_array ) {
 }
 
 // Gets an array of all the items and their ticket status
+$test = 'x';
 $save_enabled = true;
 $ticket_id_array = array();
 foreach( $item_ids as $key=>$id ) {
 	$data = ['box_folder_file_id'=>$id];
 	$ticket_id_array[] = Patt_Custom_Func::get_ticket_id_from_box_folder_file( $data );
 	
-	$data = ['ticket_id'=>$ticket_id_array[$key]['ticket_id']];
+	//$data = ['ticket_id'=>$ticket_id_array[$key]['ticket_id']];
+	$data = $ticket_id_array[$key]['ticket_id']; 
 	$ticket_status = Patt_Custom_Func::get_ticket_status( $data );
 	$ticket_id_array[$key]['ticket_status'] = $ticket_status;
 	
+	$test = $ticket_status;
+	
 	// If ticket is in status Received [63] then save enabled is true.
-	if( $ticket_status == 3 || $ticket_status == 4 || $ticket_status == 5 || $ticket_status == 670 || $ticket_status == 69 ) { 
+	if( in_array( $ticket_status, $status_id_arr ) ) { 
 		$save_enabled = false;
 	}
 	
@@ -207,7 +315,8 @@ foreach( $item_ids as $key=>$id ) {
 	
 	
 	// If digitization center is unassigned, do not allow saving. 
-	if( $storage_location->digitization_center == 666 ) {
+// 	if( $storage_location->digitization_center == 666 ) { 
+	if( $storage_location->digitization_center == $dc_not_assigned ) {
 		$save_enabled = false;		
 	}
 	
@@ -270,23 +379,41 @@ echo '</pre><br><br>';
 
 
 ob_start();
-
 /*
+
+// D E B U G 
+echo "type: " . $type ."<br>";
+echo "ticket id: " . $ticket_id ."<br>";
+echo "todo_ticket_destruction_approval: " . $todo_ticket_destruction_approval ."<br>";
+echo "todo_obj: <br><pre>";
+print_r( $todo_obj );
+//print_r($status_id_arr);
+echo "</pre>";
 echo "Assign Agents for: ".$type;
 echo "<br>Item IDs: <br>";
 print_r($item_ids);
-echo "<br>Ticket ID Array: ";
+echo "<br>Ticket ID Array: <pre>";
 print_r($ticket_id_array);
-echo "<br>";
+echo "</pre><br>";
 echo "Ticket Statuses: ";
 //print_r($box_statuses);
-print_r($ticket_status);
+//print_r($ticket_status);
+print_r($status_id_arr);
 echo "<br>";
 echo "Num of Items: ".$num_of_items;
 echo "<br>";
 echo "Is single: ".$is_single_item;
 echo "<br>";
+echo "current: " . $test;
+echo "<br>";
+echo "box status terms: ";
+echo $scanning_preparation_term . "-" . $scanning_digitization_term . "-" . $qa_qc_term . "-" . $validation_term . "-" . $destruction_approved_term . "-" . $destruction_of_source_term . "<br>";
 */
+
+
+
+
+
 //echo "<br>Fake Agents: ";
 //print_r($fake_array_of_users);
 ?>
@@ -299,6 +426,25 @@ echo "<br>";
 	<span id="modal_current_requestor" class=""><?php echo $current_requestor; ?></span>
 <br>
 -->
+
+<?php if( $type == 'todo') { ?>
+
+<div class="row">
+	<div class="col-sm-4">
+		<label class="wpsc_ct_field_label">Box Status: </label>
+	</div>
+	
+	<div class="col-sm-2">
+		<label class="wpsc_ct_field_label">To-Do: </label>
+	</div>
+	
+	<div class="col-sm-6">
+		<label class="wpsc_ct_field_label">Assign Agents: </label>
+	</div>
+</div>
+
+<?php } else { ?> 
+
 <div class="row">
 	<div class="col-sm-4">
 		<label class="wpsc_ct_field_label">Box Status: </label>
@@ -308,6 +454,9 @@ echo "<br>";
 		<label class="wpsc_ct_field_label">Assign Agents: </label>
 	</div>
 </div>
+
+<?php } ?> 
+
 
 <hr class='tight'>
 
@@ -323,6 +472,8 @@ echo "<br>";
 					echo '<div id="qaqc_alert_status" class="" ></div>';
 				}
 			?>
+			
+			
 			<div class="col-sm-4">
 			    <?php
 			    if($status->name == 'QA/QC') {
@@ -336,6 +487,7 @@ echo "<br>";
 				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> </label>
 				<?php } ?>
 			</div>
+			
 			
 			<div class="col-sm-8">
 	<!-- 			<label class="wpsc_ct_field_label">Search Digitization Staff: </label> -->
@@ -433,6 +585,119 @@ echo "<br>";
 ?>
 
 
+<?php 
+	//
+	// To-Do List HTML
+	//
+	
+	if( $type == 'todo') {
+  	
+  	// Prep
+  	$save_enabled = true;
+?> 	
+  <form id="todo-form">
+<?php  	
+		foreach( $box_statuses as $status) { 	
+?>
+
+		<?php
+    if( $status->name != 'Digitized - Not Validated' && $status->name != 'Re-scan' ) {
+    ?>
+		<div class="row zebra">
+			<div class="col-sm-4">
+				<label class="wpsc_ct_field_label label_center"><?php echo $status->name; ?> </label>
+			</div>
+			
+			<div class="col-sm-2 text-xs-center">
+				<?php
+  				
+        
+/*
+        $scanning_preparation_term = $scanning_preparation_tag->term_id;
+        $scanning_digitization_term = $scanning_digitization_tag->term_id;
+        $qa_qc_term = $qa_qc_tag->term_id;
+        $validation_term = $validation_tag->term_id;
+        $destruction_approved_term = $destruction_approved_tag->term_id;
+        $destruction_of_source_term = $destruction_of_source_tag->term_id;
+*/
+        
+        
+        
+  				
+  				
+        if( $status->name == 'Scanning Preparation' ) {
+        ?>
+				  <input data-box-status-id="<?php echo $scanning_preparation_term; ?>" type="checkbox"  <?php echo $todo_scanning_preparation_check . ' ' . $todo_scanning_preparation_disabled; ?> class="center-check">
+				<?php
+        } elseif( $status->name == 'Scanning/Digitization' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $scanning_digitization_term; ?>" type="checkbox"  <?php echo $todo_scanning_digitization_check . ' ' . $todo_scanning_digitization_disabled; ?> class="center-check">
+        <?php
+        } elseif( $status->name == 'QA/QC' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $qa_qc_term; ?>" type="checkbox"  <?php echo $todo_qa_qc_check . ' ' . $todo_qa_qc_disabled; ?> class="center-check">
+        <?php
+        } elseif( $status->name == 'Validation' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $validation_term; ?>" type="checkbox" disabled <?php echo $todo_validation_check . ' ' . $todo_validation_disabled; ?> class="center-check">
+        <?php
+        } elseif( $status->name == 'Destruction Approved' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $destruction_approved_term; ?>" type="checkbox"  <?php echo $todo_destruction_approved_check . ' ' . $todo_destruction_approved_disabled; ?> class="center-check">
+        <?php
+        } elseif( $status->name == 'Destruction of Source' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $destruction_of_source_term; ?>" type="checkbox"  <?php echo $todo_destruction_of_source_check . ' ' . $todo_destruction_of_source_disabled; ?> class="center-check">
+        <?php
+        } 
+        ?> 
+ 
+ 
+
+ 
+			</div>
+			
+			<div class="col-sm-6">
+					<div id="assigned_agents" class="  term-<?php echo $status->term_id; ?>">
+						<?php
+						    if($is_single_item) {
+							    foreach ( $assigned_agents['status'] as $term_id=>$agent_list ) {							    
+								    if( $term_id == $status->term_id ) :
+								    	foreach( $agent_list as $agent ) {
+								    	
+  											$agent_name = get_term_meta( $agent, 'label', true);
+  											 	
+  											if($agent && $agent_name):
+  							?>
+  													<div class=" wpsp_filter_display_element wpsc_assign_agents ">
+  														<div class="flex-container staff-badge" style="">
+  															<?php echo htmlentities($agent_name)?>
+  														</div>
+  													</div>
+  							<?php
+  											endif;
+										}
+									endif;	
+								}
+							}
+						?>
+
+				  </div>
+
+			</div>
+		</div>
+		<?php 
+    } 
+    ?>
+<?php
+		} 	
+		?>
+  </form>
+<?php		
+	}
+?>
+
+
 
 
 
@@ -481,6 +746,10 @@ echo "<br>";
 
 .alert_spacing {
 	margin: 0px 0px 0px 0px;
+}
+
+.center-check {
+  text-align: center;
 }
 </style>
 
@@ -536,14 +805,16 @@ jQuery(document).ready(function(){
  				
  				// Enable / Disable Save based on PHP save enabled which denotes if the Box is savable.
  				var save_enabled = '<?php echo $save_enabled ?>';
+ 				console.log({save_enabled:save_enabled});
+ 				
 				if( !save_enabled ) {
 					console.log('save disabled');
-					//jQuery("#button_agent_submit").hide();
-					jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 					jQuery("#button_agent_submit").hide();
+					//jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
+					//jQuery("#button_agent_submit").hide();
 				} else {
-					//jQuery("#button_agent_submit").show();	
-					jQuery("#button_agent_submit").removeAttr( 'disabled' );
+					jQuery("#button_agent_submit").show();	
+					//jQuery("#button_agent_submit").removeAttr( 'disabled' );
 				}
 				
 				// Enable / Disable Save based on js save enabled which denotes if all of the fields are filled in
@@ -603,11 +874,41 @@ jQuery(document).ready(function(){
 	let link_mid = '" style="text-decoration: underline;" target="_blank">';
 	let link_end = '</a>';
 	
+	var new_request_tag = '<?php $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+	echo $new_request_tag->term_id; ?>';
+	var tabled_tag = '<?php $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //3
+	echo $tabled_tag->term_id; ?>';
+	var initial_review_complete_tag = '<?php $initial_review_complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses'); //4
+	echo $initial_review_complete_tag->term_id; ?>';
+	var initial_review_rejected = '<?php $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+	echo $initial_review_rejected_tag->term_id; ?>';
+	var cancelled_tag = '<?php $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+	echo $cancelled_tag->term_id; ?>';
+	var completed_dispositioned_tag = '<?php $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+	echo $completed_dispositioned_tag->term_id; ?>';
+	
+	// Digitization Center not assigned term_id
+	var dc_not_assigned_tag = '<?php $dc_not_assigned_tag = get_term_by('slug', 'not-assigned-digi-center', 'wpsc_categories' ); //666
+	echo $dc_not_assigned_tag->term_id; ?>';
+	
+/*
+	// D E B U G 
+	console.log({dc_not_assigned_tag:dc_not_assigned_tag});
+	console.log({new_request_tag:new_request_tag});
+	console.log({tabled_tag:tabled_tag});
+	console.log({initial_review_complete_tag:initial_review_complete_tag});
+	console.log({initial_review_rejected:initial_review_rejected});
+	console.log({cancelled_tag:cancelled_tag});
+	console.log({completed_dispositioned_tag:completed_dispositioned_tag});
+*/
+	
 	//check and display error for digitization center and assigned location
 	
 	items_and_status.forEach( function(x) {
 		
-		if( x.ticket_status == 3 || x.ticket_status == 4 || x.ticket_status == 5 || x.ticket_status == 670 || x.ticket_status == 69  ) {
+		// OLD || x.ticket_status == initial_review_complete_tag
+		
+		if( x.ticket_status == new_request_tag  || x.ticket_status == tabled_tag || x.ticket_status == initial_review_rejected || x.ticket_status == cancelled_tag || x.ticket_status == completed_dispositioned_tag ) {
 			is_error = true;
 			status_error = true;
 			status_error_count++;
@@ -616,7 +917,8 @@ jQuery(document).ready(function(){
 			status_error_link += request_link_start+ticket_id+link_mid+x.item_id+link_end+', ';
 		}
 		
-		if( x.digitization_center == 666 ) {
+// 		if( x.digitization_center == 666 ) {dc_not_assigned_tag
+		if( x.digitization_center == dc_not_assigned_tag ) {
 			is_error = true;
 			dc_error = true;
 			dc_error_count++;
@@ -641,10 +943,12 @@ jQuery(document).ready(function(){
 		
 		if( status_error && status_error_count > 1 ) {
 			status_error_start = 'Boxes ';
-			status_error_mid = ': The containing Request statuses are not all Received. ';
+// 			status_error_mid = ': The containing Request statuses are not all Received. ';
+      status_error_mid = ': One of the boxes selected is in one of the following request statuses: New Request, Tabled, Initial Review Rejected, Cancelled, Completed/Dispositioned. ';
 		} else if( status_error && status_error_count == 1 ) {
 			status_error_start = 'Box ';
-			status_error_mid = ': The containing Request status is not Received. ';
+// 			status_error_mid = ': The containing Request status is not Received. '; 
+      status_error_mid = ': The selected box is in one of the following request statuses: New Request, Tabled, Initial Review Rejected, Cancelled, Completed/Dispositioned. '; 
 		}
 		
 		if( dc_error && dc_error_count > 1 ) {
@@ -676,10 +980,65 @@ jQuery(document).ready(function(){
 	console.log('save enabled');
 	if( !save_enabled ) {
 		console.log('save disabled');
-		//jQuery("#button_agent_submit").hide();
-		jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 		jQuery("#button_agent_submit").hide();
+		//jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
+		//jQuery("#button_agent_submit").hide();
 	}
+  
+  //
+  // Set data for To-Do functionality 
+  //
+  let use_type = '<?php echo $type; ?>';
+  let current_box_status = <?php echo $current_box_status; ?>;
+  let todo_ticket_destruction_approval = <?php echo $todo_ticket_destruction_approval; ?>;
+  let destruction_approval_allowed = <?php echo json_encode( $destruction_approval_allowed ); ?>;
+  var todo_save_enabled = false;
+  
+  console.log({use_type:use_type, todo_ticket_destruction_approval:todo_ticket_destruction_approval, destruction_approval_allowed:destruction_approval_allowed});
+  
+  // Disable To-Do save until one checkbox is clicked. 
+  if( use_type == 'todo' ) {
+    
+    let rando = jQuery("#todo-form input:checkbox:checked");
+    
+    console.log( rando );
+    
+    jQuery('#scanprep').change(function() {
+      console.log('clickity clack');
+      if( this.checked ) {
+        console.log( 'check' );
+      } else {
+        console.log( 'uncheck' );
+      }
+    });
+    
+    jQuery('*[data-box-status-id="'+current_box_status+'"]').change(function() {
+      console.log( 'Clicked ' + current_box_status );
+      if( this.checked ) {
+        console.log( 'DATA check' );
+        todo_save_enabled = true;
+        jQuery("#button_todo_submit").show();
+      } else {
+        console.log( 'DATA uncheck' );
+        todo_save_enabled = false;
+        jQuery("#button_todo_submit").hide();
+      }
+    });
+ 
+
+    
+  }
+  
+  // Check and set alert if To-Do ticket does not have destruction approval. 
+  if( use_type == 'todo' && destruction_approval_allowed == false && todo_ticket_destruction_approval === 0 ) {
+    
+    let message = 'The containing Request does not have Destruction Approval yet.';
+    set_alert( 'danger', message );    
+  }
+  
+  
+  
+  
 
 
 });
@@ -911,11 +1270,11 @@ function remove_user(term_id) {
 // 		if( requestor_list.length > 0 && save_enabled) {
 		if( save_enabled ) {
 			console.log('show');
-			//jQuery("#button_agent_submit").show();
-			jQuery("#button_agent_submit").removeAttr( 'disabled' );
+			jQuery("#button_agent_submit").show();
+			//jQuery("#button_agent_submit").removeAttr( 'disabled' );
 		} else {
-			//jQuery("#button_agent_submit").hide();
-			jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
+			jQuery("#button_agent_submit").hide();
+			//jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 		}
 	}
 }
@@ -932,13 +1291,61 @@ ob_start();
 
 ?>
 <button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
+
+<?php
+if(!in_array($ticket_status, $status_id_arr)) {
+?>
 <button type="button" id="button_agent_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_agents();"><?php _e('Save','supportcandy');?></button>
+<?php } 
+  
+  if( $type == 'todo' ) {
+?>
+  <button type="button" id="button_todo_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_todo();"><?php _e('Save','supportcandy');?></button>
+<?php } ?>
 
 <script>
-//jQuery("#button_agent_submit").hide();
-jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
+jQuery("#button_agent_submit").hide();
+//jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
+jQuery("#button_todo_submit").hide();
 
-function wppatt_set_agents(){
+
+
+
+//
+// Sets Status via AJAX for the To-Do list. 
+//
+
+function wppatt_set_todo() {
+  console.log( 'SET TODO' );
+  
+  let item_id = '<?php echo $item_ids[0]; ?>';	
+  let ticket_id = <?php echo $ticket_id; ?>;
+  let current_box_status = <?php echo $current_box_status; ?>;
+  
+  console.log({ item_id:item_id, ticket_id:ticket_id });  
+  
+  let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
+  console.log({is_checked:is_checked});
+  
+  jQuery.post(
+    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{
+      type: 'todo_box_status_update',
+      item_id: item_id,
+      current_box_status: current_box_status,
+      ticket_id: ticket_id
+	  }, 
+    function (response) {
+			//alert('updated: '+response);
+			response = JSON.parse( response );
+			console.log('TODO Response:');
+			console.log(response);
+			//window.location.reload();
+  });
+  
+}
+
+// Sets agents for the statuses. 
+function wppatt_set_agents() {
 	let item_ids = <?php echo json_encode($item_ids); ?>;	
 	let term_id_array = <?php echo json_encode($term_id_array); ?>;
 	let is_single_item = <?php echo json_encode($is_single_item); ?>;
@@ -972,23 +1379,22 @@ function wppatt_set_agents(){
 	// Another check to ensure you can't save 0 users
 // 	if( new_requestors.length > 0 ) {
 		jQuery.post(
-		   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_box_status_agents.php',{
-		    type: 'box_status_agents',
-		    new_agents_array: new_agents_array,
-		    item_ids: item_ids,
-		    is_single_item: is_single_item,
-		    recall_id: '<?php echo $recall_id ?>',
-		    ticket_id: '<?php echo $ticket_id ?>',
-		    new_requestors: new_requestors,
-		    old_requestors: old_requestors
-		}, 
+      '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_box_status_agents.php',{
+        type: 'box_status_agents',
+        new_agents_array: new_agents_array,
+        item_ids: item_ids,
+        is_single_item: is_single_item,
+        recall_id: '<?php echo $recall_id ?>',
+        ticket_id: '<?php echo $ticket_id ?>',
+        new_requestors: new_requestors,
+        old_requestors: old_requestors
+		  }, 
 	    function (response) {
-			//alert('updated: '+response);
-			console.log('The Response:');
-			console.log(response);
-			//window.location.reload();
-	
-	    });
+  			//alert('updated: '+response);
+  			console.log('The Response:');
+  			console.log(response);
+  			//window.location.reload();
+	  });
 //     }
 
 	//wpsc_modal_close();
@@ -1014,11 +1420,15 @@ wpsc_modal_close();
 if ($_REQUEST['page'] == 'boxdetails') {
 ?>
 wpsc_modal_close();
+window.location.reload();
 <?php 
 }
-?>   
 
-
+if($_REQUEST['page'] == 'todo') {
+?>
+wpsc_modal_close();
+window.location.reload();
+<?php } ?>
 } 
 </script>
 

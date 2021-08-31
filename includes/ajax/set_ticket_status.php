@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // set default filter for agents and customers //not true
 global $wpdb, $current_user, $wpscfunction;
 
-if (!$current_user->ID) die();
+if (!$current_user->ID) die(); 
 
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';

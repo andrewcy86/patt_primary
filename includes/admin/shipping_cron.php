@@ -89,6 +89,7 @@ WHERE tracking_number LIKE UPPER('%".WPPATT_EXT_SHIPPING_TERM."%')"
 
 $shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
 $received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
+$inprocess_tag = get_term_by('slug', 'in-process', 'wpsc_statuses');
 
 foreach ($shipping_query as $item) {
 
@@ -100,15 +101,16 @@ $get_tracking_number = $item->tracking_number;
 $ticket = $wpscfunction->get_ticket($get_ticket_id);
 $status_id = $ticket['ticket_status']; 
 
+//Fixes bug where if the received status if skipped and in process is selected the request still gets marked as delieved in the database. Only applies to external shipping.
 // IS IT A R3 REQUEST...IF R3 AND RECEIVED SET FLAG TO RECEIVED
-if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM_R3) && $status_id == $received_tag->term_id) {
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM_R3) && ($status_id == $received_tag->term_id || $status_id == $inprocess_tag->term_id) ) {
 $wpdb->update( $table_name, array( 'delivered' => 1),array('ID'=>$item->id));
 }
 //GET STATUS OF REQUEST
-if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && $status_id == $shipped_tag->term_id) {
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && ($status_id == $shipped_tag->term_id || $status_id == $inprocess_tag->term_id) ) {
 $wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
 }
-if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && $status_id == $received_tag->term_id) {
+if (strtoupper($get_tracking_number) == strtoupper(WPPATT_EXT_SHIPPING_TERM) && ($status_id == $received_tag->term_id || $status_id == $inprocess_tag->term_id)  ) {
 $wpdb->update( $table_name, array( 'delivered' => 1),array('ID'=>$item->id));
 }
 
@@ -478,7 +480,7 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
         
 $get_unique_tickets = $wpdb->get_results(
 	"SELECT DISTINCT ticket_id
-FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE tracking_number <> UPPER('".WPPATT_EXT_SHIPPING_TERM_R3."') AND ticket_id != '-99999'"
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE tracking_number <> UPPER('".WPPATT_EXT_SHIPPING_TERM."') AND tracking_number <> UPPER('".WPPATT_EXT_SHIPPING_TERM_R3."') AND ticket_id != '-99999'"
 );
 
 foreach ($get_unique_tickets as $item) {

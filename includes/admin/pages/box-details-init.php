@@ -19,13 +19,13 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
-$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id, ".$wpdb->prefix."wpsc_epa_boxinfo.box_id, ".$wpdb->prefix."wpsc_ticket.ticket_status
+$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id, ".$wpdb->prefix."wpsc_epa_boxinfo.box_id, ".$wpdb->prefix."wpsc_ticket.ticket_status, ".$wpdb->prefix."wpsc_epa_boxinfo.box_status
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket 
 WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
 $location_request_id = $request_id->request_id;
 $box_id_error_check = $request_id->box_id;
 $request_status_id = $request_id->ticket_status;
-
+$request_box_status_id = $request_id->box_status;
 
 $is_active = Patt_Custom_Func::request_status( $location_request_id );
 
@@ -36,13 +36,27 @@ else {
     $type = 'box_archive';
 }
 
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+//Request Statuses
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
 $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
 $cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $tabled_tag->term_id, $completed_dispositioned_tag->term_id);
+//Box Statuses
+$box_pending_tag = get_term_by('slug', 'pending', 'wpsc_box_statuses'); //748
+$box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
+$box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
+
+$waiting_shelved_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-shelved' );	 //816
+$waiting_rlo_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-on-rlo' );	 //1056
+$cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'cancelled' );	 //1057
+
+$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+$unauthorized_destruction_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$request_freeze_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$box_freeze_arr = array($box_pending_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
+$labels_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
 ?>
 
 
@@ -53,19 +67,28 @@ $status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->
         <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Refresh"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
         
         <?php
+        if( !in_array($request_status_id, $unauthorized_destruction_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        { ?>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
+        <?php }
         //Disable editing capabilities on certain request statuses
-        if ( !in_array($request_status_id, $status_id_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        if ( !in_array($request_status_id, $request_freeze_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         {
         ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
+		<?php
+		if( !in_array($request_box_status_id, $box_freeze_arr)) {
+		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
+		<?php } ?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit EPA Contact"></i><span class="sr-only">Bulk Edit EPA Contact</span> Bulk Edit EPA Contact </button>
+        <?php
+        }
+        
+        if( !in_array($request_status_id, $labels_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+        { ?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Labels"></i><span class="sr-only">Reprint Labels</span> Reprint Labels</button>
-
-<?php
-}
-
+        <?php }
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails' && !empty($box_id_error_check)) {
 ?>
 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left" aria-hidden="true" title="Back to Request"></i><span class="sr-only">Back to Request</span> Back to Request</button>
@@ -98,14 +121,14 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && !empty($box_id_error_check)) {
 //START REVIEW
 if($is_active == 1) {
-$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, a.box_previous_status, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
 INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files e ON e.box_id = a.id
 WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
 } else {
-$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
+$convert_box_id = $wpdb->get_row("SELECT a.id, e.lan_id, sum(a.box_destroyed) as box_destroyed, sum(e.freeze) as freeze, c.name as box_status, a.box_status as box_status_id, a.box_id, a.box_previous_status, d.ticket_priority as ticket_priority, (SELECT name as ticket_priority FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_priority) as priority_name, d.ticket_status as ticket_status, (SELECT name as ticket_status FROM ".$wpdb->prefix."terms WHERE term_id = d.ticket_status) as ticket_status_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo a
 INNER JOIN ".$wpdb->prefix."terms c ON a.box_status = c.term_id
 INNER JOIN ".$wpdb->prefix."wpsc_ticket d ON d.id = a.ticket_id
@@ -119,6 +142,7 @@ $box_lan_id = $convert_box_id->lan_id;
 $box_destroyed = $convert_box_id->box_destroyed;
 $box_freeze = $convert_box_id->freeze;
 $box_status_id = $convert_box_id->box_status_id;
+$box_previous_status_id = $convert_box_id->box_previous_status;
 $ticket_priority_id = $convert_box_id->ticket_priority;
 $ticket_status_id = $convert_box_id->ticket_status;
 
@@ -128,7 +152,21 @@ $status_background = get_term_meta($box_status_id, 'wpsc_box_status_background_c
 $status_color = get_term_meta($box_status_id, 'wpsc_box_status_color', true);
 $status_style = "background-color:".$status_background.";color:".$status_color.";";
 $box_status_name = $convert_box_id->box_status;
-$box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span>";
+
+$get_term_name = $wpdb->get_row("SELECT name
+FROM " . $wpdb->prefix . "terms WHERE term_id = ".$box_previous_status_id);
+
+$box_previous_term_name = $get_term_name->name;
+
+if ($box_status_id == $waiting_shelved_term_id && $box_previous_status_id != 0) {
+    $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
+} elseif ($box_status_id == $waiting_rlo_term_id && $box_previous_status_id != 0) {
+    $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
+} elseif ($box_status_id == $cancelled_term_id && $box_previous_status_id != 0) {
+    $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
+} else {
+    $box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span>";
+}
 
 $request_status_background = get_term_meta($ticket_status_id, 'wpsc_status_background_color', true);
 $request_status_color = get_term_meta($ticket_status_id, 'wpsc_status_color', true);
@@ -974,6 +1012,11 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
     			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
 			        } 
             }
+            
+            if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1 && Patt_Custom_Func::display_box_user_icon($box_id) == 1)
+                {
+            echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span> <a href="#" id="box_completion_status_link" style="color: #a80000; text-decoration: underline;"><strong>Reset Box Completion Status</strong></a></div>';
+                }
 			?>
 			
 			
@@ -990,7 +1033,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
                 $agent_permissions['label'];
-                if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
+                if ( (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1 && !in_array($request_status_id, $status_id_arr))
                 {
                   echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_assigned_staff_editor(\''.$the_real_box_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit Assigned Staff"></i><span class="sr-only">Edit Assigned Staff</span></button>';
                 } 
@@ -1042,6 +1085,20 @@ echo '<span style="padding-left: 10px">Please pass a valid Box ID</span>';
        
 jQuery(document).ready(function(){
   jQuery('[data-toggle="tooltip"]').tooltip();
+});
+
+//freeze button
+jQuery('#box_completion_status_link').on('click', function(e){
+     var form = this;
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/reset_box_completion_status.php',{
+        boxid : jQuery('#box_id').val()
+}, 
+   function (response) {
+       
+if(!alert(response)){window.location.reload();}
+
+   });
 });
 
 function wpsc_get_box_editor(box_id){

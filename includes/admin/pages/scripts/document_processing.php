@@ -110,15 +110,53 @@ if( $is_requester == 'true' ){
 	$searchQuery .= " and (b.customer_name ='".$user_name."') ";
 }
 
+//IF Search Generic Contains Commas
+
+$searchForValue = ',';
+
 if($searchGeneric != ''){
-    //used to be a.folderdocinfo_id
+    
+if(strpos($searchGeneric, $searchForValue) !== false){
+    
+//Strip spaces, breaks, tabs
+$search_request_ids = preg_replace('/\s+/', '', $searchGeneric);
+
+//Determine if ALL values are request IDs
+   $var=explode(',',$search_request_ids);
+   
+   $count_var = count($var);
+   
+   $count_match = 0;
+   foreach($var as $data)
+    {
+
+    $get_request = $wpdb->get_row("SELECT COUNT(id) as count
+FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = ".$data);
+
+    $request_id_match = $get_request->count;
+    
+    if($request_id_match != 0) {
+    $count_match++;
+    }
+    
+    if($count_var == $count_match) {
+    
+    $searchQuery .= " and b.request_id IN (".$search_request_ids.") ";
+    
+    } else {
+    $searchQuery .= "";
+    }
+    
+}
+
+} else {
+
    $searchQuery .= " and (a.folderdocinfofile_id like '%".$searchGeneric."%' or 
       b.request_id like '%".$searchGeneric."%' or 
       f.name like '%".$searchGeneric."%' or
       c.office_acronym like '%".$searchGeneric."%' or
       b.ticket_priority like '%".$searchGeneric."%') ";
-
-//   $searchQuery .= " and (a.folderdocinfo_id like '%".$searchGeneric."%' ) ";
+}
 }
 
 if($searchValue != ''){

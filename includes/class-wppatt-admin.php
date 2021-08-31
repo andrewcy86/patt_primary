@@ -471,6 +471,13 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	
 	    $get_shipping_count = $wpdb->get_var('SELECT COUNT(*) FROM ' .$wpdb->prefix .'wpsc_epa_shipping_tracking WHERE ticket_id = ' . $ticket_id );
 	     
+	    $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+        $initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+        $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+        
+        //Shipping
+        $status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id); 
+	     
 		//if ( ! $current_user->has_cap( 'wpsc_agent' ) ) {	// Only show widget for agents.
 		//	return;
 		//}
@@ -479,8 +486,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		
 		//Remove ability to edit widget when active = 0
 	    $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
-	    $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-	    
+
 	if ($status_id != $new_request_tag->term_id) {
 	
 		$ticket_widget_name = __( 'Shipping', 'supportcandy' );
@@ -494,7 +500,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		echo '">';
 	
 		echo '<h4 class="widget_header"> <i class="fa fa-truck" aria-hidden="true" title="Shipping"></i><span class="sr-only">Shipping</span> ' . $ticket_widget_name;
-		if($is_active == 1) {
+		if($is_active == 1 && !in_array($status_id, $status_id_arr)) {
 		echo ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit" aria-hidden="true" title="Edit Shipping"></i><span class="sr-only">Edit Shipping</span></button></h4>';
 		} else {
 		echo ' </h4>';
@@ -543,7 +549,8 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 			        echo '<li><i class="fab fa-dhl fa-lg" aria-hidden="true" title="DHL"></i><span class="sr-only">DHL</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $dhl_tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    default:
-			        echo $tracking_num_display;
+			        //echo $tracking_num_display;
+			        echo '<li><i class="fas fa-shipping-fast" aria-hidden="true" title="external"></i><span class="sr-only">external</span> ' . $tracking_num_display . ' ' . $shipped_status . $delivered_status . '</li>';
 			
 			}
 		    if (++$i == 10) break;

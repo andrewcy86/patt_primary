@@ -88,7 +88,7 @@ foreach( $searchByID as $item ) {
 		
 		$box_statuses = Patt_Custom_Func::get_all_status();
 		
-		$box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a>';
+		$box_link = '<span class="text_highlight"><a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a></span>';
 		$status = $details_array['box_status'];
 		//$details_array['status_name'] = $box_statuses;
 		$error_array[$item]['item_error'] = 'Box '.$box_link.' is in status <b>'.$box_statuses[$status].'</b> which is not Declinable.';
@@ -121,7 +121,7 @@ foreach( $searchByID as $item ) {
 			$str_length = 7;	
 	        $return_id = substr("000000{$num}", -$str_length);
 	        
-	        $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" target="_blank">'.$details_array['box_id'].'</a>';
+	        $box_link = '<span class="text_highlight"><a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" target="_blank">'.$details_array['box_id'].'</a></span>';
 	            
 			$error_array[$item]['item_error'] = 'Box '.$box_link.' already in Decline ';
 			$error_array[$item]['return_id'] = $return_id;
@@ -184,7 +184,7 @@ foreach( $searchByID as $item ) {
             $return_id = substr("000000{$num}", -$str_length);
             
             $folder_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?pid=docsearch&page=filedetails&id='.$details_array['Folderdoc_Info_id'].'" >'.$details_array['Folderdoc_Info_id'].'</a>';
-            $box_link = '<a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a>';
+            $box_link = '<span class="text_highlight"><a href="'.$subfolder_path.'/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id='.$details_array['box_id'].'" >'.$details_array['box_id'].'</a></span>';
             
 // 			$error_array[$item]['item_error'] = 'Containing Box '.$box_link.' for Folder/File '.$folder_link.' already in Return ';
 			$error_array[$item]['item_error'] = 'Containing Box '.$box_link.' for Folder/File '.$folder_link.' already in Decline ';
@@ -199,10 +199,10 @@ foreach( $searchByID as $item ) {
 		
 		$pieces = explode('-', $details_array['box_id'],2 );
 		$ticket_id = $pieces[0];
-		$link_str_box = "<a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=".
-							$details_array['box_id']."' target='_blank' >".$details_array['box_id']."</a>";
-		$link_str_request = "<a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
-								$ticket_id."' target='_blank'>".$ticket_id."</a>";					
+		$link_str_box = "<span class='text_highlight'><a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=".
+							$details_array['box_id']."' target='_blank' >".$details_array['box_id']."</a></span>";
+		$link_str_request = "<span class='text_highlight'><a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
+								$ticket_id."' target='_blank'>".$ticket_id."</a></span>";					
 		
 		$box_freeze = Patt_Custom_Func::id_in_freeze( $details_array['box_id'], 'box' );
 		if( $box_freeze ) {
@@ -230,8 +230,8 @@ foreach( $searchByID as $item ) {
 		
 		$link_str_ff = "<a href='".$subfolder_path."/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=".
 							$details_array['Folderdoc_Info_id']."' target='_blank' >".$details_array['Folderdoc_Info_id']."</a>";
-		$link_str_request = "<a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
-								$ticket_id."' target='_blank'>".$ticket_id."</a>";					
+		$link_str_request = "<span class='text_highlight'><a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".
+								$ticket_id."' target='_blank'>".$ticket_id."</a></span>";					
 							
 		
 		$data2[] = array(
