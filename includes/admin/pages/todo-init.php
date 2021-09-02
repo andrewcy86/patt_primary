@@ -1090,6 +1090,32 @@ function view_assigned_agents( box_id ) {
 // });
 }
 
+// Open Modal for editting todo items
+function edit_to_do( box_id ) {	
+	
+	//console.log('Icon!');
+    var arr = [box_id];
+    
+    //console.log('arr: '+arr);
+    //console.log(arr);
+	
+	wpsc_modal_open('Edit To-Do List');
+	
+	var data = {
+	    action: 'wppatt_assign_agents',
+	    item_ids: arr,
+	    type: 'todo'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	    jQuery('#wpsc_popup_body').html(response.body);
+	    jQuery('#wpsc_popup_footer').html(response.footer);
+	    jQuery('#wpsc_cat_name').focus();
+	}); 
+// });
+}
+
 function wpsc_help_filters(){
 
 	wpsc_modal_open('Information on Filters');

@@ -500,7 +500,7 @@ if ($status_term_id == $waiting_shelved_term_id && $row['box_previous_status'] !
 if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){	
 	$assigned_agents_icon = '
 	<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>
-	<span style="font-size: 1.0em; color: #1d1f1d;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>
+	<span style="font-size: 1.0em; color: #1d1f1d;" onclick="edit_to_do(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>
 	';
 } else {
     $assigned_agents_icon = '';

@@ -244,6 +244,7 @@ $table_box_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $data_update_d = array('box_destroyed' => 0);
 $data_where_d = array('id' => $box_id);
 $wpdb->update($table_box_name, $data_update_d, $data_where_d);
+do_action('wpppatt_after_box_destruction_unflag', $ticket_id, Patt_Custom_Func::convert_box_id_to_dbid($box_id));
 
 //Reset the physical location
 // TODO determine what to do with this
@@ -306,11 +307,6 @@ WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 
 $destruction_count_sum = $destruction_count->sum;
 
-//echo 'des val -'.$get_destruction_val .'-';
-//echo 'des vio -'.$destruction_violation;
-//echo 'fold count -'.$folder_file_count_sum .'-';
-//echo 'destruct count -'.$destruction_count_sum;
-
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
 $table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
@@ -337,7 +333,7 @@ $sso_update = array('occupied' => 0);
 $sso_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $sso_update, $sso_where);
 }
-
+do_action('wpppatt_after_box_destruction', $ticket_id, Patt_Custom_Func::convert_box_id_to_dbid($box_id));
 }
 do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 
@@ -475,6 +471,7 @@ $table_pl = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $pl_update = array('location_status_id' => '6','box_destroyed' => '1');
 $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
+do_action('wpppatt_after_box_destruction', $ticket_id, Patt_Custom_Func::convert_box_id_to_dbid($box_id));
 
 //SET SHELF LOCATION TO 0
 $table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';

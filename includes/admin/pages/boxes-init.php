@@ -151,16 +151,48 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
     			<option value="<?php echo $critical_tag->term_id; ?>">Critical</option>
              </select>
     <br /><br />
-				
+
+<?php	
+$user_digitization_center = get_user_meta( $current_user->ID, 'user_digization_center',true);
+
+if ( !empty($user_digitization_center) && $user_digitization_center == 'East' && $agent_permissions['label'] == 'Agent') { 
+?>
+<input type="hidden" id="searchByDigitizationCenter" value="East" />
+<?php 
+} 
+?>
+
+<?php
+if ( !empty($user_digitization_center) && $user_digitization_center == 'West' && $agent_permissions['label'] == 'Agent') { 
+?>
+<input type="hidden" id="searchByDigitizationCenter" value="West" />
+<?php 
+} 
+?>
+
+<?php
+if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))) { 
+?>
+				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
+					<option value=''>-- Select Digitization Center --</option>
+					<option value='East' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'East'){ echo 'selected'; } ?>>East</option>
+					<option value='West' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'West'){ echo 'selected'; } ?>>West</option>
+					<option value='Not Assigned'>Not Assigned</option>
+				</select>
+    <br /><br />
+<?php 
+} elseif(($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet')) {
+?>
 				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
 					<option value='West'>West</option>
 					<option value='Not Assigned'>Not Assigned</option>
 				</select>
-				
-				<br><br>
-				
+    <br /><br />
+<?php
+}
+?>	
 				
 			   <select id='searchByRecallDecline' aria-label='Search by Recall or Decline'>
                <option value=''>-- Select Recall or Decline --</option>
@@ -360,7 +392,14 @@ jQuery(document).ready(function(){
 			data.sg = jQuery('#searchGeneric').val();
 			data.bid = jQuery('#searchByBoxID').val();
 			data.po = jQuery('#searchByProgramOffice').val();
-			data.dc = jQuery('#searchByDigitizationCenter').val(); 
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>
+		    data.dc = jQuery('#searchByDigitizationCenter').val(); 
+			<?php
+            }
+			?>
 			data.sp = jQuery('#searchByPriority').val();
 			data.sbs = jQuery('#searchByStatus').val();
 			data.rd = jQuery('#searchByRecallDecline').val();
@@ -373,7 +412,14 @@ jQuery(document).ready(function(){
 			jQuery('#searchGeneric').val(data.sg);
 			jQuery('#searchByBoxID').val(data.bid);
 			jQuery('#searchByProgramOffice').val(data.po);
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>
 			jQuery('#searchByDigitizationCenter').val(data.dc);
+			<?php
+            }
+			?>
 			jQuery('#searchByPriority').val(data.sp);
 			jQuery('#searchByRecallDecline').val(data.rd);
 			jQuery('#searchByECMSSEMS').val(data.es);

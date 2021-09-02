@@ -24,7 +24,9 @@ $save_enabled = true;
 //
 // Get items
 //
+
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+
 $item_ids = $_REQUEST['item_ids']; 
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions(); 
@@ -205,9 +207,9 @@ echo '</pre><br>';
 echo 'restricted_reason_array: <br><pre>';
 print_r( $restricted_reason_array );
 echo '</pre><br>';
+*/
 
 	
-*/
 	
 
 	

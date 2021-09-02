@@ -33,6 +33,7 @@ $ticket_box_status = 0;
 //Box Statuses
 $box_pending_tag = get_term_by('slug', 'pending', 'wpsc_box_statuses'); //748
 $box_scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
+$box_scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); //671
 $box_destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
 $box_destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); //1272
 $box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
@@ -102,6 +103,8 @@ $unathorized_destroy++;
 }
 }
 
+do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+
 if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $validate == 0 && $ticket_request_status == 0 && $ticket_box_status == 0) {
 foreach($folderdocid_arr as $key) {
 $get_rescan = $wpdb->get_row("SELECT rescan FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '".$key."'");
@@ -118,7 +121,8 @@ $rescan_reversal = 1;
 $data_update = array('rescan' => 0);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+//do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+
 
 // Check to see if timestamp exists
 $converted = Patt_Custom_Func::convert_folderdocinfofile_id($key);
@@ -140,7 +144,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 if ($get_rescan_val == 0){
 
 //Get total count of files in a box and compare with validation count
-$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id, b.box_id, b.box_status
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$key."'");
@@ -161,32 +165,49 @@ foreach($get_box_ids as $item) {
     if( ($total_files - $total_rescan) == $total_files) {
         
         //Folder/File should go to scanning preparation when it has already been recalled, otherwise go to scanning digitization
-        if(Patt_Custom_Func::id_in_recall($key, 'folderfile') == 1 || Patt_Custom_Func::id_in_recall(Patt_Custom_Func::convert_box_id_to_dbid($item->id), 'box') == 1) {
+        if(Patt_Custom_Func::id_in_recall($key, 'folderfile') == 1 || Patt_Custom_Func::id_in_recall($item->box_id, 'box') == 1) {
             $data_update = array('scanning_preparation' => 0, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
         
-            $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
+            // Old box status and new box status audit log action
+            $old_status_str = Patt_Custom_Func::get_box_status($item->id);
+    		$new_status_str = $box_scanning_preparation_tag->name;
+    		$status_str = $old_status_str . ' to ' . $new_status_str;
+        
+            $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id, 'box_previous_status' => $item->box_status);
             $data_where_box_status = array('id' => $item->id);
             $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+            
+            // Audit log action for resetting the box completion to do list
+            do_action('wpppatt_after_reset_box_completion_status', $ticket_id, $item->box_id);
+            do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
         }
         else {
             $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
         
-            $data_update_box_status = array('box_status' => $box_scanning_digitization_tag->term_id);
+            // Old box status and new box status audit log action
+            $old_status_str = Patt_Custom_Func::get_box_status($item->id);
+    		$new_status_str = $box_scanning_digitization_tag->name;
+    		$status_str = $old_status_str . ' to ' . $new_status_str;
+        
+            $data_update_box_status = array('box_status' => $box_scanning_digitization_tag->term_id, 'box_previous_status' => $item->box_status);
             $data_where_box_status = array('id' => $item->id);
             $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+            
+            // Audit log action for resetting the box completion to do list
+            do_action('wpppatt_after_reset_box_completion_status', $ticket_id, $item->box_id);
+            do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
         }
         
         $data_where = array('id' => $item->storage_location_id);
         $wpdb->update($storage_location_table, $data_update, $data_where);
-        
-        //TODO Add Rescan do_action for audit log
     }
 }    
 
 $data_update = array('rescan' => 1);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+//do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+
 
 // Check to see if timestamp exists
 $type = 'Re-scan';
@@ -196,11 +217,6 @@ $wpdb->insert($table_timestamp, array('folderdocinfofile_id' => Patt_Custom_Func
 $data_update = array('date_updated' => $date_time);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name, $data_update, $data_where);
-
-//This is most likely a holdover from when we only used request statuses
-// if ($status_id == $validation_tag->term_id) {
-// $wpscfunction->change_status($ticket_id, $rescan_tag->term_id);   
-// }
 }
 
 if ($rescan_reversal == 1 && $destroyed == 0 && $validate == 0 && $ticket_request_status == 0 && $ticket_box_status == 0) {
@@ -210,7 +226,9 @@ echo "<strong>".$key."</strong> : Re-scan has been updated. A re-scan flag has b
 echo "<strong>".$key."</strong> : Re-scan flag has been set<br />";
 }
 
-}
+} //END FOREACH
+
+do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
 
 } elseif($destroyed > 0) {
 echo " A destroyed folder/file has been selected and cannot be validated.<br />Please unselect the destroyed folder/file. ";
@@ -263,7 +281,8 @@ $rescan_reversal = 1;
 $data_update = array('rescan' => 0);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+//do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
+do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
 
 // Check to see if timestamp exists
 $converted = Patt_Custom_Func::convert_folderdocinfofile_id($folderdocid_string);
@@ -285,7 +304,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 if ($get_rescan_val == 0){
 
 //Get total count of files in a box and compare with rescan count
-$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id, b.box_id, b.box_status
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
@@ -304,30 +323,47 @@ $total_rescan = $get_total_rescan->total_rescan;
 if( ($total_files - $total_rescan) == $total_files) {
         //Folder/File should go to scanning preparation when it has already been recalled, otherwise go to scanning digitization
         $data_update = '';
-        if(Patt_Custom_Func::id_in_recall($key, 'folderfile') == 1 || Patt_Custom_Func::id_in_recall(Patt_Custom_Func::convert_box_id_to_dbid($get_box_ids->id), 'box') == 1) {
+        if(Patt_Custom_Func::id_in_recall($key, 'folderfile') == 1 || Patt_Custom_Func::id_in_recall($get_box_ids->box_id, 'box') == 1) {
             $data_update = array('scanning_preparation' => 0, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
             
-            $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
+            // Old box status and new box status audit log action
+            $old_status_str = Patt_Custom_Func::get_box_status($get_box_ids->id);
+    		$new_status_str = $box_scanning_preparation_tag->name;
+    		$status_str = $old_status_str . ' to ' . $new_status_str;
+            
+            $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id, 'box_previous_status' => $get_box_ids->box_status);
             $data_where_box_status = array('id' => $get_box_ids->id);
             $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+            
+            do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $get_box_ids->box_id);
+            
+            // TODO add action for audit log for next step in the todo list
         }
         else {
             $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 0, 'qa_qc' => 0, 'validation' => 0, 'destruction_approved' => 0, 'destruction_of_source' => 0);
         
-            $data_update_box_status = array('box_status' => $box_scanning_digitization_tag->term_id);
+            // Old box status and new box status audit log action
+            $old_status_str = Patt_Custom_Func::get_box_status($get_box_ids->id);
+    		$new_status_str = $box_scanning_digitization_tag->name;
+    		$status_str = $old_status_str . ' to ' . $new_status_str;
+        
+            $data_update_box_status = array('box_status' => $box_scanning_digitization_tag->term_id, 'box_previous_status' => $get_box_ids->box_status);
             $data_where_box_status = array('id' => $get_box_ids->id);
             $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+            
+            do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $get_box_ids->box_id);
+            
+            // TODO add action for audit log for next step in the todo list
         }
     $data_where = array('id' => $get_box_ids->storage_location_id);
     $wpdb->update($storage_location_table, $data_update, $data_where);
-    
-    //TODO Add Validation do_action for audit log
 }
     
 $data_update = array('rescan' => 1);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+//do_action('wpppatt_after_undo_rescan_document', $ticket_id, $folderdocid_string);
+do_action('wpppatt_after_rescan_document', $ticket_id, $folderdocid_string);
 
 // Check to see if timestamp exists
 $type = 'Re-scan';
@@ -337,11 +373,6 @@ $wpdb->insert($table_timestamp, array('folderdocinfofile_id' => Patt_Custom_Func
 $data_update = array('date_updated' => $date_time);
 $data_where = array('folderdocinfofile_id' => $folderdocid_string);
 $wpdb->update($table_name, $data_update, $data_where);
-
-//This is most likely a holdover from when we only used request statuses
-// if ($status_id == $validation_tag->term_id) {
-// $wpscfunction->change_status($ticket_id, $rescan_tag->term_id);   
-// }
 }
 
 if ($rescan_reversal == 1 && $destroyed == 0 && $ticket_request_status == 0 && $ticket_box_status == 0) {

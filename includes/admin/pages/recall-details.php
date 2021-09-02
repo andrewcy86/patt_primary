@@ -107,7 +107,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			//$db_null = null;
 			
 			// OLD: $recall_obj->folderdoc_id == $db_null
-			
+			// if box, not a folder doc
 			if($recall_obj->box_id > 0 && $recall_obj->folderdoc_id_parent == $db_empty ) {
 				$recall_type = "Box";
 				$title = "[Boxes Do Not Have Titles]";
@@ -161,14 +161,14 @@ $cancel_recall_btn_css = $action_default_btn_css;
 
 			//$real_array_of_users = [$recall_obj->user_id];
 			
-			//Make Status Pretty
+			// Make Status Pretty
 			$status_term_id = $recall_obj->recall_status_id;
 			$status_background = get_term_meta($status_term_id, 'wppatt_recall_status_background_color', true);
 			$status_color = get_term_meta($status_term_id, 'wppatt_recall_status_color', true);
 			$status_style = "background-color:".$status_background.";color:".$status_color.";";
 			//echo "<br>status style: ".$status_style."<br>";
 			
-			//Tracking Info
+			// Tracking Info
 			$tracking_url = Patt_Custom_Func::get_tracking_url($recall_obj->tracking_number);
 			$tracking_num = '<a href="' . $tracking_url.'" target="_blank">'.$recall_obj->tracking_number.'</a>';
 			if ($tracking_num == $db_empty) {
@@ -1062,7 +1062,7 @@ jQuery(document).ready(function() {
 	     
 	        
 } );
-
+    // Old requirement.
 		function wpsc_get_folderfile_editor(doc_id){
 <?php
 			$box_il_val = '';

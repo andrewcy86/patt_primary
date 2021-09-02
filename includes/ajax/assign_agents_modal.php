@@ -379,7 +379,6 @@ echo '</pre><br><br>';
 
 
 ob_start();
-/*
 
 // D E B U G 
 echo "type: " . $type ."<br>";
@@ -408,7 +407,15 @@ echo "current: " . $test;
 echo "<br>";
 echo "box status terms: ";
 echo $scanning_preparation_term . "-" . $scanning_digitization_term . "-" . $qa_qc_term . "-" . $validation_term . "-" . $destruction_approved_term . "-" . $destruction_of_source_term . "<br>";
-*/
+echo "todo_scanning_preparation_disabled: " . $todo_scanning_preparation_disabled . "<br>";
+echo "todo_scanning_digitization_disabled: " . $todo_scanning_digitization_disabled . "<br>";
+echo "todo_qa_qc_disabled: " . $todo_qa_qc_disabled . "<br>";
+echo "todo_validation_disabled: " . $todo_validation_disabled . "<br>";
+echo "todo_destruction_approved_disabled: " . $todo_destruction_approved_disabled . "<br>";
+echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disabled . "<br>";
+
+
+
 
 
 
@@ -610,20 +617,6 @@ echo $scanning_preparation_term . "-" . $scanning_digitization_term . "-" . $qa_
 			
 			<div class="col-sm-2 text-xs-center">
 				<?php
-  				
-        
-/*
-        $scanning_preparation_term = $scanning_preparation_tag->term_id;
-        $scanning_digitization_term = $scanning_digitization_tag->term_id;
-        $qa_qc_term = $qa_qc_tag->term_id;
-        $validation_term = $validation_tag->term_id;
-        $destruction_approved_term = $destruction_approved_tag->term_id;
-        $destruction_of_source_term = $destruction_of_source_tag->term_id;
-*/
-        
-        
-        
-  				
   				
         if( $status->name == 'Scanning Preparation' ) {
         ?>
@@ -1034,6 +1027,11 @@ jQuery(document).ready(function(){
     
     let message = 'The containing Request does not have Destruction Approval yet.';
     set_alert( 'danger', message );    
+    
+    //disable the checkbox
+    let destruction_approved_term = <?php echo $destruction_approved_term; ?>;
+    console.log({ destruction_approved_term:destruction_approved_term }); 
+    jQuery( '*[data-box-status-id="' + destruction_approved_term + '"]' ).attr( "disabled", true );
   }
   
   

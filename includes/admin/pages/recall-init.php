@@ -107,14 +107,51 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
         <option data-value='<?php echo $value; ?>' value='<?php echo $new_program_office . ' : ' . $office_name; ?>'></option>
      <?php } ?>
      </datalist>
-				<br><br>
-				<select id='searchByDigitizationCenter' aria-label='Search by Digitization Center'>
+     
+
+<?php	
+$user_digitization_center = get_user_meta( $current_user->ID, 'user_digization_center',true);
+
+if ( !empty($user_digitization_center) && $user_digitization_center == 'East' && $agent_permissions['label'] == 'Agent') { 
+?>
+<input type="hidden" id="searchByDigitizationCenter" value="East" />
+<?php 
+} 
+?>
+
+<?php
+if ( !empty($user_digitization_center) && $user_digitization_center == 'West' && $agent_permissions['label'] == 'Agent') { 
+?>
+<input type="hidden" id="searchByDigitizationCenter" value="West" />
+<?php 
+} 
+?>
+
+<?php
+if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))) { 
+?>
+    <br /><br />
+				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
+					<option value=''>-- Select Digitization Center --</option>
+					<option value='East' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'East'){ echo 'selected'; } ?>>East</option>
+					<option value='West' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'West'){ echo 'selected'; } ?>>West</option>
+					<option value='Not Assigned'>Not Assigned</option>
+				</select>
+
+<?php 
+} elseif(($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet')) {
+?>
+    <br /><br />
+				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
 					<option value=''>-- Select Digitization Center --</option>
 					<option value='East'>East</option>
 					<option value='West'>West</option>
 					<option value='Not Assigned'>Not Assigned</option>
 				</select>
-				
+
+<?php
+}
+?>
 				
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
@@ -256,14 +293,30 @@ jQuery('[data-toggle="tooltip"]').tooltip();
 			data.sg = jQuery('#searchGeneric').val();
 			data.bid = jQuery('#searchByRecallID').val();
 			data.po = jQuery('#searchByProgramOffice').val();
+
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>			
 			data.dc = jQuery('#searchByDigitizationCenter').val();
+			<?php
+            }
+			?>
 			data.page = jQuery('tbl_templates_boxes_length').val();
 		},
 		'stateLoadParams': function(settings, data) {
 			jQuery('#searchGeneric').val(data.sg);
 			jQuery('#searchByRecallID').val(data.bid);
 			jQuery('#searchByProgramOffice').val(data.po);
+
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>	
 			jQuery('#searchByDigitizationCenter').val(data.dc);
+			<?php
+            }
+			?>
 			jQuery('tbl_templates_boxes_length').val(data.page);
 		},
 	    'serverSide': true,

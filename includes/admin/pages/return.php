@@ -1,4 +1,6 @@
 <?php
+// Formally return now decline
+
 if ( ! defined( 'ABSPATH' ) ) {
   exit; // Exit if accessed directly
 }

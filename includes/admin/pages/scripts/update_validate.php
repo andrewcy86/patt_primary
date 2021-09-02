@@ -98,9 +98,10 @@ $get_ticket_id = $wpdb->get_row("SELECT id FROM " . $wpdb->prefix . "wpsc_ticket
 $ticket_id = $get_ticket_id->id;
 
 if ($get_validation_val == 1){
-
+// Flag as unvalidated document before setting box status in the audit log
+do_action('wpppatt_after_invalidate_document', $ticket_id, $key);
 //Get total count of files in a box and compare with validation count
-$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id, b.box_id, b.box_status
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$key."'");
@@ -122,10 +123,19 @@ foreach($get_box_ids as $item) {
         $data_where = array('id' => $item->storage_location_id);
         $wpdb->update($storage_location_table, $data_update, $data_where);
         
-        $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
+        // Old box status and new box status audit log action
+        $old_status_str = Patt_Custom_Func::get_box_status($item->id);
+		$new_status_str = $box_scanning_preparation_tag->name;
+		$status_str = $old_status_str . ' to ' . $new_status_str;
+        
+        // Update box status to Scanning Preparation
+        $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id, 'box_previous_status' => $item->box_status);
         $data_where_box_status = array('id' => $item->id);
         $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
-        //TODO Add Validation do_action for audit log
+        
+        // Audit log action for resetting the box completion to do list
+        do_action('wpppatt_after_reset_box_completion_status', $ticket_id, $item->box_id);
+        do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
     }
 }    
 
@@ -133,7 +143,6 @@ $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_invalidate_document', $ticket_id, $key);
 
 // Check to see if timestamp exists
 $converted = Patt_Custom_Func::convert_folderdocinfofile_id($key);
@@ -160,7 +169,7 @@ $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_validate_document', $ticket_id, $key);
 
 //Get total count of files in a box and compare with validation count
-$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_results("SELECT b.id, b.storage_location_id, b.box_status
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$key."'");
@@ -182,10 +191,17 @@ foreach($get_box_ids as $item) {
         $data_where = array('id' => $item->storage_location_id);
         $wpdb->update($storage_location_table, $data_update, $data_where);
         
-        $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id);
+        $old_status_str = Patt_Custom_Func::get_box_status($item->id);
+		$new_status_str = $box_destruction_approved_tag->name;
+		$status_str = $old_status_str . ' to ' . $new_status_str;
+		do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
+        
+        // Set box status to Destruction Approved and previous box status
+        $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id, 'box_previous_status' => $item->box_status);
         $data_where_box_status = array('id' => $item->id);
         $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
-        //TODO Add Validation do_action for audit log
+        
+        // TODO Add do_action for when this moves to the next step in the todo list
     }
 }
 
@@ -242,7 +258,7 @@ $get_rescan_val = $get_rescan->rescan;
 if ($get_validation_val == 1 && $get_rescan_val == 0){
 
 //Get total count of files in a box and compare with validation count
-$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id, b.box_id
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
@@ -263,10 +279,18 @@ if( ($total_files - $total_validation) == 0) {
     $data_where = array('id' => $get_box_ids->storage_location_id);
     $wpdb->update($storage_location_table, $data_update, $data_where);
     
+    // Old box status and new box status audit log action
+    $old_status_str = Patt_Custom_Func::get_box_status($get_box_ids->id);
+	$new_status_str = $box_scanning_preparation_tag->name;
+	$status_str = $old_status_str . ' to ' . $new_status_str;
+    
     $data_update_box_status = array('box_status' => $box_scanning_preparation_tag->term_id);
     $data_where_box_status = array('id' => $get_box_ids->id);
     $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
-    //TODO Add Validation do_action for audit log
+    
+    // Audit log action for resetting the box completion to do list
+    do_action('wpppatt_after_reset_box_completion_status', $ticket_id, $get_box_ids->box_id);
+    do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $get_box_ids->box_id);
 }
     
 $validation_reversal = 1;
@@ -299,7 +323,7 @@ $wpdb->update($table_name , $data_update, $data_where);
 do_action('wpppatt_after_validate_document', $ticket_id, $folderdocid_string);
 
 //Get total count of files in a box and compare with validation count
-$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id
+$get_box_ids = $wpdb->get_row("SELECT b.id, b.storage_location_id, b.box_id
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.folderdocinfofile_id = '".$folderdocid_string."'");
@@ -320,10 +344,17 @@ if( ($total_files - $total_validation) == 0) {
     $data_where = array('id' => $get_box_ids->storage_location_id);
     $wpdb->update($storage_location_table, $data_update, $data_where);
     
+    // Old box status and new box status audit log action
+    $old_status_str = Patt_Custom_Func::get_box_status($get_box_ids->id);
+	$new_status_str = $box_destruction_approved_tag->name;
+	$status_str = $old_status_str . ' to ' . $new_status_str;
+    
     $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id);
     $data_where_box_status = array('id' => $get_box_ids->id);
     $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
-    //TODO Add Validation do_action for audit log
+    
+    // TODO Add audit log action for moving to next step in todo list
+    do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $get_box_ids->box_id);
 }
 
 //PATT BEGIN FOR REPORTING
@@ -340,7 +371,7 @@ $wpdb->update($table_name, $data_update, $data_where);
 }
 
 
-
+if ($page_id == 'filedetails'){
 if ($get_rescan_val == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
 echo " You must unflag document from re-scanning before validating. ";
 } elseif ($validation_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0 && $ticket_box_status == 0) {
@@ -351,6 +382,7 @@ echo " Validation has been updated. A validation has been reversed. ";
 echo " Validation has been updated. ";
 }
 
+}
 }
 
 else {

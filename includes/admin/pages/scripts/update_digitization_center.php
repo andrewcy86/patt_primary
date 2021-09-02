@@ -75,8 +75,11 @@ $ticket_id = $get_ticket_id->ticket_id;
 
 do_action('wpppatt_after_digitization_center', $ticket_id, $box_id_val, $box_dc_name);
 
+if($box_id_val == '' && $box_dc_name == '') {
+echo "Please select a digitization center. No updates have been made";
+} else {
 echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$box_dc_name;
-   
+}   
 } else {
  echo "Error updating location status table.";  
 }

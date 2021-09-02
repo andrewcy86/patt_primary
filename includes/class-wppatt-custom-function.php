@@ -89,21 +89,23 @@ $box_details_count = count($box_id_assignment);
 
 } else {
 //Get array of unassigned boxes from ticket ID
-	$box_id_assignment = self::get_unassigned_boxes($tkid);
+	$box_id_assignment = self::get_unassigned_boxes($tkid,$dc_final);
 //print_r($box_id_assignment);
 //Select count of boxes that have not been auto assigned
     $box_details_count = count($box_id_assignment);
 }
 
+$ticketid_array = array();
 
 // Check to see if tkid is a comma delimited list
 if ($destruction_flag == 0)	{
 	$ticketid_array = explode(',', $tkid);
 }
-	if (sizeof($ticketid_array) > 1 && $destruction_flag == 0) {
+
+	if (count($ticketid_array) > 1 && $destruction_flag == 0) {
 // If comma delimited list, parse out into array and run a for-each loop
 		echo 'Multiple Tickets selected';
-		print_r($ticketid_array);
+		//print_r($ticketid_array);
 	} else {
 // Is the box count = 1?:: Continuous shelf space not requried. Find first available gap.
 
@@ -2923,7 +2925,7 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb; 
             $box_details = [];
             $args = [
-                'select' => "box_id, {$wpdb->prefix}wpsc_epa_boxinfo.id as Box_id_FK, program_office_id as box_prog_office_code, box_destroyed, box_status,
+                'select' => "box_id, {$wpdb->prefix}wpsc_epa_boxinfo.id as Box_id_FK, program_office_id as box_prog_office_code, box_destroyed, box_status, storage_location_id,
                 {$wpdb->prefix}wpsc_epa_program_office.id as Program_Office_id_FK, 
                 {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
                 {$wpdb->prefix}wpsc_epa_program_office.office_name,
@@ -3706,6 +3708,17 @@ public static function id_in_recall( $identifier, $type ) {
 	        return $get_request_status->ticket_status;
         }
         
+        public static function get_box_status( $box_id ) {
+            global $wpdb;
+	        $get_box_status = $wpdb->get_row("SELECT b.name
+	        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+	        INNER JOIN " . $wpdb->prefix . "terms b ON b.term_id = a.box_status
+	        WHERE id = " . $box_id);
+            $box_status = $get_box_status->name;
+	        
+	        return $box_status;
+        }
+        
         // Get ticket owner's customer_name (wp display name) id from non-zero'd ticket id. 
         public static function get_ticket_owner_agent_id( $where ) {
 	        global $wpdb;
@@ -3804,7 +3817,7 @@ public static function id_in_recall( $identifier, $type ) {
         return $form;
     }
 
-    public static function get_unassigned_boxes($tkid){
+    public static function get_unassigned_boxes($tkid,$dc_final){
 
         global $wpdb; 
 
@@ -3818,6 +3831,7 @@ public static function id_in_recall( $identifier, $type ) {
         ".$wpdb->prefix."wpsc_epa_storage_location.shelf = 0 AND 
         ".$wpdb->prefix."wpsc_epa_storage_location.position = 0 AND
         ".$wpdb->prefix."wpsc_epa_boxinfo.location_status_id <> 6 AND
+        ".$wpdb->prefix."wpsc_epa_storage_location.digitization_center = '" . $dc_final . "' AND
         ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
         ");
 

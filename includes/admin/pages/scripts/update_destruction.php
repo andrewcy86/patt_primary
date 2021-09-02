@@ -23,7 +23,7 @@ $box_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 // Define current time
 $date_time = date('Y-m-d H:i:s');
 
-$destruction_reversal = 0;
+$destruction_reversal = array();
 $counter = 0;
 
 $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
@@ -39,18 +39,22 @@ $status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial
 
 foreach($boxid_arr as $key) {    
 
-$get_dc = $wpdb->get_row("SELECT a.ticket_category, a.id
+$get_box = $wpdb->get_row("SELECT a.ticket_category, a.id, b.box_destroyed
 FROM " . $wpdb->prefix . "wpsc_ticket a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
 WHERE b.box_id = '".$key."'");
-$get_dc_val = $get_dc->ticket_category;
-$get_ticket_id_val = $get_dc->id;
+$get_dc_val = $get_box->ticket_category;
+$get_box_destroyed_val = $get_box->box_destroyed;
+$get_ticket_id_val = $get_box->id;
 
 array_push($dc_array,$get_dc_val);
+
+array_push($destruction_reversal,$get_box_destroyed_val);
 
 }
 
 $dc_array_count = count(array_unique($dc_array));
+
 
 foreach($boxid_arr as $key) {    
 $counter++;
@@ -152,9 +156,8 @@ FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
-if ($get_destruction_val == 1 && $dc_array_count == 1){
-
-$destruction_reversal = 1;
+if ($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
+    
 $box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999');
 $box_data_where = array('box_id' => $key);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
@@ -168,7 +171,7 @@ $wpdb->update($box_table_name, $data_update, $data_where);
 
 }
 
-if ($get_destruction_val == 0){
+if ($get_destruction_val == 0 && count(array_unique($destruction_reversal)) == 1){
 $box_data_update = array('box_destroyed' => 1);
 $box_data_where = array('box_id' => $key);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
@@ -207,21 +210,28 @@ $wpdb->update($box_table_name, $data_update, $data_where);
 
 }
 
-if ($dc_array_count > 1) {
+if ($dc_array_count > 1 && count(array_unique($destruction_reversal)) > 1) {
+echo '<strong>'.$key.'</strong> : ';
+echo "Flagging/unflagging box destruction from boxes in different digitization centers not allowed.";
+if ($counter > 0) {
+echo '<br />';
+echo '<br />';
+}
+} elseif ($dc_array_count > 1 && count(array_unique($destruction_reversal)) == 1 && $destruction_reversal[0] == 1) {
 echo '<strong>'.$key.'</strong> : ';
 echo "Boxes that belong to multiple digitzation centers cannot be selected.";
 if ($counter > 0) {
 echo '<br />';
 echo '<br />';
 }
-} elseif($destruction_reversal == 1 && $dc_array_count == 1) {
+} elseif(count(array_unique($destruction_reversal)) == 1 && $destruction_reversal[0] == 1 && $dc_array_count == 1) {
 echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated. A box destruction has been reversed.";
 if ($counter > 0) {
 echo '<br />';
 echo '<br />';
 }
-} else {
+} elseif(count(array_unique($destruction_reversal)) == 1 && $destruction_reversal[0] == 0) {
 echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated";
 if ($counter > 0) {
@@ -239,7 +249,7 @@ if($dc_array_count == 1) {
 $dc_set = reset($dc_array);
 }
 
-if(count($destruction_box_array) == 1 && $dc_array_count == 1 && $destruction_reversal == 1){
+if($dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
         // Call Auto Assignment Function
         $destruction_flag = 1;
         

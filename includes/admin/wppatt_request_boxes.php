@@ -125,6 +125,7 @@ $rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses');
 $alert_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
 $status_id_arr = array($new_request_tag->term_id, $cancelled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_tabled_arr = array($tabled_tag->term_id, $new_request_tag->term_id, $cancelled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
 //Fix if location is unassigned and request status is initial review complete
 
@@ -138,7 +139,9 @@ $destruction_flag = 0;
 $destruction_boxes = '';
 
 if($status_id == $initial_review_complete_tag->term_id){
+    echo '<div style="display:none">';
 Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_flag,$destruction_boxes);
+    echo '</div>';
 }
 
 if($is_active == 1) {
@@ -399,22 +402,22 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             
 			//if (!(in_array($status_id, $status_id_arr)) && ($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
             //Can edit location if box isn't destroyed and is in the correct request status
-            if (!(in_array($status_id, $status_id_arr)) && ($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+            if (!(in_array($status_id, $status_id_tabled_arr)) && ($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
             {
-            if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Not Unassigned') {
+            if ($boxlist_dc_location != 'Not Unassigned') {
             $tbl .= '<td>' . $boxlist_location;
-            if ($boxlist_dc_location != 'Not Assigned' && $boxlist_location != 'Currently Unassigned') {
+            if ($boxlist_dc_location != 'Not Assigned') {
             $tbl .= ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit" aria-hidden="true" title="Edit Assigned Shelf Location"></i><span class="sr-only">Edit Assigned Shelf Location</span></a>';
             }
             $tbl .= '</td>';
             
             $tbl .= '<td>' . $boxlist_dc_location;
-            if($boxlist_location != 'Currently Unassigned') {
+            if($boxlist_dc_location != 'Not Unassigned') {
             $tbl .= ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt" aria-hidden="true" title="Edit Digitization Center"></i><span class="sr-only">Edit Digitization Center</span></a></td>';
             }
             $tbl .= '</td>';
             
-            } elseif ($boxlist_location == 'Currently Unassigned' && $boxlist_dc_location == 'Currently Unassigned') {
+            } elseif ($boxlist_dc_location == 'Not Unassigned') {
             $tbl .= '<td>' . $boxlist_location . '</td>';   
             $tbl .= '<td>' . $boxlist_dc_location . '</td>';
             }

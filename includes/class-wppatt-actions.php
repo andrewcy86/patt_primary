@@ -206,9 +206,9 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     function unflag_box_destruction ( $ticket_id, $box_id ){
       global $wpscfunction, $current_user;
       if($current_user->ID){
-        $log_str = sprintf( __('%1$s removed destruction flag on Box ID: %2$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>');
+        $log_str = sprintf( __('%1$s removed box destruction flag on Box ID: %2$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>');
       } else {
-        $log_str = sprintf( __('Box ID %1$s destruction flag removed','supportcandy'), '<strong>'.$box_id.'</strong>' );
+        $log_str = sprintf( __('Box ID %1$s box destruction flag removed','supportcandy'), '<strong>'.$box_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

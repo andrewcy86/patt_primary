@@ -514,6 +514,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				}
 			});
 			
+			// No longer used.
 			jQuery( ".wpsc_assign_agents" ).autocomplete({
 					minLength: 0,
 					appendTo: jQuery('.wpsc_assign_agents').parent(),
@@ -1289,6 +1290,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		}
 	}
 	
+	// No longer being used.
 	// Works for old version of recall with search button
 	function search_failed( failure_type ) {
 		var error_str = '';
