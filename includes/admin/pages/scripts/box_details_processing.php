@@ -162,7 +162,7 @@ CONCAT(
 
 CASE WHEN (
 SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.id = b.box_id) > 0 AND b.freeze <> 1
-THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #B4081A !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #B4081A;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+THEN CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\" style=\"color: #B4081A !important; text-decoration: line-through;\">',b.folderdocinfofile_id,'</a>')
 ELSE CONCAT('<a href=\"".$url_var."',b.folderdocinfofile_id,'\" id=\"folderdocinfo_link\">',b.folderdocinfofile_id,'</a>')
 END) as folderdocinfo_id_flag,
 b.folderdocinfofile_id as folderdocinfo_id,
