@@ -39,7 +39,7 @@ foreach( $item_ids as $id ) {
 		$item_ids_box[] = $box_obj->Box_id_FK;
 		$item_ids_box_status[] = $box_obj->box_status;
 // 		$item_ids_box[] = $id;
-	} elseif( substr_count($id, '-') == 3 ) {
+	} elseif( substr_count($id, '-') == 3 ) { // NOT POSSIBLE. REQUIREMENT REMOVED. 
 		$folderdoc_obj = Patt_Custom_Func::get_box_file_details_by_id($id);
 		$item_ids_folderdoc[] = $folderdoc_obj->Folderdoc_Info_id_FK;
 // 		$item_ids_folderdoc[] = $id;

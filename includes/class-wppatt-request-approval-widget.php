@@ -623,7 +623,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				<div id="wpsc_popup_footer">
 					<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();"><?php esc_html_e( 'Close', 'wpsc-export-ticket' ); ?></button>
 
-					<button type="submit" class="btn btn-success"><?php esc_html_e( 'Save Changes', 'pattracking' ); ?></button>
+					<button id="save-button" type="submit" class="btn btn-success">
+					  <?php esc_html_e( 'Save Changes', 'pattracking' ); ?>  
+          </button>
+          <div id="sending_notification" style="display:none;"><img id="loading-gif" src="<?php echo WPSC_PLUGIN_URL.'asset/images/ajax-loader@2x.gif'; ?>"></div>
+					
+					
 					
 				</div>
 				<?php wp_nonce_field( 'approval_widget_form_submit', 'approval_widget_generate_nonce' ); ?>
@@ -638,6 +643,12 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					outline: 5px auto -webkit-focus-ring-color;
 				}
 				
+				.dz-upload { 
+          display: block; 
+          background-color: red; 
+          height: 10px;
+          width: 0%;
+        }
 			</style>
 			<?php
 			$content = ob_get_clean();

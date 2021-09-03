@@ -223,7 +223,7 @@ foreach( $searchByID as $item ) {
 // 		     "validation"=>$_POST['searchByID'],     
 		     "validation"=>$details_array['box_status'],     
 		   );
-	} elseif ($details_array['type'] == 'Folder/Doc') {
+	} elseif ($details_array['type'] == 'Folder/Doc') { // NO LONGER USED, AS FOLDER/DOC NOT POSSIBLE. 
 		
 		$pieces = explode('-', $details_array['Folderdoc_Info_id'],2 );
 		$ticket_id = $pieces[0];

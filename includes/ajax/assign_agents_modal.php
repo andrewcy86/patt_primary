@@ -1,4 +1,3 @@
-
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -379,8 +378,9 @@ echo '</pre><br><br>';
 
 
 ob_start();
-/*
+
 // D E B U G 
+/*
 echo "type: " . $type ."<br>";
 echo "ticket id: " . $ticket_id ."<br>";
 echo "todo_ticket_destruction_approval: " . $todo_ticket_destruction_approval ."<br>";
@@ -414,6 +414,7 @@ echo "todo_validation_disabled: " . $todo_validation_disabled . "<br>";
 echo "todo_destruction_approved_disabled: " . $todo_destruction_approved_disabled . "<br>";
 echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disabled . "<br>";
 */
+
 
 
 
@@ -1337,7 +1338,7 @@ function wppatt_set_todo() {
 			response = JSON.parse( response );
 			console.log('TODO Response:');
 			console.log(response);
-			//window.location.reload();
+			window.location.reload();
   });
   
 }

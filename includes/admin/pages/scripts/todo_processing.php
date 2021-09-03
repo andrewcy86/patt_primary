@@ -132,6 +132,7 @@ $boxcommaList = implode(', ', array_unique($todo_boxes_array));
 
 ## Search 
 $searchQuery = " ";
+$ecms_sems_box = '';
 
 //$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
 
@@ -148,8 +149,12 @@ array_push($newBoxID_arr,$value);
 
 $newBoxID_str = str_replace(",", "|", implode(',', $newBoxID_arr));
 
-$searchQuery .= " and a.id IN (".$boxcommaList.") ";
- 
+if(count(array_unique($todo_boxes_array)) != 0){
+$ecms_sems_box .= " and a.id IN (".$boxcommaList.") ";
+} else {
+$ecms_sems_box .= " and a.id = 0 ";
+}
+
 if($newBoxID_str != ''){
    $searchQuery .= " and (a.box_id REGEXP '^(".$newBoxID_str.")$' ) ";
 }
@@ -186,15 +191,13 @@ if($searchByRecallDecline != ''){
 
 }
 
-$ecms_sems = '';
-
 if($searchByECMSSEMS != ''){
     if($searchByECMSSEMS == 'ECMS') {
-        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
+        $ecms_sems_box .= ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
     }
     
     if($searchByECMSSEMS == 'SEMS') {
-        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
+        $ecms_sems_box .= ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
     }
 }
 
@@ -263,7 +266,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . " ");
+WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems_box . " ");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 0");
 $records = mysqli_fetch_assoc($sel);
@@ -287,7 +290,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery); //(b.active <> 0) AND
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
@@ -462,7 +465,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
 
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);

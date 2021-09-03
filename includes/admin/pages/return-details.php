@@ -78,6 +78,9 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			$blank_date = '0000-00-00 00:00:00';
 			//$decline_status_pending_cancel = 'Decline Pending Cancel';
 			$decline_status_pending_cancel = 'Received'; 
+			$decline_cancelled_tag = get_term_by( 'slug', 'decline-cancelled', 'wppatt_return_statuses' );
+			$decline_cancelled_term = $decline_cancelled_tag->term_id;
+			
 			
 			
 			$return_reason = $return_obj->reason;
@@ -258,14 +261,16 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 */
 			
 			// Cancel button restriction 
-			// if admin or on request
+			// if admin 
 			$user_can_cancel = 0;
 			if ( $agent_permissions['label'] == 'Administrator' ) {
 				$user_can_cancel = 1;
 			}
 			
 			$status_cancelled = 0;
-			if ( $status_term_id == 791 ) { //Old 785; now: 791
+// 			if ( $status_term_id == 791 ) { //Old 785; now: 791
+      if ( $status_term_id == $decline_cancelled_term ) { 
+  			
 				$status_cancelled = 1;
 			}
 			
@@ -336,7 +341,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 ?>
 
 
-  <h3>Decline Details</h3>
+  <h3>Decline Details - <?php echo $decline_cancelled_term; ?> </h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
@@ -572,7 +577,19 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <script>
  jQuery(document).ready(function() {
-	 
+  
+  // If a Requester (who did not submit the Request that is being Declined) tries to access page, redirect back to Dashboard
+	// Need to add code to get the original requestor, then compare that to who is trying to access. 
+/*
+	let agent_permissions = '<?php echo $agent_permissions['label'] ?>';
+	console.log({agent_permissions:agent_permissions});
+	if( agent_permissions == 'Requester' || agent_permissions == 'Requester Pallet' ) {
+		alert('You do not have access to this page. You will be redirected to the Decline Dashboard');
+		location.href='admin.php?page=decline';
+	}
+*/
+  
+  
 	dataTable = jQuery('#tbl_templates_return_details').DataTable({
 		'processing': true,
 		'serverSide': true,
@@ -702,17 +719,20 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 		jQuery( '#wppatt_return_cancel' ).removeAttr( 'disabled' );	 
 	}
 	 
-	// Disable Extend if status not recalled. Or is user doesn't have role. 
+	// Disable Extend if status not decline. Or is user doesn't have role. 
 	jQuery( '#wppatt_return_expiration_extend' ).attr( 'disabled', 'disabled' );
 
 	//var user_can_cancel = <?php echo $user_can_cancel ?>;
-	if( current_status == 'Decline Initiated' && current_status == 'Decline Shipped' && current_status == 'Received' ) {
+// 	if( current_status == 'Decline Initiated' && current_status == 'Decline Shipped' && current_status == 'Received' ) {
+//   if( current_status == 'Decline Initiated' || current_status == 'Decline Shipped' || current_status == 'Received' ) {
+  if( current_status == 'Received' ) {
 		jQuery( '#wppatt_return_expiration_extend' ).removeAttr( 'disabled' );	 
 	} 
 
 
 } );
-
+    
+    // NOT USED ANYMORE
 		function wpsc_get_folderfile_editor(doc_id){
 <?php
 			$box_il_val = '';
@@ -757,8 +777,8 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 
 
 <!--
-Podbelski New Scripts for the Page
-Recall Editing
+New Scripts for the Page
+Decline Editing
 -->
 
 <script>
@@ -796,6 +816,7 @@ Recall Editing
 		}); 
 	}
 	
+	// NOT USED ANYMORE.
 	function wppatt_get_return_requestor_editor() {
 // 		alert('edit requestor');
 		var return_requestor_array = [];
@@ -828,7 +849,7 @@ Recall Editing
 		}); 
 	} 
 	
-	
+	// NOT USED ANYMORE.
 	function wppatt_get_date_editor(date_type) {
  		//alert('Date Type: '+date_type);
 		//jQuery('.datepicker').datepicker();
@@ -921,7 +942,7 @@ Recall Editing
 
 
 <!--
-Podbelski New styling for Recall page
+New styling for Decline page
 To be added to a css file later
 -->
 <style type="text/css">

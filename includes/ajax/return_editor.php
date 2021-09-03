@@ -2,6 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+// APPEARS TO BE OLD, AND NO LONGER USED. WP HOOK TO THIS IS COMMENTED OUT IN pattracking.php::318
+
 // set default filter for agents and customers //not true
 global $current_user, $wpscfunction;
 

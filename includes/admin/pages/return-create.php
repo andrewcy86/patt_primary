@@ -777,7 +777,7 @@ margin: 0px 0px 25px 15px;
 	
 	
 	
-	
+	// OLD for old search button. 
 	// Search for Doc Folder File ID
 	function wppatt_search_id() {
 		search_id = jQuery('#wppatt_search_id_box').val().trim();
@@ -819,6 +819,7 @@ margin: 0px 0px 25px 15px;
 		}
 	}
 	
+	// OLD: previous requirement. 
 	function search_failed( failure_type ) {
 		var error_str = '';
 		if( failure_type == 'blank' ) {
@@ -843,7 +844,8 @@ margin: 0px 0px 25px 15px;
 		jQuery('#program_office_fk').val('');	
 		
 	}
-		
+  
+  // OLD: previous requirement. 
 	function update_return_box_folder_file(response) {
 		console.log("In update recall_box_folder_file ");
 		//console.log(response);

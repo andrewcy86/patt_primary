@@ -58,6 +58,19 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	            alert( 'Error: ' + errorMessage + '\n\n Only ".pdf" files are allowed.');
                 if ( !file.accepted ) this.removeFile( file );
             });
+            
+            console.log( 'DropZone INIT' );
+        },
+        uploadprogress: function(file, progress, bytesSent) {
+          console.log( progress );
+          console.log( 'DropZone UPLOAD PROGRESS' );
+/*
+          if (file.previewElement) {
+            var progressElement = file.previewElement.querySelector("[data-dz-uploadprogress]");
+            progressElement.style.width = progress + "%";
+            progressElement.querySelector(".progress-text").textContent = progress + "%";
+          }
+*/
         }
     };
     
@@ -138,6 +151,9 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
         // Destruction Authorization dropzone file for new request form and approval widget
         var destr_autho_dropzone = new Dropzone('#destr-autho-dropzone', requestFormDropzone );
         
+        
+        
+        
         // Add Box List dropzone file for new request form and approval widget
         //var box_list_dropzone = new Dropzone('#add-box-list-dropzone', dropzoneOptionsBoxList );   
 
@@ -159,6 +175,8 @@ jQuery(document).ajaxComplete(function (event, xhr, settings) {
     }
 
 });
+
+
 
 function wpsc_set_approval_widget(){
 
@@ -340,8 +358,15 @@ function wpsc_set_approval_widget(){
       console.log(err.message);
     }
 	
-	console.log({dataform_raw:dataform});
-	
+    console.log({dataform_raw:dataform});
+    
+    // Display loading icon, for upload.
+    jQuery("#sending_notification").css('display', 'inline-block');
+    jQuery("#loading-gif").css('width', '25px');
+    jQuery("#loading-gif").css('height', 'auto');
+    jQuery("#save-button").html( 'Uploading...' );
+
+	  
     jQuery.ajax({
         url: wpsc_admin.ajax_url,
         type: 'POST',
@@ -354,11 +379,14 @@ function wpsc_set_approval_widget(){
         var response = JSON.parse(response_str);
         console.log( response );
         
+        // remove loading icon from upload
+        jQuery("#sending_notification").hide();
+        jQuery("#save-button").html( 'Done' );
+        
         // Display submit output here
         if(response.redirct_url==''){
-			jQuery('#add_box_list').html(response.thank_you_page);
-					
-		}
+    			jQuery('#add_box_list').html(response.thank_you_page);		
+    		}
         
 
         jQuery('.wpsc_submit_wait').hide();
@@ -410,6 +438,16 @@ jQuery(document).on('change' ,'#are-these-documents-used-for-the-following', fun
     }
 } );
 
+//jQuery(document).ready(function(){
+/*
+jQuery(document).ajaxComplete(function (event, xhr, settings) {
+  destr_autho_dropzone.on("totaluploadprogress", function(progress) {
+    // Update progress bar with the value in the variable "progress", which 
+    // is the % total upload progress from 0 to 100
+    console.log( progress );
+  });
+});
+*/
 
 /*jQuery(document).ready(function(){
 
