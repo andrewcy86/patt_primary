@@ -25,7 +25,9 @@ Confirm unauthorized destruction flag edit.
 $body = ob_get_clean();
 ob_start();
 ?>
-<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
+<!-- Disable refresh -->
+<!--<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>-->
+<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_submit_unauthorized_destruction();">Submit</button>
 <script>
 
@@ -37,7 +39,13 @@ postvarpage : '<?php echo $page_id;?>',
 boxid : '<?php echo $box_id;?>'
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
+      if(!alert(response)){
+          
+          //window.location.reload();
+          jQuery('#tbl_templates_folderfile').DataTable().ajax.reload(null, false);
+          jQuery('#tbl_templates_folderfile').DataTable().column(0).checkboxes.deselectAll();
+          wpsc_modal_close();
+      }
 <?php 
 if ($page_id == 'filedetails') {
 ?>
@@ -49,7 +57,10 @@ if ($page_id == 'filedetails') {
 <?php
 } else {
 ?>
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=<?php echo $page_id; ?>")
+      //window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=<?php echo $page_id; ?>")
+      jQuery('#tbl_templates_folderfile').DataTable().ajax.reload(null, false);
+      jQuery('#tbl_templates_folderfile').DataTable().column(0).checkboxes.deselectAll();
+      wpsc_modal_close();
 <?php
 }
 ?>

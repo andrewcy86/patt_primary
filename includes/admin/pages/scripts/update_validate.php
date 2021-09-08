@@ -39,6 +39,7 @@ $completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'w
 //Box statuses
 $box_scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
 $box_destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
+$box_waiting_on_rlo_tag = get_term_by('slug', 'waiting-on-rlo', 'wpsc_box_statuses'); //68
 
 $status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 
@@ -187,21 +188,23 @@ foreach($get_box_ids as $item) {
     
     //Update all flags in the storage_location table
     if( ($total_files - $total_validation) == 0) {
-        $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 1, 'qa_qc' => 1, 'validation' => 1);
-        $data_where = array('id' => $item->storage_location_id);
-        $wpdb->update($storage_location_table, $data_update, $data_where);
-        
-        $old_status_str = Patt_Custom_Func::get_box_status($item->id);
-		$new_status_str = $box_destruction_approved_tag->name;
-		$status_str = $old_status_str . ' to ' . $new_status_str;
-		do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
-        
-        // Set box status to Destruction Approved and previous box status
-        $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id, 'box_previous_status' => $item->box_status);
-        $data_where_box_status = array('id' => $item->id);
-        $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
-        
-        // TODO Add do_action for when this moves to the next step in the todo list
+      $data_update = array('scanning_preparation' => 1, 'scanning_digitization' => 1, 'qa_qc' => 1, 'validation' => 1);
+      $data_where = array('id' => $item->storage_location_id);
+      $wpdb->update($storage_location_table, $data_update, $data_where);
+      
+      $old_status_str = Patt_Custom_Func::get_box_status($item->id);
+  		//$new_status_str = $box_destruction_approved_tag->name;
+  		$new_status_str = $box_waiting_on_rlo_tag->name;
+  		$status_str = $old_status_str . ' to ' . $new_status_str;
+  		do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item->box_id);
+      
+      // Set box status to Destruction Approved and previous box status
+      //$data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id, 'box_previous_status' => $item->box_status);
+      $data_update_box_status = array('box_status' => $box_waiting_on_rlo_tag->term_id, 'box_previous_status' => $item->box_status);
+      $data_where_box_status = array('id' => $item->id);
+      $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
+      
+      // TODO Add do_action for when this moves to the next step in the todo list
     }
 }
 

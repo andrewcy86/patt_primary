@@ -205,6 +205,10 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 		color: #005C7A;
 	}
 	
+	.wpsc_loading_icon {
+		margin-top: 0px !important;
+	}
+	
 	</style>
     
 

@@ -210,6 +210,10 @@ color: rgb(255, 255, 255) !important;
 	color: #B4081A;
 }
 
+.wpsc_loading_icon {
+	margin-top: 0px !important;
+}
+
 </style>
     
 

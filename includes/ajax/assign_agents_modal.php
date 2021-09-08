@@ -104,6 +104,10 @@ $todo_validation_disabled = $validation_term == $todo_obj->box_status ? '' : 'di
 $todo_destruction_approved_disabled = $destruction_approved_term == $todo_obj->box_status ? '' : 'disabled';
 $todo_destruction_of_source_disabled = $destruction_of_source_term == $todo_obj->box_status ? '' : 'disabled';
 
+// Corner Case: if in destruction approved and destruction approved has already been submitted. Disable the checkbox. 
+$todo_destruction_approved_disabled = ( $destruction_approved_term == $todo_obj->box_status && $todo_destruction_approved == 0 ) ? '' : 'disabled';
+
+
 // Get ticket id from first or single box
 $where['box_folder_file_id'] = $item_ids[0]; 
 $ticket_id_obj = Patt_Custom_Func::get_ticket_id_from_box_folder_file( $where ); 
@@ -758,6 +762,11 @@ jQuery(document).ready(function(){
 			return false;
 		}
 	});
+		
+	
+	//
+	// Auto Complete for assign agents
+	//
 	
 	jQuery( ".wpsc_assign_agents" ).autocomplete({
 			minLength: 0,
@@ -842,7 +851,7 @@ jQuery(document).ready(function(){
 	// Checks if ticket status of any item inhibits it's editing
 	var items_and_status = <?php echo json_encode($ticket_id_array, true); ?>;
 	var alerts_disabled = '<?php echo $alerts_disabled ?>'; 
-
+  console.log({items_and_status:items_and_status});
 	
 	let is_error = false;
 		
@@ -896,6 +905,62 @@ jQuery(document).ready(function(){
 	console.log({completed_dispositioned_tag:completed_dispositioned_tag});
 */
 	
+	//
+	// Accordion Error Display
+	//
+	
+	let accordion_notification = '';
+	
+	let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong><br />';
+	let accordion_start = '<div class="accordion" id="the-accordion">';
+	
+	let accordion_item_start_1 = '<div class="accordion-item"><h2 class="accordion-header" id="';
+	let accordion_item_start_2 = '"><button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#';
+	let accordion_item_start_3 = '" aria-expanded="false" aria-controls="';
+	let accordion_item_start_4 = '">';
+
+	let accordion_item_mid_1 = '</button></h2><div id="';
+	let accordion_item_mid_2 = '" class="accordion-collapse collapse section-content" aria-labelledby="';
+	let accordion_item_mid_3 = '" data-parent="#the-accordion"><div class="accordion-body">';
+	
+	
+	let accordion_item_end = '</div></div></div>';
+	let accordion_end = '</div>';
+	
+	accordion_notification += accordion_pre_message;
+	accordion_notification += accordion_start;
+  
+/*
+  restricted_reason_array.forEach( function( item, index ) {	
+		
+		let heading = 'heading' + index;
+		let collapse = 'collapse' + index;
+		
+		
+		accordion_notification += accordion_item_start_1;
+		accordion_notification += 'heading-' + index;
+		accordion_notification += accordion_item_start_2;
+		accordion_notification += 'collapse-' + index;
+		accordion_notification += accordion_item_start_3;
+		accordion_notification += 'collapse-' + index;
+		accordion_notification += accordion_item_start_4;
+		accordion_notification += item[0];
+		accordion_notification += accordion_item_mid_1;
+		accordion_notification += 'collapse-' + index;
+		accordion_notification += accordion_item_mid_2;
+		accordion_notification += 'heading-' + index;
+		accordion_notification += accordion_item_mid_3;
+		accordion_notification += item[1];
+		accordion_notification += accordion_item_end;
+		
+		
+	});
+*/
+		
+	
+	
+	
+	
 	//check and display error for digitization center and assigned location
 	
 	items_and_status.forEach( function(x) {
@@ -932,6 +997,13 @@ jQuery(document).ready(function(){
 	status_error_link = status_error_link.slice(0, -2);
 	dc_error_link = dc_error_link.slice(0, -2); 
 	al_error_link = al_error_link.slice(0, -2); 
+	
+	// Accordion 
+	accordion_notification += accordion_end;
+  console.log( accordion_notification );
+
+	// Alter these if statements to include accordion code. 
+	// might need to use for loops for multiple issues per statement. 
 	
 	if( is_error == true && !alerts_disabled ){
 		
@@ -978,6 +1050,43 @@ jQuery(document).ready(function(){
 		//jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 		//jQuery("#button_agent_submit").hide();
 	}
+	
+	// Accordion style error: display
+/*
+	if( restricted_reason_array.length > 0 ) {
+		console.log('in');
+		//set_alert('warning', accordion_notification);	
+		let alert_style = 'alert-warning';
+		//jQuery('#alert_status').html('<div id="alert-1" class=" alert '+alert_style+'">'+accordion_notification+'</div>'); 
+		//jQuery('#alert_status').html( 'test2' ); 
+		jQuery('#alert_status').html( accordion_notification ); 
+		jQuery('#alert_status').addClass('alert_spacing');
+		jQuery('#alert_status').addClass('alert');
+		jQuery('#alert_status').addClass('alert-warning');				
+	}
+*/
+
+  // additional Accordion code - start
+	jQuery('.section-title').click(function(e) {
+    // Get current link value
+    var currentLink = jQuery(this).attr('href');
+    if(jQuery(e.target).is('.active')) {
+    	close_section();
+    }else {
+	     close_section();
+	    // Add active class to section title
+	    jQuery(this).addClass('active');
+	    // Display the hidden content
+	    jQuery('.accordion ' + currentLink).slideDown(350).addClass('open');
+    }
+		e.preventDefault();
+	});
+ 
+	function close_section() {
+    jQuery('.accordion .section-title').removeClass('active');
+    jQuery('.accordion .section-content').removeClass('open').slideUp(350);
+	}
+	// Accordion - end
   
   //
   // Set data for To-Do functionality 
@@ -1289,8 +1398,9 @@ $body = ob_get_clean();
 ob_start();
 
 ?>
-<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
-
+<!-- Disable refresh -->
+<!--<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>-->
+<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <?php
 if(!in_array($ticket_status, $status_id_arr)) {
 ?>
@@ -1338,9 +1448,14 @@ function wppatt_set_todo() {
 			response = JSON.parse( response );
 			console.log('TODO Response:');
 			console.log(response);
-			window.location.reload();
+			//Disable refresh
+			//window.location.reload();
+			
+			//Only refreshes the datatable, not the window // To-Do icon/functionality on To-Do Dashboard and Box Dashboard.
+	    jQuery('#tbl_templates_todo').DataTable().ajax.reload(null, false);
+	    jQuery('#tbl_templates_boxes').DataTable().ajax.reload(null, false); 
   });
-  
+  wpsc_modal_close();
 }
 
 // Sets agents for the statuses. 
@@ -1410,7 +1525,9 @@ var wpsc_setting_action = 'boxes';
 var attrs = {"page":"boxes"};
 
 jQuery(document).ready(function(){
-         wpsc_init(wpsc_setting_action,attrs);
+         //Disables windows reload and enables datatables refresh
+         //wpsc_init(wpsc_setting_action,attrs);
+         jQuery('#tbl_templates_boxes').DataTable().ajax.reload(null, false);
 });
 
 wpsc_modal_close();
@@ -1419,14 +1536,16 @@ wpsc_modal_close();
 if ($_REQUEST['page'] == 'boxdetails') {
 ?>
 wpsc_modal_close();
-window.location.reload();
+//Disable refresh
+//window.location.reload();
 <?php 
 }
 
 if($_REQUEST['page'] == 'todo') {
 ?>
 wpsc_modal_close();
-window.location.reload();
+//Disable refresh
+//window.location.reload();
 <?php } ?>
 } 
 </script>

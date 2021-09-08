@@ -5,6 +5,8 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 $type = $_REQUEST['pallet_action'];
 $ticket_id = $_REQUEST['ticket_id'];
 $pallet_id = $_REQUEST['pallet_id'];
@@ -37,7 +39,7 @@ $digitzation_center = $wpdb->get_row(
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
+        " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> " . $dc_not_assigned_tag->term_id . " AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
         
@@ -81,7 +83,7 @@ if( $type == 'yes' && $dc_check == 0) {
 		
 		$pallet_id_count = $wpdb->get_row(
 
- "SELECT COUNT id
+ "SELECT COUNT(id) as count
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
         WHERE pallet_id = '" . $pallet_id . "'"
         
@@ -89,7 +91,7 @@ if( $type == 'yes' && $dc_check == 0) {
 			
 		//IF YES redo $num_id
 		
-		if ($pallet_id_count > 0) {
+		if ($pallet_id_count->count > 0) {
 				$num_id = random_int(1,99999);
 		}
 		
@@ -192,7 +194,7 @@ $digitzation_center_reassign = $wpdb->get_row(
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
+        " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> " . $dc_not_assigned_tag->term_id . " AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id = '" . $id . "'"
         

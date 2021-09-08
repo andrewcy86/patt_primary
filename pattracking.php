@@ -72,6 +72,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		$upload_dir = wp_upload_dir();
         $this->define('WPPATT_UPLOADS', trailingslashit( $upload_dir['basedir'] ) );
         $this->define('WPPATT_UPLOADS_URL', trailingslashit( $upload_dir['baseurl'] ) );
+        
     }
     
     function load_textdomain(){

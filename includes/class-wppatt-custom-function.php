@@ -4239,37 +4239,57 @@ public static function id_in_recall( $identifier, $type ) {
 	        
 	        $dc_check = '';
 	        $dc_count = count( array_unique( $dc_array ) );
-
-			if( $dc_count == 1 && in_array('62', $dc_array )) {
-				$dc_check = 'East';
-			}
-			
-			if( $dc_count == 1 && in_array('2', $dc_array )) {
-				$dc_check = 'West';
-			}
-
-			if( $dc_count == 1 && in_array('666', $dc_array )) {
-				$dc_check = 'Not assigned';
-			}
-
-			if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('2', $dc_array )) {
-				$dc_check = 'Both';
-			}
-			
-			if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('666', $dc_array )) {
-				$dc_check = 'East/Not Assigned';
-			}
-
-			if( $dc_count == 2 && in_array('666', $dc_array ) && in_array('2', $dc_array )) {
-				$dc_check = 'West/Not Assigned';
-			}
-			
-			if( $dc_count == 3 && in_array('666', $dc_array ) && in_array('2', $dc_array ) && in_array('62', $dc_array )) {
-				$dc_check = 'Both/Not Assigned';
-			}
 	        
-	        return $dc_check;
-	    }
+	        $dc_west_tag = get_term_by('slug', 'w', 'wpsc_categories');
+	        $dc_east_tag = get_term_by('slug', 'e', 'wpsc_categories');
+	        $dc_east_cui_tag = get_term_by('slug', 'ecui', 'wpsc_categories');
+	        $dc_west_cui_tag = get_term_by('slug', 'wcui', 'wpsc_categories');
+	        $dc_no_assigned_tag = get_term_by('slug', 'not-assigned-digi-center', 'wpsc_categories');
+	        
+	        $dc_west_term = $dc_west_tag->term_id;
+	        $dc_east_term = $dc_east_tag->term_id;
+	        $dc_east_cui_term = $dc_east_cui_tag->term_id;
+	        $dc_west_cui_term = $dc_west_cui_tag->term_id;
+	        $dc_no_assigned_term = $dc_no_assigned_tag->term_id;
+	        
+
+    			//if( $dc_count == 1 && in_array('62', $dc_array )) {
+      		if( $dc_count == 1 && in_array( $dc_east_term, $dc_array ) ) {
+    				$dc_check = 'East';
+    			}
+    			
+    			//if( $dc_count == 1 && in_array('2', $dc_array )) {
+      		if( $dc_count == 1 && in_array( $dc_west_term, $dc_array ) ) {	
+    				$dc_check = 'West';
+    			}
+    
+    			//if( $dc_count == 1 && in_array('666', $dc_array )) {
+      		if( $dc_count == 1 && in_array( $dc_no_assigned_term, $dc_array )) {	
+    				$dc_check = 'Not assigned';
+    			}
+    
+    			//if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('2', $dc_array )) {
+      		if( $dc_count == 2 && in_array( $dc_east_term, $dc_array ) && in_array( $dc_west_term, $dc_array )) {	
+    				$dc_check = 'Both';
+    			}
+    			
+    			//if( $dc_count == 2 && in_array('62', $dc_array ) && in_array('666', $dc_array )) {
+      		if( $dc_count == 2 && in_array( $dc_east_term, $dc_array ) && in_array( $dc_no_assigned_term, $dc_array )) {	
+    				$dc_check = 'East/Not Assigned';
+    			}
+    
+    			//if( $dc_count == 2 && in_array('666', $dc_array ) && in_array('2', $dc_array )) {
+      		if( $dc_count == 2 && in_array( $dc_no_assigned_term, $dc_array ) && in_array( $dc_west_term, $dc_array )) {	
+    				$dc_check = 'West/Not Assigned';
+    			}
+    			
+    			//if( $dc_count == 3 && in_array('666', $dc_array ) && in_array('2', $dc_array ) && in_array('62', $dc_array )) {
+      		if( $dc_count == 3 && in_array( $dc_no_assigned_term, $dc_array ) && in_array( $dc_west_term, $dc_array ) && in_array( $dc_east_term, $dc_array )) {	
+    				$dc_check = 'Both/Not Assigned';
+    			}
+    	        
+    	        return $dc_check;
+    	  }
 
         /*
         //Function to obtain program office from database

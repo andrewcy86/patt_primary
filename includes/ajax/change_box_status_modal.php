@@ -28,7 +28,7 @@ $save_enabled = true;
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 
 $item_ids = $_REQUEST['item_ids']; 
-
+$page = $_REQUEST['page'];
 $agent_permissions = $wpscfunction->get_current_agent_permissions(); 
 $agent_permissions['label']; 
 $agent_type = $agent_permissions['label']; // Administrator, Agent, Manager
@@ -645,9 +645,20 @@ $body = ob_get_clean();
 ob_start();
 
 ?>
-<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>
+<!-- Disable refresh -->
+<!--<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>-->
+<button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
+<?php
+// Only refresh when on the request details page
+if($page == 'requestdetails') {
+?>
+<button type="button" id="button_box_status_submit" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_box_status();window.location.reload();"><?php _e('Save','supportcandy');?></button>
+<?php
+}
+else {
+?>
 <button type="button" id="button_box_status_submit" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_box_status();"><?php _e('Save','supportcandy');?></button>
-
+<?php } ?>
 <script>
 jQuery("#button_box_status_submit").hide();
 
@@ -689,12 +700,14 @@ function wppatt_set_box_status(){
 		//alert('updated: '+response);
 		console.log('The Response:');
 		console.log(response);
-		window.location.reload(); 
+		//Disable refresh
+		//window.location.reload(); 
 		
-		jQuery('#tbl_templates_boxes').DataTable().ajax.reload();
-		
-
-
+		//Only refreshes the datatable, not the window
+		jQuery('#tbl_templates_boxes').DataTable().ajax.reload(null, false);
+		jQuery('#tbl_templates_boxes').DataTable().column(0).checkboxes.deselectAll();
+		jQuery('#tbl_templates_todo').DataTable().ajax.reload(null, false);
+		jQuery('#tbl_templates_todo').DataTable().column(0).checkboxes.deselectAll();
     });
 
 	wpsc_modal_close();

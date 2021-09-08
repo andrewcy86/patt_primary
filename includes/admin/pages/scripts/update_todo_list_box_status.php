@@ -56,7 +56,8 @@ $next_status_arr = [];
 $next_status_arr[ $scanning_preparation_term ] = $scanning_digitization_term;
 $next_status_arr[ $scanning_digitization_term ] = $qa_qc_term;
 $next_status_arr[ $qa_qc_term ] = $digitized_not_val_term;
-$next_status_arr[ $destruction_approved_term ] = $destruction_of_source_term;
+//$next_status_arr[ $destruction_approved_term ] = $destruction_of_source_term;
+$next_status_arr[ $destruction_approved_term ] = $destruction_approved_term;
 $next_status_arr[ $destruction_of_source_term ] = $completed_dispositioned_term;
 
 // Get the next status based on the current status
@@ -88,17 +89,18 @@ if( $current_box_status == $scanning_preparation_term ) {
 
 if( $type == 'todo_box_status_update' ) {
   
-  
-  
-  // Update Box status & Box Previous Status
-  $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-  $data_where = array( 'id' => $box_fk );
-  $data_update = array( 'box_status' => $next_box_status, 'box_previous_status' => $current_box_status );
-  $wpdb->update( $table_name, $data_update, $data_where );
+  // If completing the Destruction Approved status, do not move it to the next status & no audit log.
+  if( $next_box_status != $destruction_approved_term ) {
+    
+    // Update Box status & Box Previous Status
+    $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+    $data_where = array( 'id' => $box_fk );
+    $data_update = array( 'box_status' => $next_box_status, 'box_previous_status' => $current_box_status );
+    $wpdb->update( $table_name, $data_update, $data_where );
 	
+	}
 	
-	
-	// Update Flags
+	// Update Flags in epa_storage_location
 	$table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 	$data_where = array( 'id' => $storage_location_id );
 	
@@ -137,10 +139,12 @@ if( $type == 'todo_box_status_update' ) {
   $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
 	
 	
-	// Audit Log
-	$status_str = $previous_status_name . ' to ' . $status_name;
-	
-	do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item_id );
+	// Audit Log, only for all statuses except for Destruction Approval, as it's not moving to the next state here. 
+	if( $next_box_status != $destruction_approved_term ) {
+  	
+  	$status_str = $previous_status_name . ' to ' . $status_name;
+  	do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item_id );
+  }
 } 
 
 

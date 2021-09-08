@@ -165,7 +165,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php } 
 if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
 ?>
-        <button type="button" id="wppatt_assign_staff_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
+        <button type="button" id="wppatt_assign_staff_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>; background-color:#FF7A33 !important;color:black !important;"><i class="fa fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
 <?php } ?>
 
 <?php
@@ -377,7 +377,7 @@ LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list d ON d.box_id = a.box_id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket e ON e.id = a.ticket_id
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.ticket_priority 
 
-WHERE b.rescan = 1 AND c.status_id = ".$re_scan_term_id." AND c.user_id = '" . $get_current_user_id . "'");
+WHERE b.rescan = 1 AND a.box_destroyed = 0 AND c.status_id = ".$re_scan_term_id." AND c.user_id = '" . $get_current_user_id . "'");
 
 
 foreach ($rescan_details as $info) {

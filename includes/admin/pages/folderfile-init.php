@@ -714,52 +714,6 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
           dataTable.ajax.reload( null, false );
 });
 
-/*
-       if(response.indexOf(substring) !== -1) {
-       jQuery('#ud_alert').hide();
-       } else {
-       jQuery('#ud_alert').show(); 
-       }
-
-//unauthorize destruction button
-jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
-     var form = this;
-     var rows_selected = dataTable.column(0).checkboxes.selected();
-     console.log(rows_selected);
-		   jQuery.post(
-   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
-postvarsfolderdocid : rows_selected.join(","),
-postvarpage : jQuery('#page').val(),
-boxid : jQuery('#box_id').val()
-}, 
-   function (response) {
-      //if(!alert(response)){
-      
-       wpsc_modal_open('Unauthorized Destruction');
-		  var data = {
-		    action: 'wpsc_unauthorized_destruction_ff',
-		    response_data: response
-		  };
-		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		    var response = JSON.parse(response_str);
-		    jQuery('#wpsc_popup_body').html(response.body);
-		    jQuery('#wpsc_popup_footer').html(response.footer);
-		    jQuery('#wpsc_cat_name').focus();
-		  }); 
-		  
-       var substring = "removed";
-       dataTable.ajax.reload( null, false );
-       
-       if(response.indexOf(substring) !== -1) {
-       jQuery('#ud_alert').hide();
-       } else {
-       jQuery('#ud_alert').show(); 
-       }
-       
-      //}
-   });
-});
-*/
 <?php
 }
 // END ADMIN BUTTONS

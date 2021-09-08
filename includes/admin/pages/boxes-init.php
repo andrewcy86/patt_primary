@@ -73,7 +73,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php } 
 if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
 ?>
-        <button type="button" id="wppatt_assign_staff_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
+        <button type="button" id="wppatt_assign_staff_btn" style="background-color:#FF7A33 !important;color:black !important;" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-user-plus" aria-hidden="true" title="Assign Staff"></i><span class="sr-only">Assign Staff</span> Assign Staff</button>
 <?php } ?>
 
 <?php

@@ -1944,9 +1944,15 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 		 */
 		public function get_new_storage_location_row_id() {
 			global $wpdb;
+			
+			$dc_no_assigned_tag = get_term_by('slug', 'not-assigned-digi-center', 'wpsc_categories');
+      $dc_no_assigned_term = $dc_no_assigned_tag->term_id;
+
+			
 			$table = $wpdb->prefix . 'wpsc_epa_storage_location';
 			$data = array(
-				'digitization_center' => 666,
+// 				'digitization_center' => 666,
+        'digitization_center' => $dc_no_assigned_term,
 				'aisle' => 0,
 				'bay' => 0,
 				'shelf' => 0,

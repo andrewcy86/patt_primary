@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 $subfolder_path = site_url( '', 'relative'); 
 
 global $wpdb, $current_user, $wpscfunction;
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 		exit;
 }
@@ -112,20 +114,10 @@ width: 100%;
 //check whether request is active, if not disable buttons
 $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
-$initial_review_complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+$alert_arr = array($request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
-$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses');
-$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses');
-
-$alert_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
-
-$status_id_arr = array($new_request_tag->term_id, $cancelled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
-$status_id_tabled_arr = array($tabled_tag->term_id, $new_request_tag->term_id, $cancelled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($request_new_request_tag->term_id, $request_cancelled_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);
+$status_id_tabled_arr = array($request_tabled_tag->term_id, $request_new_request_tag->term_id, $request_cancelled_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
 //Fix if location is unassigned and request status is initial review complete
 
@@ -138,7 +130,36 @@ $get_dc_val = $get_dc->ticket_category;
 $destruction_flag = 0;
 $destruction_boxes = '';
 
-if($status_id == $initial_review_complete_tag->term_id){
+
+if($status_id == $request_tabled_tag->term_id || $status_id == $request_initial_review_complete_tag->term_id){
+$dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
+
+$get_dc_unassigned_boxes = $wpdb->get_results("SELECT a.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON b.id = a.storage_location_id
+WHERE b.digitization_center = '" . $dc_not_assigned_tag->term_id . "' AND a.ticket_id = '" . $ticket_id . "'");
+
+$data_update = array('ticket_category' => $dc);
+$data_where = array('id' => $ticket_id);
+$wpdb->update($wpdb->prefix.'wpsc_ticket', $data_update, $data_where);
+
+foreach ($get_dc_unassigned_boxes as $info) {
+$storage_location_id = $info->storage_location_id;
+$data_update = array('digitization_center' => $dc);
+$data_where = array('id' => $storage_location_id);
+$wpdb->update($wpdb->prefix.'wpsc_epa_storage_location', $data_update, $data_where);
+}
+
+}
+
+if($status_id == $request_initial_review_complete_tag->term_id){
+$dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
+
+$data_update = array('ticket_category' => $dc);
+$data_where = array('id' => $ticket_id);
+$wpdb->update($wpdb->prefix.'wpsc_ticket', $data_update, $data_where);
+
+
     echo '<div style="display:none">';
 Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_flag,$destruction_boxes);
     echo '</div>';
@@ -172,8 +193,8 @@ if(Patt_Custom_Func::id_in_damaged($converted_to_request_id, $request_type) == 1
 }
 
 $get_request_status_name = $wpdb->get_row("SELECT b.name
-FROM wpqa_wpsc_ticket a
-INNER JOIN wpqa_terms b ON b.term_id = a.ticket_status
+FROM " . $wpdb->prefix . "wpsc_ticket a
+INNER JOIN " . $wpdb->prefix . "terms b ON b.term_id = a.ticket_status
 WHERE a.id = " . $ticket_id);
 $status_name = $get_request_status_name->name;
 
@@ -718,7 +739,9 @@ if($is_active == 1 && $rescan_count > 0){
 		var data = {
 		    action: 'wppatt_change_box_status',
 		    item_ids: arr,
-		    type: 'edit'
+		    type: 'edit',
+		    //only refresh on the request details page
+		    page: 'requestdetails'
 		};
 		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);
@@ -727,6 +750,7 @@ if($is_active == 1 && $rescan_count > 0){
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
 		}); 
+		
 	});
 	
 	// Assign Pallet Button Click

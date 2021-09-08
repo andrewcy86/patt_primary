@@ -426,7 +426,6 @@ jQuery("#searchByECMSSEMS").change(function(){
 //            dataTable.draw();
 //});
 
-
 function onAddTag(tag) {
     dataTable.state.save();
     dataTable.draw();
@@ -530,8 +529,9 @@ function wpsc_get_delete_permanently_bulk_ticket_1(){
        jQuery('#wpsc_popup_body').html(response.body);
        jQuery('#wpsc_popup_footer').html(response.footer);
      });
+     
   }
-
+      
    jQuery('#btn_restore_tickets').on('click', function(e){
 wpsc_get_restore_bulk_ticket_1();
   

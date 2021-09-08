@@ -266,7 +266,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems_box . " ");
+WHERE a.id <> -99999 AND a.box_destroyed = 0 AND b.active <> 0 " . $ecms_sems_box . " ");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 0");
 $records = mysqli_fetch_assoc($sel);
@@ -290,7 +290,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
+WHERE (b.active <> 0) AND (a.box_destroyed = 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
@@ -465,7 +465,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
 
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.box_destroyed = 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);

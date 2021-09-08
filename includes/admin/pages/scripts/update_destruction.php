@@ -5,6 +5,8 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 if(
 !empty($_POST['postvarsboxid'])
 ){
@@ -26,16 +28,8 @@ $date_time = date('Y-m-d H:i:s');
 $destruction_reversal = array();
 $counter = 0;
 
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
-
-$box_destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); //1272
-
 //Raised By, Staff Only Fields, Recipients
-$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($request_new_request_tag->term_id, $request_tabled_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_cancelled_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
 foreach($boxid_arr as $key) {    
 
@@ -159,31 +153,34 @@ $ticket_id = $get_ticket_id->id;
 if ($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
     
 $box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999');
-$box_data_where = array('box_id' => $key);
+$box_data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
 
 do_action('wpppatt_after_box_destruction_unflag', $ticket_id, $key);
 
 //Update date_updated column
 $data_update = array('date_updated' => $date_time);
-$data_where = array('box_id' => $key);
+$data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name, $data_update, $data_where);
 
 }
 
 if ($get_destruction_val == 0 && count(array_unique($destruction_reversal)) == 1){
 $box_data_update = array('box_destroyed' => 1);
-$box_data_where = array('box_id' => $key);
+$box_data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
+
 
 //SET PHYSICAL LOCATION TO DESTROYED
 $pl_update = array('location_status_id' => '6');
-$pl_where = array('box_id' => $key);
+$pl_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $pl_update, $pl_where);
 
 //SET SHELF LOCATION TO 0
+$dc_notassigned_val = $dc_not_assigned_tag->term_id;
+
 $table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
-$sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
+$sl_update = array('digitization_center' => $dc_notassigned_val, 'aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
@@ -243,19 +240,27 @@ echo '<br />';
 }
 
 }
+//debug
+/*
+print_r( $destruction_reversal );
+echo $get_destruction_val;
+echo count(array_unique($destruction_reversal));
+*/
 
 //Determine if all files belong to same digitization center
 if($dc_array_count == 1) {
 $dc_set = reset($dc_array);
 }
 
-if($dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
+//echo $dc_set;
+if($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
         // Call Auto Assignment Function
         $destruction_flag = 1;
         
         $destruction_boxes = implode(",", $destruction_box_array);
         //echo $destruction_boxes;
         //print_r($destruction_box_array);
+        //echo 'executing';
         $execute_auto_assignment = Patt_Custom_Func::auto_location_assignment(0,$dc_set,$destruction_flag,$destruction_boxes);
 }
 
