@@ -41,6 +41,8 @@ $status_id_arr = array( $new_request_tag->term_id, $tabled_tag->term_id, $initia
 //
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $item_ids = $_REQUEST['item_ids']; 
+$recall_ids = $_REQUEST['recall_ids']; 
+$decline_ids = $_REQUEST['decline_ids']; 
 $num_of_items = count($item_ids);
 //$ticket_id = 1;
 //$ticket_id = '0000001';
@@ -117,6 +119,10 @@ $ticket_id = $ticket_id_obj['ticket_id'];
 $box_destruction_approval = $wpdb->get_row("SELECT destruction_approval FROM ".$wpdb->prefix."wpsc_ticket WHERE id='".$ticket_id."'");				
 $todo_ticket_destruction_approval = $box_destruction_approval->destruction_approval;
 
+if( !isset( $todo_ticket_destruction_approval ) ) {
+  $todo_ticket_destruction_approval = ' ';
+}
+
 $destruction_approval_allowed;
 
 $current_box_status = $todo_obj->box_status;
@@ -155,6 +161,211 @@ function get_tax() {
 }
 add_action('init', 'get_tax', 9999);
 */
+
+//
+// Prep data for RECALL To-Do list
+//
+
+// get all pertinent term_ids
+// Recall status slugs
+$recall_recalled_tag = get_term_by('slug', 'recalled', 'wppatt_recall_statuses'); 
+$recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses'); 
+$recall_cancelled_tag = get_term_by('slug', 'recall-cancelled', 'wppatt_recall_statuses'); 
+$recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
+$recall_denied_tag = get_term_by('slug', 'recall-denied', 'wppatt_recall_statuses'); 
+$recall_shipped_tag = get_term_by('slug', 'shipped', 'wppatt_recall_statuses'); 
+
+$recall_recalled_term = $recall_recalled_tag->term_id;
+$recall_complete_term = $recall_complete_tag->term_id;
+$recall_cancelled_term = $recall_cancelled_tag->term_id;
+$recall_approved_term = $recall_approved_tag->term_id;
+$recall_denied_term = $recall_denied_tag->term_id;
+$recall_shipped_term = $recall_shipped_tag->term_id;
+
+// Grab all info needed for the recall
+$whr = [ 'recall_id' => $recall_ids[0] ]; // recall_ids todo will always contain 1 value.
+$recall_todo_arr = Patt_Custom_Func::get_recall_data( $whr ); 
+$recall_todo_obj = $recall_todo_arr[0];
+
+
+// Flags for recall statuses
+$todo_recall_approved = $recall_todo_obj->recall_approved;
+$todo_recall_complete = $recall_todo_obj->recall_complete;
+
+// used for HTML checkbox checks
+$todo_recall_approved_check = $todo_recall_approved == 1 ? 'checked' : '';
+$todo_recall_complete_check = $todo_recall_complete == 1 ? 'checked' : '';
+
+// used for HTML checkbox disabled
+// Using $recall_recalled_term as that is the status we're in before moving to recall approved. 
+// $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
+$todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_approved_term ? '' : 'disabled';
+$todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_complete_term ? '' : 'disabled';
+
+if( $type == 'recall_todo' ) {
+  
+  // needed to surpress an error 
+  $current_box_status = $recall_todo_obj->recall_status_id;
+  
+
+  $ticket_id = $recall_todo_obj->ticket_id;
+  $shipping_carrier = $recall_todo_obj->shipping_carrier;
+  $tracking_number = $recall_todo_obj->tracking_number;
+  
+  $recall_save_enabled = true;
+  
+  
+}
+
+// Get all the users on the recall
+$recall_assigned_users = $recall_todo_obj->user_id;
+
+//
+
+
+
+
+// Register Recall Status Taxonomy
+if( !taxonomy_exists('wppatt_recall_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wppatt_recall_statuses', 'wpsc_ticket', $args );
+}
+
+// $box_statuses = get_tax();
+
+// Get List of Recall Statuses
+$recall_statuses = get_terms([
+	'taxonomy'   => 'wppatt_recall_statuses',
+	'hide_empty' => false,
+	'orderby'    => 'meta_value_num',
+	'order'    	 => 'ASC',
+	'meta_query' => array('order_clause' => array('key' => 'wppatt_recall_status_load_order')),
+]);
+
+// List of box status that do not need agents assigned.
+$ignore_recall_status = [ 'Recalled', 'Shipped', 'On Loan', 'Shipped Back', 'Recall Cancelled', 'Recall Denied']; 
+
+$term_id_array = array();
+foreach( $recall_statuses as $key=>$obj ) {
+	if( in_array( $obj->name, $ignore_recall_status ) ) {
+		unset($recall_statuses[$key]);
+		
+	} else {
+		$term_id_array[] = $obj->term_id;
+	}
+}
+array_values( $recall_statuses );
+
+
+//
+// Prep data for DECLINE To-Do list
+//
+
+// get all pertinent term_ids
+// Decline status slugs
+$decline_initiated_tag = get_term_by('slug', 'decline-initiated', 'wppatt_return_statuses'); 
+$decline_shipped_tag = get_term_by('slug', 'decline-shipped', 'wppatt_return_statuses'); 
+$decline_received_tag = get_term_by('slug', 'decline-pending-cancel', 'wppatt_return_statuses');  //received
+$decline_cancelled_tag = get_term_by('slug', 'decline-cancelled', 'wppatt_return_statuses'); 
+$decline_complete_tag = get_term_by('slug', 'decline-complete', 'wppatt_return_statuses'); 
+$decline_shipped_back_tag = get_term_by('slug', 'decline-shipped-back', 'wppatt_return_statuses'); 
+$decline_expired_tag = get_term_by('slug', 'decline-expired', 'wppatt_return_statuses'); 
+
+
+$decline_initiated_term = $decline_initiated_tag->term_id;
+$decline_shipped_term = $decline_shipped_tag->term_id;
+$decline_received_term = $decline_received_tag->term_id;
+$decline_cancelled_term = $decline_cancelled_tag->term_id;
+$decline_complete_term = $decline_complete_tag->term_id;
+$decline_shipped_back_term = $decline_shipped_back_tag->term_id;
+$decline_expired_term = $decline_expired_tag->term_id;
+
+// Grab all info needed for the decline
+$whr = [ 'return_id' => $decline_ids[0] ]; // decline todo will always contain 1 value.
+$decline_todo_arr = Patt_Custom_Func::get_return_data( $whr ); 
+$decline_todo_obj = $decline_todo_arr[0];
+
+
+// Flags for decline statuses
+// NOTE: the flag is called 'return_complete' but actually should be called 'return_ready_to_ship'. As it is used to track if a decline has a shipping tracking number associated with it. 
+$todo_decline_ready_to_ship = $decline_todo_obj->return_complete; 
+
+// used for HTML checkbox checks
+$todo_decline_ready_to_ship_check = $todo_decline_ready_to_ship == 1 ? 'checked' : '';
+
+// used for HTML checkbox disabled
+// Using $recall_recalled_term as that is the status we're in before moving to recall approved. 
+// $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
+$todo_decline_ready_to_ship_disabled = $decline_todo_obj->return_status_id == $decline_initiated_term ? '' : 'disabled';
+
+
+if( $type == 'decline_todo' ) {
+  
+  // needed to surpress an error 
+  $current_box_status = $decline_todo_obj->return_status_id;
+  
+  //$ticket_id = $decline_todo_obj->ticket_id;
+  $shipping_carrier = $decline_todo_obj->shipping_carrier;
+  $tracking_number = $decline_todo_obj->tracking_number;
+  
+  if( $tracking_number == '' ) {
+    $decline_save_enabled = false;
+  } else {
+    $decline_save_enabled = true;
+  }
+  
+  
+}
+
+// Get all the users on the decline
+$decline_assigned_users = $decline_todo_obj->user_id;
+
+//
+
+
+
+
+// Register Decline Status Taxonomy
+if( !taxonomy_exists('wppatt_return_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wppatt_return_statuses', 'wpsc_ticket', $args );
+}
+
+// $box_statuses = get_tax();
+
+// Get List of Decline Statuses
+$decline_statuses = get_terms([
+	'taxonomy'   => 'wppatt_return_statuses',
+	'hide_empty' => false,
+	'orderby'    => 'meta_value_num',
+	'order'    	 => 'ASC',
+	'meta_query' => array('order_clause' => array('key' => 'wppatt_return_status_load_order')),
+]);
+
+// List of box status that do not need agents assigned.
+$ignore_decline_status = [ 'Decline Shipped', 'Received', 'Decline Shipped Back', 'Decline Complete', 'Decline Cancelled', 'Decline Expired']; 
+
+$term_id_array = array();
+foreach( $decline_statuses as $key=>$obj ) {
+	if( in_array( $obj->name, $ignore_decline_status ) ) {
+		unset($decline_statuses[$key]);
+		
+	} else {
+		$term_id_array[] = $obj->term_id;
+	}
+}
+array_values( $decline_statuses );
+
+
+
+
+
 
 // Register Box Status Taxonomy
 if( !taxonomy_exists('wpsc_box_statuses') ) {
@@ -386,17 +597,17 @@ ob_start();
 // D E B U G 
 /*
 echo "type: " . $type ."<br>";
-echo "ticket id: " . $ticket_id ."<br>";
+echo "tracking_number: " . $tracking_number ."<br>";
 echo "todo_ticket_destruction_approval: " . $todo_ticket_destruction_approval ."<br>";
-echo "todo_obj: <br><pre>";
-print_r( $todo_obj );
+echo "decline_todo_obj: <br><pre>";
+print_r( $decline_todo_obj );
 //print_r($status_id_arr);
 echo "</pre>";
 echo "Assign Agents for: ".$type;
-echo "<br>Item IDs: <br>";
-print_r($item_ids);
-echo "<br>Ticket ID Array: <pre>";
-print_r($ticket_id_array);
+echo "<br>decline_statuses: <br><pre>";
+print_r( $decline_statuses );
+echo "</pre><br>decline_ids Array: <pre>";
+print_r($decline_ids);
 echo "</pre><br>";
 echo "Ticket Statuses: ";
 //print_r($box_statuses);
@@ -417,9 +628,13 @@ echo "todo_qa_qc_disabled: " . $todo_qa_qc_disabled . "<br>";
 echo "todo_validation_disabled: " . $todo_validation_disabled . "<br>";
 echo "todo_destruction_approved_disabled: " . $todo_destruction_approved_disabled . "<br>";
 echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disabled . "<br>";
+echo "recall_recalled_tag: <pre>";
+print_r( $recall_recalled_tag );
+echo "</pre>";
+echo "recall_complete_tag: <pre>";
+print_r( $recall_complete_tag );
+echo "</pre>";
 */
-
-
 
 
 
@@ -430,7 +645,18 @@ echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disab
 //print_r($fake_array_of_users);
 ?>
 <!-- <h4>[Box ID # <?php echo $the_box_id; ?>]</h4> -->
+<?php if( $type == 'recall_todo') { ?>
+
+<h4>[Recall ID # R-<?php echo $recall_ids[0]; ?>]</h4>
+
+<?php } elseif( $type == 'decline_todo') { ?>
+<h4>[Decline ID # D-<?php echo $decline_ids[0]; ?>]</h4>
+
+<?php } else { ?>
 <h4>[Box ID # <?php echo $box_id_list; ?>]</h4>
+<?php } ?>
+
+
 <div id='alert_status' class=''></div> 
 <br>
 <!--
@@ -455,7 +681,40 @@ echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disab
 	</div>
 </div>
 
+<?php } elseif( $type == 'recall_todo') { ?>
+
+<div class="row">
+	<div class="col-sm-4">
+		<label class="wpsc_ct_field_label">Recall Status: </label>
+	</div>
+	
+	<div class="col-sm-2">
+		<label class="wpsc_ct_field_label">To-Do: </label>
+	</div>
+	
+	<div class="col-sm-6">
+		<label class="wpsc_ct_field_label">Assign Agents: </label>
+	</div>
+</div>
+
+<?php } elseif( $type == 'decline_todo') { ?>
+
+<div class="row">
+	<div class="col-sm-4">
+		<label class="wpsc_ct_field_label">Decline Status: </label>
+	</div>
+	
+	<div class="col-sm-2">
+		<label class="wpsc_ct_field_label">To-Do: </label>
+	</div>
+	
+	<div class="col-sm-6">
+		<label class="wpsc_ct_field_label">Assign Agents: </label>
+	</div>
+</div>
+
 <?php } else { ?> 
+
 
 <div class="row">
 	<div class="col-sm-4">
@@ -696,9 +955,136 @@ echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disab
 ?>
 
 
+<?php 
+	//
+	// Recall To-Do List HTML
+	//
+	
+	if( $type == 'recall_todo') {
+  	
+  	// Prep
+  	$save_enabled = true;
+?> 	
+  <form id="todo-form">
+<?php  	
+		foreach( $recall_statuses as $status) { 	
+?>
+
+		<div class="row zebra">
+			<div class="col-sm-4">
+				<label class="wpsc_ct_field_label label_center"><?php echo $status->name; ?> </label>
+			</div>
+			
+			<div class="col-sm-2 text-xs-center">
+				<?php
+  				
+        if( $status->name == 'Recall Approved' ) {
+        ?>
+				  <input data-box-status-id="<?php echo $recall_approved_term; ?>" type="checkbox"  <?php echo $todo_recall_approved_check . ' ' . $todo_recall_approved_disabled; ?> class="center-check">
+				<?php
+        } elseif( $status->name == 'Recall Complete' ) {
+        ?> 
+          <input data-box-status-id="<?php echo $recall_complete_term; ?>" type="checkbox"  <?php echo $todo_recall_complete_check . ' ' . $todo_recall_complete_disabled; ?> class="center-check">
+        <?php
+        } 
+        ?> 
+ 
+			</div>
+			
+			<div class="col-sm-6">
+					<div id="assigned_agents" class="  term-<?php echo $status->term_id; ?>">
+						<?php
+
+					    foreach ( $recall_assigned_users as $wp_user_id ) {							    
+
+						    $user_obj = get_user_by( 'id', $wp_user_id );	
+								$name = $user_obj->display_name;
+								$login = $user_obj->user_login;
+                
+						?>
+								<div class=" wpsp_filter_display_element wpsc_assign_agents ">
+									<div class="flex-container staff-badge" style="">
+										<?php echo htmlentities( $name  )?>
+									</div>
+								</div>
+						<?php
+								}
+						?>
+				  </div>
+			</div>
+		</div>
+		<?php 
+    } 
+    ?>
+
+  </form>
+<?php		
+	}
+?>
 
 
+<?php 
+	//
+	// Decline To-Do List HTML
+	//
+	
+	if( $type == 'decline_todo') {
+  	
+  	// Prep
+  	//$save_enabled = true;
+?> 	
+  <form id="todo-form">
+<?php  	
+		foreach( $decline_statuses as $status) { 	
+?>
 
+		<div class="row zebra">
+			<div class="col-sm-4">
+				<label class="wpsc_ct_field_label label_center"><?php echo $status->name; ?> </label>
+			</div>
+			
+			<div class="col-sm-2 text-xs-center">
+				<?php
+  				
+        if( $status->name == 'Decline Initiated' ) {
+        ?>
+				  <input data-box-status-id="<?php echo $decline_initiated_term; ?>" type="checkbox"  <?php echo $todo_decline_ready_to_ship_check . ' ' . $todo_decline_ready_to_ship_disabled; ?> class="center-check">
+				<?php
+        } 
+        ?> 
+ 
+			</div>
+			
+			<div class="col-sm-6">
+					<div id="assigned_agents" class="  term-<?php echo $status->term_id; ?>">
+						<?php
+
+					    foreach ( $decline_assigned_users as $wp_user_id ) {							    
+
+						    $user_obj = get_user_by( 'id', $wp_user_id );	
+								$name = $user_obj->display_name;
+								$login = $user_obj->user_login;
+                
+						?>
+								<div class=" wpsp_filter_display_element wpsc_assign_agents ">
+									<div class="flex-container staff-badge" style="">
+										<?php echo htmlentities( $name  )?>
+									</div>
+								</div>
+						<?php
+								}
+						?>
+				  </div>
+			</div>
+		</div>
+		<?php 
+    } 
+    ?>
+
+  </form>
+<?php		
+	}
+?>
 
 
 
@@ -750,6 +1136,12 @@ echo "todo_destruction_of_source_disabled: " . $todo_destruction_of_source_disab
   text-align: center;
 }
 </style>
+
+<script>
+  window.onerror = function (e) {
+    console.log('Error: ', e);
+  };
+</script>
 
 <script>
 jQuery(document).ready(function(){
@@ -904,6 +1296,65 @@ jQuery(document).ready(function(){
 	console.log({cancelled_tag:cancelled_tag});
 	console.log({completed_dispositioned_tag:completed_dispositioned_tag});
 */
+	
+	//
+	// Recall To Do Error Check
+	//
+	let type = '<?php echo $type; ?>';
+	var recall_save_enabled = '<?php echo $recall_save_enabled; ?>';
+	
+	if( type == 'recall_todo' ) {
+  	let shipping_carrier = '<?php echo $shipping_carrier; ?>';
+  	let tracking_number = '<?php echo $tracking_number; ?>';
+  	
+  	
+  	if( !tracking_number ) {
+    	
+    	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
+    	recall_save_enabled = false;
+    	set_alert( 'danger', note );
+    	
+  	}
+  	
+  }
+  
+  // Disable recall save button
+  if( !recall_save_enabled ) {
+		console.log('recall save disabled');
+		jQuery("#button_todo_recall_submit").hide();
+	}
+	
+	
+	//
+	// Decline To Do Error Check
+	//
+  type = '<?php echo $type; ?>';
+	var decline_save_enabled = '<?php echo $decline_save_enabled; ?>';
+	console.log({decline_type:type});
+	if( type == 'decline_todo' ) {
+  	let shipping_carrier = '<?php echo $shipping_carrier; ?>';
+  	let tracking_number = '<?php echo $tracking_number; ?>';
+  	console.log({ shipping_carrier:shipping_carrier, tracking_number:tracking_number });
+  	
+  	if( !tracking_number ) {
+    	
+    	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
+    	decline_save_enabled = false;
+    	set_alert( 'danger', note );
+    	
+  	}
+  	
+  }
+  
+  console.log({decline_save_enabled:decline_save_enabled});
+  
+  // Disable recall save button
+  if( !decline_save_enabled ) {
+		console.log('decline save disabled');
+		jQuery("#button_todo_decline_submit").hide();
+	}
+
+  
 	
 	//
 	// Accordion Error Display
@@ -1093,7 +1544,9 @@ jQuery(document).ready(function(){
   //
   let use_type = '<?php echo $type; ?>';
   let current_box_status = <?php echo $current_box_status; ?>;
-  let todo_ticket_destruction_approval = <?php echo $todo_ticket_destruction_approval; ?>;
+  //let current_box_status = <?php echo json_encode( $current_box_status ); ?>;  
+//   let todo_ticket_destruction_approval = <?php echo $todo_ticket_destruction_approval; ?>;
+  let todo_ticket_destruction_approval = <?php echo json_encode( $todo_ticket_destruction_approval ); ?>;
   let destruction_approval_allowed = <?php echo json_encode( $destruction_approval_allowed ); ?>;
   var todo_save_enabled = false;
   
@@ -1101,11 +1554,12 @@ jQuery(document).ready(function(){
   
   // Disable To-Do save until one checkbox is clicked. 
   if( use_type == 'todo' ) {
-    
+    console.log( 'love todo' );    
     let rando = jQuery("#todo-form input:checkbox:checked");
     
     console.log( rando );
     
+    // don't think this is used anymore. 
     jQuery('#scanprep').change(function() {
       console.log('clickity clack');
       if( this.checked ) {
@@ -1126,10 +1580,57 @@ jQuery(document).ready(function(){
         todo_save_enabled = false;
         jQuery("#button_todo_submit").hide();
       }
-    });
- 
-
+    });  
+  }
+  
+  // Disable RECALL To-Do save until one checkbox is clicked. 
+  if( use_type == 'recall_todo' ) {
+    console.log( 'love recall_todo' );
+    let rando = jQuery("#todo-form input:checkbox:checked");
     
+    console.log( rando );
+    console.log({current_box_status:current_box_status});
+    
+    
+    jQuery('*[data-box-status-id="'+current_box_status+'"]').change(function() {
+      console.log( 'Clicked ' + current_box_status );
+      if( this.checked ) {
+        console.log( 'DATA check' );
+        todo_save_enabled = true;
+        jQuery("#button_todo_recall_submit").show();
+      } else {
+        console.log( 'DATA uncheck' );
+        todo_save_enabled = false;
+        jQuery("#button_todo_recall_submit").hide();
+      }
+    });  
+  }
+  
+  // Disable DECLINE To-Do save until one checkbox is clicked. 
+  if( use_type == 'decline_todo' ) {
+    console.log( 'love decline_todo' );
+    let rando = jQuery("#todo-form input:checkbox:checked");
+    
+    let decline_save_enabled = '<?php echo $decline_save_enabled; ?>';
+    
+    console.log( {decline_save_enabled:decline_save_enabled });
+    console.log({current_box_status:current_box_status});
+    
+    
+    jQuery('*[data-box-status-id="'+current_box_status+'"]').change(function() {
+      console.log( 'Clicked ' + current_box_status );
+      if( this.checked ) {
+        console.log( 'DATA check' );
+        //todo_save_enabled = true;
+        if( decline_save_enabled ) {
+          jQuery("#button_todo_decline_submit").show();
+        }
+      } else {
+        console.log( 'DATA uncheck' );
+        //todo_save_enabled = false;
+        jQuery("#button_todo_decline_submit").hide();
+      }
+    });  
   }
   
   // Check and set alert if To-Do ticket does not have destruction approval. 
@@ -1402,7 +1903,7 @@ ob_start();
 <!--<button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();window.location.reload();"><?php _e('Close','wpsc-export-ticket');?></button>-->
 <button type="button" class="btn wpsc_popup_close" onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <?php
-if(!in_array($ticket_status, $status_id_arr)) {
+if( !in_array($ticket_status, $status_id_arr) && $type == 'edit' ) {
 ?>
 <button type="button" id="button_agent_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_agents();"><?php _e('Save','supportcandy');?></button>
 <?php } 
@@ -1410,12 +1911,19 @@ if(!in_array($ticket_status, $status_id_arr)) {
   if( $type == 'todo' ) {
 ?>
   <button type="button" id="button_todo_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_todo();"><?php _e('Save','supportcandy');?></button>
+<?php } elseif( $type == 'recall_todo' ) { ?>
+  <button type="button" id="button_todo_recall_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_todo_recall();"><?php _e('Save','supportcandy');?></button>
+<?php } elseif( $type == 'decline_todo' ) { ?>
+  <button type="button" id="button_todo_decline_submit" class="btn wpsc_popup_action"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wppatt_set_todo_decline();"><?php _e('Save','supportcandy');?></button>
+
 <?php } ?>
 
 <script>
 jQuery("#button_agent_submit").hide();
 //jQuery("#button_agent_submit").attr( 'disabled', 'disabled' );
 jQuery("#button_todo_submit").hide();
+jQuery("#button_todo_recall_submit").hide();
+jQuery("#button_todo_decline_submit").hide();
 
 
 
@@ -1427,8 +1935,9 @@ jQuery("#button_todo_submit").hide();
 function wppatt_set_todo() {
   console.log( 'SET TODO' );
   
-  let item_id = '<?php echo $item_ids[0]; ?>';	
-  let ticket_id = <?php echo $ticket_id; ?>;
+  let item_id = '<?php echo $item_ids[0]; ?>';	// always a single item, never multiple
+//   let ticket_id = <?php echo $ticket_id; ?>;
+  let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
   let current_box_status = <?php echo $current_box_status; ?>;
   
   console.log({ item_id:item_id, ticket_id:ticket_id });  
@@ -1457,6 +1966,84 @@ function wppatt_set_todo() {
   });
   wpsc_modal_close();
 }
+
+//
+// Sets Status via AJAX for the Recall To-Do list. 
+//
+
+function wppatt_set_todo_recall() {
+  console.log( 'SET RECALL TODO' );
+  
+  let recall_ids = '<?php echo $recall_ids[0]; ?>'; // always a single item, never multiple // Recall ID with leading zeros
+//  let ticket_id = <?php echo $ticket_id; ?>;
+  let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
+  let current_recall_status = <?php echo $current_box_status; ?>; // current recall status.
+  
+  console.log({ recall_ids:recall_ids, ticket_id:ticket_id, current_recall_status:current_recall_status });  
+  
+  //let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
+  //console.log({is_checked:is_checked});
+  
+  jQuery.post(
+    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{
+      type: 'todo_recall_update',
+      item_id: recall_ids,
+      current_recall_status: current_recall_status,
+      ticket_id: ticket_id
+	  }, 
+    function (response) {
+			//alert('updated: '+response);
+			response = JSON.parse( response );
+			console.log('RECALL TODO Response:');
+			console.log(response);
+			//Disable refresh
+			//window.location.reload();
+			
+			//Only refreshes the datatable, not the window // Recall To-Do icon/functionality only on Recall Dashboard.
+	    jQuery('#tbl_templates_recall').DataTable().ajax.reload(null, false);
+  });
+  wpsc_modal_close();
+}
+
+//
+// Sets Status via AJAX for the Decline To-Do list. 
+//
+
+function wppatt_set_todo_decline() {
+  console.log( 'SET Decline TODO' );
+  
+  let item_id = '<?php echo $decline_ids[0]; ?>'; // always a single item, never multiple
+  //let ticket_id = <?php echo $ticket_id; ?>;
+  //let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
+  let current_decline_status = <?php echo $current_box_status; ?>; // current decline status.
+  
+  //console.log({ item_id:item_id, ticket_id:ticket_id });  
+  
+  //let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
+  //console.log({is_checked:is_checked});
+  
+  jQuery.post(
+    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{
+      type: 'todo_decline_update',
+      item_id: item_id,
+      current_decline_status: current_decline_status
+      //current_box_status: current_box_status,
+      //ticket_id: ticket_id
+	  }, 
+    function (response) {
+			//alert('updated: '+response);
+			response = JSON.parse( response );
+			console.log('Decline TODO Response:');
+			console.log(response);
+			//Disable refresh
+			//window.location.reload();
+			
+			//Only refreshes the datatable, not the window // Decline To-Do icon/functionality only on Decline Dashboard.
+	    jQuery('#tbl_templates_return').DataTable().ajax.reload(null, false);
+  });
+  wpsc_modal_close();
+}
+
 
 // Sets agents for the statuses. 
 function wppatt_set_agents() {

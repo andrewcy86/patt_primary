@@ -214,6 +214,9 @@ color: rgb(255, 255, 255) !important;
 	margin-top: 0px !important;
 }
 
+.assign_agents_icon {
+	cursor: pointer;
+}
 </style>
     
 
@@ -722,6 +725,28 @@ function wppatt_return_editor() {
 	    jQuery('#wpsc_popup_footer').html(response.footer);
 	    jQuery('#wpsc_cat_name').focus();
 	}); 	
+}
+
+// Open Modal for editting decline todo items
+function edit_decline_to_do( box_id ) {	
+	
+  var arr = [box_id];
+	
+	wpsc_modal_open('Edit Decline To-Do List');
+	
+	var data = {
+	    action: 'wppatt_assign_agents',
+	    decline_ids: arr,
+	    type: 'decline_todo'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	    jQuery('#wpsc_popup_body').html(response.body);
+	    jQuery('#wpsc_popup_footer').html(response.footer);
+	    jQuery('#wpsc_cat_name').focus();
+	}); 
+// });
 }
 
 </script>

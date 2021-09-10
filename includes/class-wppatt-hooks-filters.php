@@ -22,6 +22,7 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 		 */
 		public function __construct() {
 
+
 			add_action( 'admin_enqueue_scripts', array( $this, 'wpsc_print_ext_js_create_ticket' ) );
 
 			// Print HTML In Request Form - Location: /home/acy3/public_html/wordpress3/wp-content/plugins/supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php.
@@ -149,8 +150,9 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 			wp_enqueue_script( 'dropzone-js', WPPATT_PLUGIN_URL . 'asset/js/dropzone.min.js', array(), time(), true );
 
 			wp_enqueue_script( 'xlsx-full-js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.5/xlsx.full.min.js', array(), time(), true );
-
-			wp_enqueue_script( 'save-ticket-boxlist-js', WPPATT_PLUGIN_URL . 'asset/js/ticket_box_list_save.js', array(), time(), true );
+    
+if($_GET['page'] == 'wpsc-tickets'){
+            wp_enqueue_script( 'save-ticket-boxlist-js', WPPATT_PLUGIN_URL . 'asset/js/ticket_box_list_save.js', array(), time(), true );
 
 			wp_localize_script(
 				'save-ticket-boxlist-js',
@@ -160,6 +162,8 @@ if ( ! class_exists( 'Patt_HooksFilters' ) ) {
 					'close_image' => WPSC_PLUGIN_URL . 'asset/images/close.png',
 				)
 			);
+}
+
 		}
 
 		/**

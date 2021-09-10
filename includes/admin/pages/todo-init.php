@@ -5,7 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 //$GLOBALS['id'] = $_GET['id'];
+$GLOBALS['page'] = 'todo';
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
@@ -20,6 +23,11 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
 $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'].' !important;color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'].' !important;border-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'].'!important';
+
+$subfolder_path = site_url( '', 'relative'); 
+
+$get_current_user_id = get_current_user_id();
+$re_scan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );   //743
 
 
 // Get Box Status
@@ -268,12 +276,8 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 	</div>
 
 
-
-	
   <div class="col-sm-8 col-md-9 wpsc_it_body">
-
-
-
+      
 <div class="table-responsive" style="overflow-x:auto;">
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" aria-label="Search..." placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch" aria-hidden="true" title="Search"></i><span class="sr-only">Search</span>
@@ -302,11 +306,6 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
     </table>
 
 <?php
-$subfolder_path = site_url( '', 'relative'); 
-
-$get_current_user_id = get_current_user_id();
-$re_scan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );   //743
-
 $box_rescan = $wpdb->get_row("SELECT count(b.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
@@ -388,7 +387,7 @@ $priority_style = "background-color:".$priority_background.";color:".$priority_c
 
 
 $tbl = '<tr>';
-$tbl .= '<td data-order="'.$info->id.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a></td>';
+$tbl .= '<td data-order="'.$info->id.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="wppatt_set_rescan(\''.$info->folderdocinfo_id.'\');" class="assign_agents_icon"><i class="fas fa-backspace" aria-hidden="true" title="Undo Re-scan"></i><span class="sr-only">Undo Re-scan</span></span></td>';
 $tbl .= '<td>'.$info->title.'</td>';
 $tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
 $tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=wpsc-tickets&id=' . $info->request_id . '">'.$info->request_id.'</a></td>';
@@ -404,10 +403,120 @@ echo $tbl;
 }
 
 }
+
+?>
+</tbody>
+</table>
+
+<!-- RECALL -->
+<?php
+$recall_query = $wpdb->get_row("SELECT count(a.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag->term_id.",".$recall_recall_complete_tag->term_id.",".$recall_recall_cancelled_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+$recall_count = $recall_query->count;
+
+if ($recall_count > 0) {
+?>
+<h3>Recall(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
+
+<div class="table-responsive" style="overflow-x:auto;">
+<table id="tbl_templates_recall_todo" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<thead>
+<tr>
+    <th class="datatable_header" scope="col">Recall ID</th>
+    <th class="datatable_header" scope="col">Request Date</th>
+    <th class="datatable_header" scope="col">Status</th>
+</tr>
+</thead>
+<tbody>
+<?php
+$recall_details = $wpdb->get_results("SELECT a.recall_id, c.name, a.request_date, a.recall_status_id
+FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag->term_id.",".$recall_recall_complete_tag->term_id.",".$recall_recall_cancelled_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+
+
+foreach ($recall_details as $info) {
+// Make Status Pretty
+$recall_status_term_id = $info->recall_status_id;
+$recall_status_background = get_term_meta($recall_status_term_id, 'wppatt_recall_status_background_color', true);
+$recall_status_color = get_term_meta($recall_status_term_id, 'wppatt_recall_status_color', true);
+$recall_status_style = "background-color:".$recall_status_background.";color:".$recall_status_color.";";
+
+$tbl = '<tr>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=recalldetails&id=R-' . $info->recall_id . '">'. 'R-' .$info->recall_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="edit_recall_to_do(\'' . $info->recall_id . '\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Recall Completion"></i><span class="sr-only">Recall Completion</span></span></td>';
+$tbl .= '<td>'.date("m/d/Y", strtotime($info->request_date)).'</td>';
+$tbl .= '<td><span id="status" class="wpsp_admin_label" style="'.$recall_status_style.'">'.$info->name.'</span></td>';
+$tbl .= '</tr>';
+
+echo $tbl;
+
+}
+
+}
+
+?>
+</tbody>
+</table>
+
+<!-- DECLINE -->
+
+<?php
+$decline_query = $wpdb->get_row("SELECT count(a.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_return a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
+WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag->term_id.",".$decline_decline_complete_tag->term_id.",".$decline_decline_cancelled_tag->term_id.",".$decline_decline_expired_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+$decline_count = $decline_query->count;
+
+if ($decline_count > 0) {
+?>
+<h3>Decline(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
+
+<div class="table-responsive" style="overflow-x:auto;">
+<table id="tbl_templates_decline_todo" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<thead>
+<tr>
+    <th class="datatable_header" scope="col">Decline ID</th>
+    <th class="datatable_header" scope="col">Request Date</th>
+    <th class="datatable_header" scope="col">Status</th>
+</tr>
+</thead>
+<tbody>
+<?php
+$decline_details = $wpdb->get_results("SELECT a.return_id, c.name, a.return_date, a.return_status_id
+FROM " . $wpdb->prefix . "wpsc_epa_return a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
+WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag->term_id.",".$decline_decline_complete_tag->term_id.",".$decline_decline_cancelled_tag->term_id.",".$decline_decline_expired_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+
+foreach ($decline_details as $info) {
+
+// Make Status Pretty
+$decline_status_term_id = $info->return_status_id;
+$decline_status_background = get_term_meta($decline_status_term_id, 'wppatt_return_status_background_color', true);
+$decline_status_color = get_term_meta($decline_status_term_id, 'wppatt_return_status_color', true);
+$decline_status_style = "background-color:".$decline_status_background.";color:".$decline_status_color.";";
+
+$tbl = '<tr>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=declinedetails&id=D-' . $info->return_id . '">'. 'D-' .$info->return_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="edit_decline_to_do(\'' . $info->return_id . '\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline Completion"></i><span class="sr-only">Decline Completion</span></span></td>';
+
+$tbl .= '<td>'.date("m/d/Y", strtotime($info->return_date)).'</td>';
+$tbl .= '<td><span id="status" class="wpsp_admin_label" style="'.$decline_status_style.'">'.$info->name.'</span></td>';
+$tbl .= '</tr>';
+
+echo $tbl;
+
+}
+
+}
+
 ?>
 </tbody>
 </table>
 <br /><br />
+
 </div>
 
 <style>
@@ -461,10 +570,29 @@ color: rgb(255, 255, 255) !important;
 </style>
  
 <script>
-
 jQuery(document).ready(function(){
- 
 <?php 
+if($recall_count > 0) { ?>
+
+var recall = jQuery('#tbl_templates_recall_todo').DataTable({
+   "autoWidth": true,
+   "paging" : true,
+   "bDestroy": true,
+   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+});
+
+<?php } 
+if($decline_count > 0) {
+?>
+
+ var decline = jQuery('#tbl_templates_decline_todo').DataTable({
+   "autoWidth": true,
+   "paging" : true,
+   "bDestroy": true,
+   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+});
+<?php 
+}
 //DISPAY IF RESCAN
 if($rescan_count > 0) {
 ?>
@@ -476,7 +604,7 @@ if($rescan_count > 0) {
   },
          "paging" : true,
          "bDestroy": true,
-		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
+		 "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
           'order': [[5, 'desc']],
 
 		});
@@ -1000,6 +1128,32 @@ if($rescan_count > 0) {
 	?>
 }); // END Document READY
 
+//Rescan Function
+function wppatt_set_rescan(folderdocinfoid){
+    
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_rescan.php',{
+postvarsfolderdocid : folderdocinfoid,
+postvarpage : 'filedetails'
+}, 
+   function (response) {
+      //if(!alert(response)){window.location.reload();}
+      wpsc_modal_open('Re-scan');
+		  var data = {
+		    action: 'wpsc_get_rescan_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });
+         
+   });
+
+}
 
 function get_display_user_html(user_name, termmeta_user_val) {
 	//console.log("in display_user");
@@ -1115,6 +1269,51 @@ function edit_to_do( box_id ) {
 	}); 
 // });
 }
+
+// Open Modal for editting decline todo items
+function edit_decline_to_do( box_id ) {	
+	
+  var arr = [box_id];
+	
+	wpsc_modal_open('Edit Decline To-Do List');
+	
+	var data = {
+	    action: 'wppatt_assign_agents',
+	    decline_ids: arr,
+	    type: 'decline_todo'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	    jQuery('#wpsc_popup_body').html(response.body);
+	    jQuery('#wpsc_popup_footer').html(response.footer);
+	    jQuery('#wpsc_cat_name').focus();
+	}); 
+// });
+}
+
+// Open Modal for editting todo items
+function edit_recall_to_do( box_id ) {	
+	
+  var arr = [box_id];
+	
+	wpsc_modal_open('Edit Recall To-Do List');
+	
+	var data = {
+	    action: 'wppatt_assign_agents',
+	    recall_ids: arr,
+	    type: 'recall_todo'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	    jQuery('#wpsc_popup_body').html(response.body);
+	    jQuery('#wpsc_popup_footer').html(response.footer);
+	    jQuery('#wpsc_cat_name').focus();
+	}); 
+// });
+}
+
 
 function wpsc_help_filters(){
 

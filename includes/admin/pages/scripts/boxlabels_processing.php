@@ -5,13 +5,9 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
- 
-$status_id_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
+$status_id_arr = array($request_new_request_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_cancelled_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
 if(isset($_POST['postvarsboxid'])){
     
@@ -47,15 +43,15 @@ $shelf = $get_destroy_status->shelf;
 $position = $get_destroy_status->position;
 $digitization_center = $get_destroy_status->digitization_center;
 
-if ($ticket_status == $tabled_tag->term_id) {
+if ($ticket_status == $request_tabled_tag->term_id) {
 array_push($tabledarray, $ticket_status);
 }
 
-if (!in_array($ticket_status, $status_id_arr) || ($destroy_status == 0 && $digitization_center != 666)) {
+if (!in_array($ticket_status, $status_id_arr) || ($destroy_status == 0 && $digitization_center != $dc_not_assigned_tag->term_id)) {
 array_push($boxidarray, $box_id);
 }
 
-if (in_array($ticket_status, $status_id_arr) || $destroy_status == 1 || $digitization_center == 666) {
+if (in_array($ticket_status, $status_id_arr) || $destroy_status == 1 || $digitization_center == $dc_not_assigned_tag->term_id) {
 $count++;
 }
 

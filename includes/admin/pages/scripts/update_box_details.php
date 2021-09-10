@@ -89,6 +89,7 @@ if(
     $wpdb->insert($table_timestamp, array('box_id' => $box_id, 'type' => $new_bs, 'user' => $current_user->display_name, 'timestamp' => $date_time) ); 
   }
   
+  /*
   //updates destruction completed and adds to request history
   if($dc != $old_dc) {
   $data_update = array('box_destroyed' => $dc);
@@ -174,6 +175,7 @@ if(
   $wpdb->update($table_ss , $sso_update, $sso_where);
   }
   }
+  */
   
   if(!empty($po)) {
     $get_old_acronym = $wpdb->get_row("SELECT b.office_acronym as office_acronym FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office b ON a.program_office_id = b.office_code WHERE a.box_id = '" . $pattboxid . "'");

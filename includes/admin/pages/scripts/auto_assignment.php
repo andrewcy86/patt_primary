@@ -5,6 +5,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 global $wpdb, $current_user, $wpscfunction;
 
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
@@ -19,15 +20,8 @@ WHERE
 id = '" . $tkid . "'
 ");
 	$ticket_details_status = $ticket_details->ticket_status;
-
-    $new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
-    $initial_review_complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
-    $tabled_request_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
-    $complete_tag = get_term_by('slug', 'awaiting-customer-reply', 'wpsc_statuses');
-    $shipped_tag = get_term_by('slug', 'awaiting-agent-reply', 'wpsc_statuses');
-    $received_tag = get_term_by('slug', 'received', 'wpsc_statuses');
     
-if (($ticket_details_status == $shipped_tag->term_id || $ticket_details_status == $received_tag->term_id || $ticket_details_status == $new_request_tag->term_id || $ticket_details_status == $tabled_request_tag->term_id || $ticket_details_status == $complete_tag->term_id) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
+if (($ticket_details_status == $request_shipped_tag->term_id || $ticket_details_status == $request_received_tag->term_id || $ticket_details_status == $request_new_request_tag->term_id || $ticket_details_status == $request_tabled_tag->term_id || $ticket_details_status == $request_initial_review_complete_tag->term_id) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != $dc_not_assigned_tag->term_id) {
 
 //Call Auto Assignment Function
 Patt_Custom_Func::auto_location_assignment($tkid,$dc_final,$destruction_flag,$destruction_boxes);

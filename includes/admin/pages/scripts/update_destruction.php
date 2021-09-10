@@ -15,6 +15,10 @@ $boxid_string = $_POST['postvarsboxid'];
 $boxid_arr = explode (",", $boxid_string);  
 $page_id = $_POST['postvarpage'];
 
+$scan_list_table = $wpdb->prefix . 'wpsc_epa_scan_list';
+
+$unauthorized_destruction_array = array();
+
 $destruction_flag = 0;
 $destruction_box_array = array();
 $dc_array = array();
@@ -33,17 +37,34 @@ $status_id_arr = array($request_new_request_tag->term_id, $request_tabled_tag->t
 
 foreach($boxid_arr as $key) {    
 
-$get_box = $wpdb->get_row("SELECT a.ticket_category, a.id, b.box_destroyed
+$get_box = $wpdb->get_row("SELECT a.ticket_category, b.box_destroyed
 FROM " . $wpdb->prefix . "wpsc_ticket a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.ticket_id = a.id
 WHERE b.box_id = '".$key."'");
 $get_dc_val = $get_box->ticket_category;
 $get_box_destroyed_val = $get_box->box_destroyed;
-$get_ticket_id_val = $get_box->id;
 
 array_push($dc_array,$get_dc_val);
-
 array_push($destruction_reversal,$get_box_destroyed_val);
+
+$get_total_files = $wpdb->get_row("SELECT COUNT(a.id) as total_files
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE b.box_id = '".$key."'");
+$total_files = $get_total_files->total_files;
+
+$get_unauthorized_destruction_total = get_row("SELECT COUNT(a.unauthorized_destruction) as total_unauthorized_destruction
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
+WHERE a.unauthorized_destruction = 1 AND b.box_id = '".$key."'");
+$total_unauthorized_destruction = $get_unauthorized_destruction_total->total_unauthorized_destruction;
+
+
+// When all files in a box are unauthorized destruction then you cannot flag/unflag as box destruction
+if( ($total_files - $total_unauthorized_destruction) == 0) {
+    //echo 'All files are unauthorized destruction : ' . $key;
+    array_push($unauthorized_destruction_array, $key);
+}
 
 }
 
@@ -150,7 +171,7 @@ FROM " . $wpdb->prefix . "wpsc_ticket
 WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
-if ($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
+if ($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1 && count($unauthorized_destruction_array) == 0){
     
 $box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999');
 $box_data_where = array('id' => $box_db_id);
@@ -165,16 +186,53 @@ $wpdb->update($box_table_name, $data_update, $data_where);
 
 }
 
-if ($get_destruction_val == 0 && count(array_unique($destruction_reversal)) == 1){
+if ($get_destruction_val == 0 && count(array_unique($destruction_reversal)) == 1 && count($unauthorized_destruction_array) == 0){
 $box_data_update = array('box_destroyed' => 1);
 $box_data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
-
 
 //SET PHYSICAL LOCATION TO DESTROYED
 $pl_update = array('location_status_id' => '6');
 $pl_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $pl_update, $pl_where);
+
+$get_physical_locations_from_box = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+AND b.box_id = '" .  $key . "'");
+
+$scanning_id = $get_physical_locations_from_box->scanning_id;
+$stagingarea_id = $get_physical_locations_from_box->stagingarea_id;
+$cart_id = $get_physical_locations_from_box->cart_id;
+$shelf_location = $get_physical_locations_from_box->shelf_location;
+$pallet_id = $get_physical_locations_from_box->pallet_id;
+
+if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+    if(!empty($pallet_id)) {
+        //Delete pallet_id from the boxinfo table
+        $boxinfo_pallet_update = array('pallet_id' => '');
+        $boxinfo_pallet_where = array('id' => $box_db_id);
+        $wpdb->update($box_table_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
+        
+        $get_pallet_for_boxes = $wpdb->get_row("SELECT COUNT(pallet_id) as pallet_count
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE pallet_id = '" .  $pallet_id . "'");
+        $pallet_count = $get_pallet_for_boxes->pallet_count;
+        
+        //Delete pallet_id from the scan_list table when the pallet_id is not found in the boxinfo table
+        if($pallet_count == 0) {
+            $wpdb->delete( $scan_list_table, array( 'pallet_id' => $pallet_id ) );
+        }
+        do_action('wpppatt_after_unassign_pallet', $ticket_id, $key, $pallet_id);
+    }
+    
+    //Delete from the scan_list table for non-pallets
+    if(!empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+        $wpdb->delete( $scan_list_table, array( 'box_id' => $key ) );
+    }
+}
+
 
 //SET SHELF LOCATION TO 0
 $dc_notassigned_val = $dc_not_assigned_tag->term_id;
@@ -214,7 +272,16 @@ if ($counter > 0) {
 echo '<br />';
 echo '<br />';
 }
-} elseif ($dc_array_count > 1 && count(array_unique($destruction_reversal)) == 1 && $destruction_reversal[0] == 1) {
+}
+elseif (count($unauthorized_destruction_array) > 0) {
+echo '<strong>'.$key.'</strong> : ';
+echo "All files in this box are marked as unauthorized destruction and cannot be flagged/unflagged as box destruction.";
+if ($counter > 0) {
+echo '<br />';
+echo '<br />';
+}
+}
+elseif ($dc_array_count > 1 && count(array_unique($destruction_reversal)) == 1 && $destruction_reversal[0] == 1) {
 echo '<strong>'.$key.'</strong> : ';
 echo "Boxes that belong to multiple digitzation centers cannot be selected.";
 if ($counter > 0) {
@@ -253,6 +320,8 @@ $dc_set = reset($dc_array);
 }
 
 //echo $dc_set;
+//print_r($unauthorized_destruction_array);
+
 if($get_destruction_val == 1 && $dc_array_count == 1 && count(array_unique($destruction_reversal)) == 1){
         // Call Auto Assignment Function
         $destruction_flag = 1;

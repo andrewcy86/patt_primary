@@ -209,6 +209,10 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 		margin-top: 0px !important;
 	}
 	
+	.assign_agents_icon {
+  	cursor: pointer;
+  }
+	
 	</style>
     
 
@@ -721,6 +725,29 @@ function wppatt_return_editor() {
 	    jQuery('#wpsc_cat_name').focus();
 	}); 	
 }
+
+// Open Modal for editting todo items
+function edit_recall_to_do( box_id ) {	
+	
+  var arr = [box_id];
+	
+	wpsc_modal_open('Edit Recall To-Do List');
+	
+	var data = {
+	    action: 'wppatt_assign_agents',
+	    recall_ids: arr,
+	    type: 'recall_todo'
+	};
+	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	    jQuery('#wpsc_popup_body').html(response.body);
+	    jQuery('#wpsc_popup_footer').html(response.footer);
+	    jQuery('#wpsc_cat_name').focus();
+	}); 
+// });
+}
+
 
 </script>
 

@@ -5,6 +5,8 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 if(
 !empty($_POST['postvarsfolderdocid'])
 ){
@@ -22,6 +24,8 @@ $dc_set = '';
 $dc_fail_message = 0;
 
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+$table_box_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+$scan_list_table = $wpdb->prefix . 'wpsc_epa_scan_list';
 
 $table_timestamp = $wpdb->prefix . 'wpsc_epa_timestamps_folderfile';
 // Define current time
@@ -33,14 +37,8 @@ $destruction_violation = 0;
 $frozen = 0;
 
 $ticket_box_status = 0;
-//Request statuses
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
 
-$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
+$status_id_arr = array($request_new_request_tag->term_id, $request_tabled_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
 foreach($folderdocid_arr as $key) {
 //Set digitzation center array
@@ -240,7 +238,6 @@ $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 
 //Reverse the destruction
-$table_box_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 $data_update_d = array('box_destroyed' => 0);
 $data_where_d = array('id' => $box_id);
 $wpdb->update($table_box_name, $data_update_d, $data_where_d);
@@ -298,13 +295,9 @@ $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
 
 //AY UPDATE JOIN
-$destruction_count = $wpdb->get_row(
-"SELECT 
-count(id) as sum
+$destruction_count = $wpdb->get_row("SELECT count(id) as sum
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
-			);
-
+WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'");
 $destruction_count_sum = $destruction_count->sum;
 
 if($folder_file_count_sum == $destruction_count_sum) {
@@ -314,9 +307,47 @@ $pl_update = array('location_status_id' => '6','box_destroyed' => '1');
 $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
 
+$get_physical_locations_from_box = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id, b.box_id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+AND b.id = '" .  $box_id . "'");
+
+$scanning_id = $get_physical_locations_from_box->scanning_id;
+$stagingarea_id = $get_physical_locations_from_box->stagingarea_id;
+$cart_id = $get_physical_locations_from_box->cart_id;
+$shelf_location = $get_physical_locations_from_box->shelf_location;
+$pallet_id = $get_physical_locations_from_box->pallet_id;
+$box_full_id = $get_physical_locations_from_box->box_id;
+
+if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+    if(!empty($pallet_id)) {
+        //Delete pallet_id from the boxinfo table
+        $boxinfo_pallet_update = array('pallet_id' => '');
+        $boxinfo_pallet_where = array('id' => $box_id);
+        $wpdb->update($table_box_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
+        
+        $get_pallet_for_boxes = $wpdb->get_row("SELECT COUNT(pallet_id) as pallet_count
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE pallet_id = '" .  $pallet_id . "'");
+        $pallet_count = $get_pallet_for_boxes->pallet_count;
+        
+        //Delete pallet_id from the scan_list table when the pallet_id is not found in the boxinfo table
+        if($pallet_count == 0) {
+            $wpdb->delete( $scan_list_table, array( 'pallet_id' => $pallet_id ) );
+        }
+        do_action('wpppatt_after_unassign_pallet', $ticket_id, $box_full_id, $pallet_id);
+    }
+    
+    //Delete from the scan_list table for non-pallets
+    if(!empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+        $wpdb->delete( $scan_list_table, array( 'box_id' => $box_id ) );
+    }
+}
+
 //SET SHELF LOCATION TO 0
 $table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
-$sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
+$sl_update = array('digitization_center' => $dc_not_assigned_tag->term_id,'aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
@@ -473,9 +504,47 @@ $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
 do_action('wpppatt_after_box_destruction', $ticket_id, Patt_Custom_Func::convert_box_id_to_dbid($box_id));
 
+$get_physical_locations_from_box = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id, b.box_id
+FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+AND b.id = '" .  $box_id . "'");
+
+$scanning_id = $get_physical_locations_from_box->scanning_id;
+$stagingarea_id = $get_physical_locations_from_box->stagingarea_id;
+$cart_id = $get_physical_locations_from_box->cart_id;
+$shelf_location = $get_physical_locations_from_box->shelf_location;
+$pallet_id = $get_physical_locations_from_box->pallet_id;
+$box_full_id = $get_physical_locations_from_box->box_id;
+
+if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+    if(!empty($pallet_id)) {
+        //Delete pallet_id from the boxinfo table
+        $boxinfo_pallet_update = array('pallet_id' => '');
+        $boxinfo_pallet_where = array('id' => $box_id);
+        $wpdb->update($table_box_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
+        
+        $get_pallet_for_boxes = $wpdb->get_row("SELECT COUNT(pallet_id) as pallet_count
+        FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE pallet_id = '" .  $pallet_id . "'");
+        $pallet_count = $get_pallet_for_boxes->pallet_count;
+        
+        //Delete pallet_id from the scan_list table when the pallet_id is not found in the boxinfo table
+        if($pallet_count == 0) {
+            $wpdb->delete( $scan_list_table, array( 'pallet_id' => $pallet_id ) );
+        }
+        do_action('wpppatt_after_unassign_pallet', $ticket_id, $box_full_id, $pallet_id);
+    }
+    
+    //Delete from the scan_list table for non-pallets
+    if(!empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+        $wpdb->delete( $scan_list_table, array( 'box_id' => $box_id ) );
+    }
+}
+
 //SET SHELF LOCATION TO 0
 $table_sl = $wpdb->prefix . 'wpsc_epa_storage_location';
-$sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
+$sl_update = array('digitization_center' => $dc_not_assigned_tag->term_id,'aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
 $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 

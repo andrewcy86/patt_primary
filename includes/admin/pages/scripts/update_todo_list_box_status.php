@@ -10,6 +10,8 @@ $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 $item_id = isset($_POST['item_id']) ? sanitize_text_field($_POST['item_id']) : ''; // full number i.e. 0000003-1
 $current_box_status = isset($_POST['current_box_status']) ? sanitize_text_field($_POST['current_box_status']) : ''; // term_id
+$current_recall_status = isset($_POST['current_recall_status']) ? sanitize_text_field($_POST['current_recall_status']) : ''; // term_id
+$current_decline_status = isset($_POST['current_decline_status']) ? sanitize_text_field($_POST['current_decline_status']) : ''; // term_id
 
 // get the id aka foreign key of the box
 $box_fk = Patt_Custom_Func::get_id_by_box_id( $item_id );
@@ -37,6 +39,39 @@ $digitized_not_val_term = $digitized_not_val_tag->term_id;
 $destruction_approved_term = $destruction_approved_tag->term_id;
 $destruction_of_source_term = $destruction_of_source_tag->term_id;
 $completed_dispositioned_term = $completed_dispositioned_tag->term_id;
+
+
+// Register Recall Status Taxonomy
+if( !taxonomy_exists('wppatt_recall_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wppatt_recall_statuses', 'wpsc_ticket', $args );
+}
+
+// Recall status slugs
+$recall_recalled_tag = get_term_by('slug', 'recalled', 'wppatt_recall_statuses'); 
+$recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
+$recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses'); 
+
+$recall_recalled_term = $recall_recalled_tag->term_id;
+$recall_approved_term = $recall_approved_tag->term_id;
+$recall_complete_term = $recall_complete_tag->term_id;
+
+
+// Register Decline Status Taxonomy
+if( !taxonomy_exists('wppatt_return_statuses') ) {
+	$args = array(
+		'public' => false,
+		'rewrite' => false
+	);
+	register_taxonomy( 'wppatt_return_statuses', 'wpsc_ticket', $args );
+}
+
+// Recall status slugs
+$decline_initiated_tag = get_term_by('slug', 'decline-initiated', 'wppatt_return_statuses'); 
+$decline_initiated_term = $decline_initiated_tag->term_id;
 
 
 // Box status flow
@@ -145,7 +180,38 @@ if( $type == 'todo_box_status_update' ) {
   	$status_str = $previous_status_name . ' to ' . $status_name;
   	do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item_id );
   }
-} 
+  
+} elseif( $type == 'todo_recall_update' )  {
+  // Update flags in recall table
+  
+  // Update Flags in wpsc_epa_recallrequest
+	$table_name = $wpdb->prefix . 'wpsc_epa_recallrequest';
+	$data_where = array( 'recall_id' => $item_id );
+	$data_update;
+	
+	if( $current_recall_status == $recall_approved_term ) {
+  	$data_update = [ 'recall_approved'=>1 ];
+	} elseif( $current_recall_status == $recall_complete_term ) {
+  	$data_update = [ 'recall_complete'=>1 ];
+	}
+  
+  $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
+  
+} elseif( $type == 'todo_decline_update' )  {
+  
+  // Update Flags in wpsc_epa_return
+	$table_name = $wpdb->prefix . 'wpsc_epa_return';
+	$data_where = array( 'return_id' => $item_id );
+	$data_update;
+	
+	if( $current_decline_status == $decline_initiated_term ) {
+  	$data_update = [ 'return_complete'=>1 ];
+	} 
+  
+  $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
+  
+}
+
 
 
 
@@ -154,7 +220,13 @@ $response = array(
 	"type" => $type,
 	"ticket_id" => $ticket_id,
 	"item_id" => $item_id,
+	"table_name" => $table_name,
 	"current_box_status" => $current_box_status,
+	"current_recall_status" => $current_recall_status,
+	"recall_recalled_term" => $recall_recalled_term,
+	"recall_recalled_tag" => $recall_recalled_tag,
+	"recall_complete_term" => $recall_complete_term,
+	"recall_complete_tag" => $recall_complete_tag,
 	"next_status_arr" => $next_status_arr,
 	"next_box_status" => $next_box_status,
 	"storage_location_status_flag_name" => $storage_location_status_flag_name,

@@ -2387,7 +2387,7 @@ public static function id_in_recall( $identifier, $type ) {
                             ];
 
             $select_fields = [
-                "{$wpdb->prefix}wpsc_epa_return" => ['id', 'return_id', 'return_date', 'return_receipt_date', 'expiration_date', 'comments', 'return_status_id', 'updated_date'],
+                "{$wpdb->prefix}wpsc_epa_return" => ['id', 'return_id', 'return_date', 'return_receipt_date', 'expiration_date', 'comments', 'return_status_id', 'updated_date', 'return_complete'],
                 // "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_return_items" => ['box_id', 'folderdoc_id', 'saved_box_status'],
@@ -3329,7 +3329,7 @@ public static function id_in_recall( $identifier, $type ) {
             // print_r($args);  
 
             $select_fields = [
-                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'box_id as recall_box_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id', 'saved_box_status'],
+                "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'box_id as recall_box_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id', 'saved_box_status', 'recall_approved', 'recall_complete'],
                 "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                 "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
             //    "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['folderdocinfo_id as folderdoc_id_parent'], // New dropped table

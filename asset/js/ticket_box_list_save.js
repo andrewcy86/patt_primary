@@ -148,6 +148,10 @@ jQuery(document).ready(function(){
     
 });
 
+jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
+            alert('File upload failed. Please ensure the box list is not open in Excel.');
+            wpsc_get_create_ticket();
+});
 
 /* Removes data from the box datatable if there is any error */
 function clearBoxTable() {
@@ -268,6 +272,7 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
             },  
             error: function (response) {
                 console.log("Excel did not upload successfully");
+                wpsc_get_create_ticket();
             }
         });
 	
@@ -317,11 +322,17 @@ function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 			
 			jQuery('.wpsc_loading_icon_submit_ticket').css('display','none');
             jQuery('#patt_thankyou').delay(1000).fadeIn(2000);
-		}
+		},
+    error: function ( response ) {
+            //alert('File upload failed. Please ensure the box list is not open in Excel.');
+            console.log("Excel did not upload successfully");
+            wpsc_get_create_ticket();
+    }
 	
 	});		
 
 }
+
 
 function ticket_id_failed() {
 	console.log( 'ticket_id failed' );
@@ -1671,7 +1682,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                 }
             },
             error: function(xhr, status, error){
-            alert('File upload failed. Please ensure the box list is not open in Excel.');
+            //alert('File upload failed. Please ensure the box list is not open in Excel.');
+            console.log("Excel did not upload successfully");
             wpsc_get_create_ticket();
      }
         });

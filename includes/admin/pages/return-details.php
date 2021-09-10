@@ -341,7 +341,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 ?>
 
 
-  <h3>Decline Details - <?php echo $decline_cancelled_term; ?> </h3>
+  <h3>Decline Details</h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 

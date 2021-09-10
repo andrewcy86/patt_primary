@@ -132,18 +132,8 @@ echo '</pre>';
 		</select>
 
 <?php
-$desruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
-$desruction_approval_term_id = $desruction_approval_tag->term_id;
-
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
-
-$status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
-
-if( ($validated == $validation_total) && ($status_id == $desruction_approval_term_id) && ($destruction_approval == 1) && !in_array($ticket_status, $status_id_arr)) {
+/*
+if( ($validated == $validation_total) && ($status_id == $desruction_of_source_tag->term_id) && ($destruction_approval == 1) && !in_array($ticket_status, $status_id_arr)) {
 ?>
 <br /><br />
 <strong>Destruction Completed:</strong><br />
@@ -159,7 +149,7 @@ if( ($validated == $validation_total) && ($status_id == $desruction_approval_ter
 
 <input type="hidden" id="dc" name="dc" value="<?php echo $dc; ?>">
 <?php } 
-
+*/
 
 /*
 if (($agent_permissions['label'] == 'Administrator')  || ($agent_permissions['label'] == 'Manager')) { 

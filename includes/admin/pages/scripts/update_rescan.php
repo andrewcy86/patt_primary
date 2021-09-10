@@ -377,9 +377,9 @@ $wpdb->update($table_name, $data_update, $data_where);
 
 if ($rescan_reversal == 1 && $destroyed == 0 && $ticket_request_status == 0 && $ticket_box_status == 0) {
 //print_r($folderdocid_arr);
-echo " Re-scan has been updated. A re-scan flag has been reversed. ";
+echo "<strong>".$key."</strong> : Re-scan has been updated. A re-scan flag has been reversed. ";
 } elseif ($rescan_reversal == 0 && $destroyed == 0 && $ticket_request_status == 0 && $ticket_box_status == 0) {
-echo " Re-scan flag has been set. ";
+echo "<strong>".$key."</strong> : Re-scan flag has been set. ";
 }
 }
 

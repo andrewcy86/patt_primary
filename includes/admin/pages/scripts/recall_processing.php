@@ -9,13 +9,15 @@ $dbname = DB_NAME; /* Database name */
 
 $subfolder_path = site_url( '', 'relative'); 
 
-global $current_user;
+global $current_user, $wpscfunction;
 
 $con = mysqli_connect($host, $user, $password,$dbname);
 // Check connection
 if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
+
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 // Variables
 $icons = '';
@@ -318,6 +320,10 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 			$icons = $freeze_icon;
 		}
 	}
+	
+	if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){	
+	    $icons .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_recall_to_do(\''.$row['recall_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Recall To Do"></i><span class="sr-only">Recall To Do</span></span>';
+    }
 	
 	
 	$track = $shipping_link_start.$tracking_num.$shipping_link_end;
