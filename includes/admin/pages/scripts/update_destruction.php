@@ -53,7 +53,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE b.box_id = '".$key."'");
 $total_files = $get_total_files->total_files;
 
-$get_unauthorized_destruction_total = get_row("SELECT COUNT(a.unauthorized_destruction) as total_unauthorized_destruction
+$get_unauthorized_destruction_total = $wpdb->get_row("SELECT COUNT(a.unauthorized_destruction) as total_unauthorized_destruction
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.id = a.box_id
 WHERE a.unauthorized_destruction = 1 AND b.box_id = '".$key."'");
