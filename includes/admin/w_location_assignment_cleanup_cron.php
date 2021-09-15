@@ -11,6 +11,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+// Find any 4/1 combination
+$get_four_one = $wpdb->get_results("
+SELECT shelf_id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+occupied = 1 AND remaining = 4
+");
+
+foreach($get_four_one as $item) {
+
+$shelf_id = $item->shelf_id;
+$data_update = array('occupied' => 0);
+$data_where = array('shelf_id' => $shelf_id);
+$wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
+
+}
+
 // Find first available slot for requests with boxes equal to 1
 $get_active_location = $wpdb->get_results("
 SELECT shelf_id
