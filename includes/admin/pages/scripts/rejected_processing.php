@@ -13,6 +13,7 @@ include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 	$ticket_id = $_POST['postvartktid'];
 	$tkstatus = $_POST['postvarstatus'];
 	$tkcomment = $_POST['postvarcomment'];
+	$dc_final = $_POST['postvardcname'];
 	
 //Get current ticket status
 $ticket              = $wpscfunction->get_ticket($ticket_id);
@@ -55,8 +56,15 @@ foreach($get_box_ids as $item) {
     $data_update_storage_location = array('aisle' => 0,'bay' => 0,'shelf' => 0,'position' => 0);
     $data_where_storage_location = array('id' => $item->storage_location_id);
     $wpdb->update($wpdb->prefix . 'wpsc_epa_storage_location', $data_update_storage_location, $data_where_storage_location);
+
+$shelf_id_arr = array($shelf_id);
+
+// RESET REMAINING
+Patt_Custom_Func::update_remaining_occupied($dc_final,$shelf_id_arr);
+
     
 }
+
 
 }
 
@@ -98,11 +106,6 @@ $wpscfunction->delete_ticket_meta($ticket_id,'rejected_timestamp',true);
 
 $wpscfunction->delete_ticket_meta($ticket_id,'rejected_timestamp',true);
 }
-
-
-// RESET OCCUPIED and REMAINING
-include_once( WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php' );
-include_once( WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php' );
 
 echo 'Reject Success.'.$test;
 //print_r($rejected_timestamp_check);

@@ -413,7 +413,7 @@ echo $tbl;
 $recall_query = $wpdb->get_row("SELECT count(a.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag->term_id.",".$recall_recall_complete_tag->term_id.",".$recall_recall_cancelled_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag->term_id.",".$recall_recall_cancelled_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
 $recall_count = $recall_query->count;
 
 if ($recall_count > 0) {
@@ -421,7 +421,7 @@ if ($recall_count > 0) {
 <h3>Recall(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_recall_todo" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_recall_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
     <th class="datatable_header" scope="col">Recall ID</th>
@@ -429,41 +429,13 @@ if ($recall_count > 0) {
     <th class="datatable_header" scope="col">Status</th>
 </tr>
 </thead>
-<tbody>
-<?php
-$recall_details = $wpdb->get_results("SELECT a.recall_id, c.name, a.request_date, a.recall_status_id
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag->term_id.",".$recall_recall_complete_tag->term_id.",".$recall_recall_cancelled_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
-
-
-foreach ($recall_details as $info) {
-// Make Status Pretty
-$recall_status_term_id = $info->recall_status_id;
-$recall_status_background = get_term_meta($recall_status_term_id, 'wppatt_recall_status_background_color', true);
-$recall_status_color = get_term_meta($recall_status_term_id, 'wppatt_recall_status_color', true);
-$recall_status_style = "background-color:".$recall_status_background.";color:".$recall_status_color.";";
-
-$tbl = '<tr>';
-$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=recalldetails&id=R-' . $info->recall_id . '">'. 'R-' .$info->recall_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="edit_recall_to_do(\'' . $info->recall_id . '\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Recall Completion"></i><span class="sr-only">Recall Completion</span></span></td>';
-$tbl .= '<td>'.date("m/d/Y", strtotime($info->request_date)).'</td>';
-$tbl .= '<td><span id="status" class="wpsp_admin_label" style="'.$recall_status_style.'">'.$info->name.'</span></td>';
-$tbl .= '</tr>';
-
-echo $tbl;
-
-}
-
-}
-
-?>
-</tbody>
 </table>
 
 <!-- DECLINE -->
 
 <?php
+}
+
 $decline_query = $wpdb->get_row("SELECT count(a.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
@@ -576,9 +548,26 @@ if($recall_count > 0) { ?>
 
 var recall = jQuery('#tbl_templates_recall_todo').DataTable({
    "autoWidth": true,
+   "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_recall_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  },
    "paging" : true,
    "bDestroy": true,
-   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+   		'serverMethod': 'post',
+		'searching': false, // Remove default Search Control
+		'ajax': {
+			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_recall_processing.php',
+ 			'data': function(data){
+				var sbu = '<?php echo get_current_user_id();?>';
+				data.searchByUser = sbu;
+ 			}
+		},
+   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+   "columns": [
+			{ data: 'recall_id', 'class' : 'text_highlight'},
+			{ data: 'request_date'},
+			{ data: 'recall_status' },
+		]
 });
 
 <?php } 
@@ -587,6 +576,9 @@ if($decline_count > 0) {
 
  var decline = jQuery('#tbl_templates_decline_todo').DataTable({
    "autoWidth": true,
+   "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_decline_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  },
    "paging" : true,
    "bDestroy": true,
    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
@@ -600,7 +592,7 @@ if($rescan_count > 0) {
 	     "autoWidth": true,
 	     //"scrollX" : true,
 	     "initComplete": function (settings, json) {  
-    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+    jQuery("#tbl_templates_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
          "paging" : true,
          "bDestroy": true,

@@ -130,7 +130,7 @@ $get_dc_val = $get_dc->ticket_category;
 $destruction_flag = 0;
 $destruction_boxes = '';
 
-
+//Double Check to make sure DC is assigned (DC is now assigned at ingestion conformation page)
 if($status_id == $request_tabled_tag->term_id || $status_id == $request_initial_review_complete_tag->term_id){
 $dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
 
@@ -152,18 +152,71 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_location', $data_update, $data_whe
 
 }
 
-if($status_id == $request_initial_review_complete_tag->term_id){
+//Double Check to make sure Aisle,Bay,Shelf,Position is Assigned
+/*if($status_id == $request_initial_review_complete_tag->term_id){
 $dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
 
 $data_update = array('ticket_category' => $dc);
 $data_where = array('id' => $ticket_id);
 $wpdb->update($wpdb->prefix.'wpsc_ticket', $data_update, $data_where);
 
-
+//include_once( WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php' );
+//include_once( WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php' );
+       
     echo '<div style="display:none">';
 Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_flag,$destruction_boxes);
     echo '</div>';
+
 }
+*/
+
+if($status_id == $request_initial_review_complete_tag->term_id){
+echo '<div style="display:none">';
+Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_flag,$destruction_boxes);
+echo '</div>';
+
+}
+
+//Double Check to make sure Aisle,Bay,Shelf,Position is cleared after rejection of request
+if($status_id == $request_initial_review_rejected_tag->term_id){
+    
+$get_box_ids_count = $wpdb->get_row("SELECT count(a.id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id
+WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND a.ticket_id = '".$ticket_id."'");
+
+if($get_box_ids_count->count > 0) {
+
+$get_box_ids = $wpdb->get_results("SELECT a.id, a.storage_location_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id
+WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND a.ticket_id = '".$ticket_id."'");
+
+foreach($get_box_ids as $item) {
+    $data_update_box_status = array('box_status' => $box_cancelled_tag->term_id);
+    $data_where_box_status = array('id' => $item->id);
+    $wpdb->update($wpdb->prefix . 'wpsc_epa_boxinfo', $data_update_box_status, $data_where_box_status);
+    
+// RESET Aisle/Bay/Shelf/Position Location
+
+// GET SHELF ID
+    $get_shelf_id = $wpdb->get_row("SELECT aisle, bay, shelf FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id = '" . $item->storage_location_id . "'");
+    $shelf_id = $get_shelf_id->aisle.'_'.$get_shelf_id->bay.'_'.$get_shelf_id->shelf;
+
+// RESET AISLE, BAY, SHELF, POSITION TO 0
+    $data_update_storage_location = array('aisle' => 0,'bay' => 0,'shelf' => 0,'position' => 0);
+    $data_where_storage_location = array('id' => $item->storage_location_id);
+    $wpdb->update($wpdb->prefix . 'wpsc_epa_storage_location', $data_update_storage_location, $data_where_storage_location);
+    
+}
+
+include_once( WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php' );
+include_once( WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php' );
+
+}
+
+}
+
 
 if($is_active == 1) {
     $request_type = 'request';

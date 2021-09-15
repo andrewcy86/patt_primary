@@ -7,6 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 //$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
 //require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 // EAST Cleanup
 
 global $current_user, $wpscfunction, $wpdb;
@@ -33,7 +35,7 @@ $get_active_location = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
-digitization_center = 62
+digitization_center = ".$dc_east_tag->term_id."
 ");
 
 foreach($get_active_location as $item) {
@@ -49,7 +51,7 @@ SELECT position FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE aisle = '" . $aisle . "' 
 AND bay = '" . $bay . "' 
 AND shelf = '" . $shelf . "' 
-AND digitization_center = 62
+AND digitization_center = ".$dc_east_tag->term_id."
 ");
 
 $position_count = count($position_details);
@@ -59,8 +61,8 @@ $position_count = count($position_details);
 // Set Remaining to 0
 if($position_count >= 4) {
 
-$data_update = array('remaining' => 0);
-$data_where = array('shelf_id' => $shelf_id);
+$data_update = array('remaining' => 0, 'occupied' => 1);
+$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_east_tag->term_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
@@ -68,11 +70,20 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 // Set Remaining to the position count
 if($position_count > 0 && $position_count <= 3) {
 
-$data_update = array('remaining' => $position_count);
-$data_where = array('shelf_id' => $shelf_id);
+
+$data_update = array('remaining' => 4-$position_count, 'occupied' => 1);
+$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_east_tag->term_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
+
+
+if($position_count == 0) {
+    $data_update_occupied = array('occupied' => 0, 'remaining' => 4);
+    $data_where_occupied = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_east_tag->term_id);
+    $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update_occupied, $data_where_occupied);
+}
+
 
 }
 
@@ -82,7 +93,7 @@ $get_negative_remaining = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE SIGN(remaining) = -1 AND
-digitization_center = 62
+digitization_center = ".$dc_east_tag->term_id."
 ");
 
 foreach($get_negative_remaining as $item) {
@@ -97,7 +108,7 @@ $get_positive_remaining = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE remaining >= 5 AND
-digitization_center = 62
+digitization_center = ".$dc_east_tag->term_id."
 ");
 
 foreach($get_positive_remaining as $item) {
@@ -113,7 +124,7 @@ SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE remaining >= 0 AND
 remaining <= 4 AND
-digitization_center = 62
+digitization_center = ".$dc_east_tag->term_id."
 ");
 
 foreach($get_not_occupied as $item) {
@@ -128,7 +139,7 @@ $get_occupied = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE remaining = 4 AND
-digitization_center = 62
+digitization_center = ".$dc_east_tag->term_id."
 ");
 
 foreach($get_occupied as $item) {
