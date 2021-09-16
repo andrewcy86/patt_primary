@@ -40,6 +40,16 @@ if($dc_final == $dc_east_tag->term_id) {
 
 foreach($shelf_id_arr as $item) {
 
+$get_shelf_dbid = $wpdb->get_row("
+SELECT id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $item . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+$get_shelf_dbid_val = $get_shelf_dbid->id;
+
 $shelf_id = $item;
 
 [$aisle, $bay, $shelf] = explode("_", $shelf_id);
@@ -59,10 +69,10 @@ $position_count = count($position_details);
 //echo $position_count.'<br />';
 
 // Set Remaining to 0
-if($position_count >= 4) {
+if($position_count == 4) {
 
 $data_update = array('remaining' => 0, 'occupied' => 1);
-$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+$data_where = array('id' => $get_shelf_dbid_val);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
@@ -72,7 +82,7 @@ if($position_count > 0 && $position_count <= 3) {
 
 
 $data_update = array('remaining' => 4-$position_count, 'occupied' => 1);
-$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+$data_where = array('id' => $get_shelf_dbid_val);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
@@ -80,7 +90,7 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 
 if($position_count == 0) {
     $data_update_occupied = array('occupied' => 0, 'remaining' => 4);
-    $data_where_occupied = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+    $data_where_occupied = array('id' => $get_shelf_dbid_val);
     $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update_occupied, $data_where_occupied);
 }
 
@@ -92,6 +102,16 @@ return true;
 // Find first available slot for requests with boxes equal to 1
 
 foreach($shelf_id_arr as $item) {
+
+$get_shelf_dbid = $wpdb->get_row("
+SELECT id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $item . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+$get_shelf_dbid_val = $get_shelf_dbid->id;
 
 $shelf_id = $item;
 
@@ -112,10 +132,10 @@ $position_count = count($position_details);
 //echo $position_count.'<br />';
 
 // Set Remaining to 0
-if($position_count >= 4) {
+if($position_count == 4) {
 
 $data_update = array('remaining' => 0, 'occupied' => 1);
-$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+$data_where = array('id' => $get_shelf_dbid);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
@@ -124,14 +144,14 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 if($position_count > 0 && $position_count <= 3) {
 
 $data_update = array('remaining' => 4-$position_count, 'occupied' => 1);
-$data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+$data_where = array('id' => $get_shelf_dbid);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
 
 if($position_count == 0) {
     $data_update_occupied = array('occupied' => 0, 'remaining' => 4);
-    $data_where_occupied = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_final);
+    $data_where_occupied = array('id' => $get_shelf_dbid);
     $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update_occupied, $data_where_occupied);
 }
 
@@ -317,7 +337,12 @@ $gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_
 
         public static function auto_location_find_gap($dc_final,$begin_seq,$sequence_shelfid,$box_details_count)		
 {
-        global $wpdb;    
+        global $wpdb;
+
+include WPPATT_ABSPATH . 'includes/term-ids.php';       
+
+if($dc_final == $dc_east_tag->term_id) {
+    
 $find_gaps = $wpdb->get_row("
 WITH 
 cte1 AS
@@ -339,6 +364,7 @@ LIMIT 1
 ");
 
 $findgaps_id = $find_gaps->id;
+$findgaps_total = $find_gaps->total;
 
 $findgaps_array = explode(",", $findgaps_id);
 
@@ -360,10 +386,173 @@ array_push($shelfid_gaps_array,$get_shelf_id_value);
 				
 }
 
+if($findgaps_total >= $box_details_count){
 return $shelfid_gaps_array;
+} else {
+
+$begin_seq_west = Patt_Custom_Func::begin_sequence($dc_west_tag->term_id);
+
+$find_gaps_end = $wpdb->get_row("
+WITH 
+cte1 AS
+(
+SELECT id, shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE digitization_center = " . $dc_final . " AND
+id BETWEEN ".$begin_seq." AND " . $begin_seq_west . "
+)
+SELECT GROUP_CONCAT(id) as id,
+       GROUP_CONCAT(shelf_id) as shelf_id,
+       GROUP_CONCAT(remaining) as remaining,
+       SUM(remaining) as total
+FROM cte1
+WHERE remaining != 0
+GROUP BY group_num
+HAVING total >= '".$box_details_count."'
+LIMIT 1
+");
+
+$findgaps_end_id = $find_gaps_end->id;
+$findgaps_end_total = $find_gaps_end->total;
+
+$findgaps_end_array = explode(",", $findgaps_end_id);
+
+asort($findgaps_end_array);
+
+$shelfid_gaps_end_array = array();
+
+foreach($findgaps_end_array as $item) {
+$shelf_id_end_value = $wpdb->get_row("
+SELECT shelf_id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+id = '" . $item . "'
+");
+
+$get_shelf_id_end_value = $shelf_id_end_value->shelf_id;
+
+array_push($shelfid_gaps_end_array,$get_shelf_id_end_value);
 
 }
 
+if($findgaps_end_total >= $box_details_count){
+return $shelfid_gaps_end_array;
+} else {
+echo 'no more space in digitzation center east';
+}
+
+}
+
+}
+
+if($dc_final == $dc_west_tag->term_id) {
+
+$get_final_storage_id_range = $wpdb->get_row("SELECT max(id) as max FROM " . $wpdb->prefix . "wpsc_epa_storage_status WHERE id <> '-99999' AND digitization_center = '".$dc_west_tag->term_id."' ");
+
+$get_storage_id_range_max = $get_storage_id_range->max;
+
+$find_gaps = $wpdb->get_row("
+WITH 
+cte1 AS
+(
+SELECT id, shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE digitization_center = " . $dc_final . " AND
+id BETWEEN ".$begin_seq." AND " . $sequence_shelfid . "
+)
+SELECT GROUP_CONCAT(id) as id,
+       GROUP_CONCAT(shelf_id) as shelf_id,
+       GROUP_CONCAT(remaining) as remaining,
+       SUM(remaining) as total
+FROM cte1
+WHERE remaining != 0
+GROUP BY group_num
+HAVING total >= '".$box_details_count."'
+LIMIT 1
+");
+
+$findgaps_id = $find_gaps->id;
+$findgaps_total = $find_gaps->total;
+
+$findgaps_array = explode(",", $findgaps_id);
+
+asort($findgaps_array);
+
+$shelfid_gaps_array = array();
+
+foreach($findgaps_array as $item) {
+$shelf_id_value = $wpdb->get_row("
+SELECT shelf_id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+id = '" . $item . "'
+");
+
+$get_shelf_id_value = $shelf_id_value->shelf_id;
+
+array_push($shelfid_gaps_array,$get_shelf_id_value);
+				
+}
+
+if($findgaps_total >= $box_details_count){
+return $shelfid_gaps_array;
+} else {
+
+$begin_seq_west = Patt_Custom_Func::begin_sequence($dc_west_tag->term_id);
+
+$find_gaps_end = $wpdb->get_row("
+WITH 
+cte1 AS
+(
+SELECT id, shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE digitization_center = " . $dc_final . " AND
+id BETWEEN ".$begin_seq_west." AND " . $get_storage_id_range_max . "
+)
+SELECT GROUP_CONCAT(id) as id,
+       GROUP_CONCAT(shelf_id) as shelf_id,
+       GROUP_CONCAT(remaining) as remaining,
+       SUM(remaining) as total
+FROM cte1
+WHERE remaining != 0
+GROUP BY group_num
+HAVING total >= '".$box_details_count."'
+LIMIT 1
+");
+
+$findgaps_end_id = $find_gaps_end->id;
+$findgaps_end_total = $find_gaps_end->total;
+
+$findgaps_end_array = explode(",", $findgaps_end_id);
+
+asort($findgaps_end_array);
+
+$shelfid_gaps_end_array = array();
+
+foreach($findgaps_end_array as $item) {
+$shelf_id_end_value = $wpdb->get_row("
+SELECT shelf_id
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE
+id = '" . $item . "'
+");
+
+$get_shelf_id_end_value = $shelf_id_end_value->shelf_id;
+
+array_push($shelfid_gaps_end_array,$get_shelf_id_end_value);
+
+}
+
+if($findgaps_end_total >= $box_details_count){
+return $shelfid_gaps_end_array;
+} else {
+echo 'no more space in digitzation center west';
+}
+}
+
+}
+
+}
 
 /**
  * Auto assign shelf information given dc and ticket id

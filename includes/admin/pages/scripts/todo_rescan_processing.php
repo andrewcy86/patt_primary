@@ -26,6 +26,10 @@ $columnIndex = $_POST['order'][0]['column']; // Column index
 $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 
+if($columnName == 'priority') {
+    $columnName = 'ticket_priority_order';
+}
+
 $get_current_user_id = $_POST['searchByUser'];
 $re_scan_term_id = Patt_Custom_Func::get_term_by_slug( 're-scan' );   //743
 
@@ -91,15 +95,16 @@ while ($row = mysqli_fetch_assoc($rescanRecords)) {
     $priority_color = get_term_meta($row['ticket_priority'], 'wpsc_priority_color', true);
     $priority_style = "background-color:".$priority_background.";color:".$priority_color;
 	
-	$icons .= ' <span style="font-size: 1.0em;" onclick="wppatt_set_rescan(\''.$row['folderdocinfofile_id'].'\');" class="assign_agents_icon"><i class="fas fa-backspace" aria-hidden="true" title="Undo Re-scan"></i><span class="sr-only">Undo Re-scan</span></span></td>';
+	$icons .= ' <span style="font-size: 1.0em;" onclick="wppatt_set_rescan(\''.$row['folderdocinfofile_id'].'\');" class="assign_agents_icon"><i class="fas fa-backspace" aria-hidden="true" title="Undo Re-scan"></i><span class="sr-only">Undo Re-scan</span></span>';
     
    	$data[] = array(
+   	    "dbid"=>$row['id'],
 		"folderdocinfofile_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=".$row['folderdocinfofile_id']."' >".$row['folderdocinfofile_id']."</a>" . $icons,
 		"title"=> $row['title'],
 		"box_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=".$row['box_id']."' >".$row['box_id']."</a>",
 		"request_id" =>"<a href='".$subfolder_path."/wp-admin/admin.php?page=wpsc-tickets&id=".$row['request_id']."' >".$row['request_id']."</a>",
 		"physical_location" => $row['physical_location'],
-		"priority" => "<span class='wpsp_admin_label' style='".$status_style."'>".$row['name']."</span>", 
+		"priority" => "<span class='wpsp_admin_label' style='".$priority_style."'>".$row['name']."</span>", 
    );
    
    // Clear icons

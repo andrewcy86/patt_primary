@@ -318,7 +318,7 @@ if ($rescan_count > 0) {
 <h3>Files assigned to <?php echo esc_html( $current_user->user_login ); ?> requiring re-scan:</h3>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_todo_rescan" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_todo_rescan" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
     <th class="datatable_header" scope="col">Folder/File ID</th>
@@ -450,6 +450,7 @@ var recall = jQuery('#tbl_templates_recall_todo').DataTable({
    "autoWidth": true,
    "processing": true,
    "serverSide": true,
+   "stateSave": true,
    "initComplete": function (settings, json) {  
     jQuery("#tbl_templates_recall_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
@@ -486,6 +487,7 @@ if($decline_count > 0) {
    "autoWidth": true,
    "processing": true,
    "serverSide": true,
+   "stateSave": true,
    "initComplete": function (settings, json) {  
     jQuery("#tbl_templates_decline_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
@@ -518,10 +520,11 @@ if($decline_count > 0) {
 //DISPAY IF RESCAN
 if($rescan_count > 0) {
 ?>
-     	 var rescan = jQuery('#tbl_templates_todo_rescan').DataTable({
+   var rescan = jQuery('#tbl_templates_todo_rescan').DataTable({
    "autoWidth": true,
    "processing": true,
    "serverSide": true,
+   "stateSave": true,
    "initComplete": function (settings, json) {  
     jQuery("#tbl_templates_todo_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
@@ -543,6 +546,7 @@ if($rescan_count > 0) {
    	        console.log(response);
     },
    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+   "order": [[5, "asc"]],
    "columns": [
 			{ data: 'folderdocinfofile_id', 'class' : 'text_highlight'},
 			{ data: 'title'},
@@ -1086,8 +1090,8 @@ postvarpage : 'filedetails'
       wpsc_modal_open('Re-scan');
 		  var data = {
 		    action: 'wpsc_get_rescan_ffd',
-		    response_data: response,
-		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		    response_data: response
+		    //response_page: '<?php echo $GLOBALS['page']; ?>'
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
 		    var response = JSON.parse(response_str);
@@ -1095,7 +1099,7 @@ postvarpage : 'filedetails'
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
 		  });
-         
+         jQuery('#tbl_templates_todo_rescan').DataTable().ajax.reload(null, false); 
    });
 
 }
