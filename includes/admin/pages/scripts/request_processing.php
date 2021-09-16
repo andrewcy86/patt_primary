@@ -231,8 +231,6 @@ group by a.request_id ".$searchHaving.") t");
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
-$status_id = 5;
-
 ## Fetch records
 $boxQuery = "
 SELECT

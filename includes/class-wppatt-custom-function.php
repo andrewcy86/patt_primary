@@ -456,7 +456,7 @@ Patt_Custom_Func::shelf_assignment($is_single,$one_box_assignment_shelf_id,$dc_f
 return true;
 
 } else {
-$
+
 //EXPLODE SHELF ID
 //MAKE ASSIGNMENT
 $is_single = 0;

@@ -2001,6 +2001,7 @@ function wppatt_set_todo_recall() {
 			
 			//Only refreshes the datatable, not the window // Recall To-Do icon/functionality only on Recall Dashboard.
 	    jQuery('#tbl_templates_recall').DataTable().ajax.reload(null, false);
+	    jQuery('#tbl_templates_recall_todo').DataTable().ajax.reload(null, false);
   });
   wpsc_modal_close();
 }
@@ -2040,6 +2041,7 @@ function wppatt_set_todo_decline() {
 			
 			//Only refreshes the datatable, not the window // Decline To-Do icon/functionality only on Decline Dashboard.
 	    jQuery('#tbl_templates_return').DataTable().ajax.reload(null, false);
+	    jQuery('#tbl_templates_decline_todo').DataTable().ajax.reload(null, false);
   });
   wpsc_modal_close();
 }
