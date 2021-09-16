@@ -169,13 +169,13 @@ Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_f
 
 }
 */
-
+/*
 if($status_id == $request_initial_review_complete_tag->term_id){
 echo '<div style="display:none">';
 Patt_Custom_Func::auto_location_assignment($ticket_id,$get_dc_val,$destruction_flag,$destruction_boxes);
 echo '</div>';
 
-}
+}*/
 
 //Double Check to make sure Aisle,Bay,Shelf,Position is cleared after rejection of request
 if($status_id == $request_initial_review_rejected_tag->term_id){

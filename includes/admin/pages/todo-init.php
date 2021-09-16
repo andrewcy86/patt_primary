@@ -156,7 +156,6 @@ array_push($todo_boxes_array, $todo_boxes);
 }
 
 $boxcommaList = implode(', ', $todo_boxes_array);
-
 ?>
 
 
@@ -319,7 +318,7 @@ if ($rescan_count > 0) {
 <h3>Files assigned to <?php echo esc_html( $current_user->user_login ); ?> requiring re-scan:</h3>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_rescan" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_todo_rescan" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
     <th class="datatable_header" scope="col">Folder/File ID</th>
@@ -330,82 +329,10 @@ if ($rescan_count > 0) {
     <th class="datatable_header" scope="col">Priority</th> 
 </tr>
 </thead>
-<tbody>
 <?php
-$rescan_details = $wpdb->get_results("SELECT 
-b.title as title, 
-b.folderdocinfofile_id as folderdocinfo_id , 
-b.id as id,
-a.box_id,
-CASE
-WHEN d.scanning_id IS NOT NULL
-THEN d.scanning_id
-WHEN d.stagingarea_id IS NOT NULL
-THEN d.stagingarea_id
-WHEN d.cart_id IS NOT NULL
-THEN d.cart_id
-WHEN d.shelf_location IS NOT NULL
-THEN d.shelf_location
-    ELSE '-'
-END as physical_location,
-e.request_id,
-f.name,
-e.ticket_priority,
-CASE 
-WHEN e.ticket_priority = 621
-THEN
-1
-WHEN e.ticket_priority = 9
-THEN
-2
-WHEN e.ticket_priority = 8
-THEN
-3
-WHEN e.ticket_priority = 7
-THEN
-4
-ELSE
-999
-END
- as ticket_priority_order
-
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b ON b.box_id = a.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus c ON c.box_id = a.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list d ON d.box_id = a.box_id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket e ON e.id = a.ticket_id
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.ticket_priority 
-
-WHERE b.rescan = 1 AND a.box_destroyed = 0 AND c.status_id = ".$re_scan_term_id." AND c.user_id = '" . $get_current_user_id . "'");
-
-
-foreach ($rescan_details as $info) {
-
-$priority_background = get_term_meta($info->ticket_priority, 'wpsc_priority_background_color', true);
-$priority_color = get_term_meta($info->ticket_priority, 'wpsc_priority_color', true);
-$priority_style = "background-color:".$priority_background.";color:".$priority_color.";";
-
-
-$tbl = '<tr>';
-$tbl .= '<td data-order="'.$info->id.'"><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="wppatt_set_rescan(\''.$info->folderdocinfo_id.'\');" class="assign_agents_icon"><i class="fas fa-backspace" aria-hidden="true" title="Undo Re-scan"></i><span class="sr-only">Undo Re-scan</span></span></td>';
-$tbl .= '<td>'.$info->title.'</td>';
-$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
-$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=wpsc-tickets&id=' . $info->request_id . '">'.$info->request_id.'</a></td>';
-$priority_name = $info->name;
-$priority = "<span class='wpsp_admin_label' style='".$priority_style."'>".$priority_name."</span>";
-
-$tbl .= '<td>'.$info->physical_location.'</td>';
-$tbl .= '<td data-order="'.$info->ticket_priority_order.'">'.$priority.'</td>';
-$tbl .= '</tr>';
-
-echo $tbl;
-
-}
-
 }
 
 ?>
-</tbody>
 </table>
 
 <!-- RECALL -->
@@ -447,7 +374,7 @@ if ($decline_count > 0) {
 <h3>Decline(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_decline_todo" class="text_highlight display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_decline_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
     <th class="datatable_header" scope="col">Decline ID</th>
@@ -455,37 +382,10 @@ if ($decline_count > 0) {
     <th class="datatable_header" scope="col">Status</th>
 </tr>
 </thead>
-<tbody>
 <?php
-$decline_details = $wpdb->get_results("SELECT a.return_id, c.name, a.return_date, a.return_status_id
-FROM " . $wpdb->prefix . "wpsc_epa_return a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
-WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag->term_id.",".$decline_decline_complete_tag->term_id.",".$decline_decline_cancelled_tag->term_id.",".$decline_decline_expired_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
-
-foreach ($decline_details as $info) {
-
-// Make Status Pretty
-$decline_status_term_id = $info->return_status_id;
-$decline_status_background = get_term_meta($decline_status_term_id, 'wppatt_return_status_background_color', true);
-$decline_status_color = get_term_meta($decline_status_term_id, 'wppatt_return_status_color', true);
-$decline_status_style = "background-color:".$decline_status_background.";color:".$decline_status_color.";";
-
-$tbl = '<tr>';
-$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=declinedetails&id=D-' . $info->return_id . '">'. 'D-' .$info->return_id.'</a>  <span style="font-size: 1.0em; color: #1d1f1d;" onclick="edit_decline_to_do(\'' . $info->return_id . '\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline Completion"></i><span class="sr-only">Decline Completion</span></span></td>';
-
-$tbl .= '<td>'.date("m/d/Y", strtotime($info->return_date)).'</td>';
-$tbl .= '<td><span id="status" class="wpsp_admin_label" style="'.$decline_status_style.'">'.$info->name.'</span></td>';
-$tbl .= '</tr>';
-
-echo $tbl;
-
-}
-
 }
 
 ?>
-</tbody>
 </table>
 <br /><br />
 
@@ -548,20 +448,28 @@ if($recall_count > 0) { ?>
 
 var recall = jQuery('#tbl_templates_recall_todo').DataTable({
    "autoWidth": true,
+   "processing": true,
+   "serverSide": true,
    "initComplete": function (settings, json) {  
     jQuery("#tbl_templates_recall_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
    "paging" : true,
    "bDestroy": true,
-   		'serverMethod': 'post',
-		'searching': false, // Remove default Search Control
-		'ajax': {
-			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_recall_processing.php',
- 			'data': function(data){
-				var sbu = '<?php echo get_current_user_id();?>';
-				data.searchByUser = sbu;
- 			}
-		},
+   	'serverMethod': 'post',
+	'searching': false, // Remove default Search Control
+	'ajax': {
+		'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_recall_processing.php',
+ 		'data': function(data){
+			var sbu = '<?php echo get_current_user_id();?>';
+			data.searchByUser = sbu;
+ 		}
+	},
+		
+	'drawCallback': function (settings) { 
+    // Here the response
+    var response = settings.json;
+   	        console.log(response);
+    },
    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
    "columns": [
 			{ data: 'recall_id', 'class' : 'text_highlight'},
@@ -576,28 +484,73 @@ if($decline_count > 0) {
 
  var decline = jQuery('#tbl_templates_decline_todo').DataTable({
    "autoWidth": true,
+   "processing": true,
+   "serverSide": true,
    "initComplete": function (settings, json) {  
     jQuery("#tbl_templates_decline_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
    "paging" : true,
    "bDestroy": true,
-   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+   'serverMethod': 'post',
+	'searching': false, // Remove default Search Control
+	'ajax': {
+		'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_decline_processing.php',
+ 		'data': function(data){
+			var sbu = '<?php echo get_current_user_id();?>';
+			data.searchByUser = sbu;
+ 		}
+	},
+		
+	'drawCallback': function (settings) { 
+    // Here the response
+    var response = settings.json;
+   	        console.log(response);
+    },
+   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+   "columns": [
+			{ data: 'return_id', 'class' : 'text_highlight'},
+			{ data: 'return_date'},
+			{ data: 'decline_status' },
+		]
 });
 <?php 
 }
 //DISPAY IF RESCAN
 if($rescan_count > 0) {
 ?>
-     	 var rescan = jQuery('#tbl_templates_rescan').DataTable({
-	     "autoWidth": true,
-	     //"scrollX" : true,
-	     "initComplete": function (settings, json) {  
-    jQuery("#tbl_templates_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+     	 var rescan = jQuery('#tbl_templates_todo_rescan').DataTable({
+   "autoWidth": true,
+   "processing": true,
+   "serverSide": true,
+   "initComplete": function (settings, json) {  
+    jQuery("#tbl_templates_todo_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
-         "paging" : true,
-         "bDestroy": true,
-		 "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-          'order': [[5, 'desc']],
+   "paging" : true,
+   "bDestroy": true,
+   'serverMethod': 'post',
+	'searching': false, // Remove default Search Control
+	'ajax': {
+		'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/todo_rescan_processing.php',
+ 		'data': function(data){
+			var sbu = '<?php echo get_current_user_id();?>';
+			data.searchByUser = sbu;
+ 		}
+	},
+		
+	'drawCallback': function (settings) { 
+    // Here the response
+    var response = settings.json;
+   	        console.log(response);
+    },
+   "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+   "columns": [
+			{ data: 'folderdocinfofile_id', 'class' : 'text_highlight'},
+			{ data: 'title'},
+			{ data: 'box_id', 'class' : 'text_highlight' },
+			{ data: 'request_id', 'class' : 'text_highlight' },
+			{ data: 'physical_location' },
+			{ data: 'priority' },
+		]
 
 		});
 <?php 

@@ -55,7 +55,7 @@ $obtain_box_ids_details = $wpdb->get_results("
 Patt_Custom_Func::auto_location_assignment($tkid,$dc_final,$destruction_flag,$destruction_boxes);
 
 //echo $tkid.','.$dc_final.','.$destruction_flag.','.$destruction_boxes;
-	
+
 } else {
 	echo "No automatic box shelf assignments made.";
 }

@@ -11,7 +11,6 @@ include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 
 //Grab ticket ID and Selected Digitization Center from Modal
 	$ticket_id = $_POST['postvartktid'];
-	$tkstatus = $_POST['postvarstatus'];
 	$tkcomment = $_POST['postvarcomment'];
 	$dc_final = $_POST['postvardcname'];
 	
@@ -19,23 +18,20 @@ include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 $ticket              = $wpscfunction->get_ticket($ticket_id);
 $status_id           = $ticket['ticket_status']; 
 
-if (isset($_POST['postvartktid']) && isset($_POST['postvarstatus'])) {
+if (isset($_POST['postvartktid'])) {
 
                 
 //Insert timestamp to expedite shipping by requestor
 
 $review_complete_timestamp_check = $wpscfunction->get_ticket_meta($ticket_id,'review_complete_timestamp');
 $t=time();
-if($tkstatus == $request_initial_review_complete_tag->term_id && empty($review_complete_timestamp_check)) {
+if(empty($review_complete_timestamp_check)) {
 $wpscfunction->add_ticket_meta($ticket_id,'review_complete_timestamp',$t);
 echo 'ticketid'.$tkid;
 }
 
 
 $rejected_comment_check = $wpscfunction->get_ticket_meta($ticket_id,'rejected_comment');
-
-
-if($tkstatus == $request_initial_review_rejected_tag->term_id) {
 
 $get_box_ids = $wpdb->get_results("SELECT id, storage_location_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
@@ -66,17 +62,15 @@ Patt_Custom_Func::update_remaining_occupied($dc_final,$shelf_id_arr);
 }
 
 
-}
-
-if($tkcomment != '' && $tkstatus == $request_initial_review_rejected_tag->term_id && empty($rejected_comment_check)) {
+if($tkcomment != '' && empty($rejected_comment_check)) {
     
 $wpscfunction->add_ticket_meta($ticket_id,'rejected_comment',$tkcomment);
 
-} elseif($tkcomment != '' && $tkstatus == $request_initial_review_rejected_tag->term_id && !empty($rejected_comment_check)) {
+} elseif($tkcomment != '' && !empty($rejected_comment_check)) {
 
 $wpscfunction->update_ticket_meta($ticket_id,'rejected_comment',array('meta_value'=> $tkcomment));
 
-} elseif($tkstatus != $request_initial_review_rejected_tag->term_id && !empty($rejected_comment_check)) {
+} elseif(!empty($rejected_comment_check)) {
 
 $wpscfunction->delete_ticket_meta($ticket_id,'rejected_comment',true);
 
@@ -88,26 +82,26 @@ $wpscfunction->delete_ticket_meta($ticket_id,'rejected_comment',true);
 //Set the initial review rejected timestamp
 $rejected_timestamp_check = $wpscfunction->get_ticket_meta($ticket_id,'rejected_timestamp');
 $t=time();
-if($tkstatus == $request_initial_review_rejected_tag->term_id && empty($rejected_timestamp_check)) {
+if(empty($rejected_timestamp_check)) {
     
 $wpscfunction->add_ticket_meta($ticket_id,'rejected_timestamp',$t);
 
-} elseif($tkstatus == $request_initial_review_rejected_tag->term_id && !empty($rejected_timestamp_check) && $status_id != $request_initial_review_rejected_tag->term_id) {
+} elseif(!empty($rejected_timestamp_check) && $status_id != $request_initial_review_rejected_tag->term_id) {
 
 $wpscfunction->update_ticket_meta($ticket_id,'rejected_timestamp',array('meta_value'=> $t));
 
-} elseif($tkstatus != $request_initial_review_rejected_tag->term_id && !empty($rejected_timestamp_check)) {
+} elseif(!empty($rejected_timestamp_check)) {
 
 $wpscfunction->delete_ticket_meta($ticket_id,'rejected_timestamp',true);
 
-} elseif($tkstatus == $request_initial_review_rejected_tag->term_id && !empty($rejected_timestamp_check) && $status_id == $request_initial_review_rejected_tag->term_id && $tkcomment != $rejected_comment_check) {
+} elseif(!empty($rejected_timestamp_check) && $status_id == $request_initial_review_rejected_tag->term_id && $tkcomment != $rejected_comment_check) {
 
 } else {
 
 $wpscfunction->delete_ticket_meta($ticket_id,'rejected_timestamp',true);
 }
 
-echo 'Reject Success.'.$test;
+echo 'Reject Success.';
 //print_r($rejected_timestamp_check);
 } else {
 	echo "Issue with reject timestamp update";
