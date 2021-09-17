@@ -1883,7 +1883,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 				
 
 				
-				//$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
+				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
 				
 				// D E V SITE - TESTING
 				//$site_name_id_valid = 'Success';
@@ -1917,7 +1917,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						die();
 					
 				}
-
+*/
 			} 
 			
 			
