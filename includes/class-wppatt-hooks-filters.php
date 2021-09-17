@@ -1917,7 +1917,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						die();
 					
 				}
-*/
+
 			} 
 			
 			
