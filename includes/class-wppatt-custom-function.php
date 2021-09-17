@@ -447,10 +447,6 @@ echo 'no more space in digitzation center east';
 
 if($dc_final == $dc_west_tag->term_id) {
 
-$get_final_storage_id_range = $wpdb->get_row("SELECT max(id) as max FROM " . $wpdb->prefix . "wpsc_epa_storage_status WHERE id <> '-99999' AND digitization_center = '".$dc_west_tag->term_id."' ");
-
-$get_storage_id_range_max = $get_storage_id_range->max;
-
 $find_gaps = $wpdb->get_row("
 WITH 
 cte1 AS
@@ -497,6 +493,11 @@ array_push($shelfid_gaps_array,$get_shelf_id_value);
 if($findgaps_total >= $box_details_count){
 return $shelfid_gaps_array;
 } else {
+
+$get_final_storage_id_range = $wpdb->get_row("SELECT max(id) as maximum FROM " . $wpdb->prefix . "wpsc_epa_storage_status WHERE id <> '-99999' AND digitization_center = '".$dc_west_tag->term_id."' ");
+
+$get_storage_id_range_max = $get_final_storage_id_range->maximum;
+
 
 $begin_seq_west = Patt_Custom_Func::begin_sequence($dc_west_tag->term_id);
 

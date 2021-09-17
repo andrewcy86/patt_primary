@@ -45,15 +45,17 @@ $query = mysqli_query($con, "SELECT COUNT(a.return_id) as allcount
 FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
 WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag.",".$decline_decline_complete_tag.",".$decline_decline_cancelled_tag.",".$decline_decline_expired_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id);
 $records = mysqli_fetch_assoc($query);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Base Query for Declines assigned to current user
-$baseQuery = "SELECT a.return_id, c.name as decline_status, a.return_date, a.return_status_id
+$baseQuery = "SELECT a.return_id, c.name as decline_status, a.return_date, a.return_status_id, d.tracking_number
 FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
 WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag.",".$decline_decline_complete_tag.",".$decline_decline_cancelled_tag.",".$decline_decline_expired_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id . "
 ORDER BY a.id, ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $declineRecords = mysqli_query($con, $baseQuery);
@@ -68,8 +70,11 @@ while ($row = mysqli_fetch_assoc($declineRecords)) {
 	$status_color = get_term_meta($status_term_id, 'wppatt_return_status_color', true);
 	$status_style = "background-color:".$status_background.";color:".$status_color;
 
-	$icons .= ' <span style="font-size: 1.0em;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Recall To Do</span></span>';
+	//$icons .= ' <span style="font-size: 1.0em;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Recall To Do</span></span>';
 
+    if(empty($row['tracking_number'])){
+     $icons .= ' <span style="font-size: 1.0em;"><i class="fas fa-truck" aria-hidden="true" title="Shipping Tracking Number Required"></i><span class="sr-only">Shipping Tracking Number Required</span></span>';
+    }
    	$data[] = array(
 		"return_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=declinedetails&id=D-".$row['return_id']."' >D-".$row['return_id']."</a>" . $icons,
 		"return_date"=> date('m/d/Y', strtotime( $row['return_date'] )),

@@ -405,8 +405,17 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 	}
 	
 	if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){	
-    $icons .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Recall To Do</span></span>';
-  }	
+    //$icons .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Decline To Do</span></span>';
+    
+    
+    $decline_expired_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-expired' );
+    $decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' );
+
+    if(empty($row['tracking_number']) && $status_term_id != $decline_expired_term_id && $status_term_id != $decline_cancelled_term_id){
+    $icons .= ' <span style="font-size: 1.0em; color: #8b0000;"><i class="fas fa-truck" aria-hidden="true" title="Shipping Tracking Number Required"></i><span class="sr-only">Shipping Tracking Number Required</span></span>';
+    }
+	    
+	}	
    
    	$data[] = array(
 		"return_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=declinedetails&id=D-".$row['return_id']."' >D-".$row['return_id']."</a>" . $icons, 		
