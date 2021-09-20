@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-//$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
-//require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;
 

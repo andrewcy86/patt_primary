@@ -130,9 +130,10 @@ $get_dc_val = $get_dc->ticket_category;
 $destruction_flag = 0;
 $destruction_boxes = '';
 
+$dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
+
 //Double Check to make sure DC is assigned (DC is now assigned at ingestion conformation page)
 if($status_id == $request_tabled_tag->term_id || $status_id == $request_initial_review_complete_tag->term_id){
-$dc = Patt_Custom_Func::get_default_digitization_center($ticket_id);
 
 $get_dc_unassigned_boxes = $wpdb->get_results("SELECT a.storage_location_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
@@ -178,12 +179,14 @@ echo '</div>';
 }*/
 
 //Double Check to make sure Aisle,Bay,Shelf,Position is cleared after rejection of request
-if($status_id == $request_initial_review_rejected_tag->term_id){
+/*if($status_id == $request_initial_review_rejected_tag->term_id){
     
 $get_box_ids_count = $wpdb->get_row("SELECT count(a.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location b ON a.storage_location_id = b.id
 WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND a.ticket_id = '".$ticket_id."'");
+
+$get_shelf_id_arr = array();
 
 if($get_box_ids_count->count > 0) {
 
@@ -203,6 +206,9 @@ foreach($get_box_ids as $item) {
     $get_shelf_id = $wpdb->get_row("SELECT aisle, bay, shelf FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id = '" . $item->storage_location_id . "'");
     $shelf_id = $get_shelf_id->aisle.'_'.$get_shelf_id->bay.'_'.$get_shelf_id->shelf;
 
+    array_push($get_shelf_id_arr, $shelf_id);
+    
+    
 // RESET AISLE, BAY, SHELF, POSITION TO 0
     $data_update_storage_location = array('aisle' => 0,'bay' => 0,'shelf' => 0,'position' => 0);
     $data_where_storage_location = array('id' => $item->storage_location_id);
@@ -210,12 +216,14 @@ foreach($get_box_ids as $item) {
     
 }
 
-include_once( WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php' );
-include_once( WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php' );
+Patt_Custom_Func::update_remaining_occupied($dc,$get_shelf_id_arr);
+
+//include_once( WPPATT_ABSPATH . 'includes/admin/e_location_assignment_cleanup_cron.php' );
+//include_once( WPPATT_ABSPATH . 'includes/admin/w_location_assignment_cleanup_cron.php' );
 
 }
 
-}
+}*/
 
 
 if($is_active == 1) {

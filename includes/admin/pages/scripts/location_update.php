@@ -5,6 +5,8 @@ global $wpdb, $current_user, $wpscfunction;
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_POST['postvarbname']) && isset($_POST['postvarboxname']) && isset($_POST['postvarcentername'])){
    $shelf_position = $_POST['postvarspname'];
  
@@ -20,13 +22,13 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
 
    $center_value = '';
    
-   if ($center == 62) {
+   if ($center == $dc_east_tag->term_id) {
      $center_value = 'E';
-   } else if ($center == 2){
+   } else if ($center == $dc_west_tag->term_id){
      $center_value = 'W';  
-   } else if ($center == 663){
+   } else if ($center == $dc_east_cui_tag->term_id){
      $center_value = 'ECUI';    
-   } else if ($center == 664){
+   } else if ($center == $dc_west_cui_tag->term_id){
      $center_value = 'WCUI';    
    }
 
@@ -52,28 +54,8 @@ WHERE id = '" . $box_storage_location_id . "'"
 			$existing_position = $storage_location_details->position;
 			$existing_shelf_id = $existing_aisle.'_'.$existing_bay.'_'.$existing_shelf;
 
-$existing_shelf_update = $wpdb->get_row("
-SELECT remaining
-FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE
-shelf_id = '" . $existing_shelf_id . "' AND
-digitization_center = '" . $center . "'
-");
+Patt_Custom_Func::update_remaining_occupied($center_term_id,array($existing_shelf_id));
 
-$existing_shelf_update_remaining = $existing_shelf_update->remaining + 1;
-
-				$existing_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				
-				if ($existing_shelf_update_remaining == 4) {
-				$existing_ss_data_update = array('occupied' => 0, 'remaining' => 999);
-				} else {
-				$existing_ss_data_update = array('occupied' => 1, 'remaining' => 999);
-				}
-				
-				$existing_ss_data_where = array('shelf_id' => $existing_shelf_id, 'digitization_center' => $center_term_id);
-
-				$wpdb->update($existing_ss_table_name, $existing_ss_data_update, $existing_ss_data_where);
-				
 // Update wpqa_wpsc_epa_storage_location with new location that was selected
 
 $table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
@@ -84,21 +66,7 @@ $wpdb->update($table_name , $data_update, $data_where);
 $new_shelf_id_update = $aisle.'_'.$bay.'_'.$shelf;
 
 // Update storage status remove box from new shelf location
-				$new_shelf_update = $wpdb->get_row("
-SELECT remaining
-FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE
-shelf_id = '" . $new_shelf_id_update . "' AND
-digitization_center = '" . $center_term_id . "'
-");
-
-				$new_shelf_update_remaining = $new_shelf_update->remaining - 1;
-
-				$new_ss_table_name = $wpdb->prefix . 'wpsc_epa_storage_status';
-				$new_ss_data_update = array('occupied' => 1, 'remaining' => 999);
-				$new_ss_data_where = array('shelf_id' => $new_shelf_id_update, 'digitization_center' => $center_term_id);
-
-				$wpdb->update($new_ss_table_name, $new_ss_data_update, $new_ss_data_where);
+Patt_Custom_Func::update_remaining_occupied($center_term_id,array($new_shelf_id_update));
 
 				$get_ticket_id = $wpdb->get_row("
 SELECT ticket_id
