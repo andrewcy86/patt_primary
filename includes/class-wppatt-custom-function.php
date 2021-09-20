@@ -173,17 +173,17 @@ public static function shelf_assignment($is_single,$box_shelf_id,$dc_final,$box_
 
 global $wpdb; 
 
-echo $is_single;
-echo print_r($box_shelf_id);
-echo $dc_final;
-print_r($box_storage_id_assignment);
-echo $box_details_count;
+//echo $is_single;
+//echo print_r($box_shelf_id);
+//echo $dc_final;
+//print_r($box_storage_id_assignment);
+//echo $box_details_count;
 if($is_single == 1) {
 
 //Explode Aisle, Bay, Shelf into indvidual variables
 [$box_aisle, $box_bay, $box_shelf] = explode("_", $box_shelf_id);
 
-echo $box_shelf_id; 
+//echo $box_shelf_id; 
 
 // Get first available position
 $box_position_details = $wpdb->get_results("
@@ -201,8 +201,8 @@ foreach ($box_position_details as $info) {
 	$box_position = $info->position;
 	array_push($box_position_gap_array, $box_position);
 }
-echo 'Box position gap array : ';
-print_r($box_position_gap_array) . '<br/>';
+//echo 'Box position gap array : ';
+//print_r($box_position_gap_array) . '<br/>';
 
 // Determine missing positions and push to an array         
 $box_missing = array_diff(range(1, 4), $box_position_gap_array);
@@ -215,24 +215,24 @@ foreach ($box_missing_final as &$box_missing_val) {
 		array_push($box_aisle_bay_shelf_position, $box_position_id_val);
 }
 
-print_r($box_aisle_bay_shelf_position);
+//print_r($box_aisle_bay_shelf_position);
 // Determine aisle, bay, shelf, position
 
 for ($i = 0; $i < count($box_aisle_bay_shelf_position); $i++) {
     
 [$box_final_aisle, $box_final_bay, $box_final_shelf, $box_final_position] = explode("_", $box_aisle_bay_shelf_position[$i]);
-echo $box_aisle_bay_shelf_position[$i];
+//echo $box_aisle_bay_shelf_position[$i];
 // Make auto-assignment in database
 $storage_location_table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
 $sl_data_update = array('aisle' => $box_final_aisle, 'bay' => $box_final_bay, 'shelf' => $box_final_shelf, 'position' => $box_final_position, 'digitization_center' => $dc_final);
-echo $box_storage_id_assignment[$i];
+//echo $box_storage_id_assignment[$i];
 $sl_data_where = array('id' => $box_storage_id_assignment[$i]);
 $wpdb->update($storage_location_table_name, $sl_data_update, $sl_data_where);
 
 $box_shelf_id_update = $box_final_aisle . '_' . $box_final_bay . '_' . $box_final_shelf;
 
 // Update storage status table
-echo 'true';
+//echo 'true';
 
 }
 
@@ -576,15 +576,15 @@ if($destruction_flag == 1) {
 $box_id_assignment = explode(',', $destruction_boxes);
 }
 
-print_r('Box IDs : ' . $box_id_assignment) . '<br/>';
+//print_r('Box IDs : ' . $box_id_assignment) . '<br/>';
 $box_details_count = count($box_id_assignment);
-echo 'Box Count : ' . $box_details_count . '<br/>';
+//echo 'Box Count : ' . $box_details_count . '<br/>';
 //PRINT BOX ID ASSIGNMENT
 //print_r($box_id_assignment);
 
 // Defines begining of sequence for digitzation center
 $begin_seq = Patt_Custom_Func::begin_sequence($dc_final);
-echo 'Begin Sequence ' . $begin_seq . '<br/>';
+//echo 'Begin Sequence ' . $begin_seq . '<br/>';
 // Finds Shelf ID of next available sequence for gap
 $find_sequence = $wpdb->get_row("
 WITH 

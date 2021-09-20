@@ -278,6 +278,7 @@ if(Patt_Custom_Func::id_in_freeze($converted_to_request_id, $request_type) == 1)
 if($is_active == 1) {
 $box_details = $wpdb->get_results("SELECT 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_previous_status as box_previous_status,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.pallet_id as pallet_id,
 (SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
@@ -309,6 +310,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
 } else {
 $box_details = $wpdb->get_results("SELECT 
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, 
+" . $wpdb->prefix . "wpsc_epa_boxinfo.box_previous_status as box_previous_status,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id,
 " . $wpdb->prefix . "wpsc_epa_boxinfo.pallet_id as pallet_id,
 (SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
@@ -372,11 +374,24 @@ $tbl .=  '<th class="datatable_header" scope="col"></th>';
 			    
 
 			    $boxlist_status_id = $info->status_id;
+			    $box_previous_status_id = $info->box_previous_status;
 			    $status_background = get_term_meta($boxlist_status_id, 'wpsc_box_status_background_color', true);
 	            $status_color = get_term_meta($boxlist_status_id, 'wpsc_box_status_color', true);
 	            $status_style = "background-color:".$status_background.";color:".$status_color.";";
 	            $boxlist_status_name = $info->status_name;
-	            $boxlist_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$boxlist_status_name."</span>";
+
+
+$get_term_name = $wpdb->get_row("SELECT name
+FROM " . $wpdb->prefix . "terms WHERE term_id = ".$box_previous_status_id);
+$box_previous_term_name = $get_term_name->name;
+
+$show_previous_box_status_array = array($box_waiting_shelved_tag->term_id, $box_waiting_on_rlo_tag->term_id, $box_cancelled_tag->term_id);
+
+if (in_array($boxlist_status_id, $show_previous_box_status_array) && $box_previous_status_id != 0) {
+    $boxlist_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$boxlist_status_name."</span></a>";
+} else {
+    $boxlist_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$boxlist_status_name."</span>";
+}
 			    $boxlist_dc = $info->digitization_center;
 			    $boxlist_dc_val = strtoupper($info->digitization_center_slug);
 			    $boxlist_aisle = $info->aisle;

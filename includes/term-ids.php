@@ -8,10 +8,10 @@ $dc_east_cui_tag = get_term_by('slug', 'ecui', 'wpsc_categories'); //663
 $dc_west_cui_tag = get_term_by('slug', 'wcui', 'wpsc_categories'); //664
 
 //Priority Tags
-$priority_not_assigned_tag = get_term_by('slug', 'not-assigned', 'wpsc_priorities');
-$priority_normal_tag = get_term_by('slug', 'low', 'wpsc_priorities');
-$priority_high_tag = get_term_by('slug', 'medium', 'wpsc_priorities');
-$priority_critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
+$priority_not_assigned_tag = get_term_by('slug', 'not-assigned', 'wpsc_priorities'); //621
+$priority_normal_tag = get_term_by('slug', 'low', 'wpsc_priorities'); //7
+$priority_high_tag = get_term_by('slug', 'medium', 'wpsc_priorities'); //8
+$priority_critical_tag = get_term_by('slug', 'high', 'wpsc_priorities'); //9
 
 //Request Level Status Tags
 $request_new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3

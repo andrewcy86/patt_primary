@@ -11,6 +11,8 @@ $GLOBALS['id'] = sanitize_text_field($_POST['id']);
 $GLOBALS['pid'] = sanitize_text_field($_POST['pid']);
 $GLOBALS['page'] = sanitize_text_field($_POST['page']);
 
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 $general_appearance = get_option('wpsc_appearance_general_settings');
@@ -155,16 +157,14 @@ $box_status_name = $convert_box_id->box_status;
 
 $get_term_name = $wpdb->get_row("SELECT name
 FROM " . $wpdb->prefix . "terms WHERE term_id = ".$box_previous_status_id);
-
 $box_previous_term_name = $get_term_name->name;
 
-if ($box_status_id == $waiting_shelved_term_id && $box_previous_status_id != 0) {
+$show_previous_box_status_array = array($box_waiting_shelved_tag->term_id, $box_waiting_on_rlo_tag->term_id, $box_cancelled_tag->term_id);
+
+if (in_array($box_status_id, $show_previous_box_status_array) && $box_previous_status_id != 0) {
     $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
-} elseif ($box_status_id == $waiting_rlo_term_id && $box_previous_status_id != 0) {
-    $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
-} elseif ($box_status_id == $cancelled_term_id && $box_previous_status_id != 0) {
-    $box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$box_previous_term_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
-} else {
+}
+else {
     $box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span>";
 }
 

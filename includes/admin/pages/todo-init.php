@@ -318,7 +318,7 @@ if ($rescan_count > 0) {
 <h3>Files assigned to <?php echo esc_html( $current_user->user_login ); ?> requiring re-scan:</h3>
 
 <div class="table-responsive" style="overflow-x:auto;">
-<table id="tbl_templates_todo_rescan" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_rescan_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
 <thead>
 <tr>
     <th class="datatable_header" scope="col">Folder/File ID</th>
@@ -520,13 +520,13 @@ if($decline_count > 0) {
 //DISPAY IF RESCAN
 if($rescan_count > 0) {
 ?>
-   var rescan = jQuery('#tbl_templates_todo_rescan').DataTable({
+   var rescan = jQuery('#tbl_templates_rescan_todo').DataTable({
    "autoWidth": true,
    "processing": true,
    "serverSide": true,
    "stateSave": true,
    "initComplete": function (settings, json) {  
-    jQuery("#tbl_templates_todo_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+    jQuery("#tbl_templates_rescan_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
   },
    "paging" : true,
    "bDestroy": true,
@@ -805,6 +805,12 @@ if($rescan_count > 0) {
 	    dataTable.column(0).checkboxes.deselectAll();
 		dataTable.state.clear();
 		dataTable.destroy();
+		rescan.state.clear();
+		rescan.destroy();
+		recall.state.clear();
+		recall.destroy();
+		decline.state.clear();
+		decline.destroy();
 		location.reload();
 	});
 	
@@ -1099,7 +1105,7 @@ postvarpage : 'filedetails'
 		    jQuery('#wpsc_popup_footer').html(response.footer);
 		    jQuery('#wpsc_cat_name').focus();
 		  });
-         jQuery('#tbl_templates_todo_rescan').DataTable().ajax.reload(null, false); 
+         jQuery('#tbl_templates_rescan_todo').DataTable().ajax.reload(null, false); 
    });
 
 }

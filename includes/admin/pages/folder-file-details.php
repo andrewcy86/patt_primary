@@ -14,6 +14,7 @@ $s3_exist = 0;
 
 $subfolder_path = site_url( '', 'relative');
 //include_once( WPPATT_UPLOADS . 'api_authorization_strings.php' );
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 
 $GLOBALS['id'] = sanitize_text_field($_GET['id']);
 $GLOBALS['pid'] = sanitize_text_field($_GET['pid']);
@@ -208,7 +209,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
     //END REVIEW
     $user = get_user_by( 'id', $folderfile_validation_user);
 
-    $box_details = $wpdb->get_row("SELECT c.name, a.id, a.box_status, a.box_destroyed, b.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, b.ticket_priority as ticket_priority, 
+    $box_details = $wpdb->get_row("SELECT c.name, a.id, a.box_previous_status, a.box_status, a.box_destroyed, b.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, b.ticket_priority as ticket_priority, 
 (SELECT name as ticket_priority FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_priority) as ticket_priority_name, b.ticket_status as ticket_status, 
 (SELECT name as ticket_status FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as ticket_status_name
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
@@ -225,6 +226,7 @@ WHERE a.id = '" . $folderfile_boxid . "'");
 	$box_ticket_priority_name = $box_details->ticket_priority_name;
 	$box_ticket_status = $box_details->ticket_status;
 	$box_ticket_status_name = $box_details->ticket_status_name;
+	$box_previous_status = $box_details->box_previous_status;
 
 	// Display box status
 	$status_background = get_term_meta($box_status, 'wpsc_box_status_background_color', true);
@@ -1458,7 +1460,21 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 	                             
 	                            <div class="wpsp_sidebar_labels"><strong>Box Status:</strong><br /> 
 	                            <?php 
-	                                echo $box_status_display;
+	                                $get_previous_box_status_name = $wpdb->get_row("SELECT name
+	                                FROM wpqa_terms
+	                                WHERE term_id = " . $box_previous_status);
+	                                $previous_box_status_name = $get_previous_box_status_name->name;
+	                                
+	                                $show_previous_box_status_tooltip = array($box_waiting_shelved_tag->term_id, $box_waiting_on_rlo_tag->term_id, $box_cancelled_tag->term_id);
+	                                $previous_box_status = "<a href='#' style='color: #000000 !important;' data-toggle='tooltip' data-placement='right' data-html='true' aria-label='Previous Box Status' title='Previous Box Status: ".$previous_box_status_name."'><span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
+	                                $only_box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$box_status_name."</span></a>";
+	                                
+	                                if(in_array($box_status, $show_previous_box_status_tooltip) && $box_previous_status != 0) {
+    	                                echo $previous_box_status;
+	                                }
+	                                else {
+	                                    echo $only_box_status;
+	                                }
 	                            ?>
 	                            </div>
 	                            
