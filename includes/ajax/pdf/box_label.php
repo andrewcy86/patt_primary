@@ -85,10 +85,6 @@ if (isset($_GET['id']))
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
         INNER JOIN " . $wpdb->prefix . "terms ON " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
         WHERE
-        " . $wpdb->prefix . "wpsc_epa_storage_location.aisle <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.bay <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.shelf <> 0 AND 
-        " . $wpdb->prefix . "wpsc_epa_storage_location.position <> 0 AND 
         " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center <> 666 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed = 0 AND
         " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
