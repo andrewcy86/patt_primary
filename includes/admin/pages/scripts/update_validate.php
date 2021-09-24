@@ -352,7 +352,7 @@ if( ($total_files - $total_validation) == 0) {
 	$new_status_str = $box_destruction_approved_tag->name;
 	$status_str = $old_status_str . ' to ' . $new_status_str;
     
-    $data_update_box_status = array('box_status' => $box_destruction_approved_tag->term_id);
+    $data_update_box_status = array('box_status' => $box_waiting_on_rlo_tag->term_id);
     $data_where_box_status = array('id' => $get_box_ids->id);
     $wpdb->update($boxinfo_table, $data_update_box_status, $data_where_box_status);
     

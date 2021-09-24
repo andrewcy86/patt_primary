@@ -28,14 +28,10 @@ WHERE active = 1 AND id <> -99999");
 $identified_requests_array = array();
 $validated_box = 0;
 
-$ecms_tag = get_term_by('slug', 'ecms', 'wpsc_statuses'); //998
-$sems_tag = get_term_by('slug', 'sems', 'wpsc_statuses'); //1010
-$completed_dispositoned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
 //ECMS, SEMS, Completed/Diposition and Cancelled array
 
 //$exempt_status_array = array(998,1010,1003,69);
-$exempt_status_array = array($ecms_tag->term_id,$sems_tag->term_id,$completed_dispositioned_tag->term_id,$cancelled_tag->term_id);
+$exempt_status_array = array($request_ecms_tag->term_id,$request_sems_tag->term_id,$request_completed_dispositioned_tag->term_id,$request_cancelled_tag->term_id);
 //FIND request where all documents are validated
 
 foreach($get_total_request_count as $item) {
@@ -64,10 +60,8 @@ foreach($get_total_request_count as $item) {
     array_push($check_validation_array, $check_validation);
     }
     
-    $cancelled_box_status_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
-    
     $validated_box = in_array_all(1,$check_validation_array);
-    $cancel_box_check = in_array_all($cancelled_box_status_tag->term_id,$check_status_array);
+    $cancel_box_check = in_array_all($box_cancelled_tag->term_id,$check_status_array);
     
     if($validated_box == 1 && $cancel_box_check != 1) {
     array_push($identified_requests_array, $ticket_id);
@@ -85,21 +79,21 @@ WHERE id =".$item);
 
     //Determine if requests is SEMS or ECMS?
     $sems_check = $wpscfunction->get_ticket_meta($item,'super_fund');
-    $in_process_tag = get_term_by('slug', 'in-process', 'wpsc_statuses'); //997                
+    
     if(in_array("true", $sems_check)) {
     // Change Request Status to SEMS and Log
     //echo $item.'- SEMS,'. $sems_tag->term_id;
     // Check if status is in Process and not beyond SEMS
     
-        if($ticket_status == $in_process_tag->term_id && !in_array($ticket_status, $exempt_status_array)) {
-            $wpscfunction->change_status($item, $sems_tag->term_id);
+        if($ticket_status == $request_in_process_tag->term_id && !in_array($ticket_status, $exempt_status_array)) {
+            $wpscfunction->change_status($item, $request_sems_tag->term_id);
         }
     } else {
     // Change Request Status to ECMS and Log
     //echo $item.'- ECMS,'. $ecms_tag->term_id;
     // Check if status is In Process and not beyond SEMS
-        if($ticket_status == $in_process_tag->term_id && !in_array($ticket_status, $exempt_status_array)) {
-             $wpscfunction->change_status($item, $ecms_tag->term_id);
+        if($ticket_status == $request_in_process_tag->term_id && !in_array($ticket_status, $exempt_status_array)) {
+             $wpscfunction->change_status($item, $request_ecms_tag->term_id);
         }
     }
 

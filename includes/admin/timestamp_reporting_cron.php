@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+echo $WP_PATH . "<br/>";
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;

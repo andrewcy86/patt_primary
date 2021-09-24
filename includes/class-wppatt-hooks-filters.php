@@ -1865,13 +1865,13 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 			}
 */
 			
-/*
+
 			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
 			if( $superfund ) {				
 				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
-*/
+
 			
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
@@ -1883,12 +1883,12 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 				
 
 				
-				//$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
+				$site_name_id_valid = Patt_Custom_Func::sems_site_id_validation( $sems_check_site_name, $sems_check_site_id, $region_id );
 				
 				// D E V SITE - TESTING
 				//$site_name_id_valid = 'Success';
 				
-/*
+
 				if( $site_name_id_valid != 'Success') {
 					
 					$delete_ticket = apply_filters( 'request_ticket_delete', $ticket_id );
@@ -1917,7 +1917,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						die();
 					
 				}
-*/
+
 			} 
 			
 			

@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $current_user, $wpscfunction;
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 
 $flag_btn = false;
 
@@ -19,23 +20,7 @@ $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 // Change Status ID when going to production to reflect the term_id of the "New" status
 
 //using slug instead of status ID
-$new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses');
-$new_request_term_id = $new_request_tag->term_id;
-
-$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses');
-$initial_review_rejected_term_id = $initial_review_rejected_tag->term_id;
-
-$cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses');
-$cancelled_term_id = $cancelled_tag->term_id;
-
-$tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
-$tabled_term_id = $tabled_tag->term_id;
-
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
-$completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
-
-//$status_array = array(3, 670, 69, 2763);
-$status_array = array($new_request_term_id, $initial_review_rejected_term_id, $cancelled_term_id, $completed_dispositioned_term_id);
+$status_array = array($request_new_request_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_cancelled_tag->term_id, $request_completed_dispositioned_tag->term_id);
 if (!in_array($status_id, $status_array)) {
     $flag_btn = true;
 }

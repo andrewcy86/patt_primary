@@ -4,7 +4,7 @@ global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
+include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
@@ -18,28 +18,6 @@ $box_fk = Patt_Custom_Func::get_id_by_box_id( $item_id );
 
 $box_details_obj = Patt_Custom_Func::get_box_file_details_by_id( $item_id );
 $storage_location_id = $box_details_obj->storage_location_id;
-
-// get all pertinent term_ids
-// Box status slugs
-$pending_tag = get_term_by('slug', 'pending', 'wpsc_box_statuses'); 
-$scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); 
-$scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); 
-$qa_qc_tag = get_term_by('slug', 'q-a', 'wpsc_box_statuses'); 
-$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); 
-$digitized_not_val_tag = get_term_by('slug', 'closed', 'wpsc_box_statuses'); 
-$destruction_approved_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); 
-$destruction_of_source_tag = get_term_by('slug', 'destruction-of-source', 'wpsc_box_statuses'); 
-$completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); 
-
-$scanning_preparation_term = $scanning_preparation_tag->term_id;
-$scanning_digitization_term = $scanning_digitization_tag->term_id;
-$qa_qc_term = $qa_qc_tag->term_id;
-$validation_term = $validation_tag->term_id;
-$digitized_not_val_term = $digitized_not_val_tag->term_id;
-$destruction_approved_term = $destruction_approved_tag->term_id;
-$destruction_of_source_term = $destruction_of_source_tag->term_id;
-$completed_dispositioned_term = $completed_dispositioned_tag->term_id;
-
 
 // Register Recall Status Taxonomy
 if( !taxonomy_exists('wppatt_recall_statuses') ) {
@@ -88,12 +66,11 @@ $decline_initiated_term = $decline_initiated_tag->term_id;
 // Destruction of Source -> Completed/Dispositioned
 
 $next_status_arr = [];
-$next_status_arr[ $scanning_preparation_term ] = $scanning_digitization_term;
-$next_status_arr[ $scanning_digitization_term ] = $qa_qc_term;
-$next_status_arr[ $qa_qc_term ] = $digitized_not_val_term;
-//$next_status_arr[ $destruction_approved_term ] = $destruction_of_source_term;
-$next_status_arr[ $destruction_approved_term ] = $destruction_approved_term;
-$next_status_arr[ $destruction_of_source_term ] = $completed_dispositioned_term;
+$next_status_arr[ $box_scanning_preparation_tag->term_id ] = $box_scanning_digitization_tag->term_id;
+$next_status_arr[ $box_scanning_digitization_tag->term_id ] = $box_qa_qc_tag->term_id;
+$next_status_arr[ $box_qa_qc_tag->term_id ] = $box_digitized_not_validated_tag->term_id;
+$next_status_arr[ $box_destruction_approved_tag->term_id ] = $box_destruction_approved_tag->term_id;
+$next_status_arr[ $box_destruction_of_source_tag->term_id ] = $box_completed_dispositioned_tag->term_id;
 
 // Get the next status based on the current status
 $next_box_status = $next_status_arr[ $current_box_status ];
@@ -102,15 +79,15 @@ $next_box_status = $next_status_arr[ $current_box_status ];
 // based on the current box status, which has just been finished. 
 $storage_location_status_flag_name = '';
 
-if( $current_box_status == $scanning_preparation_term ) {
+if( $current_box_status == $box_scanning_preparation_tag->term_id ) {
   $storage_location_status_flag_name = 'scanning_preparation';
-} elseif( $current_box_status == $scanning_digitization_term ) {
+} elseif( $current_box_status == $box_scanning_digitization_tag->term_id ) {
   $storage_location_status_flag_name = 'scanning_digitization';
-} elseif( $current_box_status == $qa_qc_term ) {
+} elseif( $current_box_status == $box_qa_qc_tag->term_id ) {
   $storage_location_status_flag_name = 'qa_qc';
-} elseif( $current_box_status == $destruction_approved_term ) {
+} elseif( $current_box_status == $box_destruction_approved_tag->term_id ) {
   $storage_location_status_flag_name = 'destruction_approved';
-} elseif( $current_box_status == $destruction_of_source_term ) {
+} elseif( $current_box_status == $box_destruction_of_source_tag->term_id ) {
   $storage_location_status_flag_name = 'destruction_of_source';
 } 
 
@@ -125,7 +102,7 @@ if( $current_box_status == $scanning_preparation_term ) {
 if( $type == 'todo_box_status_update' ) {
   
   // If completing the Destruction Approved status, do not move it to the next status & no audit log.
-  if( $next_box_status != $destruction_approved_term ) {
+  if( $next_box_status != $box_destruction_approved_tag->term_id ) {
     
     // Update Box status & Box Previous Status
     $table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
@@ -143,30 +120,30 @@ if( $type == 'todo_box_status_update' ) {
 	$status_name = '';
 	$previous_status_name = '';
 	
-	if( $current_box_status == $scanning_preparation_term ) {
+	if( $current_box_status == $box_scanning_preparation_tag->term_id ) {
   	$col_name = 'scanning_preparation';
-  	$previous_status_name = $scanning_preparation_tag->name;
-  	$status_name = $scanning_digitization_tag->name;
+  	$previous_status_name = $box_scanning_preparation_tag->name;
+  	$status_name = $box_scanning_digitization_tag->name;
   	
-	} elseif( $current_box_status == $scanning_digitization_term ) {
+	} elseif( $current_box_status == $box_scanning_digitization_tag->term_id ) {
   	$col_name = 'scanning_digitization';
-  	$previous_status_name = $scanning_digitization_tag->name;
-  	$status_name = $qa_qc_tag->name;
+  	$previous_status_name = $box_scanning_digitization_tag->name;
+  	$status_name = $box_qa_qc_tag->name;
   	
-	} elseif( $current_box_status == $qa_qc_term ) {
+	} elseif( $current_box_status == $box_qa_qc_tag->term_id ) {
   	$col_name = 'qa_qc';
-  	$previous_status_name = $qa_qc_tag->name;
-  	$status_name = $digitized_not_val_tag->name;
+  	$previous_status_name = $box_qa_qc_tag->name;
+  	$status_name = $box_digitized_not_validated_tag->name;
   	
-	} elseif( $current_box_status == $destruction_approved_term ) {
+	} elseif( $current_box_status == $box_destruction_approved_tag->term_id ) {
   	$col_name = 'destruction_approved';
-  	$previous_status_name = $destruction_approved_tag->name;
-  	$status_name = $destruction_of_source_tag->name;
+  	$previous_status_name = $box_destruction_approved_tag->name;
+  	$status_name = $box_destruction_of_source_tag->name;
   	
-	} elseif( $current_box_status == $destruction_of_source_term ) {
+	} elseif( $current_box_status == $box_destruction_of_source_tag->term_id ) {
   	$col_name = 'destruction_of_source';
-  	$previous_status_name = $destruction_of_source_tag->name;
-  	$status_name = $completed_dispositioned_tag->name;
+  	$previous_status_name = $box_destruction_of_source_tag->name;
+  	$status_name = $box_completed_dispositioned_tag->name;
   	
 	}
 	
@@ -175,7 +152,7 @@ if( $type == 'todo_box_status_update' ) {
 	
 	
 	// Audit Log, only for all statuses except for Destruction Approval, as it's not moving to the next state here. 
-	if( $next_box_status != $destruction_approved_term ) {
+	if( $next_box_status != $box_destruction_approved_tag->term_id ) {
   	
   	$status_str = $previous_status_name . ' to ' . $status_name;
   	do_action('wpppatt_after_box_status_update', $ticket_id, $status_str, $item_id );
