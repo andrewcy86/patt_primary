@@ -1,4 +1,7 @@
  <?php  
+ 
+ header("X-Frame-Options: allow-from https://work.epa.gov");
+  
  include 'db_connection.php';
  $conn = OpenCon();
  
