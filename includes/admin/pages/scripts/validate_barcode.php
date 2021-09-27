@@ -75,7 +75,9 @@ if( ($total_files - $total_validation) == 0) {
 }
 
 echo $barcode.' has been set to validated.';
+echo '<br /> <br />';
 
+/*
         $filename = 'LDF_1_2_6_ldf_09019588800598d8';
         $file = WPPATT_UPLOADS."/validation-temp/".$filename."_content.zip";
         
@@ -85,6 +87,7 @@ echo $barcode.' has been set to validated.';
     } else {
         echo 'no file delete';
     }
+*/
 
 //FAIL for all other barcodes       
 } else {
