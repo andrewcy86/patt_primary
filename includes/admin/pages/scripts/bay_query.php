@@ -24,7 +24,8 @@ FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE aisle = '" . $_GET['aisle_id'] . "' AND bay = '" . $value . "' AND  digitization_center = '" . $_GET['center'] . "'"
 			);
 
-    $output_array[$i] = 'Bay #' . $value . ' [' . (20 - $get_available_bay->count) . ' boxes remain]';
+// Updated 3 boxes to a shelf
+    $output_array[$i] = 'Bay #' . $value . ' [' . (30 - $get_available_bay->count) . ' boxes remain]';
     $i++;
 
 }

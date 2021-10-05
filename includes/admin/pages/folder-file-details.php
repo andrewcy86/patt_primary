@@ -321,7 +321,7 @@ div.dataTables_wrapper {
         {
         ?>
         <?php 
-        if ( ($box_status == $validation_tag->term_id || $box_status == $rescan_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
+        if ( ($box_status == $validation_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
         ?>
         <!-- language of buttons change based on 0 or 1 -->
         <?php

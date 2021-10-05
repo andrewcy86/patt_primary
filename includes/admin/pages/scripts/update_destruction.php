@@ -196,19 +196,23 @@ $pl_update = array('location_status_id' => '6');
 $pl_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $pl_update, $pl_where);
 
-$get_physical_locations_from_box = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.shelf_location, b.pallet_id
+$get_physical_locations_from_box = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location, b.pallet_id
 FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
-WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
 AND b.box_id = '" .  $key . "'");
 
 $scanning_id = $get_physical_locations_from_box->scanning_id;
 $stagingarea_id = $get_physical_locations_from_box->stagingarea_id;
 $cart_id = $get_physical_locations_from_box->cart_id;
+$validation_location_area_id = $get_physical_locations_from_box->validation_location_area_id;
+$qaqc_location_area_id = $get_physical_locations_from_box->qaqc_location_area_id;
+$scanning_prep_location_area_id = $get_physical_locations_from_box->scanning_prep_location_area_id;
+$scanning_location_area_id = $get_physical_locations_from_box->scanning_location_area_id;
 $shelf_location = $get_physical_locations_from_box->shelf_location;
 $pallet_id = $get_physical_locations_from_box->pallet_id;
 
-if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($validation_location_area_id) || !empty($qaqc_location_area_id) || !empty($scanning_prep_location_area_id) || !empty($scanning_location_area_id) || !empty($shelf_location)) {
     if(!empty($pallet_id)) {
         //Delete pallet_id from the boxinfo table
         $boxinfo_pallet_update = array('pallet_id' => '');
@@ -228,7 +232,7 @@ if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !emp
     }
     
     //Delete from the scan_list table for non-pallets
-    if(!empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($shelf_location)) {
+    if(!empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($validation_location_area_id) || !empty($qaqc_location_area_id) || !empty($scanning_prep_location_area_id) || !empty($scanning_location_area_id) || !empty($shelf_location)) {
         $wpdb->delete( $scan_list_table, array( 'box_id' => $key ) );
     }
 }

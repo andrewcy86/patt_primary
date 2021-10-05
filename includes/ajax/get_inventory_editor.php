@@ -55,7 +55,8 @@ $patt_ticket_id = $box_details->request_id;
 <select id="aisle_selector" name="aisle_selector" class="form-control" aria-label="Aisle Selector">    
 <option value="0">--Select Aisle--</option>
 <?php
-$digitization_center_aisle_total = 50;
+// Updated 3 boxes to a shelf
+$digitization_center_aisle_total = 11;
 
 $aisle_array = range(1, $digitization_center_aisle_total);
 
@@ -65,11 +66,12 @@ foreach ($aisle_array as $value) {
 FROM " . $wpdb->prefix . "wpsc_epa_storage_location
 WHERE aisle = '" . $value . "' AND digitization_center = '" . $digitization_center . "'"
 			);
-			
-$remaining_boxes = 100 - $get_available_aisle->count;
+// Updated 3 boxes to a shelf
+$remaining_boxes = 150 - $get_available_aisle->count;
 $disabled = $remaining_boxes != 0 ? "" : "disabled";
 
-  echo '<option value="'.$value.'" '.$disabled .'>Aisle #' . $value . ' [' . (100 - $get_available_aisle->count) . ' boxes remain]'.'</option>';
+// Updated 3 boxes to a shelf
+  echo '<option value="'.$value.'" '.$disabled .'>Aisle #' . $value . ' [' . (150 - $get_available_aisle->count) . ' boxes remain]'.'</option>';
 
 }
 

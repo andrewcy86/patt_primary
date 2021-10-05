@@ -91,7 +91,8 @@ $response = array(
   "draw" => intval($draw),
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
-  "aaData" => $data
+  "aaData" => $data,
+  "test" => $boxQuery
 );
 
 echo json_encode($response);

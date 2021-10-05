@@ -23,7 +23,7 @@ WHERE folderdocinfofile_id = '".$barcode."'");
 $get_folderdocinfo_id_val = $get_folderdocinfo_id->id;
 $get_folderdocinfo_box_id_val = $get_folderdocinfo_id->box_id;
 
-$box_details = $wpdb->get_row("SELECT a.box_status as box_status, b.ticket_status as ticket_status, b.id as ticket_id
+$box_details = $wpdb->get_row("SELECT a.box_status as box_status, b.ticket_status as ticket_status, b.id as ticket_id, a.box_id as box_id, a.storage_location_id as storage_location_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
 WHERE a.id = '" . $get_folderdocinfo_box_id_val . "'");
@@ -38,7 +38,7 @@ $rescan_validate_status_id_arr = array($request_new_request_tag->term_id, $reque
 
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $barcode)){
     
-if ( ($box_status == $box_validation_tag->term_id || $box_status == $box_rescan_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
+if ( ($box_status == $box_validation_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
 
     
 $data_update = array('validation' => 1, 'validation_user_id' => $user_id);
@@ -74,8 +74,7 @@ if( ($total_files - $total_validation) == 0) {
   $wpdb->update($table_box, $data_update_box_status, $data_where_box_status);
 }
 
-echo $barcode.' has been set to validated.';
-echo '<br /> <br />';
+echo '<div class="alert alert-success"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span> '.$barcode.' has been set to validated.</div>';
 
 /*
         $filename = 'LDF_1_2_6_ldf_09019588800598d8';

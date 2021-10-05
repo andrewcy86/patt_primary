@@ -114,6 +114,13 @@ width: 100%;
 //check whether request is active, if not disable buttons
 $is_active = Patt_Custom_Func::ticket_active( $ticket_id );
 
+//Request Statuses
+$request_new_request_tag = get_term_by('slug', 'open', 'wpsc_statuses'); //3
+$request_tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses'); //2763
+$request_initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$request_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_statuses'); //1003
+$request_cancelled_tag = get_term_by('slug', 'destroyed', 'wpsc_statuses'); //69
+
 $alert_arr = array($request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);
 
 $status_id_arr = array($request_new_request_tag->term_id, $request_cancelled_tag->term_id, $request_initial_review_rejected_tag->term_id, $request_completed_dispositioned_tag->term_id);

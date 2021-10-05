@@ -1,5 +1,5 @@
  <?php  
- 
+
  header("X-Frame-Options: allow-from https://work.epa.gov");
   
  include 'db_connection.php';
@@ -36,24 +36,37 @@ while($row_main = mysqli_fetch_array($result_main))
    <strong>Title: </strong>'.$row_main["Schedule_Title"].'<br />  
    <strong>Program: </strong>'.$row_main["Program"].'<br />   
    <strong>Applicability: </strong>'.$row_main["Applicability"].'<br /> 
-   <strong>Function: </strong>'.$row_main["Function_Code"].' - '.$row_main["Function_Title"].'
-   <p><strong>NARA Disposal Authority:</strong></p>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"].'
-   ';
-   echo '<p><strong>Description:</strong></p>'.$row_main["Schedule_Description"]. '
-   <strong>Disposition Instructions:</strong>';
+   <strong>Function: </strong>'.$row_main["Function_Code"].' - '.$row_main["Function_Title"];
    
-   while($disposition_summary = mysqli_fetch_array($result_di)) {
-        echo $disposition_summary["Disposition_Summary"];
-    }
- echo '
-   <strong>Gudiance:</strong><br />'.$row_main["Guidance"].'</br>
-   <p><strong>Reasons for Disposition: </strong></p>'.$row_main["Reasons_For_Disposition"].'</br>
+   if(!empty($row_main["NARA_Disposal_Authority_Record_Schedule_Level"])) {
+        echo'<p><strong>NARA Disposal Authority:</strong></p>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"];
+   }
+   
+   if(!empty($row_main["Schedule_Description"])) {
+        echo '<p><strong>Description:</strong></p>'.$row_main["Schedule_Description"];
+   }
+   if(!empty($disposition_summary["Disposition_Summary"])) {
+       echo '<strong>Disposition Instructions:</strong><br/>';
+       while($disposition_summary = mysqli_fetch_array($result_di)) {
+            echo $disposition_summary["Disposition_Summary"];
+        }
+   }
+   
+   if(!empty($row_main["Guidance"])) {
+        echo '<strong>Gudiance:</strong><br />'.$row_main["Guidance"].'</br>';
+   }
+   
+   if(!empty($row_main["Reasons_For_Disposition"])) {
+        echo '<p><strong>Reasons for Disposition: </strong></p>'.$row_main["Reasons_For_Disposition"].'</br>';
+   }
+   
+   echo'
    <strong>Custodians: </strong>'.$row_main["Custodians"].'</br>
    <strong>Related Schedules: </strong>'.$row_main["Related_Schedules"].'</br>
    <strong>Previous NARA Disposal Authority: </strong>'.$row_main["Previous_NARA_Disposal_Authority"].'</br>
    <strong>Entry: </strong>'.Patt_Custom_Func::get_converted_date($row_main["Entry_Date"]).'</br>
-   <strong>EPA Approval: </strong>'.$row_main["EPA_Approval"].'</br>
-   <strong>NARA Approval: </strong>'.$row_main["NARA_Approval"].'</br>
+   <strong>EPA Approval: </strong>'.Patt_Custom_Func::get_converted_date($row_main["EPA_Approval"]).'</br>
+   <strong>NARA Approval: </strong>'.Patt_Custom_Func::get_converted_date($row_main["NARA_Approval"]).'</br>
    ';
 }
 

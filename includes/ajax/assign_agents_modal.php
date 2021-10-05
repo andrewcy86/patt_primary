@@ -656,7 +656,6 @@ echo "</pre>";
 <h4>[Box ID # <?php echo $box_id_list; ?>]</h4>
 <?php } ?>
 
-
 <div id='alert_status' class=''></div> 
 <br>
 <!--
@@ -1087,6 +1086,14 @@ echo "</pre>";
 ?>
 
 
+<?php 
+//ERMD Error Message Fix
+$get_todo_flag = $wpdb->get_row("SELECT a.destruction_of_source, b.box_destroyed FROM " . $wpdb->prefix . "wpsc_epa_storage_location a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.storage_location_id = a.id WHERE b.box_id = '" . $box_id_list . "'");
+
+$scanning_d_s_val = $get_todo_flag->destruction_of_source;
+$scanning_b_d_val = $get_todo_flag->box_destroyed;
+?>
 
 <style>
 .zebra {
@@ -1250,6 +1257,7 @@ jQuery(document).ready(function(){
 	let status_error_link = '';
 	let dc_error_link = '';	// digitization center error
 	let al_error_link = '';	// assigned location error
+    let box_id_var = '';	// box id
 	let status_error_count = 0;
 	let dc_error_count = 0;
 	let al_error_count = 0;
@@ -1442,7 +1450,7 @@ jQuery(document).ready(function(){
 			al_error_link += box_link_start+x.item_id+link_mid+x.item_id+link_end+', ';
 		}
 		
-		
+		box_id_var += x.item_id;
 	});
 	
 	status_error_link = status_error_link.slice(0, -2);
@@ -1478,10 +1486,10 @@ jQuery(document).ready(function(){
 		
 		if( al_error && al_error_count > 1 ) {
 			al_error_start = 'Boxes ';
-			al_error_mid = ': The Assigned Loctation is Unassigned. ';
+			al_error_mid = ': The Assigned Location is Unassigned. ';
 		} else if( al_error && al_error_count == 1 ) {
 			al_error_start = 'Box ';
-			al_error_mid = ': The Assigned Loctation is Unassigned. ';
+			al_error_mid = ': The Assigned Location is Unassigned. ';
 		}
 		
 		const error_end = ' Saving Disabled.';
@@ -1490,7 +1498,18 @@ jQuery(document).ready(function(){
 					dc_error_start+dc_error_link+dc_error_mid + 
 					al_error_start+al_error_link+al_error_mid + 
 					error_end;
-		set_alert( 'danger', message );
+
+//ERMD Disable the following errors: The Digitization Center is Unassigned. AND The Assigned Location is Unassigned. Saving Disabled. WHEN ALL to-do flags are set to 1 except for destruction of source		
+
+<?php
+if($scanning_b_d_val == 1) {
+?>
+
+		set_alert( 'danger', message);
+<?php
+}
+?>
+
 	}
 	
 	var save_enabled = '<?php echo $save_enabled ?>';

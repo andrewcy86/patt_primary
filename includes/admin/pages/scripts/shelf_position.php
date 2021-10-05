@@ -40,7 +40,7 @@ if (($box_details->aisle == '0') || ($box_details->bay == '0') || ($box_details-
 
 .front-indicator {
 	width: 122px;
-	margin: 5px 32px 15px 32px;
+	margin: 5px 32px 15px 10px;
 	background-color: #f6f6f6;	
 	color: #adadad;
 	text-align: center;
@@ -166,11 +166,16 @@ margin-top: -196px !important;
 					$total = jQuery('#total'),
 					sc = jQuery('#seat-map').seatCharts({
 					map: [
-						'eeee',
-						'e[,1]e[,2]e[,3]e[,4]',
-						'e[,1]e[,2]e[,3]e[,4]',
-						'e[,1]e[,2]e[,3]e[,4]',
-						'e[,1]e[,2]e[,3]e[,4]',
+						'eee',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
+						'e[,1]e[,2]e[,3]',
 					],
 					seats: {
 						f: {

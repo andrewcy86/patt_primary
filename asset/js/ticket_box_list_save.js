@@ -148,9 +148,13 @@ jQuery(document).ready(function(){
     
 });
 
+jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
+
 jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
             alert('File upload failed. Please ensure the box list is not open in Excel.');
             wpsc_get_create_ticket();
+});
+
 });
 
 /* Removes data from the box datatable if there is any error */

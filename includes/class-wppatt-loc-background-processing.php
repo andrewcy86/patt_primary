@@ -28,7 +28,7 @@ global $current_user, $wpscfunction,$wpdb;
 $dc_id = $_POST['dc_id'];
 
 // ONLY supporting EAST and WEST DC's at the moment
-
+/*
 if ( $dc_id == 2 || $dc_id == 62) {
 
 // Find first available slot for requests with boxes equal to 1
@@ -36,7 +36,7 @@ $get_active_location = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
 WHERE
-remaining NOT IN (0,4) AND 
+remaining NOT IN (0,3) AND 
 digitization_center = ".$dc_id);
 
 
@@ -62,16 +62,16 @@ $position_count = count($position_details);
 // Set Remaining to the position count unassigned
 if($position_count == 999) {
 
-$data_update = array('remaining' => 4-$position_count);
+$data_update = array('remaining' => 3-$position_count);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
 
 // Set Remaining to the position count
-if($position_count > 0 && $position_count <= 3) {
+if($position_count > 0 && $position_count <= 2) {
 
-$data_update = array('remaining' => 4-$position_count);
+$data_update = array('remaining' => 3-$position_count);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
@@ -80,14 +80,14 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 // Set Remaining to 4
 if($position_count == 0) {
 
-$data_update = array('remaining' => 4, 'occupied' => 0);
+$data_update = array('remaining' => 3, 'occupied' => 0);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
 
 // Set Remaining to 0
-if($position_count >= 4) {
+if($position_count >= 3) {
 
 $data_update = array('remaining' => 0, 'occupied' => 1);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
@@ -121,7 +121,7 @@ AND digitization_center = ".$dc_id);
 
 $position_count = count($position_details);
 
-$data_update = array('remaining' => 4-$position_count);
+$data_update = array('remaining' => 3-$position_count);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
@@ -185,18 +185,18 @@ AND digitization_center = ".$dc_id);
 
 $position_count = count($position_details);
 
-$data_update = array('remaining' => 4-$position_count);
+$data_update = array('remaining' => 3-$position_count);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where);
 
 }
 
 
-//Check for remaining 4 and occupied = 1
+//Check for remaining 3 and occupied = 1
 $get_remaining_four = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE remaining = 4 AND
+WHERE remaining = 3 AND
 occupied = 1 AND
 digitization_center = ".$dc_id);
 
@@ -217,7 +217,7 @@ digitization_center = ".$dc_id);
 
 foreach($get_negative_remaining as $item) {
 $shelf_id = $item->shelf_id;
-$data_update = array('remaining' => 4);
+$data_update = array('remaining' => 3);
 $data_where = array('shelf_id' => $shelf_id, 'digitization_center' => $dc_id);
 $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where); 
 }
@@ -226,7 +226,7 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 $get_positive_remaining = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE remaining >= 5 AND
+WHERE remaining >= 3 AND
 digitization_center = ".$dc_id);
 
 foreach($get_positive_remaining as $item) {
@@ -240,7 +240,7 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 $get_not_occupied = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE remaining IN (0,1,2,3) AND
+WHERE remaining IN (0,1,2) AND
 digitization_center = ".$dc_id);
 
 foreach($get_not_occupied as $item) {
@@ -254,7 +254,7 @@ $wpdb->update($wpdb->prefix.'wpsc_epa_storage_status', $data_update, $data_where
 $get_occupied = $wpdb->get_results("
 SELECT shelf_id
 FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-WHERE remaining = 4 AND
+WHERE remaining = 3 AND
 digitization_center = ".$dc_id);
 
 foreach($get_occupied as $item) {
@@ -298,7 +298,7 @@ $wpdb->delete( $wpdb->prefix.'wpsc_epa_storage_location', array( 'id' => $diff) 
 }
 
 }
-
+*/
 
 
 	}

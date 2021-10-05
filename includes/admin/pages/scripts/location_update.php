@@ -18,7 +18,6 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
    $bay = $_POST['postvarbname'];
    $boxid = $_POST['postvarboxname'];
    $center = $_POST['postvarcentername'];
-   $center_term_id = term_exists( $center ); 
 
    $center_value = '';
    
@@ -54,8 +53,6 @@ WHERE id = '" . $box_storage_location_id . "'"
 			$existing_position = $storage_location_details->position;
 			$existing_shelf_id = $existing_aisle.'_'.$existing_bay.'_'.$existing_shelf;
 
-Patt_Custom_Func::update_remaining_occupied($center_term_id,array($existing_shelf_id));
-
 // Update wpqa_wpsc_epa_storage_location with new location that was selected
 
 $table_name = $wpdb->prefix . 'wpsc_epa_storage_location';
@@ -66,7 +63,10 @@ $wpdb->update($table_name , $data_update, $data_where);
 $new_shelf_id_update = $aisle.'_'.$bay.'_'.$shelf;
 
 // Update storage status remove box from new shelf location
-Patt_Custom_Func::update_remaining_occupied($center_term_id,array($new_shelf_id_update));
+Patt_Custom_Func::update_remaining_occupied($center,array($new_shelf_id_update));
+
+Patt_Custom_Func::update_remaining_occupied($center,array($existing_shelf_id));
+
 
 				$get_ticket_id = $wpdb->get_row("
 SELECT ticket_id

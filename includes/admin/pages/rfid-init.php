@@ -59,17 +59,19 @@ Enter one or more Box IDs:<br />
          <input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
 <br />
 
+
+         <!--<input type='text' id='searchByReaderID' value='<?php echo $GLOBALS['reader']; ?>'>-->
          <?php
 $rfid_settings_init_array= $wpscfunction->get_ticket_meta(0,'rfid_settings_locations');
 
 $rfid_settings_array = explode(',', $rfid_settings_init_array[0]);
 			?>
-<select id='searchByReaderID' style="display:none !important;">
+<!--<select id='searchByReaderID' style="display:none !important;">
      <option value=''>-- Select RFID Reader --</option>
      <?php foreach($rfid_settings_array as $items) { ?>
      <option value='<?php echo $items; ?>'><?php echo $items; ?></option>
      <?php } ?>
-</select>
+</select>-->
 <?php
 //}
 ?>
@@ -164,8 +166,8 @@ function GetURLParameter(sParam)
 
 jQuery(document).ready(function(){
     
-var term= GetURLParameter('reader');
-jQuery('#searchByReaderID').val(term);
+//var term= GetURLParameter('reader');
+//jQuery('#searchByReaderID').val(term);
 
 
     jQuery('[data-toggle="tooltip"]').tooltip(); 

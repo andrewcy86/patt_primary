@@ -111,6 +111,9 @@ $newPair = array_filter($box_complete_array, "findZero");
 
 $first_key = key($newPair); // First element's key
 
+
+if($first_key != '') {
+
 $get_box_id = $wpdb->get_row("SELECT 
 id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id <> '-99999' AND storage_location_id = ".$storage_location_id);
@@ -121,7 +124,9 @@ $get_todo_boxes = $wpdb->get_row("SELECT box_id
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus WHERE box_id = ".$box_id." AND user_id = ".$searchByUser." AND status_id = ".$first_key);
 
 $todo_boxes = $get_todo_boxes->box_id;
-
+} else {
+$todo_boxes = ''; 
+}
 if($todo_boxes != '') {
 array_push($todo_boxes_array, $todo_boxes);
 }
@@ -266,7 +271,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE a.id <> -99999 AND a.box_destroyed = 0 AND b.active <> 0 " . $ecms_sems_box . " ");
+WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems_box . " ");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
 //$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 0");
 $records = mysqli_fetch_assoc($sel);
@@ -290,7 +295,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE (b.active <> 0) AND (a.box_destroyed = 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
@@ -465,7 +470,7 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
 
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
 
-WHERE (b.active <> 0) AND (a.box_destroyed = 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 $boxRecords = mysqli_query($con, $boxQuery);
