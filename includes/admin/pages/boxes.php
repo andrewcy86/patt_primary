@@ -25,7 +25,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 <div class="bootstrap-iso">
   
-  <h3>Box/Pallet Search</h3>
+  <h3>Box/Pallet Search -- TEST</h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;"></div>
 
