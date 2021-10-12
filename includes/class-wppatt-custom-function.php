@@ -330,7 +330,7 @@ $gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_
 								
 				$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' . $gap_shelf;
 // Update storage status table
-                 Patt_Custom_Func::update_remaining_occupied($dc_final,$gap_shelf_id_update);
+                 Patt_Custom_Func::update_remaining_occupied($dc_final,array($gap_shelf_id_update));
 			}
                
 
