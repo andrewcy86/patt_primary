@@ -83,8 +83,16 @@ $searchQuery = " ";
 $searchHaving = " ";
 $locationarray = array("east", "west", "east cui", "west cui", "not assigned");
 
+$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($currentUser);
+$user_list = implode(",", $get_aa_ship_groups);
+
 if($searchByUser == 'mine') {
-   $searchQuery .= " and (a.customer_name ='".$currentUser."') ";    
+   if(!empty($user_list)) {
+        $searchQuery .= " and (a.customer_name ='".$currentUser."' OR um.user_id IN ($user_list)) ";  
+   }
+   else {
+       $searchQuery .= " and (a.customer_name ='".$currentUser."') ";  
+   }
 }
 
 if($searchByUser == 'search for user') {
@@ -176,6 +184,10 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = b.id
+
+LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
@@ -194,6 +206,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
+
 WHERE a.id <> -99999 AND a.active <> 0 " . $ecms_sems . "
 group by a.request_id) t");
 $records = mysqli_fetch_assoc($sel);
@@ -207,6 +220,10 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = b.id
+
+LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
@@ -225,6 +242,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
+
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving.") t");
 
@@ -330,6 +348,7 @@ INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files k ON k.box_id = b.id
 
 LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
@@ -350,6 +369,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
    WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
+
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 

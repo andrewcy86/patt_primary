@@ -70,10 +70,10 @@ while ($row = mysqli_fetch_assoc($declineRecords)) {
 	$status_color = get_term_meta($status_term_id, 'wppatt_return_status_color', true);
 	$status_style = "background-color:".$status_background.";color:".$status_color;
 
-	//$icons .= ' <span style="font-size: 1.0em;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Recall To Do</span></span>';
+	$icons .= ' <span style="font-size: 1.0em;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Recall To Do</span></span>';
 
     if(empty($row['tracking_number'])){
-     $icons .= ' <span style="font-size: 1.0em;"><i class="fas fa-truck" aria-hidden="true" title="Shipping Tracking Number Required"></i><span class="sr-only">Shipping Tracking Number Required</span></span>';
+     //$icons .= ' <span style="font-size: 1.0em;"><i class="fas fa-truck" aria-hidden="true" title="Shipping Tracking Number Required"></i><span class="sr-only">Shipping Tracking Number Required</span></span>';
     }
    	$data[] = array(
 		"return_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=declinedetails&id=D-".$row['return_id']."' >D-".$row['return_id']."</a>" . $icons,

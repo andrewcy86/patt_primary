@@ -117,7 +117,7 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_rfid" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
-                <th class="datatable_header" scope="col"></th>
+                <th class="datatable_header" id="selectall" scope="col"></th>
                 <th class="datatable_header" scope="col">Reader ID</th>
                 <th class="datatable_header" scope="col">Box ID</th>
                 <th class="datatable_header" scope="col">Request ID</th>
@@ -177,6 +177,9 @@ jQuery(document).ready(function(){
     'serverMethod': 'post',
     'scrollX' : true,
     'paging' : true,
+    'initComplete': function (settings, json) {
+		    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
+		},
     'searching': false, // Remove default Search Control
     'ajax': {
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/rfid_processing.php',

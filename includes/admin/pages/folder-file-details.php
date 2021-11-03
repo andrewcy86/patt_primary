@@ -73,9 +73,6 @@ $damaged_unauthorized_destruction_status_id_arr = array($new_request_tag->term_i
 $rescan_validate_status_id_arr = array($new_request_tag->term_id, $tabled_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
 $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag->term_id, $box_destruction_approved_tag->term_id, $box_destruction_of_source_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
 ?>
-
-
-
 <div class="bootstrap-iso">
 <?php
     //switch out SQL statement depending on if the request is archived
@@ -211,7 +208,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
 
     $box_details = $wpdb->get_row("SELECT c.name, a.id, a.box_previous_status, a.box_status, a.box_destroyed, b.request_id as request_id, a.box_id as box_id, a.ticket_id as ticket_id, b.ticket_priority as ticket_priority, 
 (SELECT name as ticket_priority FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_priority) as ticket_priority_name, b.ticket_status as ticket_status, 
-(SELECT name as ticket_status FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as ticket_status_name
+(SELECT name as ticket_status FROM " . $wpdb->prefix . "terms WHERE term_id = b.ticket_status) as ticket_status_name, b.customer_name
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.box_status
@@ -227,6 +224,7 @@ WHERE a.id = '" . $folderfile_boxid . "'");
 	$box_ticket_status = $box_details->ticket_status;
 	$box_ticket_status_name = $box_details->ticket_status_name;
 	$box_previous_status = $box_details->box_previous_status;
+	$box_customer_name = $box_details->customer_name;
 
 	// Display box status
 	$status_background = get_term_meta($box_status, 'wpsc_box_status_background_color', true);
@@ -249,9 +247,11 @@ WHERE a.id = '" . $folderfile_boxid . "'");
     
     //record schedule
     $box_rs = Patt_Custom_Func::get_record_schedule_by_id($folderfile_folderdocinfofile_id, $type);
+    $box_rs_name = Patt_Custom_Func::get_record_schedule_name_by_id($GLOBALS['id'],$type);
     
     //program office
    $box_po = Patt_Custom_Func::get_program_office_by_id($folderfile_folderdocinfofile_id, $type);
+   $box_po_name = Patt_Custom_Func::get_program_office_name_by_id($GLOBALS['id'],$type);
     
     //box location
     $location = $wpdb->get_row("SELECT c.name as location, b.aisle as aisle, b.bay as bay, b.shelf as shelf, b.position as position, d.locations
@@ -309,7 +309,11 @@ div.dataTables_wrapper {
 ?>
 
 <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
-
+<?php
+// Restrict access to only the original requester, associated RLO groups or users with elevated privileges
+$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($box_customer_name);
+if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_name == $box_customer_name || (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent')) ) {
+?>
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
 	<div class="col-sm-12">
@@ -541,14 +545,14 @@ echo $decline_icon.$recall_icon;
             
             
 			if(!empty($box_po)) {
-			    echo "<strong>Program Office:</strong> <p class='normal_p'>" . $box_po . "</p> <br />";
+			    echo "<strong>Program Office:</strong> <p class='normal_p'>" . $box_po . ' : ' . $box_po_name . "</p> <br />";
 			}
 			else {
 			    echo "<strong style='color:red'>Program Office: REASSIGN IMMEDIATELY</strong> <br />";
 			}
             
             if(!empty($box_rs)) {
-                echo "<strong>Record Schedule:</strong> <p class='normal_p'>" . $box_rs ."</p> <br />";
+                echo "<strong>Record Schedule:</strong> <p class='normal_p'>" . $box_rs . ' : ' . $box_rs_name ."</p> <br />";
             }
             else {
 			    echo "<strong style='color:red'>Record Schedule: REASSIGN IMMEDIATELY</strong> <br />";
@@ -978,7 +982,7 @@ $tbl = '
   <tr>';
  
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')) {
-$tbl .= '<th class="datatable_header"></th>';
+$tbl .= '<th class="datatable_header" id="selectall"></th>';
 }
 
 $tbl .='
@@ -1074,6 +1078,9 @@ echo $tbl;
 	var dataTable = jQuery('#tbl_templates_ecms').DataTable({
 	     "autoWidth": true,
 	     "paging" : true,
+	     "initComplete": function (settings, json) {
+		    jQuery('#selectall').prepend('<sub>Select All</sub><br>');
+		},
 	     "scrollX" : true,
 		 "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         'columnDefs': [	
@@ -1574,3 +1581,9 @@ echo '<span style="padding-left: 10px">Please pass a valid Folder/File ID</span>
   </div>
 </div>
 <!-- Pop-up snippet end -->
+
+<?php }
+else {
+    echo "<br/> You are not authorized to access this page.";
+}
+?>

@@ -52,9 +52,9 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unathorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unathorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" class="notab" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
-    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" class="notab" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Labels"></i><span class="sr-only">Reprint Labels</span> Reprint Labels</button>
         <?php
         }
@@ -64,8 +64,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-scan"></i><span class="sr-only">Re-scan</span> Re-scan <a href="#" aria-label="Re-scan button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" class="notab" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-scan"></i><span class="sr-only">Re-scan</span> Re-scan <a href="#" class="notab" aria-label="Re-scan button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php
         }
         ?>
@@ -227,7 +227,7 @@ div.dataTables_processing { z-index: 1; }
                 ?>                
                 
                 <!-- PATT BEGIN -->
-                <th class="datatable_header" scope="col" ></th>
+                <th class="datatable_header" id="selectall" scope="col" ></th>
                 <?php
                 }
                 ?>
@@ -289,6 +289,7 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
     //'scrollX' : true,
     "initComplete": function (settings, json) {
         jQuery("#tbl_templates_folderfile").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+        jQuery('#selectall').append('<span class="sr-only">Select All</span>');
     },
     'autowidth' : true,
     'drawCallback': function( settings ) {
@@ -763,7 +764,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_validation_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_rescan_btn').attr('disabled', 'disabled');
-	
+	jQuery('.notab').attr('tabindex', '-1');
 	function toggle_button_display() {
 	//	var form = this;
 		console.log({checks:dataTable.column(0)});
@@ -775,6 +776,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
         	jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_validation_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_rescan_btn').removeAttr('disabled');
+	        jQuery('.notab').removeAttr('tabindex');
 	  	} else {
 	    	jQuery('#wpsc_individual_destruction_btn').attr('disabled', 'disabled');
 	        jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
@@ -782,6 +784,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
         	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
         	jQuery('#wpsc_individual_validation_btn').attr('disabled', 'disabled');
         	jQuery('#wpsc_individual_rescan_btn').attr('disabled', 'disabled');
+	        jQuery('.notab').attr('tabindex', '-1');
 	  	}
 	}
 

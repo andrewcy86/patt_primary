@@ -614,7 +614,11 @@ jQuery(document).ready(function(){
 	});
 	
 
-	
+	// Added event listener to the upload_button_label section to prevent the default form submission
+	var upload_file_button = document.querySelector("#upload_button_label");
+	upload_file_button.addEventListener("keydown", function(event) {
+		jQuery('#fileInput').click();
+	});
 
 
   

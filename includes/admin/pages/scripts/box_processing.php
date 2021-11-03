@@ -136,7 +136,16 @@ if($searchByECMSSEMS != ''){
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
 	$user_name = $current_user->display_name;
-	$searchQuery .= " and (b.customer_name ='".$user_name."') ";
+	
+	$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
+    $user_list = implode(",", $get_aa_ship_groups);
+	
+	if(!empty($user_list)) {
+	    $searchQuery .= " and ( (b.customer_name ='".$user_name."') OR um.user_id IN ($user_list) ) ";
+	}
+	else {
+	    $searchQuery .= " and (b.customer_name ='".$user_name."') ";
+	}
 }
 
 
@@ -328,6 +337,10 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+
+LEFT JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = u.ID
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS f ON (f.box_id = a.id)
@@ -353,6 +366,10 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+
+LEFT JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = u.ID
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS f ON (f.box_id = a.id)
@@ -489,6 +506,8 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 
+LEFT JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = u.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest

@@ -151,40 +151,40 @@ if ( ! class_exists( 'Wppatt_New_Request_Litigation_Letter' ) ) {
 					<div id="approval_litigation_letter" class="tab_content visible">
 						<h5><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></h5>
 
-						<div class="dropzone" id="litigation-letter-dropzone">
+						<button type="button" class="dropzone" id="litigation-letter-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="litigation_letter_files" type="file" id="litigation_letter_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 					</div>
 
 					<div id="approval_congressional" class="tab_content hidden">
 						<h5><?php esc_html_e( 'Congressional', 'pattracking' ); ?></h5>
 
-						<div class="dropzone" id="congressional-dropzone">
+						<button type="button" class="dropzone" id="congressional-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="congressional_files" type="file" id="congressional_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 					</div>
 
 					<div id="approval_foia" class="tab_content hidden">
 						<h5><?php esc_html_e( 'FOIA', 'pattracking' ); ?></h5>
 
-						<div class="dropzone" id="foia-dropzone">
+						<button type="button" class="dropzone" id="foia-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="foia_files" type="file" id="foia_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 					</div>
 				</div>
 			</div>

@@ -915,10 +915,9 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		
 		die();
     }
-    
-    
-    
-    // Displays the user's Digitization Center on their Profile
+	
+
+  // Displays the user's Digitization Center on their Profile
     public function extra_user_profile_fields( $user ) { 
 		global $wpscfunction;
 		
@@ -976,7 +975,6 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		<?php 
 		}
 	} 
-	
 	// Saves the user's Digitization Center selection upon clicking 'Update Profile'
 	public function save_extra_user_profile_fields( $user_id ) {
 	    if ( !current_user_can( 'edit_user', $user_id ) ) { 

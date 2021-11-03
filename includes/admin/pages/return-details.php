@@ -344,7 +344,22 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
   <h3>Decline Details</h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
+<?php
+// Restrict access to only the users added to the decline, associated RLO groups or users with elevated privileges
+$decline_users_arr = array();
+$get_all_associated_users = $wpdb->get_results("SELECT b.user_id
+FROM " . $wpdb->prefix . "wpsc_epa_return a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
+WHERE a.return_id = '" . $GLOBALS['return_id'] . "'");
 
+foreach($get_all_associated_users as $item) {
+    $user_id = $item->user_id;
+    array_push($decline_users_arr, $user_id);
+}
+
+$aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
+if(in_array($current_user->ID, $decline_users_arr) || !empty(array_intersect($decline_users_arr, $aa_ship_groups)) || (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent')) ) {
+?>
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
 	<div class="col-sm-12">
@@ -1001,3 +1016,9 @@ To be added to a css file later
 	}
 	
 </style>
+
+<?php }
+else {
+    echo "<br/> You are not authorized to access this page.";
+}
+?>

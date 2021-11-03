@@ -133,7 +133,12 @@ jQuery(document).ready(function(){
           	
           	
             var uploader = document.querySelector('#dzBoxUpload');
-            var newDropzone = new Dropzone(uploader, dropzoneOptions);      
+            var newDropzone = new Dropzone(uploader, dropzoneOptions);
+            
+            // Added event listener to the dzBoxUpload section to prevent the default form submission
+			uploader.addEventListener("click", function(event){
+				event.preventDefault();
+			});
 	                  
 	        	} else {
 		        	//alert( "Didn't grab dropzone files. Error." );

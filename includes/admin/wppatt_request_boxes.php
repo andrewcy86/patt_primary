@@ -364,7 +364,7 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
   
   
 if ( !(in_array($status_id, $status_id_arr)) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $is_active == 1) {
-$tbl .=  '<th class="datatable_header" scope="col"></th>';
+$tbl .=  '<th class="datatable_header" id="selectall" scope="col"></th>';
 }     
                     // PATT BEGIN
          $tbl .=   '<th class="datatable_header" scope="col">Box ID</th>
@@ -606,7 +606,7 @@ if($rescan_count > 0) {
         ?>
         
     <!-- PATT BEGIN -->
-    <th class="datatable_header" scope="col"></th>
+    <th class="datatable_header" id="selectall_2" scope="col"></th>
     <?php } ?>
     <th class="datatable_header" scope="col">Box ID</th>
     <th class="datatable_header" scope="col">Folder/File ID</th>
@@ -666,7 +666,8 @@ if($rescan_count > 0 && $is_active == 1) {
 	     "autoWidth": true,
 	     //"scrollX" : true,
 	     "initComplete": function (settings, json) {  
-    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+    jQuery("#tbl_templates_rescan").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+    jQuery('#selectall_2').append('<span class="sr-only">Select All</span>');
   },
          "paging" : true,
          "bDestroy": true,
@@ -702,7 +703,8 @@ if($rescan_count > 0 && $is_active == 1) {
 	     "autoWidth": true,
 	     //"scrollX" : true,
 	     "initComplete": function (settings, json) {  
-    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+    jQuery("#tbl_templates_request_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");         
+    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
   },
          "paging" : true,
          "bDestroy": true,

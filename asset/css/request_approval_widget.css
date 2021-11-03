@@ -65,7 +65,7 @@
 }
 
 #wpsc_frm_create_ticket label span.red-text {
-	color: red;
+	color: #b4081a !important;
 }
 
 #wpsc_frm_create_ticket .create_ticket_fields_container ul.nav-tabs li a:focus {

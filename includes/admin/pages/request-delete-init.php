@@ -254,7 +254,7 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_templates_requests_delete" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
-                <th class="datatable_header" scope="col"></th>
+                <th class="datatable_header" id="selectall" scope="col"></th>
                 <th class="datatable_header" scope="col">Request ID</th>
                 <th class="datatable_header" scope="col">Priority</th>
                 <th class="datatable_header" scope="col">Status</th>
@@ -288,6 +288,9 @@ jQuery(document).ready(function(){
     'stateSave': true,
     'scrollX': true,
     'paging' : true,
+    "initComplete": function (settings, json) {     
+		    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
+		},
     'stateSaveParams': function(settings, data) {
       data.ss = jQuery('#searchByStatus').val();
       data.sp = jQuery('#searchByPriority').val();

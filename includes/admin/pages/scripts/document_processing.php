@@ -107,7 +107,16 @@ if($searchByECMSSEMS != ''){
 // If a user is a requester, only show the folder/files from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
 	$user_name = $current_user->display_name;
-	$searchQuery .= " and (b.customer_name ='".$user_name."') ";
+	
+	$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($user_name);
+    $user_list = implode(",", $get_aa_ship_groups);
+	
+	if(!empty($user_list)) {
+	    $searchQuery .= " and ( b.customer_name ='".$user_name."' OR um.user_id IN ($user_list) ) ";
+	}
+	else {
+	    $searchQuery .= " and (b.customer_name ='".$user_name."') ";
+	}
 }
 
 //IF Search Generic Contains Commas
@@ -176,6 +185,9 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
+LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
+
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY box_id) AS g ON (g.box_id = d.id AND g.folderdoc_id = '-99999')
@@ -210,6 +222,9 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+
+LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
@@ -299,6 +314,9 @@ INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+
+LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest

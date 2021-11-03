@@ -58,7 +58,7 @@ $_SESSION['current_page'] = $_SERVER['SCRIPT_NAME'];
             <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="background-color:#FF7A33 !important;color:black !important;">
             <i aria-hidden="true" class="fa fa-truck" title="Change Tracking Number"></i>
             <span class="sr-only">Change Tracking Number</span>
-            Change Shipping Tracking Number <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>">
+            Change Shipping Tracking Number <a href="#" class="notab" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>">
             <i aria-hidden="true" class="far fa-question-circle" title="Help" style="color: black !important"></i>
             <span class="sr-only">Help</span>
             </a></button>
@@ -164,7 +164,7 @@ color: rgb(255, 255, 255) !important;
                 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
                 {
                 ?>
-                <th class="datatable_header" scope="col" ></th>
+                <th class="datatable_header" id="selectall" scope="col" ></th>
                 <?php
                 }
                 ?>
@@ -204,6 +204,10 @@ jQuery('[data-toggle="tooltip"]').tooltip();
     'stateSave': true,
     'scrollX' : true,
     'paging' : true,
+    "initComplete": function (settings, json) {
+		    jQuery("#tbl_templates_shipping").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
+		},
     'stateSaveParams': function(settings, data) {
       data.sg = jQuery('#searchGeneric').val();
       data.tn = jQuery('#searchByTN').val();
@@ -432,6 +436,7 @@ jQuery("#searchByTN_tag").on('paste',function(e){
 	jQuery('#wpsc_individual_shipped_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_delivered_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');	
+	jQuery('.notab').attr('tabindex', '-1');
 	
 	function toggle_button_display() {
 	//	var form = this;
@@ -439,11 +444,13 @@ jQuery("#searchByTN_tag").on('paste',function(e){
 		if(rows_selected.count() > 0) {
 			jQuery('#wpsc_individual_shipped_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_delivered_btn').removeAttr('disabled');
-			jQuery('#wppatt_change_shipping_btn').removeAttr('disabled');		
+			jQuery('#wppatt_change_shipping_btn').removeAttr('disabled');	
+			jQuery('.notab').removeAttr('tabindex');
 	  	} else {
 	    	jQuery('#wpsc_individual_shipped_btn').attr('disabled', 'disabled');  
 	    	jQuery('#wpsc_individual_delivered_btn').attr('disabled', 'disabled');
     		jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');
+	        jQuery('.notab').attr('tabindex', '-1');
 	  	}
 	}
 	

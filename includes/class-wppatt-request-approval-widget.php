@@ -433,14 +433,14 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 						?>
 						<span class="destruction_auth_instruction"><div class='alert-warning alert'><?php echo '1 or more files needed for Destruction Authorization.'; ?></div></span>
 						<?php } ?>
-						<div class="dropzone" id="destr-autho-dropzone" tabindex="0">
+						<button type="button" class="dropzone" id="destr-autho-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="destruction_authorization_files" type="file" id="destruction_authorization_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 
 						<?php
 
@@ -466,14 +466,14 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_litigation_letter" class="tab_content hidden">
 						<h4><?php esc_html_e( 'Litigation Letter', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="litigation-letter-dropzone" tabindex="0">
+						<button type="button" class="dropzone" id="litigation-letter-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="litigation_letter_files" type="file" id="litigation_letter_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 
 						<?php
 						if ( is_array( $litig_letter_image ) && count( $litig_letter_image ) > 0 ) {
@@ -498,14 +498,14 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_congressional" class="tab_content hidden">
 						<h4><?php esc_html_e( 'Congressional', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="congressional-dropzone" tabindex="0">
+						<button type="button" class="dropzone" id="congressional-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="congressional_files" type="file" id="congressional_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 
 						<?php
 						if ( is_array( $congressional_file ) && count( $congressional_file ) > 0 ) {
@@ -530,14 +530,14 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 					<div id="approval_foia" class="tab_content hidden">
 						<h4><?php esc_html_e( 'FOIA', 'pattracking' ); ?></h4>
 
-						<div class="dropzone" id="foia-dropzone" tabindex="0">
+						<button type="button" class="dropzone" id="foia-dropzone" tabindex="0" style="width: 100%;">
 							<div class="fallback">
 								<input name="foia_files" type="file" id="foia_files" />
 							</div>
 							<div class="dz-default dz-message">
-								<button class="dz-button" type="button" tabindex="-1">Drop .pdf file here to upload.</button>
+								<span class="dz-button" tabindex="-1">Drop .pdf file here to upload.</span>
 							</div>
-						</div>
+						</button>
 
 						<?php
 						if ( is_array( $foia_file ) && count( $foia_file ) > 0 ) {
@@ -1178,9 +1178,17 @@ if ( ! class_exists( 'Wppatt_Request_Approval_Widget' ) ) {
 				unset( $ticket_field_metavalue[ $meta_key ] );
 				$wpscfunction->update_ticket_meta( $request_id, 'destruction_authorizations_image', array( 'meta_value' => json_encode( $ticket_field_metavalue ) ) );
 
-				$destruction_approval_status = ( count( $ticket_field_metavalue ) === intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ? 1 : 0 );
+				// $destruction_approval_status = ( count( $ticket_field_metavalue ) === intval( Patt_Custom_Func::get_accession_count( $request_id ) ) ? 1 : 0 );
 
-				$wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'destruction_approval' => $destruction_approval_status ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
+				// $wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'destruction_approval' => $destruction_approval_status ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
+				
+				// Checks if the Associated Documents list has atlease one file or more upon deletion
+				if ( count( $ticket_field_metavalue ) > 0 ) {
+					$wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'destruction_approval' => 1 ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
+				}
+				else {
+					$wpdb->update( "{$wpdb->prefix}wpsc_ticket", array( 'destruction_approval' => 0 ), array( 'id' => $request_id ), array( '%d' ), array( '%d' ) );
+				}
 
 				echo wp_json_encode(
 					array(

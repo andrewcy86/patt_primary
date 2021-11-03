@@ -24,6 +24,93 @@ if (!class_exists('Patt_Custom_Func')) {
         }
 
 
+public static function json_response($code = 200, $message = null)
+{
+    // clear the old headers
+    header_remove();
+    // set the actual code
+    http_response_code($code);
+    // set the header to make sure cache is forced
+    header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+    // treat this as json
+    header('Content-Type: application/json');
+    $status = array(
+        200 => '200 OK',
+        400 => '400 Bad Request',
+        422 => 'Unprocessable Entity',
+        500 => '500 Internal Server Error'
+        );
+    // ok, validation error, or failure
+    header('Status: '.$status[$code]);
+    // return the encoded json
+    return json_encode(array(
+        'status' => $code, // success or not?
+        'message' => $message
+        ));
+}
+
+/**
+* Convert display name to user ID
+* @return user ID
+*/
+
+public static function get_user_id_by_display_name( $display_name ) {
+    global $wpdb;
+
+    if ( ! $user = $wpdb->get_row( $wpdb->prepare(
+        "SELECT `ID` FROM $wpdb->users WHERE `display_name` = %s", $display_name
+    ) ) )
+        return false;
+
+    return $user->ID;
+}
+
+/**
+* Get AA'ship requestor group based on current logged in user
+* @return array of user id's in the group, return false if user does not belong to a group
+*/
+		public static function get_requestor_group( $user_id ) {
+	        global $wpdb;
+	        
+$final_user_arr = array();
+
+if (!is_int($user_id)) {
+$user_id = Patt_Custom_Func::get_user_id_by_display_name($user_id);
+}
+
+$get_requestor_group = $wpdb->get_row("
+SELECT count(umeta_id) as count, meta_value
+FROM " . $wpdb->prefix . "usermeta
+WHERE
+user_id = '" . $user_id . "' AND
+meta_key = 'user_requestor_group'
+");
+
+$requestor_group_count = $get_requestor_group->count;
+
+if ($requestor_group_count == 0) {
+
+$error = array();
+
+return $error;
+
+} else {
+$get_user_arr = $wpdb->get_results("
+SELECT user_id FROM " . $wpdb->prefix . "usermeta 
+WHERE 
+meta_value = '" . $get_requestor_group->meta_value . "' 
+AND meta_key = 'user_requestor_group'
+");
+
+foreach($get_user_arr as $user_id) {
+array_push($final_user_arr, $user_id->user_id);
+}
+
+return $final_user_arr;
+
+}
+		}
+		
 /**
  * Update Counts: Update Remaining and Occupied Counts for East and West
  * @return true
@@ -2775,6 +2862,44 @@ public static function id_in_recall( $identifier, $type ) {
             }
         }
         
+            //Function to get record schedule name from folderdocinfofile_id or box_id
+            public static function get_record_schedule_name_by_id($id, $type) {
+            global $wpdb;
+            
+            if($type == 'box' || $type == 'box_archive') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Title
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                WHERE b.box_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Schedule_Title;
+                
+                return $record_schedule;
+            }
+            else if($type == 'folderfile') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Title
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Schedule_Title;
+                
+                return $record_schedule;
+            }
+            else if($type == 'folderfile_archive') {
+                $get_record_schedule = $wpdb->get_row("SELECT DISTINCT a.Schedule_Title
+                FROM " . $wpdb->prefix . "epa_record_schedule a
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.record_schedule_id = a.id
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $record_schedule = $get_record_schedule->Schedule_Title;
+                
+                return $record_schedule;
+            }
+            else {
+                return false;
+            }
+        }
+        
         //Function to get pallet_id from folderdocinfofile_id or box_id
         public static function get_pallet_id_by_id($id, $type) {
             global $wpdb;
@@ -2815,7 +2940,7 @@ public static function id_in_recall( $identifier, $type ) {
             global $wpdb;
             
             if($type == 'box' || $type == 'box_archive') {
-                $get_program_office = $wpdb->get_row("SELECT a.office_acronym
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_acronym
                 FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
                 WHERE b.box_id = '" . $id . "'");
@@ -2840,6 +2965,44 @@ public static function id_in_recall( $identifier, $type ) {
                 INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
                 WHERE c.folderdocinfofile_id = '" . $id . "'");
                 $program_office = $get_program_office->office_acronym;
+                
+                return $program_office;
+            }
+            else {
+                return false;
+            }
+        }
+        
+        //Function to get program office name from folderdocinfofile_id or box_id
+        public static function get_program_office_name_by_id($id, $type) {
+            global $wpdb;
+            
+            if($type == 'box' || $type == 'box_archive') {
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_name
+                FROM ".$wpdb->prefix."wpsc_epa_program_office a
+                INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                WHERE b.box_id = '" . $id . "'");
+                $program_office = $get_program_office->office_name;
+                
+                return $program_office;
+            }
+            else if($type == 'folderfile') {
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_name
+                FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $program_office = $get_program_office->office_name;
+                
+                return $program_office;
+            }
+            else if($type == 'folderfile_archive') {
+                $get_program_office = $wpdb->get_row("SELECT DISTINCT a.office_name
+                FROM " . $wpdb->prefix . "wpsc_epa_program_office a 
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.program_office_id = a.office_code
+                INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+                WHERE c.folderdocinfofile_id = '" . $id . "'");
+                $program_office = $get_program_office->office_name;
                 
                 return $program_office;
             }

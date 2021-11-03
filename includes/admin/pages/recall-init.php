@@ -53,7 +53,7 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 {
 ?>      
 <!-- PATT Begin -->
-      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck" aria-hidden="true" title="Change Shipping Tracking Number"></i> Change Shipping Tracking Number <a href="#" aria-label="Change shipping tracking number" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Question"></i><span class="sr-only">Question</span></a></button>
+      <button type="button" id="wppatt_change_shipping_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-truck" aria-hidden="true" title="Change Shipping Tracking Number"></i> Change Shipping Tracking Number <a href="#" class="notab" aria-label="Change shipping tracking number" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-change-shipping'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Question"></i><span class="sr-only">Question</span></a></button>
 
 <?php
 }
@@ -232,7 +232,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') )
 {
 ?>
-                <th class="datatable_header" scope="col" ></th>
+                <th class="datatable_header" scope="col" id="selectall"></th>
 <?php
 }
 ?>
@@ -295,6 +295,7 @@ jQuery('[data-toggle="tooltip"]').tooltip();
 		//'scrollX' : true,
 		"initComplete": function (settings, json) {     
 		    jQuery("#tbl_templates_recall").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
 		},
 		'paging' : true,
 			'stateSaveParams': function(settings, data) {
@@ -461,6 +462,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');
 	jQuery('#wppatt_return_btn').attr('disabled', 'disabled');
+	jQuery('.notab').attr('tabindex', '-1');
 	
 	function toggle_button_display() {
 	//	var form = this;
@@ -469,12 +471,14 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	    	//console.log('boxes checked '+rows_selected.count());
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
 			jQuery('#wppatt_change_shipping_btn').removeAttr('disabled');
-			jQuery('#wppatt_return_btn').removeAttr('disabled');		
+			jQuery('#wppatt_return_btn').removeAttr('disabled');
+	        jQuery('.notab').removeAttr('tabindex');
 	  	} else {
 	    	//console.log('no checks boxed '+rows_selected.count());
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
 	    	jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');    	
-	    	jQuery('#wppatt_return_btn').attr('disabled', 'disabled');    	    	
+	    	jQuery('#wppatt_return_btn').attr('disabled', 'disabled'); 
+	    	jQuery('.notab').attr('tabindex', '-1');
 	  	}
 	}
 

@@ -21,13 +21,14 @@ $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_
 
 $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
 
-$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id, ".$wpdb->prefix."wpsc_epa_boxinfo.box_id, ".$wpdb->prefix."wpsc_ticket.ticket_status, ".$wpdb->prefix."wpsc_epa_boxinfo.box_status
+$request_id = $wpdb->get_row("SELECT ".$wpdb->prefix."wpsc_ticket.request_id, ".$wpdb->prefix."wpsc_epa_boxinfo.box_id, ".$wpdb->prefix."wpsc_ticket.ticket_status, ".$wpdb->prefix."wpsc_epa_boxinfo.box_status, ".$wpdb->prefix."wpsc_ticket.customer_name
 FROM ".$wpdb->prefix."wpsc_epa_boxinfo, ".$wpdb->prefix."wpsc_ticket 
 WHERE ".$wpdb->prefix."wpsc_ticket.id = ".$wpdb->prefix."wpsc_epa_boxinfo.ticket_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
 $location_request_id = $request_id->request_id;
 $box_id_error_check = $request_id->box_id;
 $request_status_id = $request_id->ticket_status;
 $request_box_status_id = $request_id->box_status;
+$request_customer_name = $request_id->customer_name;
 
 $is_active = Patt_Custom_Func::request_status( $location_request_id );
 
@@ -59,6 +60,10 @@ $unauthorized_destruction_arr = array($new_request_tag->term_id, $initial_review
 $request_freeze_arr = array($initial_review_rejected_tag->term_id, $completed_dispositioned_tag->term_id);
 $box_freeze_arr = array($box_pending_tag->term_id, $box_completed_dispositioned_tag->term_id, $box_cancelled_tag->term_id);
 $labels_arr = array($new_request_tag->term_id, $initial_review_rejected_tag->term_id, $cancelled_tag->term_id, $completed_dispositioned_tag->term_id);
+
+// Restrict access to only the original requester, associated RLO groups or users with elevated privileges
+$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($request_customer_name);
+if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_name == $request_customer_name || (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent')) ) {
 ?>
 
 
@@ -263,7 +268,7 @@ div.dataTables_wrapper {
                         if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                     {
                     ?>
-                    <th class="datatable_header" scope="col" ></th>
+                    <th class="datatable_header" id="selectall" scope="col" ></th>
                     <?php
                     }
                     ?>
@@ -331,6 +336,7 @@ jQuery(document).ready(function(){
     //'scrollX' : true,
     "initComplete": function (settings, json) {
         jQuery("#tbl_templates_box_details").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+        jQuery('#selectall').append('<span class="sr-only">Select All</span>');
     },
     'paging' : true,
     'drawCallback': function( settings ) {
@@ -815,7 +821,9 @@ jQuery('#freeze_alert').hide();
  
  <?php
     $location_program_office = Patt_Custom_Func::get_program_office_by_id($GLOBALS['id'],$type);
-    $location_record_schedule = Patt_Custom_Func::get_record_schedule_by_id($GLOBALS['id'],$type); 
+    $location_record_schedule = Patt_Custom_Func::get_record_schedule_by_id($GLOBALS['id'],$type);
+    $program_office_name = Patt_Custom_Func::get_program_office_name_by_id($GLOBALS['id'],$type);
+    $record_schedule_name = Patt_Custom_Func::get_record_schedule_name_by_id($GLOBALS['id'],$type);
     
     $box_location = $wpdb->get_row("SELECT ".$wpdb->prefix."terms.name as digitization_center, aisle, bay, shelf, position FROM ".$wpdb->prefix."terms, ".$wpdb->prefix."wpsc_epa_storage_location, ".$wpdb->prefix."wpsc_epa_boxinfo WHERE ".$wpdb->prefix."terms.term_id = ".$wpdb->prefix."wpsc_epa_storage_location.digitization_center AND ".$wpdb->prefix."wpsc_epa_storage_location.id = ".$wpdb->prefix."wpsc_epa_boxinfo.storage_location_id AND ".$wpdb->prefix."wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_digitization_center = $box_location->digitization_center;
@@ -957,7 +965,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
                     $new_program_office = $preg_replace_program_office;
                 }
                 */
-                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong><br />' . $location_program_office . '</div>';
+                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong><br />' . $location_program_office . ' : ' . $program_office_name . '</div>';
             }
             else {
                 echo '<div class="wpsp_sidebar_labels"><strong style="color:red">Program Office:<br /> REASSIGN IMMEDIATELY</strong> </div>';
@@ -975,7 +983,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
             }
             
             if(!empty($location_record_schedule)) {
-                echo '<div class="wpsp_sidebar_labels"><strong >Record Schedule: </strong><br />' . $location_record_schedule . '</div>';
+                echo '<div class="wpsp_sidebar_labels"><strong >Record Schedule: </strong><br />' . $location_record_schedule . ' : ' . $record_schedule_name . '</div>';
             }
             else {
                 echo '<div class="wpsp_sidebar_labels"><strong style="color:red">Record Schedule:<br /> REASSIGN IMMEDIATELY</strong> </div>';
@@ -1157,3 +1165,9 @@ function view_assigned_agents( box_id ) {
 	}); 
 }
 </script>
+
+<?php } 
+else {
+    echo "<br/> You are not authorized to access this page.";
+}
+?>

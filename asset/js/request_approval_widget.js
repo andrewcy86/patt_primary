@@ -383,6 +383,13 @@ function wpsc_set_approval_widget(){
         jQuery("#sending_notification").hide();
         jQuery("#save-button").html( 'Done' );
         
+        // Clicking the save button after the text has been changed to done
+        // will prevent duplicate files from being uploaded
+        jQuery("#save-button").click(function(event) { 
+            event.preventDefault(); 
+            wpsc_modal_close();
+        });
+        
         // Display submit output here
         if(response.redirct_url==''){
     			jQuery('#add_box_list').html(response.thank_you_page);		
@@ -406,6 +413,12 @@ function wpsc_set_approval_widget(){
             location.reload();
         }); }, 3000);
 
+    });
+    
+    // Added event listener to the dzBoxUpload section to prevent the default form submission
+    var box_upload_element = document.querySelector("#dzBoxUpload");
+    box_upload_element.addEventListener("click", function(event){
+        event.preventDefault();
     });
 }
 

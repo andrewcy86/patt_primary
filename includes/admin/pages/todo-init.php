@@ -179,7 +179,7 @@ if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label']
 if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-		<button type="button" id="wppatt_change_status_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-heartbeat" aria-hidden="true" title="Assign Box Status"></i><span class="sr-only">Assign Box Status</span> Assign Box Status <a href="#" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" id="wppatt_change_status_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-heartbeat" aria-hidden="true" title="Assign Box Status"></i><span class="sr-only">Assign Box Status</span> Assign Box Status <a href="#" class="notab" aria-label="Assign Box Status" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-assign-box-status'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
 <?php } ?>
 		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Box Labels"></i><span class="sr-only">Reprint Box Labels</span> Reprint Box Labels</button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Pallet Labels"></i><span class="sr-only">Reprint Pallet Labels</span> Reprint Pallet Labels</button>-->
@@ -288,7 +288,7 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 {
 ?>
-                <th class="datatable_header" scope="col" ></th>
+                <th class="datatable_header" id="selectall" scope="col" ></th>
 <?php
 }
 ?>
@@ -588,6 +588,7 @@ if($rescan_count > 0) {
 		
 		"initComplete": function (settings, json) {
 		    jQuery("#tbl_templates_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		    jQuery('#selectall').append('<span class="sr-only">Select All</span>');
 		},
 		'paging' : true,
 		'stateSaveParams': function(settings, data) {
@@ -846,6 +847,7 @@ if($rescan_count > 0) {
 	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_pallet_label_btn').attr('disabled', 'disabled');
+	jQuery('.notab').attr('tabindex', '-1');
 	
 	function toggle_button_display() {
 	//	var form = this;
@@ -859,6 +861,7 @@ if($rescan_count > 0) {
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_pallet_label_btn').removeAttr('disabled');
+			jQuery('.notab').removeAttr('tabindex');
 	  	} else {
 	  	    jQuery('#wpsc_box_destruction_btn').attr('disabled', 'disabled'); 
 	  		jQuery('#wpsc_box_completion_btn').attr('disabled', 'disabled');
@@ -866,6 +869,7 @@ if($rescan_count > 0) {
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');    
 	    	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
 	    	jQuery('#wpsc_individual_pallet_label_btn').attr('disabled', 'disabled');
+	        jQuery('.notab').attr('tabindex', '-1');
 	  	}
 	}
 	

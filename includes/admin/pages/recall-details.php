@@ -50,7 +50,6 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 $action_admin_btn_css = 'background-color:#5cbdea !important;color:#FFFFFF !important;';
 $cancel_recall_btn_css = $action_default_btn_css;
-
 ?>
 
 
@@ -283,8 +282,24 @@ $cancel_recall_btn_css = $action_default_btn_css;
   <h3>Recall Details</h3>
 
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
+<?php
+// Restrict access to only the users added to the recall, associated RLO groups or users with elevated privileges
+$recall_users_arr = array();
+$get_all_associated_users = $wpdb->get_results("SELECT b.user_id
+FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+WHERE a.recall_id = '" . $GLOBALS['recall_id'] . "'");
 
+foreach($get_all_associated_users as $item) {
+    $user_id = $item->user_id;
+    array_push($recall_users_arr, $user_id);
+}
+
+$aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
+if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($recall_users_arr, $aa_ship_groups)) || (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent')) ) {
+?>
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
+    
   <!-- PATT Begin -->
 	<div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recall';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i aria-hidden="true" class="fa fa-list-ul" title="Recall List"></i><span class="sr-only">Recall List</span> Recall List</button>
@@ -1539,3 +1554,9 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 	}
 	
 </style>
+
+<?php }
+else {
+  echo "<br/> You are not authorized to access this page.";  
+}
+?>

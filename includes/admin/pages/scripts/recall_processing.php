@@ -82,8 +82,18 @@ if ( $searchByProgramOffice != '' ) {
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ) {
 	$user_name = $current_user->display_name;
-	$searchQuery .= " and (innerTable.customer_name ='".$user_name."') ";
+	$user_id = $current_user->ID;
+    $get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($user_id);
+    $user_list = implode(",", $get_aa_ship_groups);
+    if(!empty($user_list)) {
+
+	$searchQuery .= " and (innerTable.customer_name ='".$user_name."' OR innerTable.user_id IN ($user_list)) ";
+	
+    } else {
+	$searchQuery .= " and (innerTable.customer_name ='".$user_name."') ";        
+    }
 }
+
 
 ## Search 
 
@@ -261,7 +271,8 @@ LEFT JOIN " . $wpdb->prefix . "terms T1 ON
 LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id
 LEFT JOIN " . $wpdb->prefix . "terms T2 ON
     T2.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id    
+LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id 
+
 WHERE
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
 

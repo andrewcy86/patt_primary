@@ -404,13 +404,16 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           function epa_admin_menu_items() {
             //add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
-            
+
+
             add_submenu_page( '', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo-init', 'todo_init_page' );
             add_submenu_page( 'wpsc-tickets', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo', 'todo_page' );
 
             add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
+            
+            add_submenu_page( 'wpsc-tickets', 'Requester Groups', 'Requester Groups', 'wpsc_agent', 'groups', 'requester_groups_page' );         
             
             }
             
@@ -516,6 +519,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function todo_init_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/todo-init.php'
+            );
+            }
+            
+            function requester_groups_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/requester_groups.php'
             );
             }
             

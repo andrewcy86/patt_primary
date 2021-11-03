@@ -101,10 +101,21 @@ if ( $searchByProgramOffice != '' ) {
 if( $is_requester == 'true' ) {
 	
 	// 	$user_name = $current_user->display_name;
+	$user_id = $current_user->ID;
 	$user_email = $current_user->user_email;
 	// $searchQuery .= " and (innerTable.customer_name ='".$user_name."') ";
 //	$searchQuery .= " and (innerTable.customer_email ='".$user_email."') ";		
-	$searchQuery .= " and (innerTable.customer_email like '%".$user_email."%') ";			
+	
+	
+
+    $get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($user_id);
+    $user_list = implode(",", $get_aa_ship_groups);
+    if(!empty($user_list)) {
+	$searchQuery .= " and (innerTable.customer_email like '%".$user_email."%' OR innerTable.user_id IN ($user_list)) ";
+    } else {
+	$searchQuery .= " and (innerTable.customer_email like '%".$user_email."%') ";       
+    }
+    
 }
 
 ## Search 

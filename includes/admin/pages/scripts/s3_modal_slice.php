@@ -174,11 +174,11 @@ canvas {
 		    </span>
 -->
 		    
-		    <label for="fileInput" class="button fileinput-button" tabindex="0">
-          <i class="fas fa-plus"></i>
-	        <span>Select File...</span>
-        </label>
-        <input id="fileInput" type="file" name="file" accept="*" style="display:none" tabindex="-1" /> 
+		    <label id="upload_button_label" for="fileInput" class="button fileinput-button" tabindex="0">
+                <i class="fas fa-plus"></i>
+                <span role="button" aria-controls="filename">Select File...</span>
+            </label>
+            <input id="fileInput" type="file" name="file" accept="*" style="display:none" tabindex="-1" /> 
 		    			    
 			 	<span class="button cancel-button" style='display:none;'>
 			        <i class="fas fa-minus"></i>
