@@ -82,15 +82,25 @@ if (!empty($api_key)) {
         
         if ($set_event_id == 1) {
             //Cross check office_code with wpqa_wpsc_epa_program_office to make sure it is valid
-            $query_office_code = "SELECT COUNT(id) AS COUNT, parent_office_code
- FROM " . $wpdb->prefix . "wpsc_epa_program_office 
+            $query_organization = "SELECT organization
+ FROM wpqa_wpsc_epa_program_office 
  WHERE office_code = '" . $office_code . "' LIMIT 1";
+        
+        $result_organization = mysqli_query($conn, $query_organization);
+        
+        while ($organization_result = mysqli_fetch_array($result_organization)) {
+            $organization_code = $organization_result["organization"];
+        }
+            
+            $query_office_code = "SELECT COUNT(id) AS COUNT, office_code
+ FROM wpqa_wpsc_epa_program_office 
+ WHERE organization = '" . $organization_code . "' AND parent_office_code = '0' LIMIT 1";
             
             $result_office_code = mysqli_query($conn, $query_office_code);
             
             while ($office_code_result = mysqli_fetch_array($result_office_code)) {
                 $set_office_code = $office_code_result["COUNT"];
-                $parent_office_code = $office_code_result["parent_office_code"];
+                $parent_office_code = $office_code_result["office_code"];
             }
             
             if ($set_office_code > 0) {
@@ -130,7 +140,7 @@ VALUES ('" . $lan_id . "','" . $employee_id . "', '" . $parent_office_code . "',
                     //echo $check_office_code;
                     if ($check_office_code == 0) {
                         //Update office Code
-                        $update_receiver_po = "UPDATE arms_game_receivers SET office_code = '" . $parent_office_code . "', updated_date = '" . $dt . "' WHERE employee_id = " . $employee_id;
+                        $update_receiver_po = "UPDATE arms_game_receivers SET office_code = '" . $parent_office_code . "', updated_date = '" . $dt . "' WHERE employee_id = '" . $employee_id ."'";
                         
                         if ($conn->query($update_receiver_po) === true) {
                             //echo 'Updated receiver program office successfully <br/>';
@@ -210,7 +220,7 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "', '" . 
                 $new_points_value = $get_event_value + $get_r_points_value;
                 //echo $new_points_value;
                 
-                $update_receiver_points = "UPDATE arms_game_receivers SET points = '" . $new_points_value . "', updated_date = '" . $dt . "' WHERE employee_id = " . $employee_id;
+                $update_receiver_points = "UPDATE arms_game_receivers SET points = '" . $new_points_value . "', updated_date = '" . $dt . "' WHERE employee_id = '" . $employee_id."'";
                 
                 if ($conn->query($update_receiver_points) === true) {
                     //echo 'Updated receiver points successfully <br/>';
@@ -246,7 +256,7 @@ WHERE '" . $new_points_value . "' >= value";
                 //Level up update
                 
                 if ($get_level_id_value != 0) {
-                    $update_receiver_level = "UPDATE arms_game_receivers SET level_id = '" . $get_level_id_value . "', updated_date = '" . $dt . "' WHERE employee_id = " . $employee_id;
+                    $update_receiver_level = "UPDATE arms_game_receivers SET level_id = '" . $get_level_id_value . "', updated_date = '" . $dt . "' WHERE employee_id = '" . $employee_id ."'";
                     
                     if ($conn->query($update_receiver_level) === true) {
                         //echo 'Updated receiver level successfully <br/>';
