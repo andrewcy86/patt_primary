@@ -7,11 +7,13 @@ $conn = OpenCon();
 //Check API Key to make sure it is valid
 $api_key     = htmlspecialchars($_GET['api_key']);
 $employee_id = htmlspecialchars($_GET['employee_id']);
+$lan_id = htmlspecialchars($_GET['lan_id']);
 $type = htmlspecialchars($_GET['type']);
 $set_api = '';
 $set_employee_id = '';
+$set_lan_id = '';
 
-if (!empty($api_key) && !empty($employee_id) && !empty($type)) {
+if (!empty($api_key) && !empty($type) && (!empty($employee_id) || !empty($lan_id))) {
 
     //Check API Key to make sure it is valid
     $query_api_key = "SELECT COUNT(id) AS COUNT
@@ -34,8 +36,25 @@ if (!empty($api_key) && !empty($employee_id) && !empty($type)) {
         $set_employee_id = $employee_id_result["COUNT"];
     }
     
-    if ($set_api == 1 && $set_employee_id == 1) {
-        
+    $query_lan_id = "SELECT COUNT(id) AS COUNT
+ FROM arms_game_receivers
+ WHERE lan_id = '" . $lan_id . "' LIMIT 1";
+    
+    $result_lan_id = mysqli_query($conn, $query_lan_id);
+    
+    while ($lan_id_result = mysqli_fetch_array($result_lan_id)) {
+        $set_lan_id = $lan_id_result["COUNT"];
+    }
+    
+    if ($set_api == 1 && ($set_employee_id == 1 || $set_lan_id == 1) ) {
+
+if(!empty($employee_id) && !empty($lan_id)) {
+    $where = "WHERE ( a.employee_id = '".$employee_id."' AND a.lan_id = '".$lan_id."' )";
+}
+else {
+    $where = "WHERE ( a.employee_id = '".$employee_id."' AND a.lan_id = '".$lan_id."' )";
+}
+
 switch ($type) {
   case "profile":
     $query_receiver_info = "
@@ -49,7 +68,7 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
-where a.employee_id = '".$employee_id."'
+where ( a.employee_id = '".$employee_id."' OR a.lan_id = '".$lan_id."' )
 ";
     
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
@@ -72,7 +91,7 @@ SELECT a.id, b.lan_id, b.employee_id, b.office_code, b.points, c.name as badge_t
 arms_game_achievements a
 LEFT JOIN arms_game_receivers b on a.receiver_id = b.id
 LEFT JOIN arms_game_rewards c on a.rewards_id = c.id
-where b.employee_id = '".$employee_id."'
+where ( b.employee_id = '".$employee_id."' OR b.lan_id = '".$lan_id."' )
 ";
     
     $result_badges = mysqli_query($conn, $query_badges);
@@ -99,8 +118,15 @@ else {
         if($set_api == 0) {
             print_r( Patt_Custom_Func::json_response(422, 'api_key of ' . $api_key . ' not found'));
         }
-        if($set_employee_id == 0) {
+        // employee_id OR lan_id acceptable
+        if( ($set_employee_id == 0 && empty($lan_id)) ) {
             print_r( Patt_Custom_Func::json_response(422, 'employee_id of ' . $employee_id . ' not found'));
+        }
+        if( ($set_lan_id == 0 && empty($employee_id)) ) {
+            print_r( Patt_Custom_Func::json_response(422, 'lan_id of ' . $lan_id . ' not found'));
+        }
+        if($set_employee_id == 0 && $set_lan_id == 0 && !empty($employee_id) && !empty($set_lan_id)) {
+            print_r( Patt_Custom_Func::json_response(422, 'employee_id of ' . $employee_id . ' not found and lan_id of ' . $lan_id . ' not found'));
         }
     }
     
@@ -109,8 +135,8 @@ else {
     if(empty($api_key)) {
         print_r( Patt_Custom_Func::json_response(400, 'Missing api_key field'));
     }
-    if(empty($employee_id)){
-        print_r( Patt_Custom_Func::json_response(400, 'Missing employee_id field'));
+    if(empty($employee_id) && empty($lan_id)){
+        print_r( Patt_Custom_Func::json_response(400, 'Missing employee_id and lan_id field, must include one or the other in request'));
     }
     if(empty($type)) {
         print_r( Patt_Custom_Func::json_response(400, 'Missing type field'));
