@@ -188,7 +188,7 @@ VALUES ('" . $lan_id . "','" . $employee_id . "', '" . $parent_office_code . "',
                 if ($get_event_activity_count == 0) {
                     //Insert into activities table
                     $insert_activity = "INSERT INTO arms_game_activities (receiver_id,event_id,app_id,counter,value,created_date,updated_date)
-VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "','','', '" . $dt . "', '" . $dt . "')";
+VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '" . $dt . "', '" . $dt . "')";
                     
                     if ($conn->query($insert_activity) === true) {
                         //echo 'New activity created successfully <br/>';
