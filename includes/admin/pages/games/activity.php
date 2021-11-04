@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+global $wpdb;
+
 include 'db_connection.php';
 $conn = OpenCon();
 
@@ -83,7 +85,7 @@ if (!empty($api_key)) {
         if ($set_event_id == 1) {
             //Cross check office_code with wpqa_wpsc_epa_program_office to make sure it is valid
             $query_organization = "SELECT organization
- FROM wpqa_wpsc_epa_program_office 
+ FROM " . $wpdb->prefix . "wpsc_epa_program_office 
  WHERE office_code = '" . $office_code . "' LIMIT 1";
         
         $result_organization = mysqli_query($conn, $query_organization);
@@ -93,7 +95,7 @@ if (!empty($api_key)) {
         }
             
             $query_office_code = "SELECT COUNT(id) AS COUNT, office_code
- FROM wpqa_wpsc_epa_program_office 
+ FROM " . $wpdb->prefix . "wpsc_epa_program_office 
  WHERE organization = '" . $organization_code . "' AND parent_office_code = '0' LIMIT 1";
             
             $result_office_code = mysqli_query($conn, $query_office_code);
