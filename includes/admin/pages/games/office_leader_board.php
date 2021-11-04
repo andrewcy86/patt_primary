@@ -11,6 +11,7 @@ $api_key     = htmlspecialchars($_GET['api_key']);
 $office_code = htmlspecialchars($_GET['office_code']);
 $set_api = '';
 $set_office_code = 0;
+$parent_office_code = '';
 $empty_office_code = 0;
 
 if (!empty($api_key) && !empty($office_code)) {
@@ -26,10 +27,30 @@ if (!empty($api_key) && !empty($office_code)) {
         $set_api = $api_result["COUNT"];
     }
     
+    // Get AA Ship from office_code
+    $query_organization = "SELECT organization
+    FROM " . $wpdb->prefix . "wpsc_epa_program_office 
+    WHERE office_code = '" . $office_code . "' LIMIT 1";
+    $result_organization = mysqli_query($conn, $query_organization);
+    
+    while ($organization_result = mysqli_fetch_array($result_organization)) {
+        $organization_code = $organization_result["organization"];
+    }
+    
+    $query_parent_office_code = "SELECT office_code
+    FROM " . $wpdb->prefix . "wpsc_epa_program_office 
+    WHERE organization = '" . $organization_code . "' AND parent_office_code = '0' LIMIT 1";
+    $result_parent_office_code = mysqli_query($conn, $query_parent_office_code);
+    
+    while ($parent_office_code_result = mysqli_fetch_array($result_parent_office_code)) {
+        $parent_office_code = $parent_office_code_result["office_code"];
+    }
+    
     //Cross check office_code with receivers table to make sure it is valid
     $query_office_code = "SELECT COUNT(id) AS COUNT
     FROM arms_game_receivers
-    WHERE office_code = '" . $office_code . "' LIMIT 1";
+    WHERE office_code = '" . $parent_office_code . "' 
+    LIMIT 1";
                 
     $result_office_code = mysqli_query($conn, $query_office_code);
     
@@ -54,7 +75,7 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
-where a.office_code = '".$office_code."'
+where a.office_code = '".$parent_office_code."'
 ";
     
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
