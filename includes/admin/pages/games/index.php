@@ -27,6 +27,7 @@
 <p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/receiver.php</strong></p>
 <p><strong>Required Parameters:<br /></strong></p>
 <p><strong>employee_id: </strong>(S) EPA Employee ID</p>
+<p><strong>*lan_id: </strong>(S) EPA LAN ID *Optional</p>
 <p><strong>type</strong>: (S) Available options: profile, badges. Gets information on the user including their points, level, office rank and overall rank. Get badges that have been awarded to the user.</p>
 <p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
 <h3>Get Data [POST]</h3>

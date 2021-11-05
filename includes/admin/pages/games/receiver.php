@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+global $wpdb;
+
 include 'db_connection.php';
 $conn = OpenCon();
 
@@ -12,8 +14,9 @@ $type = htmlspecialchars($_GET['type']);
 $set_api = '';
 $set_employee_id = '';
 $set_lan_id = '';
+$both_identifiers = '';
 
-if (!empty($api_key) && !empty($type) && (!empty($employee_id) || !empty($lan_id))) {
+if ( !empty($api_key) && !empty($type) && (!empty($employee_id) || !empty($lan_id)) ) {
 
     //Check API Key to make sure it is valid
     $query_api_key = "SELECT COUNT(id) AS COUNT
@@ -46,14 +49,20 @@ if (!empty($api_key) && !empty($type) && (!empty($employee_id) || !empty($lan_id
         $set_lan_id = $lan_id_result["COUNT"];
     }
     
-    if ($set_api == 1 && ($set_employee_id == 1 || $set_lan_id == 1) ) {
+    if ($set_api == 1 && ($set_employee_id > 0 || $set_lan_id > 0) ) {
 
-if(!empty($employee_id) && !empty($lan_id)) {
-    $where = "WHERE ( a.employee_id = '".$employee_id."' AND a.lan_id = '".$lan_id."' )";
+// Check if both employee_id and lan_id are provided
+if( !empty($employee_id) && !empty($lan_id) && $set_employee_id > 0 && $set_lan_id > 0) {
+    $both_identifiers = " AND ";
 }
 else {
-    $where = "WHERE ( a.employee_id = '".$employee_id."' AND a.lan_id = '".$lan_id."' )";
+    $both_identifiers = " OR ";
 }
+
+//echo "employee_id : " . $employee_id . "<br/>";
+//echo "lan_id : " . $lan_id . "<br/>";
+//echo "employee found " .  $set_employee_id . "<br/>";
+//echo "lanid found " .  $set_lan_id . "<br/>";
 
 switch ($type) {
   case "profile":
@@ -68,8 +77,9 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
-where ( a.employee_id = '".$employee_id."' OR a.lan_id = '".$lan_id."' )
+where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$lan_id."' )
 ";
+echo $query_receiver_info;
     
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
@@ -91,7 +101,7 @@ SELECT a.id, b.lan_id, b.employee_id, b.office_code, b.points, c.name as badge_t
 arms_game_achievements a
 LEFT JOIN arms_game_receivers b on a.receiver_id = b.id
 LEFT JOIN arms_game_rewards c on a.rewards_id = c.id
-where ( b.employee_id = '".$employee_id."' OR b.lan_id = '".$lan_id."' )
+where ( b.employee_id = '".$employee_id."' ".$both_identifiers." b.lan_id = '".$lan_id."' )
 ";
     
     $result_badges = mysqli_query($conn, $query_badges);
