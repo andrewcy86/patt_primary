@@ -109,7 +109,7 @@ if (!empty($api_key)) {
                 //Check if user exists in the receivers table
                 $query_employee_id = "SELECT COUNT(id) AS COUNT
  FROM arms_game_receivers 
- WHERE employee_id = '" . $employee_id . "' LIMIT 1";
+ WHERE employee_id = '" . $employee_id . "' AND lan_id = '" . $lan_id . "' LIMIT 1";
                 
                 $result_employee_id = mysqli_query($conn, $query_employee_id);
                 
