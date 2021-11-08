@@ -41,52 +41,13 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,4}(-[a][0-9]{1,4})?$/", $
 if ( ($box_status == $box_validation_tag->term_id) && !in_array($box_ticket_status, $rescan_validate_status_id_arr)) {
 
     
-$data_update = array('validation' => 1, 'validation_user_id' => $user_id);
+$data_update = array('rescan' => 1);
 $data_where = array('id' => $get_folderdocinfo_id_val);
 $wpdb->update($wpdb->prefix.'wpsc_epa_folderdocinfo_files', $data_update, $data_where);
 
-do_action('wpppatt_after_validate_document', $box_ticket_id, $barcode);
+do_action('wpppatt_after_rescan_document', $box_ticket_id, $barcode);
 
-// Get all validations in a box vs. total files
-$get_total_files = $wpdb->get_row("SELECT COUNT(id) as total_count
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE box_id = " . $get_folderdocinfo_box_id_val);
-$total_files = $get_total_files->total_count;
-
-$get_total_validation = $wpdb->get_row("SELECT COUNT(validation) as total_validation
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
-WHERE validation = 1 AND box_id = " . $get_folderdocinfo_box_id_val);
-$total_validation = $get_total_validation->total_validation;
-
-if( ($total_files - $total_validation) == 0) {
-  $data_update_todo = array('scanning_preparation' => 1, 'scanning_digitization' => 1, 'qa_qc' => 1, 'validation' => 1);
-  $data_where_todo = array('id' => $box_storage_location_id);
-  $wpdb->update($storage_location_table, $data_update_todo, $data_where_todo);
-  
-  $old_status_str = Patt_Custom_Func::get_box_status($get_folderdocinfo_box_id_val);
-  $new_status_str = $box_waiting_on_rlo_tag->name;
-  $status_str = $old_status_str . ' to ' . $new_status_str;
-  do_action('wpppatt_after_box_status_update', $box_ticket_id, $status_str, $box_full_id);
-  
-  // Set box status to Destruction Approved and previous box status
-  $data_update_box_status = array('box_status' => $box_waiting_on_rlo_tag->term_id, 'box_previous_status' => $box_status);
-  $data_where_box_status = array('id' => $get_folderdocinfo_box_id_val);
-  $wpdb->update($table_box, $data_update_box_status, $data_where_box_status);
-}
-
-echo '<div class="alert alert-success"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span> '.$barcode.' has been set to validated.</div>';
-
-/*
-        $filename = 'LDF_1_2_6_ldf_09019588800598d8';
-        $file = WPPATT_UPLOADS."/validation-temp/".$filename."_content.zip";
-        
-    if (file_exists($file)) {
-        unlink($file);
-        echo 'file delete';
-    } else {
-        echo 'no file delete';
-    }
-*/
+echo '<div class="alert alert-danger" role="alert"><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span> '.$barcode.' has been set to re-scan.</div>';
 
 //FAIL for all other barcodes       
 } else {
@@ -94,7 +55,7 @@ echo 'Please ensure the box and/or request statuses are correct.';
 }
 
 } else {
-echo 'Please enter a valid folder/file id.';
+echo 'Please enter a valid folder/file ID.';
 }
 
 } else {

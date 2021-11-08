@@ -16,6 +16,9 @@ $set_employee_id = '';
 $set_lan_id = '';
 $both_identifiers = '';
 
+$profile_count = 0;
+$badges_count = 0;
+
 if ( !empty($api_key) && !empty($type) && (!empty($employee_id) || !empty($lan_id)) ) {
 
     //Check API Key to make sure it is valid
@@ -79,19 +82,19 @@ ORDER BY office_code, points
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
 where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$lan_id."' )
 ";
-echo $query_receiver_info;
     
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
     $rows = array();
                 while($r = mysqli_fetch_assoc($result_receiver_info)) {
                     $rows[] = $r;
+                    $profile_count++;
                 }
-if(!empty($rows)) {
+if(!empty($rows) && $profile_count == 1) {
     print json_encode($rows);
 }
 else {
-    print_r(Patt_Custom_Func::json_response(500, 'No results could be retrieved for this user.'));
+    print_r(Patt_Custom_Func::json_response(500, 'No results / more than 1 result could be retrieved for this user. Please submit a request with both employee_id and lan_id.'));
 }
     break;
   case "badges":
@@ -109,12 +112,13 @@ where ( b.employee_id = '".$employee_id."' ".$both_identifiers." b.lan_id = '".$
     $rows = array();
                 while($r = mysqli_fetch_assoc($result_badges)) {
                     $rows[] = $r;
+                    $badges_count++;
                 }
-if(!empty($rows)) {
+if(!empty($rows) && $badges_count == 1) {
     print json_encode($rows);
 }
 else {
-    print_r(Patt_Custom_Func::json_response(500, 'No results could be retrieved for this user.'));
+    print_r(Patt_Custom_Func::json_response(500, 'No results / more than 1 result could be retrieved for this user. Please submit a request with both employee_id and lan_id.'));
 }
     break;
   default:
