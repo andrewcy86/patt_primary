@@ -56,7 +56,7 @@ FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
-WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag.",".$decline_decline_complete_tag.",".$decline_decline_cancelled_tag.",".$decline_decline_expired_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id . "
+WHERE a.return_complete = 0
 ORDER BY a.id, ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $declineRecords = mysqli_query($con, $baseQuery);
 $data = array();

@@ -26,6 +26,18 @@ $dc_set = '';
 
 $box_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
 
+$current_box_status = isset($_POST['current_box_status']) ? sanitize_text_field($_POST['current_box_status']) : ''; // term_id
+$item_id = isset($_POST['item_id']) ? sanitize_text_field($_POST['item_id']) : '';
+
+// Define wpqa_wpsc_epa_storage_location db table
+$box_table_epa_storage_location = $wpdb->prefix .'wpsc_epa_storage_location';
+
+// get the id aka foreign key of the box
+$box_fk = Patt_Custom_Func::get_id_by_box_id( $item_id );
+
+$box_details_obj = Patt_Custom_Func::get_box_file_details_by_id( $item_id );
+$storage_location_id = $box_details_obj->storage_location_id;
+
 // Define current time
 $date_time = date('Y-m-d H:i:s');
 
@@ -177,6 +189,11 @@ $box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999')
 $box_data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
 
+// Update destruction of source column to be false
+$box_storage_location_data_update = array('destruction_of_source' => 0);
+$box_storage_location_data_where = array('id' => $storage_location_id);
+$wpdb->update($box_table_epa_storage_location , $box_storage_location_data_update, $box_storage_location_data_where);
+
 do_action('wpppatt_after_box_destruction_unflag', $ticket_id, $key);
 
 //Update date_updated column
@@ -190,6 +207,11 @@ if ($get_destruction_val == 0 && count(array_unique($destruction_reversal)) == 1
 $box_data_update = array('box_destroyed' => 1);
 $box_data_where = array('id' => $box_db_id);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
+
+// Update destruction of source column to be true
+$box_storage_location_data_update = array('destruction_of_source' => 1);
+$box_storage_location_data_where = array('id' => $storage_location_id);
+$wpdb->update($box_table_epa_storage_location , $box_storage_location_data_update, $box_storage_location_data_where);
 
 //SET PHYSICAL LOCATION TO DESTROYED
 $pl_update = array('location_status_id' => '6');
@@ -212,13 +234,20 @@ $scanning_location_area_id = $get_physical_locations_from_box->scanning_location
 $shelf_location = $get_physical_locations_from_box->shelf_location;
 $pallet_id = $get_physical_locations_from_box->pallet_id;
 
+$get_pallet_id_from_box = $wpdb->get_row("SELECT pallet_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+WHERE box_id = '" .  $key . "'");
+$boxinfo_pallet_id = $get_pallet_id_from_box->pallet_id;
+
+if(!empty($boxinfo_pallet_id)) {
+    //Delete pallet_id from the boxinfo table
+    $boxinfo_pallet_update = array('pallet_id' => '');
+    $boxinfo_pallet_where = array('id' => $box_db_id);
+    $wpdb->update($box_table_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
+}
+
 if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($validation_location_area_id) || !empty($qaqc_location_area_id) || !empty($scanning_prep_location_area_id) || !empty($scanning_location_area_id) || !empty($shelf_location)) {
     if(!empty($pallet_id)) {
-        //Delete pallet_id from the boxinfo table
-        $boxinfo_pallet_update = array('pallet_id' => '');
-        $boxinfo_pallet_where = array('id' => $box_db_id);
-        $wpdb->update($box_table_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
-        
         $get_pallet_for_boxes = $wpdb->get_row("SELECT COUNT(pallet_id) as pallet_count
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
         WHERE pallet_id = '" .  $pallet_id . "'");

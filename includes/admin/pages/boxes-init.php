@@ -69,7 +69,7 @@ array_values($box_statuses);
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 {
 ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban" aria-hidden="true" title="Destruction Completed"></i><span class="sr-only">Destruction Completed</span> Destruction Completed</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban" aria-hidden="true" title="Destruction Completed"></i><span class="sr-only">Reverse Destruction</span> Reverse Destruction</button>
 <?php } 
 if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
 ?>
@@ -87,8 +87,6 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
   </div>
 
 </div>
-
-
 
 
 <div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
@@ -681,11 +679,23 @@ jQuery(document).ready(function(){
 	
 	function toggle_button_display() {
 	//	var form = this;
+	
+		// Get the destroyed boxes link
+		var destroyed_boxes = document.querySelectorAll(".text_highlight a[style*='color: #B4081A !important; text-decoration: underline line-through;']");
 		
 		console.log({checks:dataTable.column(0)});
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
-		    jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');	
+		    rows_selected.each((el)=> {
+				destroyed_boxes.forEach( function(element){
+				
+					if(el == element.textContent){
+						console.log("there's a match: " + el + " " + element.textContent);
+						jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');
+					}
+				});
+			});
+		    // jQuery('#wpsc_box_destruction_btn').removeAttr('disabled');
 			jQuery('#wppatt_assign_staff_btn').removeAttr('disabled');	
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_label_btn').removeAttr('disabled');	

@@ -229,13 +229,13 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					<textarea id="return_comment_text" name="return_comment" rows="2" cols="30" class="form-control " style="height: auto !important;" ></textarea>
 				</div>
 				
-				<div  data-fieldtype="text" data-visibility="" class="col-sm-9 visible form-group wpsc_form_field">
-					<label class="wpsc_ct_field_label" for="<?php echo $form_field->slug;?>">
-						Shipping Tracking Number <?php //echo $required_html ?>
-					</label>
+				<!--<div  data-fieldtype="text" data-visibility="" class="col-sm-9 visible form-group wpsc_form_field">-->
+				<!--	<label class="wpsc_ct_field_label" for="<?php echo $form_field->slug;?>">-->
+				<!--		Shipping Tracking Number <?php //echo $required_html ?> -->
+				<!--	</label>-->
 					
-					<input id="return_shipping_tracking" name="return_shipping_tracking" cols="30" class="form-control" > </input>
-				</div>
+				<!--	<input id="return_shipping_tracking" name="return_shipping_tracking" cols="30" class="form-control" > </input>-->
+				<!--</div>-->
 				
 <!--
 				<div  data-fieldtype="text" data-visibility="" class="col-sm-9 visible wppatt_required form-group wpsc_form_field">	

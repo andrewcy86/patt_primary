@@ -7,7 +7,7 @@ include 'db_connection.php';
 $conn = OpenCon();
 
 //Check API Key to make sure it is valid
-$api_key     = htmlspecialchars($_GET['api_key']);
+$api_key = htmlspecialchars($_GET['api_key']);
 $lan_id = htmlspecialchars($_GET['lan_id']);
 $employee_id = htmlspecialchars($_GET['employee_id']);
 $office_code = htmlspecialchars($_GET['office_code']);
@@ -46,6 +46,9 @@ $rules_end_date       = '';
 
 $dt = date('Y-m-d h:i:s');
 
+// Check for successes
+$success_array = array();
+
 if (!empty($api_key)) {
     
     //Get App ID
@@ -83,6 +86,11 @@ if (!empty($api_key)) {
         }
         
         if ($set_event_id == 1) {
+            
+            if(strlen($office_code) != 8) {
+                $office_code = Patt_Custom_Func::company_name_conversion($office_code);
+            }
+            
             //Cross check office_code with wpqa_wpsc_epa_program_office to make sure it is valid
             $query_organization = "SELECT organization
  FROM " . $wpdb->prefix . "wpsc_epa_program_office 
@@ -123,8 +131,10 @@ VALUES ('" . $lan_id . "','" . $employee_id . "', '" . $parent_office_code . "',
                     
                     if ($conn->query($insert_receiver) === true) {
                         //echo 'New receiver created successfully <br/>';
+                        array_push($success_array, 1);
                     } else {
                         //echo 'Error <br/>';
+                        array_push($success_array, 0);
                     }
                     
                 } else {
@@ -146,8 +156,10 @@ VALUES ('" . $lan_id . "','" . $employee_id . "', '" . $parent_office_code . "',
                         
                         if ($conn->query($update_receiver_po) === true) {
                             //echo 'Updated receiver program office successfully <br/>';
+                            array_push($success_array, 1);
                         } else {
                             //echo 'Error <br/>';
+                            array_push($success_array, 0);
                         }
                         
                     }
@@ -192,8 +204,10 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '
                     
                     if ($conn->query($insert_activity) === true) {
                         //echo 'New activity created successfully <br/>';
+                        array_push($success_array, 1);
                     } else {
                         //echo 'Error: activity created issue. <br/>';
+                        array_push($success_array, 0);
                     }
                 } else {
                     $new_counter_val = $get_activity_counter + 1;
@@ -202,8 +216,10 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '
                     
                     if ($conn->query($update_activity_counter) === true) {
                         //echo 'Updated receiver points successfully <br/>';
+                        array_push($success_array, 1);
                     } else {
                         //echo 'Error <br/>';
+                        array_push($success_array, 0);
                     }
                 }
                 
@@ -226,8 +242,10 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '
                 
                 if ($conn->query($update_receiver_points) === true) {
                     //echo 'Updated receiver points successfully <br/>';
+                    array_push($success_array, 1);
                 } else {
                     //echo 'Error <br/>';
+                    array_push($success_array, 0);
                 }
                 
                 //Check if level up is needed
@@ -262,8 +280,10 @@ WHERE '" . $new_points_value . "' >= value";
                     
                     if ($conn->query($update_receiver_level) === true) {
                         //echo 'Updated receiver level successfully <br/>';
+                        array_push($success_array, 1);
                     } else {
                         //echo 'Error <br/>';
+                        array_push($success_array, 0);
                     }
                 }
                 
@@ -357,8 +377,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -381,8 +403,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -393,8 +417,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -405,8 +431,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -428,8 +456,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -440,8 +470,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -452,8 +484,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -464,8 +498,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -476,8 +512,10 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                                             
                                             if ($conn->query($insert_achivement) === true) {
                                                 //echo 'New Achivement Added. <br/>';
+                                                array_push($success_array, 1);
                                             } else {
                                                 //echo 'Error <br/>';
+                                                array_push($success_array, 0);
                                             }
                                         }
                                         break;
@@ -489,17 +527,15 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
                         }
                     }
                     
-                    
-                    
-                    
-                    //Evalue associated conditions
-                    //Get associated rule
-                    
-                    
                     }   
                 }
-            //JSON response if all fields are correct
-            print_r( Patt_Custom_Func::json_response(200, 'Success'));
+                //JSON response if all fields are correct
+                if(in_array(0, $success_array)) {
+                    print_r( Patt_Custom_Func::json_response(500, 'There was an error with one of the SQL statements, please contact a member of the ECMS team to remediate.'));
+                }
+                else {
+                    print_r( Patt_Custom_Func::json_response(200, 'Success'));
+                }
             } else {
                 //JSON response if office_code incorrect
                 print_r( Patt_Custom_Func::json_response(422, 'office_code of ' . $office_code . ' not found'));

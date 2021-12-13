@@ -459,11 +459,29 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	//	var form = this;
 		var rows_selected = dataTable.column(0).checkboxes.selected();
 		if(rows_selected.count() > 0) {
+		    
 	    	//console.log('boxes checked '+rows_selected.count());
 			jQuery('#wppatt_change_status_btn').removeAttr('disabled');
 			jQuery('#wppatt_change_shipping_btn').removeAttr('disabled');
 			jQuery('#wppatt_return_btn').removeAttr('disabled');
 			jQuery('.notab').removeAttr('tabindex');
+			
+            
+            // Foreach function to get the tracking number of each selected box
+            jQuery.each(dataTable.rows('.selected').nodes(), function() {
+                var data = dataTable.row(this).data();
+                var trackingNumber = data.tracking_number;
+                
+                // Checks if a tracking number exists
+                // if(jQuery(data.tracking_number).attr("href") == ''){
+                //     jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');    
+                // //   console.log('data: ' + rows_selected.return_id); 
+                // }
+                if(data.return_initiated == 0){
+                    jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');    
+                //   console.log('data: ' + rows_selected.return_id); 
+                }
+            });
 	  	} else {
 	    	//console.log('no checks boxed '+rows_selected.count());
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
@@ -584,8 +602,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
 
 
-
-
+// On click function that toggles the datatable selected class
+ jQuery('#tbl_templates_return tbody').on( 'click', '.dt-checkboxes', function () {
+        jQuery(this).parent().parent().toggleClass('selected');
+        jQuery(this).parent().parent().addClass('bg-transparent');
+    } );
 
 
 

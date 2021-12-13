@@ -64,3 +64,20 @@ cursor: help;
 #license_upgrade {
     display: none;
 }
+
+.bg-transparent {
+    background: none !important;
+}
+
+.bg-transparent:hover {
+    background: #f1f1f1 !important;
+}
+
+table.dataTable.display tbody tr.odd.selected
+table.dataTable tbody tr.selected,
+/*table.dataTable.display tbody tr:hover.selected>.sorting_1,*/
+table.dataTable.display tbody tr.selected>.sorting_1,
+table.dataTable.display tbody tr.odd.selected>.sorting_1
+{
+    background: none !important;
+}

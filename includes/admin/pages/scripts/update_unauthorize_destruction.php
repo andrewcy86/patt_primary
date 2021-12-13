@@ -324,13 +324,20 @@ $shelf_location = $get_physical_locations_from_box->shelf_location;
 $pallet_id = $get_physical_locations_from_box->pallet_id;
 $box_full_id = $get_physical_locations_from_box->box_id;
 
+$get_pallet_id_from_box = $wpdb->get_row("SELECT pallet_id
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+WHERE id = '" .  $box_id . "'");
+$boxinfo_pallet_id = $get_pallet_id_from_box->pallet_id;
+
+if(!empty($boxinfo_pallet_id)) {
+    //Delete pallet_id from the boxinfo table
+    $boxinfo_pallet_update = array('pallet_id' => '');
+    $boxinfo_pallet_where = array('id' => $box_id);
+    $wpdb->update($table_box_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
+}
+
 if(!empty($pallet_id) || !empty($scanning_id) || !empty($stagingarea_id) || !empty($cart_id) || !empty($validation_location_area_id) || !empty($qaqc_location_area_id) || !empty($scanning_prep_location_area_id) || !empty($scanning_location_area_id) || !empty($shelf_location)) {
     if(!empty($pallet_id)) {
-        //Delete pallet_id from the boxinfo table
-        $boxinfo_pallet_update = array('pallet_id' => '');
-        $boxinfo_pallet_where = array('id' => $box_id);
-        $wpdb->update($table_box_name, $boxinfo_pallet_update, $boxinfo_pallet_where);
-        
         $get_pallet_for_boxes = $wpdb->get_row("SELECT COUNT(pallet_id) as pallet_count
         FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
         WHERE pallet_id = '" .  $pallet_id . "'");

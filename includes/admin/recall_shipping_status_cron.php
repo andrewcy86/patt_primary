@@ -547,6 +547,7 @@ $recall_complete_recall_status_query = $wpdb->get_results(
       rr.recall_id as recall_id,
       rr.recall_status_id as recall_status,
       rr.box_id as box_id,
+      rr.recall_complete as recall_complete,
       rr.saved_box_status as saved_box_status
     FROM 
 	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
@@ -614,18 +615,20 @@ foreach ($recall_complete_recall_status_query as $item) {
 	} 
 	
 	
-	// update recall status to Recall Complete [733]
-	$recall_id = $item->recall_id;	
-	$where = [ 'id' => $recall_id ];
-// 	$data_status = [ 'recall_status_id' => 733 ]; //change status from On Loan to Shipped Back
-	$data_status = [ 'recall_status_id' => $status_complete_term_id ]; //change status from On Loan to Shipped Back
-	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-	
-	// Update Recall DB Received date 
-	$where = [ 'id' => $recall_id ];
-	$current_datetime = date("Y-m-d H:i:s");
-	$data = [ 'return_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-	Patt_Custom_Func::update_recall_data( $data, $where );
+	if($item->recall_complete == 1) {
+    	// update recall status to Recall Complete [733]
+    	$recall_id = $item->recall_id;	
+    	$where = [ 'id' => $recall_id ];
+    // 	$data_status = [ 'recall_status_id' => 733 ]; //change status from On Loan to Shipped Back
+    	$data_status = [ 'recall_status_id' => $status_complete_term_id ]; //change status from On Loan to Shipped Back
+    	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
+    	
+    	// Update Recall DB Received date 
+    	$where = [ 'id' => $recall_id ];
+    	$current_datetime = date("Y-m-d H:i:s");
+    	$data = [ 'return_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
+    	Patt_Custom_Func::update_recall_data( $data, $where );
+	}
 	
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
 	

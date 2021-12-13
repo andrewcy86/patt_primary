@@ -13,6 +13,8 @@ if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 	exit;
 }
 
+include( WPPATT_ABSPATH . 'includes/term-ids.php' );
+
 $subfolder_path = site_url( '', 'relative'); 
 
 //
@@ -173,7 +175,8 @@ $recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_sta
 $recall_cancelled_tag = get_term_by('slug', 'recall-cancelled', 'wppatt_recall_statuses'); 
 $recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
 $recall_denied_tag = get_term_by('slug', 'recall-denied', 'wppatt_recall_statuses'); 
-$recall_shipped_tag = get_term_by('slug', 'shipped', 'wppatt_recall_statuses'); 
+$recall_shipped_tag = get_term_by('slug', 'shipped', 'wppatt_recall_statuses');
+$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses'); 
 
 $recall_recalled_term = $recall_recalled_tag->term_id;
 $recall_complete_term = $recall_complete_tag->term_id;
@@ -181,6 +184,7 @@ $recall_cancelled_term = $recall_cancelled_tag->term_id;
 $recall_approved_term = $recall_approved_tag->term_id;
 $recall_denied_term = $recall_denied_tag->term_id;
 $recall_shipped_term = $recall_shipped_tag->term_id;
+$recall_shipped_back_term = $recall_shipped_back_tag->term_id;
 
 // Grab all info needed for the recall
 $whr = [ 'recall_id' => $recall_ids[0] ]; // recall_ids todo will always contain 1 value.
@@ -200,7 +204,8 @@ $todo_recall_complete_check = $todo_recall_complete == 1 ? 'checked' : '';
 // Using $recall_recalled_term as that is the status we're in before moving to recall approved. 
 // $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
 $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_approved_term ? '' : 'disabled';
-$todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_complete_term ? '' : 'disabled';
+// $todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_complete_term ? '' : 'disabled';
+$todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_shipped_back_term ? '' : 'disabled';
 
 if( $type == 'recall_todo' ) {
   
@@ -290,16 +295,19 @@ $decline_todo_obj = $decline_todo_arr[0];
 
 
 // Flags for decline statuses
-// NOTE: the flag is called 'return_complete' but actually should be called 'return_ready_to_ship'. As it is used to track if a decline has a shipping tracking number associated with it. 
-$todo_decline_ready_to_ship = $decline_todo_obj->return_complete; 
+// NOTE: the flag is called 'return_initiated' but actually should be called 'return_ready_to_ship'. As it is used to track if a decline has a shipping tracking number associated with it. 
+$todo_decline_ready_to_ship = $decline_todo_obj->return_initiated;
+$todo_decline_complete = $decline_todo_obj->return_complete; 
 
 // used for HTML checkbox checks
 $todo_decline_ready_to_ship_check = $todo_decline_ready_to_ship == 1 ? 'checked' : '';
+$todo_decline_complete_check = $todo_decline_complete == 1 ? 'checked' : '';
 
 // used for HTML checkbox disabled
 // Using $recall_recalled_term as that is the status we're in before moving to recall approved. 
 // $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
 $todo_decline_ready_to_ship_disabled = $decline_todo_obj->return_status_id == $decline_initiated_term ? '' : 'disabled';
+$todo_decline_complete_disabled = $decline_todo_obj->return_status_id == $decline_complete_term ? '' : 'disabled';
 
 
 if( $type == 'decline_todo' ) {
@@ -311,11 +319,13 @@ if( $type == 'decline_todo' ) {
   $shipping_carrier = $decline_todo_obj->shipping_carrier;
   $tracking_number = $decline_todo_obj->tracking_number;
   
-  if( $tracking_number == '' ) {
-    $decline_save_enabled = false;
-  } else {
-    $decline_save_enabled = true;
-  }
+  $decline_save_enabled = true;
+  
+//   if( $tracking_number == '' ) {
+//     $decline_save_enabled = false;
+//   } else {
+//     $decline_save_enabled = true;
+//   }
   
   
 }
@@ -353,7 +363,7 @@ $ignore_decline_status = [ 'Decline Shipped', 'Received', 'Decline Shipped Back'
 
 $term_id_array = array();
 foreach( $decline_statuses as $key=>$obj ) {
-	if( in_array( $obj->name, $ignore_decline_status ) ) {
+	if( in_array( $obj->name, $ignore_decline_status ) &&  $obj->name !== 'Decline Complete' ) {
 		unset($decline_statuses[$key]);
 		
 	} else {
@@ -983,7 +993,7 @@ echo "</pre>";
 				<?php
         } elseif( $status->name == 'Recall Complete' ) {
         ?> 
-          <input data-box-status-id="<?php echo $recall_complete_term; ?>" type="checkbox"  <?php echo $todo_recall_complete_check . ' ' . $todo_recall_complete_disabled; ?> class="center-check">
+          <input data-box-status-id="<?php echo $recall_shipped_back_term; ?>" type="checkbox"  <?php echo $todo_recall_complete_check . ' ' . $todo_recall_complete_disabled; ?> class="center-check">
         <?php
         } 
         ?> 
@@ -1050,6 +1060,13 @@ echo "</pre>";
 				  <input data-box-status-id="<?php echo $decline_initiated_term; ?>" type="checkbox"  <?php echo $todo_decline_ready_to_ship_check . ' ' . $todo_decline_ready_to_ship_disabled; ?> class="center-check">
 				<?php
         } 
+        
+        if( $status->name == 'Decline Complete' ) {
+		?>
+				  <input data-box-status-id="<?php echo $decline_complete_term; ?>" type="checkbox"  <?php echo $todo_decline_complete_check . ' ' . $todo_decline_complete_disabled; ?> class="center-check" />
+				<?php
+		} 
+
         ?> 
  
 			</div>
@@ -1315,22 +1332,22 @@ jQuery(document).ready(function(){
   	let shipping_carrier = '<?php echo $shipping_carrier; ?>';
   	let tracking_number = '<?php echo $tracking_number; ?>';
   	
-  	
-  	if( !tracking_number ) {
+  	    // Red warning message that disables the save button for decline initiated if there's no shipping number for the box
+//   	if( !tracking_number ) {
     	
-    	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
-    	recall_save_enabled = false;
-    	set_alert( 'danger', note );
+//     	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
+//     	recall_save_enabled = false;
+//     	set_alert( 'danger', note );
     	
-  	}
+//   	}
   	
   }
   
   // Disable recall save button
-  if( !recall_save_enabled ) {
-		console.log('recall save disabled');
-		jQuery("#button_todo_recall_submit").hide();
-	}
+//   if( !recall_save_enabled ) {
+// 		console.log('recall save disabled');
+// 		jQuery("#button_todo_recall_submit").hide();
+// 	}
 	
 	
 	//
@@ -1344,13 +1361,15 @@ jQuery(document).ready(function(){
   	let tracking_number = '<?php echo $tracking_number; ?>';
   	console.log({ shipping_carrier:shipping_carrier, tracking_number:tracking_number });
   	
-  	if( !tracking_number ) {
+  	
+  	// Red warning message that disables the save button for decline initiated if there's no shipping number for the box
+//   	if( !tracking_number ) {
     	
-    	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
-    	decline_save_enabled = false;
-    	set_alert( 'danger', note );
+//     	let note = 'This Item does not have a shipping tracking number. Saving Disabled.';
+//     	decline_save_enabled = false;
+//     	set_alert( 'danger', note );
     	
-  	}
+//   	}
   	
   }
   
@@ -1592,11 +1611,11 @@ if($scanning_b_d_val == 1) {
       console.log( 'Clicked ' + current_box_status );
       if( this.checked ) {
         console.log( 'DATA check' );
-        todo_save_enabled = true;
+        // todo_save_enabled = true;
         jQuery("#button_todo_submit").show();
       } else {
         console.log( 'DATA uncheck' );
-        todo_save_enabled = false;
+        // todo_save_enabled = false;
         jQuery("#button_todo_submit").hide();
       }
     });  
@@ -1954,6 +1973,172 @@ jQuery("#button_todo_decline_submit").hide();
 function wppatt_set_todo() {
   console.log( 'SET TODO' );
   
+   // Datatable object
+  var dataTable = jQuery('#tbl_templates_todo').DataTable({
+	    
+	    'autoWidth': true,
+		'processing': true,
+		'serverSide': true,
+		'stateSave': true,
+		//'scrollX' : true,
+		
+		"initComplete": function (settings, json) {
+		    jQuery("#tbl_templates_todo").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+		},
+		'retrieve': true,
+		'paging' : true,
+		'stateSaveParams': function(settings, data) {
+			data.sg = jQuery('#searchGeneric').val();
+			data.bid = jQuery('#searchByBoxID').val();
+			data.po = jQuery('#searchByProgramOffice').val();
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>
+		    data.dc = jQuery('#searchByDigitizationCenter').val(); 
+			<?php
+            }
+			?>
+			data.sp = jQuery('#searchByPriority').val();
+			data.sbs = jQuery('#searchByStatus').val();
+			data.rd = jQuery('#searchByRecallDecline').val();
+			data.es = jQuery('#searchByECMSSEMS').val();
+			data.sbu = jQuery('#searchByUser').val(); 
+			data.aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
+			data.aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get();                   
+		},
+		'stateLoadParams': function(settings, data) {
+			jQuery('#searchGeneric').val(data.sg);
+			jQuery('#searchByBoxID').val(data.bid);
+			jQuery('#searchByProgramOffice').val(data.po);
+			<?php
+			if (($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet'))
+            {
+			?>
+			jQuery('#searchByDigitizationCenter').val(data.dc);
+			<?php
+            }
+			?>
+			jQuery('#searchByPriority').val(data.sp);
+			jQuery('#searchByRecallDecline').val(data.rd);
+			jQuery('#searchByECMSSEMS').val(data.es);
+			jQuery('#searchByStatus').val(data.sbs); 
+			jQuery('#searchByUser').val(data.sbu); 
+			
+			// If data values aren't defined then set them as blank arrays.
+			if( typeof data.aaVal == 'undefined' ) {
+				data.aaVal = [];
+				data.aaName = [];				
+			}
+			
+			data.aaVal.forEach( function(val, key) {
+				let html_str = get_display_user_html(data.aaName[key], val); 
+				jQuery('#assigned_agents').append(html_str);
+			});
+			//let html_str = get_display_user_html(ui.item.label, ui.item.flag_val);
+			//jQuery('#assigned_agents').append(html_str);
+			//jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get(); //load saved users   
+		},
+		'serverMethod': 'post',
+		'searching': false, // Remove default Search Control
+		'ajax': {
+			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_processing.php',
+			'data': function(data){
+				// Read values
+				var po_value = jQuery('#searchByProgramOffice').val();
+				var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
+				var sg = jQuery('#searchGeneric').val();
+				var boxid = jQuery('#searchByBoxID').val();
+				var dc = jQuery('#searchByDigitizationCenter').val();
+				var sp = jQuery('#searchByPriority').val();
+				var rd = jQuery('#searchByRecallDecline').val();
+				var es = jQuery('#searchByECMSSEMS').val();
+				var sbs = jQuery('#searchByStatus').val(); 
+				var sbu = jQuery('#searchByUser').val();  
+				var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
+				var aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get(); 
+				//console.log({is_requester:is_requester});
+				// Append to data
+				data.searchGeneric = sg;
+				data.searchByBoxID = boxid;
+				data.searchByProgramOffice = po;
+				data.searchByDigitizationCenter = dc;
+				data.searchByPriority = sp;
+				data.searchByRecallDecline = rd;
+				data.searchByECMSSEMS = es;
+				data.searchByStatus = sbs;
+				data.searchByUser = sbu;
+				data.searchByUserAAVal = aaVal;
+				data.searchByUserAAName = aaName;
+				data.is_requester = is_requester;
+			
+			}
+		},
+		'drawCallback': function (settings) { 
+		    jQuery('[data-toggle="tooltip"]').tooltip();
+	        // Here the response
+	        var response = settings.json;
+	       	        console.log(response);
+    	},
+        'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],
+		'fixedColumns': true,
+	<?php		
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
+	{
+	?>
+		'columnDefs': [
+		{	'width' : 5,
+			'targets': 0,	
+			'checkboxes': {	
+			   'selectRow': true	
+			},
+		},
+		{
+            'targets': [ 1 ],
+            'orderData': [ 2 ]
+        },
+        {
+            'targets': [ 2 ],
+            'visible': false,
+            'searchable': false
+        },
+		{ 'width': '100%', 'targets': 4 },
+		{ 'width': '5%', 'targets': 6 }
+		],
+		'select': {	
+			'style': 'multi'
+		},
+		'order': [[1, 'asc']],
+// 		'order': [[1, 'desc']],
+	<?php
+	}
+	?>
+		'columns': [
+	<?php		
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
+	{
+	?>
+			{ data: 'box_id', 'title': 'Select All Checkbox'},
+
+	<?php
+	}
+	?>
+
+			{ data: 'box_id_flag', 'class' : 'text_highlight'},
+			{ data: 'dbid', visible: false},
+			{ data: 'pallet_id' },
+			{ data: 'ticket_priority' },
+			{ data: 'request_id', 'class' : 'text_highlight' },
+			{ data: 'status' },       
+			{ data: 'location' },
+			{ data: 'acronym' },
+			{ data: 'validation' },
+		]
+	});
+  
+
+  let destruction_of_source_term_id = <?php echo $destruction_of_source_term; ?>;
+  
   let item_id = '<?php echo $item_ids[0]; ?>';	// always a single item, never multiple
 //   let ticket_id = <?php echo $ticket_id; ?>;
   let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
@@ -1963,6 +2148,37 @@ function wppatt_set_todo() {
   
   let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
   console.log({is_checked:is_checked});
+  console.log('current box status: ' + current_box_status);
+  console.log( 'term id: ' + destruction_of_source_term_id);
+
+  if(current_box_status == destruction_of_source_term_id){
+	var form = this;
+	     var rows_selected = dataTable.column(0).checkboxes.selected();
+		 console.log('rows selected: ' + rows_selected);
+			   jQuery.post(
+	   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_destruction.php',{
+	postvarsboxid : item_id,
+	}, 
+	   function (response) {
+	      //if(!alert(response)){
+	      
+	      wpsc_modal_open('Destruction Completed');
+			  var data = {
+			    action: 'wpsc_get_destruction_completed_b',
+			    response_data: response
+			  };
+			  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+			    var response = JSON.parse(response_str);
+			    jQuery('#wpsc_popup_body').html(response.body);
+			    jQuery('#wpsc_popup_footer').html(response.footer);
+			    jQuery('#wpsc_cat_name').focus();
+			  }); 
+			  
+	          dataTable.ajax.reload( null, false );
+              dataTable.column(0).checkboxes.deselectAll();
+	      //}
+	   });
+  }
   
   jQuery.post(
     '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{
@@ -1980,9 +2196,10 @@ function wppatt_set_todo() {
 			//window.location.reload();
 			
 			//Only refreshes the datatable, not the window // To-Do icon/functionality on To-Do Dashboard and Box Dashboard.
-	    jQuery('#tbl_templates_todo').DataTable().ajax.reload(null, false);
-	    jQuery('#tbl_templates_boxes').DataTable().ajax.reload(null, false); 
+			jQuery('#tbl_templates_todo').DataTable().ajax.reload(null, false);
+			jQuery('#tbl_templates_boxes').DataTable().ajax.reload(null, false); 
   });
+  
   wpsc_modal_close();
 }
 
@@ -2041,6 +2258,8 @@ function wppatt_set_todo_decline() {
   
   //let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
   //console.log({is_checked:is_checked});
+  
+  console.log('current decline status: ' + current_decline_status);
   
   jQuery.post(
     '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{

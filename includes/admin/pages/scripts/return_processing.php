@@ -275,6 +275,7 @@ SELECT
     " . $wpdb->prefix . "wpsc_epa_return.id,
     " . $wpdb->prefix . "wpsc_epa_return.return_id,
     " . $wpdb->prefix . "wpsc_epa_return.return_date,
+    " . $wpdb->prefix . "wpsc_epa_return.return_initiated,
     " . $wpdb->prefix . "wpsc_epa_return.return_receipt_date,
     " . $wpdb->prefix . "wpsc_epa_return.received_date,
     " . $wpdb->prefix . "wpsc_epa_return.comments,
@@ -439,6 +440,7 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 		"received_date"=> (strtotime( $row['received_date']) > 0) ? date('m/d/Y', strtotime( $row['received_date'])) : 'N/A',	
 //		"expiration_date"=>"90 Days", //date('m/d/Y', strtotime( $date_expiration)), 
  		"tracking_number"=>$track,
+ 		"return_initiated"=>$row['return_initiated'],
    );
    
    $icons = '';

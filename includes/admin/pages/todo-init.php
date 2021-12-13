@@ -366,7 +366,7 @@ if ($recall_count > 0) {
 $decline_query = $wpdb->get_row("SELECT count(a.id) as count
 FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
-WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag->term_id.",".$decline_decline_complete_tag->term_id.",".$decline_decline_cancelled_tag->term_id.",".$decline_decline_expired_tag->term_id.") AND a.id != '-99999' AND b.user_id = '" . $get_current_user_id . "'");
+WHERE a.return_complete = 0");
 $decline_count = $decline_query->count;
 
 if ($decline_count > 0) {

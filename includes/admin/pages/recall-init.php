@@ -61,7 +61,7 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 <!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet"></i><span class="sr-only" title="Change Status">Change Status</span> Change Status</button>       -->
   
 <!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recalldetails&id=R-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-vial" title="Recall Details"></i><span class="sr-only">Recall Details</span> Recall Details: R-0000001 </button> -->
-      
+      r
 <!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-truck-loading" title="Recall"></i><span class="sr-only">Recall </span> Recall </button> -->
 <!-- PATT End -->      
       
@@ -473,6 +473,22 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 			jQuery('#wppatt_change_shipping_btn').removeAttr('disabled');
 			jQuery('#wppatt_return_btn').removeAttr('disabled');
 	        jQuery('.notab').removeAttr('tabindex');
+	        
+	        // Foreach function to get the tracking number of each selected box
+            jQuery.each(dataTable.rows('.selected').nodes(), function() {
+                var data = dataTable.row(this).data();
+                var trackingNumber = data.tracking_number;
+                
+                // Checks if a tracking number exists
+                // if(jQuery(data.tracking_number).attr("href") == ''){
+                //     jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');    
+                // //   console.log('data: ' + rows_selected.return_id); 
+                // }
+                if(data.recall_approved == 0){
+                    jQuery('#wppatt_change_shipping_btn').attr('disabled', 'disabled');    
+                //   console.log('data: ' + rows_selected.return_id); 
+                }
+            });
 	  	} else {
 	    	//console.log('no checks boxed '+rows_selected.count());
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');
@@ -582,7 +598,12 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	
 	
 	
-	
+	// On click function that toggles the datatable selected class
+ jQuery('#tbl_templates_recall tbody').on( 'click', '.dt-checkboxes', function () {
+        jQuery(this).parent().parent().toggleClass('selected');
+        jQuery(this).parent().parent().addClass('bg-transparent');
+    } );
+
 	
 	
 	

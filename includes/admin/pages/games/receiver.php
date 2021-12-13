@@ -97,6 +97,144 @@ else {
     print_r(Patt_Custom_Func::json_response(500, 'No results / more than 1 result could be retrieved for this user. Please submit a request with both employee_id and lan_id.'));
 }
     break;
+
+  case "office_proximity":
+      
+      
+                $query_employee_rank = "SELECT a.office_code as office_code, a.rank as office_rank from (    
+SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
+SELECT GROUP_CONCAT( DISTINCT points
+ORDER BY points DESC ) FROM arms_game_receivers)
+) AS overall_rank
+ FROM arms_game_receivers
+ORDER BY office_code, points
+) as a 
+LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$lan_id."' )";
+                
+                $employee_rank = mysqli_query($conn, $query_employee_rank);
+                
+                while ($employee_id_result = mysqli_fetch_array($employee_rank)) {
+                    $set_employee_rank = $employee_id_result["office_rank"];
+                    $parent_office_code = $employee_id_result["office_code"];
+                }
+                
+$employee_rank_arr = array();
+
+
+if($set_employee_rank != 0){
+$query_equal_rank = "
+
+SELECT a.id, a.lan_id, a.employee_id as employee_id, a.points, b.name as level, a.rank as office_rank from (    
+SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
+SELECT GROUP_CONCAT( DISTINCT points
+ORDER BY points DESC ) FROM arms_game_receivers)
+) AS overall_rank
+ FROM arms_game_receivers
+ORDER BY office_code, points
+) as a 
+LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+where a.office_code = '".$parent_office_code."' and a.rank = ".$set_employee_rank;
+
+                $employee_equal_rank = mysqli_query($conn, $query_equal_rank);
+                
+                while ($employee_equal_rank_result = mysqli_fetch_array($employee_equal_rank)) {
+                    $equal_rank_employee_id = $employee_equal_rank_result["employee_id"];
+                }
+    
+if(!empty($equal_rank_employee_id)){
+array_push($employee_rank_arr,$equal_rank_employee_id);  
+}
+}
+
+
+$foward_rank = $set_employee_rank - 1;
+
+if($foward_rank != 0){
+$query_forward_rank = "
+
+SELECT a.id, a.lan_id, a.employee_id as employee_id, a.points, b.name as level, a.rank as office_rank from (    
+SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
+SELECT GROUP_CONCAT( DISTINCT points
+ORDER BY points DESC ) FROM arms_game_receivers)
+) AS overall_rank
+ FROM arms_game_receivers
+ORDER BY office_code, points
+) as a 
+LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+where a.office_code = '".$parent_office_code."' and a.rank = ".$foward_rank;
+
+                $employee_forward_rank = mysqli_query($conn, $query_forward_rank);
+                
+                while ($employee_forward_rank_result = mysqli_fetch_array($employee_forward_rank)) {
+                    $forward_rank_employee_id = $employee_forward_rank_result["employee_id"];
+                }
+
+//echo $foward_rank;             
+    
+if(!empty($forward_rank_employee_id)){
+array_push($employee_rank_arr,$forward_rank_employee_id);  
+}
+}
+
+
+$reverse_rank = $set_employee_rank + 1;
+
+$query_reverse_rank = "
+
+SELECT a.id, a.lan_id, a.employee_id as employee_id, a.points, b.name as level, a.rank as office_rank from (    
+SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
+SELECT GROUP_CONCAT( DISTINCT points
+ORDER BY points DESC ) FROM arms_game_receivers)
+) AS overall_rank
+ FROM arms_game_receivers
+ORDER BY office_code, points
+) as a 
+LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+where a.office_code = '".$parent_office_code."' and a.rank = ".$reverse_rank;
+
+                $employee_reverse_rank = mysqli_query($conn, $query_reverse_rank);
+                
+                while ($employee_reverse_rank_result = mysqli_fetch_array($employee_reverse_rank)) {
+                    $reverse_rank_employee_id = $employee_reverse_rank_result["employee_id"];
+                }
+
+//echo $foward_rank;     
+if(!empty($reverse_rank_employee_id)){
+array_push($employee_rank_arr,$reverse_rank_employee_id);     
+}
+
+
+//print_r($employee_rank_arr);
+
+$result_arr = array();
+
+foreach($employee_rank_arr as $item) {
+    $query_receiver_info = "
+
+SELECT a.id, a.lan_id, a.employee_id, a.office_code, a.points, b.name as level, a.rank as office_rank, a.overall_rank from (    
+SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
+SELECT GROUP_CONCAT( DISTINCT points
+ORDER BY points DESC ) FROM arms_game_receivers)
+) AS overall_rank
+ FROM arms_game_receivers
+ORDER BY office_code, points
+) as a 
+LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+where ( a.employee_id = '".$item."' )
+";
+    
+    $result_receiver_info = mysqli_query($conn, $query_receiver_info);
+    
+
+                while($r = mysqli_fetch_assoc($result_receiver_info)) {
+                    $result_arr[] = $r;
+                }
+}
+
+print json_encode($result_arr);
+
+    break;
   case "badges":
     $query_badges = "
 

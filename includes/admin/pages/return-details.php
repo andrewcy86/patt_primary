@@ -97,6 +97,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 			//$status_slug = get_term_by('ID', $decline_status_id );
 			//$decline_status = get_term_by( 'id', 1023 ); 
 			//$real_array_of_users = ($return_obj->user_id) ? $return_obj->user_id : [];
+			$return_initiated = $return_obj->return_initiated;
 			$return_initiated_date = $return_obj->return_date;
 			$return_shipped_date = '[Remove From Display]'; 
 			$returned_date = $return_obj->return_receipt_date;
@@ -425,7 +426,7 @@ if(in_array($current_user->ID, $decline_users_arr) || !empty(array_intersect($de
 			<?php				
 				if( $agent_permissions['label'] == 'Agent' || $agent_permissions['label'] == 'Administrator' || ($agent_permissions['label'] == 'Manager') ) 
 				{
-					if( $status_cancelled == 0 ) 
+					if( $status_cancelled == 0 && $return_initiated == 1 ) 
 					{
 		
 			?>
@@ -433,6 +434,18 @@ if(in_array($current_user->ID, $decline_users_arr) || !empty(array_intersect($de
 			<!-- PATT Begin -->
 			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
 			<!-- PATT End -->
+			
+			<?php
+					}
+					else
+				    {
+		
+			?>
+			
+            			<!-- PATT Begin -->
+            			<button disabled style="border: none; background: transparent;"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></button>
+            			<a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="The Decline Initiated checkbox must be checked and saved before adding a shipping address"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
+            			<!-- PATT End -->
 			
 			<?php
 					}
@@ -447,9 +460,9 @@ if(in_array($current_user->ID, $decline_users_arr) || !empty(array_intersect($de
 		
 			?>
 			
-			<!-- PATT Begin -->
-			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
-			<!-- PATT End -->
+        			<!-- PATT Begin -->
+        			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
+        			<!-- PATT End -->
 			
 			<?php
 					}
@@ -592,6 +605,8 @@ if(in_array($current_user->ID, $decline_users_arr) || !empty(array_intersect($de
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <script>
  jQuery(document).ready(function() {
+     // Inititate the tooltip popup
+     jQuery('[data-toggle="tooltip"]').tooltip(); 
   
   // If a Requester (who did not submit the Request that is being Declined) tries to access page, redirect back to Dashboard
 	// Need to add code to get the original requestor, then compare that to who is trying to access. 

@@ -27,6 +27,11 @@ if (!empty($api_key) && !empty($office_code)) {
         $set_api = $api_result["COUNT"];
     }
     
+    if(strlen($office_code) != 8) {
+        $office_code = Patt_Custom_Func::company_name_conversion($office_code);
+    }
+            
+    
     // Get AA Ship from office_code
     $query_organization = "SELECT organization
     FROM " . $wpdb->prefix . "wpsc_epa_program_office 
@@ -75,9 +80,8 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
-where a.office_code = '".$parent_office_code."'
-";
-    
+where a.office_code = '".$parent_office_code."'  LIMIT 10";
+
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
     $rows = array();

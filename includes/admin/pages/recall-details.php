@@ -23,7 +23,7 @@ $wpsc_redirect_to_ticket_list  = get_option('wpsc_redirect_to_ticket_list');
 $wpsc_allow_rich_text_editor   = get_option('wpsc_allow_rich_text_editor');
 $rich_editing = $wpscfunction->rich_editing_status($current_user);
 $wpsc_allow_reply_confirmation = get_option('wpsc_allow_reply_confirmation');
-$ticket_status       = $wpscfunction->get_ticket_status($ticket_id);
+$ticket_status = $wpscfunction->get_ticket_status($ticket_id);
 
 // Icons
 $icons = '';
@@ -191,6 +191,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			$received_date = $recall_obj->request_receipt_date;
 			$returned_date = $recall_obj->return_date;
 			$ticket_id = $recall_obj->ticket_id;
+			$recall_approved = $recall_obj->recall_approved;
 			
 			// Update Date Format
 			//$request_date = date('m/d/yy h:m', strtotime($request_date));
@@ -385,13 +386,25 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 //				($agent_permissions['label'] == 'Requester')		
 				if( ($status == 'Recalled' && $agent_permissions['label'] == 'Agent') || ($status == 'On Loan' && $current_user_on_request) || $agent_permissions['label'] == 'Administrator' || ($status == 'Recalled' && $agent_permissions['label'] == 'Manager') ) 
 				{
-					if( $status_cancelled == 0 ) 
+					if( $status_cancelled == 0 && $recall_approved == 1 ) 
 					{
 		
 			?>
-			<!-- PATT Begin -->
-			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
-			<!-- PATT End -->
+            			<!-- PATT Begin -->
+            			<a href="#" onclick="wppatt_get_shipping_tracking_editor()"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></a>
+            			<!-- PATT End -->
+            			<?php
+					}
+					else
+				    {
+		
+			?>
+			
+            			<!-- PATT Begin -->
+            			<button disabled style="border: none; background: transparent;"><i aria-hidden="true" class="fas fa-edit" title="Shipping Tracking Editor"></i><span class="sr-only">Shipping Tracking Editor</span></button>
+            			<a href="#" aria-label="Filter" data-toggle="tooltip" data-placement="right" data-html="true" title="The Recall Approved checkbox must be checked and saved before adding a shipping address"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a>
+            			<!-- PATT End -->
+			
 			<?php
 					}
 				}
@@ -998,6 +1011,9 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <script>
 jQuery(document).ready(function() {
+    
+    // Inititate the tooltip popup
+     jQuery('[data-toggle="tooltip"]').tooltip(); 
 	 
 	//Check if real data, otherwise set alert 
 	let recall_type = '<?php echo $recall_type ?>';

@@ -91,9 +91,10 @@ foreach ($shipped_return_status_query as $item) {
 	$data_status = [ 'return_status_id' => $status_decline_shipped_term_id ]; //change status from Decline Initiated to Decline Shipped
 	$obj = Patt_Custom_Func::update_return_data( $data_status, $where );
 	
-	$data_update_decline_completion = array('return_complete' => 1);
-    $data_where_decline_completions = array('id' => $return_id);
-    $wpdb->update($wpdb->prefix . 'wpsc_epa_return', $data_update_decline_completion, $data_where_decline_completions);
+	// The return_complete column is being updated when the decline status is changed 
+// 	$data_update_decline_completion = array('return_complete' => 1);
+//     $data_where_decline_completions = array('id' => $return_id);
+//     $wpdb->update($wpdb->prefix . 'wpsc_epa_return', $data_update_decline_completion, $data_where_decline_completions);
     
     
 	// Update Decline (Return) ship date  when it is shipped.

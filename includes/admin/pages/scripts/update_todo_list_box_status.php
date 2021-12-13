@@ -31,11 +31,13 @@ if( !taxonomy_exists('wppatt_recall_statuses') ) {
 // Recall status slugs
 $recall_recalled_tag = get_term_by('slug', 'recalled', 'wppatt_recall_statuses'); 
 $recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
-$recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses'); 
+$recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses');
+$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses'); 
 
 $recall_recalled_term = $recall_recalled_tag->term_id;
 $recall_approved_term = $recall_approved_tag->term_id;
 $recall_complete_term = $recall_complete_tag->term_id;
+$recall_shipped_back_term = $recall_shipped_back_tag->term_id;
 
 
 // Register Decline Status Taxonomy
@@ -47,10 +49,12 @@ if( !taxonomy_exists('wppatt_return_statuses') ) {
 	register_taxonomy( 'wppatt_return_statuses', 'wpsc_ticket', $args );
 }
 
-// Recall status slugs
-$decline_initiated_tag = get_term_by('slug', 'decline-initiated', 'wppatt_return_statuses'); 
-$decline_initiated_term = $decline_initiated_tag->term_id;
+// Decline status slugs
+$decline_initiated_tag = get_term_by('slug', 'decline-initiated', 'wppatt_return_statuses');
+$decline_complete_tag = get_term_by('slug', 'decline-complete', 'wppatt_return_statuses');
 
+$decline_initiated_term = $decline_initiated_tag->term_id;
+$decline_complete_term = $decline_complete_tag->term_id;
 
 // Box status flow
 // $next_status_arr is an array where the index is the term_id for the current box status, 
@@ -69,8 +73,10 @@ $next_status_arr = [];
 $next_status_arr[ $box_scanning_preparation_tag->term_id ] = $box_scanning_digitization_tag->term_id;
 $next_status_arr[ $box_scanning_digitization_tag->term_id ] = $box_qa_qc_tag->term_id;
 $next_status_arr[ $box_qa_qc_tag->term_id ] = $box_digitized_not_validated_tag->term_id;
-$next_status_arr[ $box_destruction_approved_tag->term_id ] = $box_destruction_approved_tag->term_id;
+$next_status_arr[ $box_destruction_approved_tag->term_id ] = $box_destruction_of_source_tag->term_id;
 $next_status_arr[ $box_destruction_of_source_tag->term_id ] = $box_completed_dispositioned_tag->term_id;
+// $next_status_arr[ $box_destruction_approved_tag->term_id ] = $box_destruction_approved_tag->term_id;
+// $next_status_arr[ $box_destruction_of_source_tag->term_id ] = $box_completed_dispositioned_tag->term_id;
 
 // Get the next status based on the current status
 $next_box_status = $next_status_arr[ $current_box_status ];
@@ -168,7 +174,7 @@ if( $type == 'todo_box_status_update' ) {
 	
 	if( $current_recall_status == $recall_approved_term ) {
   	$data_update = [ 'recall_approved'=>1 ];
-	} elseif( $current_recall_status == $recall_complete_term ) {
+	} elseif( $current_recall_status == $recall_shipped_back_term ) {
   	$data_update = [ 'recall_complete'=>1 ];
 	}
   
@@ -181,9 +187,12 @@ if( $type == 'todo_box_status_update' ) {
 	$data_where = array( 'return_id' => $item_id );
 	$data_update;
 	
-	if( $current_decline_status == $decline_initiated_term ) {
-  	$data_update = [ 'return_complete'=>1 ];
-	} 
+	if( $current_decline_status == $decline_initiated_tag->term_id ) {
+  		// $data_update = [ 'return_complete'=>1 ];
+		  $data_update = [ 'return_initiated'=>1 ];
+	} elseif( $current_decline_status == $decline_complete_tag->term_id ) {
+		$data_update = [ 'return_complete'=>1 ];
+	}
   
   $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
   
@@ -204,6 +213,12 @@ $response = array(
 	"recall_recalled_tag" => $recall_recalled_tag,
 	"recall_complete_term" => $recall_complete_term,
 	"recall_complete_tag" => $recall_complete_tag,
+	"recall_shipped_back_term" => $recall_shipped_back_term,
+	"recall_shipped_back_tag" => $recall_shipped_back_tag,
+	"decline_initiated_term" => $decline_initiated_term,
+	"decline_initiated_tag" => $decline_initiated_tag,
+	"decline_complete_term" => $decline_complete_term,
+	"decline_complete_tag" => $decline_complete_tag,
 	"next_status_arr" => $next_status_arr,
 	"next_box_status" => $next_box_status,
 	"storage_location_status_flag_name" => $storage_location_status_flag_name,

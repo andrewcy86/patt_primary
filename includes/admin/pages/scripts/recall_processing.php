@@ -213,6 +213,7 @@ $baseQuery = "
 SELECT
     " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id,
+    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_approved,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.expiration_date,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.request_date,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.request_receipt_date,
@@ -349,7 +350,8 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 		"request_receipt_date"=> (strtotime( $row['request_receipt_date']) > 0) ? date('m/d/Y', strtotime( $row['request_receipt_date'])) : 'N/A', 		
 //		"expiration_date"=>"90 Days", //date('m/d/Y', strtotime( $date_expiration)), 
 //		"tracking_number"=>$row['tracking_number'],
- 		"tracking_number"=>$track
+ 		"tracking_number"=>$track,
+ 		"recall_approved"=>$row['recall_approved'],
    );
    
    // Clear icons

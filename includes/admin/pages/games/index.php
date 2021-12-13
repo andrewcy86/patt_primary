@@ -28,7 +28,7 @@
 <p><strong>Required Parameters:<br /></strong></p>
 <p><strong>employee_id: </strong>(S) EPA Employee ID</p>
 <p><strong>*lan_id: </strong>(S) EPA LAN ID *Optional</p>
-<p><strong>type</strong>: (S) Available options: profile, badges. Gets information on the user including their points, level, office rank and overall rank. Get badges that have been awarded to the user.</p>
+<p><strong>type</strong>: (S) Available options: profile, badges, office_proximity. Gets information on the user including their points, level, office rank and overall rank. Get badges that have been awarded to the user.</p>
 <p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
 <h3>Get Data [POST]</h3>
 <p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/get_data.php</strong></p>
@@ -45,6 +45,71 @@
 <p><strong>Required Parameters:</strong></p>
 <p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
 <p>Retrieves all receivers and their overall rank.&nbsp;</p>
+
+<h3>Update Tables [POST]</h3>
+<p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/update_tables.php</strong></p>
+<h4>All UPDATE statements require the database ID and active will always be set to true by default on INSERT.</h4>
+<h4>INSERT/UPDATE to the conditions, events, rewards, and rules tables</h4>
+<hr>
+
+<h4>Conditions Table : INSERT</h4>
+<p><strong>Required Parameters:</strong></p>
+<ul>
+<li><strong>rule_id</strong>: (I) Foreign key to the rules table</li>
+<li><strong>operation</strong>: (S)</li>
+<li><strong>event_id</strong> (I) Foreign key to the events table</li>
+<li><strong>expression</strong>: (S)</li>
+<li><strong>value</strong>: (I) </li>
+</ul>
+<h4>Conditions Table : UPDATE</h4>
+<p><strong>Optional Parameters:</strong></p>
+<li><strong>rule_id</strong>: (I) Foreign key to the rules table</li>
+<li><strong>operation</strong>: (S)</li>
+<li><strong>event_id</strong>: (I) Foreign key to the events table</li>
+<li><strong>expression</strong>: (S)</li>
+<li><strong>value</strong>: (I)</li>
+<hr>
+
+<h4>Events Table : INSERT</h4>
+<p><strong>Required Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>description</strong>: (S)</li>
+<li><strong>value</strong>: (I)</li>
+<h4>Events Table : UPDATE</h4>
+<p><strong>Optional Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>description</strong>: (S)</li>
+<li><strong>value</strong>: (I)</li>
+<hr>
+
+<h4>Rewards Table : INSERT</h4>
+<p><strong>Required Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>description</strong>: (S)</li>
+<li><strong>image_url</strong>: (S)</li>
+<h4>Rewards Table : UPDATE</h4>
+<p><strong>Optional Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>description</strong>: (S)</li>
+<li><strong>active</strong>: (B)</li>
+<li><strong>image_url</strong>: (S)</li>
+<hr>
+
+<h4>Rules Table : INSERT</h4>
+<p><strong>Required Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>rewards_id</strong>: (I) Foreign key to the rewards table</li>
+<p><strong>Optional Parameters:</strong></p>
+<li><strong>start_date</strong>: (DT) Defaults to 0000-00-00 00:00:00 </li>
+<li><strong>end_date</strong>: (DT) Defaults to 0000-00-00 00:00:00 </li>
+<h4>Rewards Table : UPDATE</h4>
+<p><strong>Optional Parameters:</strong></p>
+<li><strong>name</strong>: (S)</li>
+<li><strong>rewards_id</strong>: (I) Foreign key to the rewards table</li>
+<li><strong>active</strong> (B)</li>
+<li><strong>start_date</strong>: (DT)</li>
+<li><strong>end_date</strong>: (DT)</li>
+<hr>
 
 <h2>Error Codes</h2>
 <p><strong>400: </strong> Missing field</p>

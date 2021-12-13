@@ -23,6 +23,24 @@ if (!class_exists('Patt_Custom_Func')) {
             $this->table_prefix = $wpdb->prefix;
         }
 
+public static function company_name_conversion($company_name)
+{
+    global $wpdb;
+
+$get_office_code = $wpdb->get_row("
+SELECT office_code
+FROM " . $wpdb->prefix . "wpsc_epa_program_office
+WHERE
+office_acronym = '" . $company_name . "' AND
+parent_office_code = 0
+");
+
+$office_code = $get_office_code->office_code;
+
+return $office_code;
+    
+}
+
 
 public static function json_response($code = 200, $message = null)
 {
@@ -2703,7 +2721,7 @@ public static function id_in_recall( $identifier, $type ) {
                             ];
 
             $select_fields = [
-                "{$wpdb->prefix}wpsc_epa_return" => ['id', 'return_id', 'return_date', 'return_receipt_date', 'expiration_date', 'comments', 'return_status_id', 'updated_date', 'return_complete'],
+                "{$wpdb->prefix}wpsc_epa_return" => ['id', 'return_id', 'return_date', 'return_receipt_date', 'expiration_date', 'comments', 'return_status_id', 'updated_date', 'return_initiated', 'return_complete'],
                 // "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
 //                "{$wpdb->prefix}wpsc_epa_folderdocinfo" => ['title', 'folderdocinfo_id as folderdoc_id'],
                 "{$wpdb->prefix}wpsc_epa_return_items" => ['box_id', 'folderdoc_id', 'saved_box_status'],
