@@ -263,9 +263,10 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
              </select>
     <br /><br />
     	
-               <select id='searchByECMSSEMS' aria-label='Search by ECMS or SEMS'>
-               <option value=''>-- Select ECMS or SEMS --</option>
-               <option value='ECMS'>ECMS</option>
+               <!-- ECMS has been updated to be called ARMS instead -->
+               <select id='searchByECMSSEMS' aria-label='Search by ARMS or SEMS'>
+               <option value=''>-- Select ARMS or SEMS --</option>
+               <option value='ECMS'>ARMS</option>
                <option value='SEMS'>SEMS</option>
              </select>
              
@@ -737,6 +738,7 @@ if($rescan_count > 0) {
         dataTable.draw();
     });
     
+  	// ECMS has been updated to be called ARMS instead
     jQuery("#searchByECMSSEMS").change(function(){
         dataTable.state.save();
         dataTable.draw();

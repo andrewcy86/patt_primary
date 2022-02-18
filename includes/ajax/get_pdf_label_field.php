@@ -73,7 +73,13 @@ if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrato
 
 <h3>Step 1</h3>
 <!--<p>Print box label and afix it to the side of the box.</p>-->
-<p>Print box label and attach the label on the inside of the box lid in each box. Box labels should not be placed on the exterior to prevent carrier labels from obscuring barcodes with their shipping labels.</p>
+<!--<p>Print box label and attach the label on the inside of the box lid in each box. Box labels should not be placed on the exterior to prevent carrier labels from obscuring barcodes with their shipping labels.</p>-->
+<ul style="list-style: disc; padding-left: 50px;">
+    <li>Print box label.</li>
+    <li>Tape label to the inside of the box lid.</li>
+    <li>Repeat for each box in the request.</li>
+</ul>
+<p>Box labels should not be placed on the exterior to prevent carrier labels from obscuring barcodes with their shipping labels.</p>
 
 <?php
 $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
@@ -96,12 +102,24 @@ if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 ?>
 
 <h3>Step 2</h3>
-<p>Print Box list and place it into the first box of earch record schedule series.</p>
+<!--<p>Print Box list and place it into the first box of earch record schedule series.</p>-->
+<ul style="list-style: disc; padding-left: 50px;">
+    <li>Print Box List (link below) and place it into the first box of each digitization request.</li>
+</ul>
 <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_list.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box List Printout</a></strong>
 
 <h3>Step 3</h3>
 <!--<p>Print folder/file labels. Folder seperate sheets must be placed as the first document in the folder. File labels must be placed on the top right of each document within the box.</p>-->
-<p>Print folder/file labels. Folder separator sheets must be placed as the first document in the folder. File labels must be placed on the lower right hand corner of each document. Labels cannot cover any writing on the record, and location may deviate from this standard as necessary for accuracy. See box preparation/label placing Working Instruction for additional information.</p>
+<!--<p>Print folder/file labels. Folder separator sheets must be placed as the first document in the folder. File labels must be placed on the lower right hand corner of each document. Labels cannot cover any writing on the record, and location may deviate from this standard as necessary for accuracy. See box preparation/label placing Working Instruction for additional information.</p>-->
+<ul style="list-style: disc; padding-left: 50px;">
+    <li>Print folder/file labels (links below).</li>
+    <li>Folder separator sheets must be placed as the first document in the folder.</li>
+    <li>File labels must be placed on the lower right hand corner of each document.</li>
+  	<ul style="padding-left: 35px;">
+      <li>Labels must not cover any writing on the record, and location may deviate from this standard as necessary for accuracy.</li>
+      <li>See Generate/Print Box Listing/Barcodes/Labels Work Instruction for additional information.</li>
+  	</ul>
+</ul>
 
 <?php
 $box_index_value = current($list_array);
@@ -138,10 +156,10 @@ if ($list_array_count>1) {
 
 <h3>Step 4</h3>
 <p>If shipping more than 25 boxes at a time and a pallet is used, follow these instructions.</p>
+<ul style="list-style: disc; padding-left: 50px;">
+    <li>Use shrink wrap or straps to secure pallet.</li>
+</ul>
 
-<ol>
-<li>Use shrink wrap or straps to secure pallet.</li>
-</ol>
 
 <h3>Step 5</h3>
 <p>Print shipping label and ensure that tracking number is properly entered into the Paper Asset Tracking Tool.</p>
@@ -149,12 +167,12 @@ if ($list_array_count>1) {
 
 <h3>Shipping Label Placement</h3>
 
-<ol>
+<ul style="list-style: disc; padding-left: 50px;">
 <li>Adhere the shipping label to the box using self-adhesive labels only. Do not use tape or glue.</li>  
 <li>Be sure all edges are secure.</li>  
 <li>Do not cover the barcode with tape or plastic wrap. Doing so will make your barcode un-scannable.</li>  
 <li>Place the shipping label so it does not wrap around the edge of the package. The surface area of the address side of the parcel must be large enough to contain the entire label.</li>  
-</ol>
+</ul>
 
 
 

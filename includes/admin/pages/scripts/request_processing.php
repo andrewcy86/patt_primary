@@ -429,6 +429,7 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
 ## Response
 $response = array(
   "draw" => intval($draw),
+  "docQuery" => $boxQuery,
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data

@@ -115,7 +115,7 @@ $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
 			<option value="<?php echo $shipped_tag->term_id; ?>">Shipped</option>
 			<option value="<?php echo $received_tag->term_id; ?>">Received</option>
 			<option value="<?php echo $in_progress_tag->term_id; ?>">In Process</option>
-			<option value="<?php echo $ecms_tag->term_id; ?>">ECMS</option>
+			<option value="<?php echo $ecms_tag->term_id; ?>">ARMS</option>
 			<option value="<?php echo $sems_tag->term_id; ?>">SEMS</option>
 			<option value="<?php echo $completed_dispositioned_tag->term_id; ?>">Completed/Dispositioned</option>
 			<option value="<?php echo $cancelled_tag->term_id; ?>">Cancelled</option>
@@ -171,9 +171,10 @@ if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Admi
 <?php
 }
 ?>
-       <select id='searchByECMSSEMS' aria-label='Search by ECMS or SEMS'>
-       <option value=''>-- Select ECMS or SEMS --</option>
-       <option value='ECMS'>ECMS</option>
+       <!-- ECMS has been updated to be called ARMS instead -->
+       <select id='searchByECMSSEMS' aria-label='Search by ARMS or SEMS'>
+       <option value=''>-- Select ARMS or SEMS --</option>
+       <option value='ECMS'>ARMS</option>
        <option value='SEMS'>SEMS</option>
      </select>
 <br /><br />
@@ -419,6 +420,7 @@ jQuery("#searchByStatus").change(function(){
     dataTable.draw();
 });
 
+// ECMS has been updated to be called ARMS instead
 jQuery("#searchByECMSSEMS").change(function(){
     dataTable.state.save();
     dataTable.draw();

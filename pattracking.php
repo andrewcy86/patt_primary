@@ -136,6 +136,17 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		        'dashicons-images-alt2',
 		        0
 		    );
+          
+          add_menu_page(
+              __( 'PATT Transfer', 'supportcandy' ),
+              'PATT Transfer',
+              'manage_options',
+              'patt-transfer',
+              'patt_transfer_init_page',
+              'dashicons-randomize',
+              6
+          );
+          
 		}
         
         // Add Return / Decline Shipping CRON
@@ -450,7 +461,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping', 'shipping_page' ); 
             add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
-            
+            add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
             
           }
             
@@ -547,6 +558,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             );
             }
             
+          	function patt_transfer_details(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/patt-transfer-details.php'
+            );
+            }
+          
             function inventory_test(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/test_inventory.php'
             );
@@ -599,6 +615,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 			function batch_uploader_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/batch-uploader.php'
             );
+            }
+          
+          	function patt_transfer_init_page(){
+              include_once( WPPATT_ABSPATH . 'includes/admin/pages/patt-transfer-init.php'
+              );
             }
     
         }
