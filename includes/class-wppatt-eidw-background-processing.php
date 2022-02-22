@@ -93,6 +93,7 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 		$email = $json['Resources']['0']['emails']['0']['value'];
 		$phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
 		$org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
+  		$workforce_id = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['employeeNumber'];
 		
 		//get LAN ID to compare on the box details page
 		$lan_id_username = $json['Resources'][0]['userName'];
@@ -156,6 +157,7 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 		    "phone"=>$phone,
 		    "org"=>$org,
 		    "lan_id"=>$lan_id_username,
+          	"workforce_id"=>$workforce_id,
 		); 
 		   
 		// Use json_encode() function 
@@ -165,7 +167,7 @@ Patt_Custom_Func::insert_api_error('eidw-class-background-processing',$status,$e
 		//echo($json); 
 		   
 		   
-		$lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username;
+		$lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username.','.$workforce_id;
 		
 		$id_query = $wpdb->get_results("SELECT a.id as id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id = '" . $lan_id_check_val . "' AND c.id = ".$ticket_id);
 		

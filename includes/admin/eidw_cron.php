@@ -66,6 +66,7 @@ $full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']
 $email = $json['Resources']['0']['emails']['0']['value'];
 $phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
 $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
+$workforce_id = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['employeeNumber'];
 
 //get LAN ID to compare on the box details page
 $lan_id_username = $json['Resources'][0]['userName'];
@@ -99,6 +100,7 @@ $lan_id_details_array = array(
     "phone"=>$phone,
     "org"=>$org,
     "lan_id"=>$lan_id_username,
+    "workforce_id"=>$workforce_id,
 ); 
    
 // Use json_encode() function 
@@ -108,7 +110,7 @@ $json = json_encode($lan_id_details_array);
 echo($json); 
    
    
-$lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username;
+$lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username.','.$workforce_id;
 
 // Detects update to contact info, if yes then update table
 if ($lan_id_details != $lan_id_details_val && $lan_id_details != 'Error')
