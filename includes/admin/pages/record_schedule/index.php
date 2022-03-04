@@ -5,10 +5,10 @@
  include 'db_connection.php';
  $conn = OpenCon();
 
- $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, Revised_Date
+ $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
  FROM " . $wpdb->prefix . "epa_record_schedule
  WHERE Reserved_Flag = 0 and id != '-99999'
- ORDER BY Schedule_Number ASC";  
+ ORDER BY Schedule_Number ASC";
  $result = mysqli_query($conn, $query);  
  ?>  
 
@@ -50,7 +50,7 @@
                                     <td>'.$row["Function_Code"].'</td>  
                                     <td>'.$row["Program"].'</td>  
                                     <td>'.$row["Applicability"].'</td>
-                                    <td>'.Patt_Custom_Func::get_converted_date($row["Revised_Date"]).'</td>
+                                    <td>'.$row["Revised_Date"].'</td>
                                </tr>  
                                ';  
                           }  

@@ -6,7 +6,7 @@
  $conn = OpenCon();
  
  //all columns from the record_schedule table
- $query_rs ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Function_Title, Program, Applicability, NARA_Disposal_Authority_Record_Schedule_Level, Schedule_Description, Disposition_Instructions, Guidance, Status, Custodians, Reasons_For_Disposition, Related_Schedules, Entry_Date, Previous_NARA_Disposal_Authority, EPA_Approval, NARA_Approval, Revised_Date, Item_Number
+ $query_rs ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Function_Title, Program, Applicability, NARA_Disposal_Authority_Record_Schedule_Level, Schedule_Description, Disposition_Instructions, Guidance, Status, Custodians, Reasons_For_Disposition, Related_Schedules, DATE_FORMAT(`Entry_Date`,'%m/%d/%Y') as Entry_Date, Previous_NARA_Disposal_Authority, DATE_FORMAT(`EPA_Approval`,'%m/%d/%Y') as EPA_Approval, DATE_FORMAT(`NARA_Approval`,'%m/%d/%Y') as NARA_Approval, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date, Item_Number
  FROM " . $wpdb->prefix . "epa_record_schedule 
  WHERE Reserved_Flag = 0 AND id != '-99999' AND Schedule_Number = ". $_GET["rs"] . " LIMIT 1";  
  $result_main = mysqli_query($conn, $query_rs);
@@ -32,7 +32,7 @@ while($row_main = mysqli_fetch_array($result_main))
   {  
    echo '
    <h2>EPA Records Schedule '.$row_main["Schedule_Number"].'</h2>
-   <strong>Status: </strong>'.$row_main["Status"].', '. Patt_Custom_Func::get_converted_date($row_main["Revised_Date"]) . '<br />
+   <strong>Status: </strong>'.$row_main["Status"].', '. $row_main["Revised_Date"] . '<br />
    <strong>Title: </strong>'.$row_main["Schedule_Title"].'<br />  
    <strong>Program: </strong>'.$row_main["Program"].'<br />   
    <strong>Applicability: </strong>'.$row_main["Applicability"].'<br /> 

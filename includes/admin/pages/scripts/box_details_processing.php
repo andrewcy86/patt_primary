@@ -121,7 +121,7 @@ then concat(substring(b.title, 1, 25), '...')
 else b.title 
 end 
 as title,
-b.date,
+DATE_FORMAT(b.date,'%m/%d/%Y') as date,
 b.lan_id as epa_contact_email,
 
 CONCAT(
@@ -171,7 +171,7 @@ then concat(substring(b.title, 1, 25), '...')
 else b.title 
 end 
 as title,
-b.date,
+DATE_FORMAT(b.date,'%m/%d/%Y') as date,
 b.lan_id as epa_contact_email,
 
 CONCAT(
@@ -264,7 +264,7 @@ else {
      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "dbid"=>$row['dbid'],
      "title"=>$row['title'],
-     "date"=>Patt_Custom_Func::get_converted_date($row['date']),
+     "date"=>$row['date'],
      "epa_contact_email"=>$row['epa_contact_email'],
      "validation"=>$validation_icon . ' ' . $row['validation']
    );

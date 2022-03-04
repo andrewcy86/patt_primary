@@ -425,7 +425,10 @@ ob_start();
 
     });
 jQuery('.jsgrid-insert-mode-button').attr('aria-label', 'Add New');
-
+jQuery('.jsgrid-insert-mode-button').attr('title', 'Add New');
+jQuery("<span class='sr-only'>Add New</span>").insertAfter(".jsgrid-insert-mode-button");
+   
+   
                  });
                  
                  

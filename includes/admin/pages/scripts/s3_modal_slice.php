@@ -206,6 +206,7 @@ canvas {
 <!-- 			<input type="text" style="border: none;background: transparent;" id="objectlocation" name="objectlocation" size="150" value=""> -->
 				<input type="hidden" style="border: none;background: transparent;" id="objectkey" name="objectkey" size="150" value="">
 				<input type="hidden" style="border: none;background: transparent;" id="objectlocation" name="objectlocation" size="150" value="">
+          		<input type="hidden" style="border: none;background: transparent;" id="document_id" name="document_id" size="150" value="<?php echo $GLOBALS["id"]; ?>">
 		</div>
 	</div>
 </div>
@@ -232,10 +233,14 @@ function upload(file) {
     jQuery("#upload_alert_status_modal").text(""); 
     jQuery("#objectkey").val("");
     jQuery("#objectlocation").val("");
+  	jQuery("#document_id").val();
     jQuery('#progress .progress-bar').css('width',"0px");
     jQuery('#progress .progress-number').text("");
+  
+  	var doc_id_filename_ext = jQuery("#document_id").val() + "_" + file.name;
 
     s3upload = new S3MultiUpload(file);
+  	//console.log(doc_id_filename_ext);
     console.log('about to upload');
     //console.log({s3upload:s3upload.fileInfo.size});
     

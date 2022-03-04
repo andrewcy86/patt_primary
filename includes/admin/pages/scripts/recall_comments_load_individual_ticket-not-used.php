@@ -242,14 +242,14 @@ echo $padded_request_id;
 									<small><?php echo $customer_email?></small>
 								<?php }?>
 								<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) && $ticket_status):?>
-									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" title="<?php _e('Delete this thread','supportcandy');?>"></i>
-									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i>
+									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" tabindex="0" title="<?php _e('Delete this thread','supportcandy');?>"></i>
+									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread" tabindex="0" title="<?php _e('Edit this thread','supportcandy');?>"></i>
 								<?php endif;?>
 								<?php if($current_user->has_cap('wpsc_agent')): ?>
 								<!--PATT BEGIN
 									<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>
 								PATT END-->
-									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" tabindex="0" title="<?php _e('Thread Info','supportcandy');?>"></i>
 									
 								<?php endif;?>
 							</div>
@@ -339,13 +339,13 @@ echo $padded_request_id;
 									<small><?php echo $customer_email?></small>
 								<?php }?>
 								<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) && $ticket_status):?>
-									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" title="<?php _e('Delete this thread','supportcandy');?>"></i>
-									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread"  title="<?php _e('Edit this thread','supportcandy');?>"></i>
+									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread" tabindex="0" title="<?php _e('Delete this thread','supportcandy');?>"></i>
+									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"   class="fa fa-edit thread_action_btn wpsc_edit_thread" tabindex="0" title="<?php _e('Edit this thread','supportcandy');?>"></i>
 								<?php endif;?>
 								<?php if($current_user->has_cap('wpsc_agent')): ?>
 								    <!--removes button from admin/staff role-->
 									<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>-->
-									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" tabindex="0" title="<?php _e('Thread Info','supportcandy');?>"></i>
 								<?php endif;?>
 							</div>
 							<div class="thread_messege">
@@ -426,14 +426,14 @@ echo $padded_request_id;
 									<small><?php echo $customer_email?></small>
 								<?php }?>
 								<?php if ($wpscfunction->has_permission('edit_delete_ticket',$ticket_id) && $ticket_status):?>
-									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-trash thread_action_btn wpsc_delete_thread"></i>
-									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);"  class="fa fa-edit thread_action_btn wpsc_edit_thread"></i>
+									<i onclick="wpsc_get_delete_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" tabindex="0" class="fa fa-trash thread_action_btn wpsc_delete_thread"></i>
+									<i onclick="wpsc_get_edit_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" tabindex="0" class="fa fa-edit thread_action_btn wpsc_edit_thread"></i>
 								<?php endif;?>
 								<?php if($current_user->has_cap('wpsc_agent')): ?>
 									<!--<i onclick="wpsc_get_create_thread(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>);" class="fa fa-plus-square thread_action_btn wpsc_create_ticket_thread" title="<?php _e('Create new ticket from this thread','supportcandy');?>"></i>-->
 								<?php endif;?>
 								<?php if($current_user->has_cap('wpsc_agent')):?>
-									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
+									<i onclick="wpsc_get_thread_info(<?php echo $ticket_id ?>,<?php echo $thread->ID ?>,'thread');" tabindex="0" class="fas fa-info-circle thread_action_btn wpsc_thread_info" title="<?php _e('Thread Info','supportcandy');?>"></i>
 									
 						        <?php endif;?>
 
