@@ -1110,6 +1110,33 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.storage_location_id = a.
 
 $scanning_d_s_val = $get_todo_flag->destruction_of_source;
 $scanning_b_d_val = $get_todo_flag->box_destroyed;
+
+
+
+// If save enabled, 
+// get all restrictions on the boxes listed.
+if( $save_enabled ) {
+
+	$status_list = Patt_Custom_Func::get_restricted_box_status_list_2( $item_ids, $agent_type ); 
+	$box_statuses = $status_list[ 'box_statuses' ];
+	$restriction_reason = $status_list[ 'restriction_reason' ];
+	$restricted_reason_array = $status_list[ 'restricted_reason_array' ];
+	
+	
+	
+} else {
+	
+	// If save not enabled, list the restriction reason as: C5 - statuses of the selected Boxes are not all the same
+	$box_statuses = [];
+	$restriction_reason = $restriction_reason_C5;
+	
+	foreach( $item_ids as $key => $item ) {
+	  $restricted_reason_array[ $item ] = $restriction_reason_C5;
+  }
+}
+
+// print_r($restricted_reason_array);
+// echo json_encode($restricted_reason_array); 
 ?>
 
 <style>
@@ -1405,10 +1432,15 @@ jQuery(document).ready(function(){
 	let accordion_item_end = '</div></div></div>';
 	let accordion_end = '</div>';
 	
+  
 	accordion_notification += accordion_pre_message;
 	accordion_notification += accordion_start;
   
-/*
+  
+  let restricted_reason_obj = <?php echo json_encode( $restricted_reason_array ); ?>;
+	const restricted_reason_array = Object.entries( restricted_reason_obj );
+  
+
   restricted_reason_array.forEach( function( item, index ) {	
 		
 		let heading = 'heading' + index;
@@ -1433,7 +1465,7 @@ jQuery(document).ready(function(){
 		
 		
 	});
-*/
+
 		
 	
 	
@@ -1541,7 +1573,7 @@ if($scanning_b_d_val == 1) {
 	}
 	
 	// Accordion style error: display
-/*
+
 	if( restricted_reason_array.length > 0 ) {
 		console.log('in');
 		//set_alert('warning', accordion_notification);	
@@ -1553,7 +1585,7 @@ if($scanning_b_d_val == 1) {
 		jQuery('#alert_status').addClass('alert');
 		jQuery('#alert_status').addClass('alert-warning');				
 	}
-*/
+
 
   // additional Accordion code - start
 	jQuery('.section-title').click(function(e) {

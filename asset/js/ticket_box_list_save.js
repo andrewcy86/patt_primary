@@ -677,6 +677,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                        let prev_program_office = '';
 	                        let prev_record_schedule = '';
 	                        let prev_site_id = '';
+                          	let prev_box_id = 0;
 							
 							
 							// removes asterisks from upload file headers
@@ -1534,6 +1535,25 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert( alert_message );
 			                                flag = true;
 			                            }
+                                      
+                                      
+                                      
+                                      
+                                      // Validate Box column starts with number 1
+										if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( 
+												  parsedData[2][index_box] != 1 ||
+												  parsedData[2][index_box] == 0
+			                            		)
+			                            ) {
+			                                let alert_message = '';
+
+											alert_message += 'Please start line '+ (count + 1) +' with number 1.' ;
+			                                alert( alert_message );
+			                                flag = true;
+			                            }
 										
 										
 			                            // Clear table if err
@@ -1584,6 +1604,27 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                prev_epa_contact = parsedData[count][index_epa_contact];
 			                                prev_program_office = parsedData[count][index_prog_office];
 			                                prev_record_schedule = parsedData[count][index_rec_sched];
+                                          
+                                          	prev_box_id = parsedData[count-1][index_box]; 
+
+											// Validate Box column has sequential box ordering
+											if( 
+												flag != true && 
+												count > 1 && 
+													(
+													parsedData[count][index_box] > 0 &&
+													parsedData[count-1][index_box] >= 1 &&
+													prev_box_id != parsedData[count][index_box] &&
+													(parsedData[count][index_box]) - prev_box_id != 1
+													)
+											) {
+												let alert_message = '';
+												alert_message += 'Box ID number should be in sequential order.';
+												// alert_message += 'number has changed to ' + (parsedData[count][index_box] - prev_box_id) + ' from ' +  prev_box_id;
+												alert( alert_message );
+												flag = true;
+												return;
+											}
 			                                
 			                                if( superfundx == 'yes' ) {
 				                                let prev_site_id_array = parsedData[count][index_site_id].split( '/' );

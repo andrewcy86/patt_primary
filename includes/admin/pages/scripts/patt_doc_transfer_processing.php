@@ -498,7 +498,8 @@ $published_failure_icon = '';
 $published_warning_icon = '';
 
 $clock_icon = '<a><span style="font-size: 1.2em; margin-left: 4px; color: #111;"><i class="fas fa-clock" aria-hidden="true" title="Duration"></i><span class="sr-only"></span></span></a>';  
- 
+$published_icon = '';
+  
 // Received Stage Statuses
 if($row['received_stage'] == 0) {
 	// Pending Status
@@ -617,6 +618,7 @@ if($row['published_stage'] == 0) {
 elseif($row['published_stage'] == 1) {
 	// Success Status
 	$published_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Published Stage: Success"><span style="font-size: 1.3em; color: #2f631d;margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>';
+  	$published_icon = '<a><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-solid fa-shield-blank" aria-hidden="true" title="Published"></i><span class="sr-only"></span></span></a>';
 }
 elseif($row['published_stage'] == 2) {
 	// Fail Status
@@ -637,7 +639,7 @@ else {
 
 	$data[] = array(
 		"db_id"=>$row['ID'],
-		"doc_id"=>$row['folderdocinfo_id_flag'],
+		"doc_id"=>$row['folderdocinfo_id_flag'].$published_icon,
 		"status"=>$row['status'],
 		"received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon . '' . $published_pending_icon.$published_success_icon.$published_failure_icon.$published_warning_icon,
 		"duration"=> $duration->format('%H:%I:%S').$clock_icon,
