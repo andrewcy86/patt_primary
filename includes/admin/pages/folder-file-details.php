@@ -170,6 +170,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
 	);
     }
     //folderdocinfofiles table id
+	$folderfile_file_object_key = $folderfile_details->object_key;
     $folderdocinfofileid = $folderfile_details->id;
     //folderdocinfofiles folderdocinfofile_id
 	$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;    
@@ -803,6 +804,7 @@ echo '</div>';
 echo '<input type="hidden" id="mdocs-name-single-file" />';
 echo '<input type="hidden" name="folderdocinfo_files_id" id="folderdocinfo_files_id" />';
 echo '<input type="hidden" name="folderdocinfofile_id" id="folderdocinfofile_id" />';
+echo '<input type="hidden" name="previous_s3_key" id="previous_s3_key" />';
 
 // Hide DropZone if no file attachment aka no digital file.
 if( $folderfile_details->attachment == '0' ) {  ?> 
@@ -846,6 +848,9 @@ if( $folderfile_details->file_size == null || $folderfile_details->file_size == 
 
 	let folderdocinfofile_id = '<?php echo $folderfile_folderdocinfofile_id; ?>';
 	jQuery('input[name=folderdocinfofile_id]').val( folderdocinfofile_id ); 
+
+	let previous_s3_key = '<?php echo $folderfile_file_object_key; ?>';
+	jQuery('input[name=previous_s3_key]').val( previous_s3_key ); 
 </script>
 <?php
 
