@@ -802,7 +802,7 @@ echo '</div>';
 // Hidden Stuff
 echo '<input type="hidden" id="mdocs-name-single-file" />';
 echo '<input type="hidden" name="folderdocinfo_files_id" id="folderdocinfo_files_id" />';
-
+echo '<input type="hidden" name="folderdocinfofile_id" id="folderdocinfofile_id" />';
 
 // Hide DropZone if no file attachment aka no digital file.
 if( $folderfile_details->attachment == '0' ) {  ?> 
@@ -843,6 +843,9 @@ if( $folderfile_details->file_size == null || $folderfile_details->file_size == 
 	// Sets the PK for folderdocinfo_files to be used by the s3upload.js file
 	let folderfileid = '<?php echo $folderfile_details->id; ?>';
 	jQuery('input[name=folderdocinfo_files_id]').val( folderfileid ); 
+
+	let folderdocinfofile_id = '<?php echo $folderfile_folderdocinfofile_id; ?>';
+	jQuery('input[name=folderdocinfofile_id]').val( folderdocinfofile_id ); 
 </script>
 <?php
 
