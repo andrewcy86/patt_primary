@@ -123,7 +123,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         
         // Add Decline Reminder Email & PM Notification CRON // No longer used. All actions done in wppatt_return_shipping_status_schedule
         //add_action( 'wppatt_decline_reminder_cron', array($frontend, 'wppatt_decline_reminder_email_cron_schedule'));
-        
+
+        // Add PATT/ARMS Tranfer Monitoring CRON
+        add_action( 'wppatt_patt_arms_monitor_cron', array($frontend, 'wppatt_patt_arms_monitor_cron_schedule'));
+      
         // add menu item for specialty upload section - BATCH UPLOADER
         add_action( 'admin_menu', 'wpdocs_register_my_custom_menu_page' );
 		function wpdocs_register_my_custom_menu_page() {

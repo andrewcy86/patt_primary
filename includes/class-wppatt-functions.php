@@ -111,6 +111,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     public function wppatt_timestamp_reporting_folderfile_recall_decline_schedule() {
     include WPPATT_ABSPATH . 'includes/admin/timestamp_reporting_folderfile_recall_decline_cron.php';
     }
+
+    // CRON PATT/ARMS Tranfer Monitoring
+    public function wppatt_patt_arms_monitor_cron_schedule() {
+    include WPPATT_ABSPATH . 'includes/admin/patt_arms_monitor_cron.php';
+    }
     
     public function addStyles(){    
         wp_register_style('wpsc-bootstrap-css', WPSC_PLUGIN_URL.'asset/css/bootstrap-iso.css?version='.WPSC_VERSION );
