@@ -465,7 +465,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
-            
+            add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
           }
             
 			function custom_menu_item_redirect_external_link() {
@@ -563,6 +563,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
           	function patt_transfer_details(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/patt-transfer-details.php'
+            );
+            }
+          
+          	function missed_files_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/missed-files.php'
             );
             }
           

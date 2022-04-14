@@ -44,7 +44,7 @@ if (!empty($api_key) && !empty($office_code)) {
     
     $query_parent_office_code = "SELECT office_code
     FROM " . $wpdb->prefix . "wpsc_epa_program_office 
-    WHERE organization = '" . $organization_code . "' AND parent_office_code = '0' LIMIT 1";
+    WHERE organization = '" . $organization_code . "' AND parent_office_code LIKE '0%' LIMIT 1";
     $result_parent_office_code = mysqli_query($conn, $query_parent_office_code);
     
     while ($parent_office_code_result = mysqli_fetch_array($result_parent_office_code)) {

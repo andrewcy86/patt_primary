@@ -179,6 +179,92 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 } else {
     echo 'Request does not exist or is archived.';
 }
+    } elseif (preg_match("/^P-(E|W)-[0-9]{5}$/", $barcode)){
+
+$box_details = $wpdb->get_results(
+				"
+SELECT " . $wpdb->prefix . "wpsc_epa_boxinfo.id as id, " . $wpdb->prefix . "wpsc_epa_boxinfo.id as box_data_id, " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id as box_id, 
+" . $wpdb->prefix . "terms.name as digitization_center,
+" . $wpdb->prefix . "wpsc_epa_storage_location.aisle as aisle, " . $wpdb->prefix . "wpsc_epa_storage_location.bay as bay, " . $wpdb->prefix . "wpsc_epa_storage_location.shelf as shelf, " . $wpdb->prefix . "wpsc_epa_storage_location.position as position, " . $wpdb->prefix . "wpsc_epa_location_status.locations as physical_location,
+(SELECT " . $wpdb->prefix . "terms.name FROM " . $wpdb->prefix . "wpsc_epa_boxinfo, " . $wpdb->prefix . "terms WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.box_status = " . $wpdb->prefix . "terms.term_id AND " . $wpdb->prefix . "wpsc_epa_boxinfo.id = box_data_id) as status,
+" . $wpdb->prefix . "wpsc_epa_program_office.office_acronym as program_office,
+" . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number as record_schedule
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id = " . $wpdb->prefix . "wpsc_epa_storage_location.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_location_status ON " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id = " . $wpdb->prefix . "wpsc_epa_location_status.id
+INNER JOIN " . $wpdb->prefix . "terms ON  " . $wpdb->prefix . "terms.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.office_code = " . $wpdb->prefix . "wpsc_epa_boxinfo.program_office_id
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "epa_record_schedule.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.record_schedule_id
+
+WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.pallet_id = '" . $barcode ."'"
+			);
+      
+   
+
+			$tbl = '<strong>Boxes associated with this pallet:</strong><br /><br />
+<table id="dataTable" class="stripe" width="100%">
+<thead>
+  <tr>
+    <th width="35px" height="50px"></th>
+    <th>ID</th>
+    <th>Physical Location</th>
+    <th class="desktop">Digitization Center</th>
+    <th class="desktop">Shelf Location</th>
+    <th class="desktop">Box Status</th>
+    <th class="desktop">Program Office</th>
+    <th class="desktop">Record Schedule</th>
+  </tr>
+ </thead><tbody>
+';
+
+			foreach ($box_details as $info) {
+			    $boxlist_dbid = $info->id;
+				$boxlist_id = $info->box_id;
+				$boxlist_location = $info->digitization_center;
+				if ($boxlist_location == 'East') {
+					$boxlist_location_val = "E";
+				} else {
+					$boxlist_location_val = "W";
+				}
+
+			    if (($info->aisle == '0') || ($info->bay == '0') || ($info->shelf == '0') || ($info->position == '0')) {
+				$boxlist_shelf_location = 'Currently Unassigned';
+				} else {
+                $boxlist_shelf_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_location_val;
+				}
+				
+				$boxlist_box_status = $info->status;
+                $boxlist_physical_location = $info->physical_location;
+                $boxlist_program_office = $info->program_office;
+                $boxlist_record_schedule = $info->record_schedule;
+                
+                $boxdetails_url = admin_url( 'admin.php?page=boxdetails', 'https' );
+                
+			$tbl .= '<tr>
+            <td  width="35px" height="50px"></td>
+            <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" class="text_link" target="_blank">' . $boxlist_id . '</a></td>';
+            
+            $type = 'box';
+            $loc_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
+            
+            if($loc_id != '') {
+             $tbl .= '<td>' . $boxlist_physical_location . ' ('.$loc_id.')</td>';
+            } else {
+             $tbl .= '<td>' . $boxlist_physical_location . '</td>';           
+            }
+            
+            $tbl .= '<td>' . $boxlist_location . '</td>
+            <td>' . $boxlist_shelf_location . '</td>
+            <td>' . $boxlist_box_status . '</td>
+            <td>' . $boxlist_program_office . '</td>
+            <td>' . $boxlist_record_schedule . '</td>
+            </tr>
+            ';
+			}
+			$tbl .= '</tbody></table>';
+
+			echo $tbl;
+      
 //Determine if string contains a box ID
     } elseif (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $barcode)){
 

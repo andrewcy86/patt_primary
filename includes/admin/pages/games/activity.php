@@ -90,21 +90,18 @@ if (!empty($api_key)) {
             if(strlen($office_code) != 8) {
                 $office_code = Patt_Custom_Func::company_name_conversion($office_code);
             }
-            
             //Cross check office_code with wpqa_wpsc_epa_program_office to make sure it is valid
             $query_organization = "SELECT organization
  FROM " . $wpdb->prefix . "wpsc_epa_program_office 
  WHERE office_code = '" . $office_code . "' LIMIT 1";
-        
         $result_organization = mysqli_query($conn, $query_organization);
         
         while ($organization_result = mysqli_fetch_array($result_organization)) {
             $organization_code = $organization_result["organization"];
         }
-            
             $query_office_code = "SELECT COUNT(id) AS COUNT, office_code
  FROM " . $wpdb->prefix . "wpsc_epa_program_office 
- WHERE organization = '" . $organization_code . "' AND parent_office_code = '0' LIMIT 1";
+ WHERE organization = '" . $organization_code . "' AND parent_office_code LIKE '0%' LIMIT 1";
             
             $result_office_code = mysqli_query($conn, $query_office_code);
             
@@ -112,7 +109,6 @@ if (!empty($api_key)) {
                 $set_office_code = $office_code_result["COUNT"];
                 $parent_office_code = $office_code_result["office_code"];
             }
-            
             if ($set_office_code > 0) {
                 //Check if user exists in the receivers table
                 $query_employee_id = "SELECT COUNT(id) AS COUNT

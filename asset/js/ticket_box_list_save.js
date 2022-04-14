@@ -678,6 +678,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                        let prev_record_schedule = '';
 	                        let prev_site_id = '';
                           	let prev_box_id = 0;
+                          	let prev_folder_id = 0;
 							
 							
 							// removes asterisks from upload file headers
@@ -1605,7 +1606,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                prev_program_office = parsedData[count][index_prog_office];
 			                                prev_record_schedule = parsedData[count][index_rec_sched];
                                           
-                                          	prev_box_id = parsedData[count-1][index_box]; 
+                                          	prev_box_id = parsedData[count-1][index_box];
+                                          	prev_folder_id = parsedData[count-1][index_folder_id];
 
 											// Validate Box column has sequential box ordering
 											if( 
@@ -1624,6 +1626,38 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 												alert( alert_message );
 												flag = true;
 												return;
+											} else {
+												// Validate Folder Identifier column has sequential box ordering
+												if( 
+													flag != true && 
+													count > 1 && 
+														(
+														parsedData[count][index_box] != 1 &&
+														parsedData[count-1][index_box] != parsedData[count][index_box] &&
+														parsedData[count][index_folder_id] != 1
+														)
+												) {
+													let alert_message = '';
+														alert_message += 'Please start a new box list folder identifier column with the number 1.';
+														// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+														// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+														alert( alert_message );
+														flag = true;
+														return;
+												}
+
+												if(
+													parsedData[count][index_folder_id] > 1 &&
+													(parsedData[count][index_folder_id]) - prev_folder_id != 1
+												){
+													let alert_message = '';
+													alert_message += 'Folder identifier number should be in sequential order.';
+													// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+													// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+													alert( alert_message );
+													flag = true;
+													return;
+												}	
 											}
 			                                
 			                                if( superfundx == 'yes' ) {

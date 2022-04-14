@@ -79,7 +79,7 @@ $newPalletID_str = str_replace(",", "|", implode(',', $newPalletID_arr));
 
 if($searchByDocID != ''){
     //used to be a.folderdocinfo_id
-   $searchQuery .= "and (a.folderdocinfofile_id REGEXP '^(".$searchByDocID.")$' ) ";
+   $searchQuery .= "and (folderdocinfofile_id REGEXP '^(".$searchByDocID.")$' ) ";
 }
 
 if($newBoxID_str != ''){
@@ -95,7 +95,7 @@ if($searchByProgramOffice != ''){
 }
 
 if($searchByDigitizationCenter != ''){
-   $searchQuery .= " and (f.name ='".$searchByDigitizationCenter."') ";
+   $searchQuery .= " and (e.name ='".$searchByDigitizationCenter."') ";
 }
 
 if($searchByPriority != ''){
@@ -103,7 +103,7 @@ if($searchByPriority != ''){
 }
 
 if($searchByStatus != ''){
-   $searchQuery .= " and (a.status ='".$searchByStatus."') ";
+   $searchQuery .= " and (f.name ='".$searchByStatus."') ";
 }
 
 //Get term_ids for Recall status slugs
@@ -350,7 +350,7 @@ FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = ".$data);
 //       b.request_id like '%".$searchGeneric."%' or
 //       c.office_acronym like '%".$searchGeneric."%') ";
 
-		$searchQuery .= " and (a.folderdocinfofile_id like '%".$searchGeneric."%' or 
+		$searchQuery .= " and (folderdocinfofile_id like '%".$searchGeneric."%' or 
 			status like '%".$searchGeneric."%') ";
 }
 }
@@ -361,7 +361,7 @@ if($searchValue != ''){
 //       b.request_id like '%".$searchValue."%' or
 //       c.office_acronym like '%".$searchValue."%') ";
 
-		$searchQuery .= " and (a.folderdocinfofile_id like '%".$searchValue."%' or
+		$searchQuery .= " and (folderdocinfofile_id like '%".$searchValue."%' or
 			status like '%".$searchGeneric."%')  ";
 }
 
@@ -394,12 +394,7 @@ if($searchValue != ''){
 
 ## Total number of records without filtering
 $sel = mysqli_query($con,"SELECT COUNT(*) as allcount
-FROM " . $wpdb->prefix . "epa_patt_arms_logs as a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdocinfofile_id = a.folderdocinfofile_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE a.ID <> -99999");
+FROM " . $wpdb->prefix . "epa_patt_arms_transfer_errors");
 
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
@@ -407,15 +402,11 @@ $totalRecords = $records['allcount'];
 
 // ## Total number of records with filtering
 $sel = mysqli_query($con,"SELECT COUNT(*) as allcount 
-FROM " . $wpdb->prefix . "epa_patt_arms_logs as a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdocinfofile_id = a.folderdocinfofile_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE a.ID <> -99999" . $stage_status . $overall_status . " AND 1 " . $searchQuery);
+FROM " . $wpdb->prefix . "epa_patt_arms_transfer_errors");
+
 
 // $sel = mysqli_query($con,"SELECT COUNT(*) as allcount
-// FROM " . $wpdb->prefix . "epa_patt_arms_logs");
+// FROM " . $wpdb->prefix . "epa_patt_arms_transfer_errors");
 
 
 
@@ -449,18 +440,8 @@ $totalRecordwithFilter = $records['allcount'];
 ## Fetch records
 //REVIEW
 $boxQuery = "
-SELECT *,
-CONCAT(
-	CASE 
-	WHEN received_stage = 2 THEN CONCAT('<span>',a.folderdocinfofile_id,'</span>')
-	ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=patttransferdetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>') 
-	END) as folderdocinfo_id_flag
-FROM " . $wpdb->prefix . "epa_patt_arms_logs as a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdocinfofile_id = a.folderdocinfofile_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE a.ID <> -99999" . $stage_status . $overall_status . " AND 1 " . $searchQuery;
+SELECT *
+FROM " . $wpdb->prefix . "epa_patt_arms_transfer_errors";
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
@@ -648,15 +629,18 @@ else {
 	$start_stage = Date_Create($row['received_stage_timestamp']);
 	$end_stage = Date_Create($row['metadata_stage_timestamp']);
 	$duration = date_diff($end_stage,$start_stage);
-	
+
+	$last_modified_date = date_create($row['last_modified']);
+	$last_modified_date = date_format($last_modified_date, "m/d/Y");
 
 	$data[] = array(
 		"db_id"=>$row['ID'],
-		"doc_id"=>$row['folderdocinfo_id_flag'].$published_icon,
-		"status"=>$row['status'],
-		"received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon . '' . $published_pending_icon.$published_success_icon.$published_failure_icon.$published_warning_icon,
-		"location"=>$row['name'],
-		"duration"=> $duration->format('%H:%I:%S').$clock_icon,
+		"s3_key"=>$row['s3_key'],
+		"last_modified"=>$last_modified_date,
+		// "doc_id"=>$row['folderdocinfo_id_flag'].$published_icon,
+		// "status"=>$row['status'],
+		// "received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon . '' . $published_pending_icon.$published_success_icon.$published_failure_icon.$published_warning_icon,
+		// "duration"=> $duration->format('%H:%I:%S').$clock_icon,
 	);
 }
 ## Response

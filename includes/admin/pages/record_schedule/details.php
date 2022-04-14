@@ -1,12 +1,15 @@
 <?php  
 
  header("X-Frame-Options: allow-from https://work.epa.gov");
-  
+ //1=Final, 2=Superseded, 3=Draft, 4=Deleted
+
+ $page_type = isset($_GET['p']) ? $_GET['p'] : 0;
+
  include 'db_connection.php';
  $conn = OpenCon();
  
  //all columns from the record_schedule table
- $query_rs ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Function_Title, Program, Applicability, NARA_Disposal_Authority_Record_Schedule_Level, Schedule_Description, Disposition_Instructions, Guidance, Status, Custodians, Reasons_For_Disposition, Related_Schedules, DATE_FORMAT(`Entry_Date`,'%m/%d/%Y') as Entry_Date, Previous_NARA_Disposal_Authority, DATE_FORMAT(`EPA_Approval`,'%m/%d/%Y') as EPA_Approval, DATE_FORMAT(`NARA_Approval`,'%m/%d/%Y') as NARA_Approval, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date, Item_Number
+ $query_rs ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Function_Title, Program, Applicability, NARA_Disposal_Authority_Record_Schedule_Level, Schedule_Description, Disposition_Instructions, Guidance, Status, Custodians, Reasons_For_Disposition, Related_Schedules, DATE_FORMAT(`Entry_Date`,'%m/%d/%Y') as Entry_Date, Previous_NARA_Disposal_Authority, DATE_FORMAT(`EPA_Approval`,'%m/%d/%Y') as EPA_Approval, NARA_Approval, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date, Item_Number
  FROM " . $wpdb->prefix . "epa_record_schedule 
  WHERE Reserved_Flag = 0 AND id != '-99999' AND Schedule_Number = ". $_GET["rs"] . " LIMIT 1";  
  $result_main = mysqli_query($conn, $query_rs);
@@ -16,18 +19,27 @@
  WHERE Reserved_Flag = 0 AND id != '-99999' AND Schedule_Number = ". $_GET["rs"] . " LIMIT 1";  
  $title_main = mysqli_query($conn, $query_title);
  
- //$query_da ="SELECT NARA_Disposal_Authority_Record_Schedule_Level FROM " . $wpdb->prefix . "epa_record_schedule WHERE Schedule_Number = ". $_GET["rs"];  
- //$result_da = mysqli_query($conn, $query_da);  
- 
  $query_di ="SELECT Disposition_Summary FROM " . $wpdb->prefix . "epa_record_schedule WHERE Schedule_Number = ". $_GET["rs"];  
  $result_di = mysqli_query($conn, $query_di);  
+
+if ($page_type != 0) {
  ?>  
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
   <head>
     <meta charset="utf-8" />
-<title>EPA Records Schedules | EPA@Work</title>
+<title>
+<?php
+if ($page_type == 1) {
+echo 'EPA Records Schedules | EPA@Work';
+} elseif ($page_type == 2) {
+echo 'EPA Superseded Records Schedules | EPA@Work';
+} elseif ($page_type == 3) {
+echo 'EPA Draft Records Schedules | EPA@Work';
+}
+?>
+</title>
 <meta name="description" content="A records schedule provides mandatory instructions on how long to keep records (retention) and when records can be destroyed and/or transferred to alternate storage facilities (disposition). Records schedules are also known as records disposition schedules, records retention schedules and records control schedules. />
 <meta name="Generator" content="Drupal 9 (https://www.drupal.org)" />
 <meta name="MobileOptimized" content="width" />
@@ -189,7 +201,14 @@ while($row_breadcrumb = mysqli_fetch_array($title_main))
     
       <div class="views-element-container"><div class="view view-mass-mailers view-id-mass_mailers view-display-id-page_1 js-view-dom-id-e1386f114016194050874f8e478fd8ffd15730aaf22446fc444969a212213320">
   
-      <?php 
+      <?php
+if ($page_type == 1) {
+echo '<div class="alert alert-info" role="alert">Final schedules are approved by the National Archives and Records Administration (NARA). Browse the final schedules below. Consolidated schedules that are still waiting for NARA approval can be found on the superseded schedules page.</div>';
+} elseif ($page_type == 2) {
+echo '<div class="alert alert-info" role="alert"><strong>This schedule is superseded by a consolidated schedule; to know which consolidated schedule, refer to superseded schedules. It may not be used to retire or destroy records. If you have any questions, please contact the Records Help Desk.</strong></div>';
+} elseif ($page_type == 3) {
+echo '<div class="alert alert-info" role="alert"><strong>This schedule is in draft. It may not be used to retire or destroy records. If you have any questions, please contact the Records Help Desk.</strong></div>';
+}
       echo($query);
 while($row_main = mysqli_fetch_array($result_main))  
   {  
@@ -233,14 +252,20 @@ while($row_main = mysqli_fetch_array($result_main))
    <strong>Custodians: </strong>'.$row_main["Custodians"].'</br>
    <strong>Related Schedules: </strong>'.$row_main["Related_Schedules"].'</br>
    <strong>Previous NARA Disposal Authority: </strong>'.$row_main["Previous_NARA_Disposal_Authority"].'</br>
-   <strong>Entry: </strong>'.$row_main["Entry_Date"].'</br>
-   <strong>EPA Approval: </strong>'.$row_main["EPA_Approval"].'</br>
-   <strong>NARA Approval: </strong>'.$row_main["NARA_Approval"].'</br>
-   ';
+   <strong>Entry: </strong>'.$row_main["Entry_Date"].'</br>';
+   if($row_main["EPA_Approval"] == '00/00/0000') {
+        echo '<strong>EPA Approval: </strong>Not Applicable</br>';
+   }
+   else {
+        echo '<strong>EPA Approval: </strong>'.$row_main["EPA_Approval"].'</br>';
+   }
+   echo '<strong>NARA Approval: </strong>'.$row_main["NARA_Approval"].'</br>';
 }
 
 
       ?>
+      
+</main>          
 </div>
 <footer class="usa-footer usa-footer--slim" role="contentinfo">
   <div class="grid-container usa-footer__return-to-top">
@@ -304,7 +329,7 @@ while($row_main = mysqli_fetch_array($result_main))
 
           </nav>
         </div>
-                </div>
+                </div>                                                                                                                             
   </div>
   <div class="usa-footer__secondary-section">
     <div class="grid-container">
@@ -328,3 +353,8 @@ while($row_main = mysqli_fetch_array($result_main))
 
   </body>
 </html>
+<?php
+} else {
+echo 'ERROR: Page Type Missing';
+}
+?>

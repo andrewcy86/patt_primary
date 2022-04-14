@@ -41,7 +41,27 @@ return $office_code;
     
 }
 
+public static function check_initial_review_complete($ticket_id)
+{
+    global $wpdb;
 
+$get_initial_review_complete = $wpdb->get_row("
+SELECT COUNT(ID) as id_count
+FROM " . $wpdb->prefix . "wpsc_epa_timestamps_request
+WHERE
+type = 'Initial Review Complete' AND
+request_id = '" . $ticket_id . "'
+");
+
+  if ($get_initial_review_complete->id_count > 0)
+  {
+return true;
+  } else {
+return false;    
+  }
+    
+}
+      
 public static function json_response($code = 200, $message = null)
 {
     // clear the old headers

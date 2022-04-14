@@ -1186,6 +1186,24 @@ if( $save_enabled ) {
 .center-check {
   text-align: center;
 }
+  
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+  
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+* html .ui-autocomplete {
+    height: 100px;
+}
+
+.ui-menu:last-of-type {
+    top: 10px !important;
+}
 </style>
 
 <script>

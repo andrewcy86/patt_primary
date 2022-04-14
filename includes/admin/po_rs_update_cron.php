@@ -8,25 +8,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-$endpoint = RS_PO_ENDPOINT;
+//$endpoint = RS_PO_ENDPOINT;
+
+// Endpoint needs to be added into environment variable for staging environment
+$endpoint = "https://data.epa.gov/dmapservice/query";
 $count = 0;
 
 //Program Office
-$po_query = "query officeQuery {
-  programOffices(
-    orderBy: [ID_ASC, ORGANIZATION_DESC]
-  ) {
-    nodes {
-      id
-      organization
-      organizationDescription
-      organizationAcronym
-      officeCode
-      officeAcronym
-      officeName
-      parentOfficeCode
-    }
-  }
+// $po_query = "query officeQuery {
+//   programOffices(
+//     orderBy: [ID_ASC, ORGANIZATION_DESC]
+//   ) {
+//     nodes {
+//       id
+//       organization
+//       organizationDescription
+//       organizationAcronym
+//       officeCode
+//       officeAcronym
+//       officeName
+//       parentOfficeCode
+//     }
+//   }
+// }";
+
+$po_query = "query programOffice {
+    ecms__program_office { 
+        __all_columns__ 
+        }
+    ecms__program_office__aggregate {
+        aggregate {
+            count
+        }
+    } 
 }";
 
 $po_data = array ('query' => $po_query);
@@ -41,21 +55,27 @@ $po_options = array(
 
 $po_context  = stream_context_create($po_options);
 $po_result = file_get_contents($endpoint, false, $po_context);
+// var_dump('po results: ' . $po_result);
+// var_dump($po_context);
 
 if ($po_result === FALSE) { 
 
-$err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
-Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
-    
+    $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
+    Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
+    // var_dump($err);
 }
 
-//echo $http_response_header[0];
-//var_dump($http_response_header);
-//var_dump($result);
 
 $po_json = json_decode($po_result, true);
+// var_dump($po_json);
 
-$organizationDescription = $po_json['data']['programOffices']['nodes'][0]['organizationDescription'];
+$po_json_api_count = $po_json['data']['ecms__program_office__aggregate'][0];
+// var_dump($po_json['data']['ecms__program_office__aggregate'][0]);
+
+// $organizationDescription = $po_json['data']['programOffices']['nodes'][0]['organizationDescription'];
+$organizationDescription = $po_json['data']['ecms__program_office'][0]['organization_description'];
+
+// var_dump($po_json['data']['ecms__program_office']);
 
 //echo $organizationDescription;
 
@@ -80,19 +100,20 @@ $wpdb->insert($po_table, array(
     'parent_office_code' => ''
 ));
 
-foreach ($po_json['data']['programOffices']['nodes'] as $po_item)
+foreach ($po_json['data']['ecms__program_office'] as $po_item)
 {
-//print_r($id);
+// print_r('test' . $id);
 
 foreach ($po_item as $key => $value) {
 
 $organization = $po_item['organization'];
-$organizationDescription = $po_item['organizationDescription'];
-$organizationAcronym = $po_item['organizationAcronym'];
-$officeCode = $po_item['officeCode'];
-$officeAcronym = $po_item['officeAcronym'];
-$officeName = $po_item['officeName'];
-$parentOfficeCode = $po_item['parentOfficeCode'];
+$organizationDescription = $po_item['organization_description'];
+$organizationAcronym = $po_item['organization_acronym'];
+$officeCode = $po_item['office_code'];
+$officeAcronym = $po_item['office_acronym'];
+// $officeName = $po_item['office_name'];
+$officeName = RemoveSpecialChar($po_item['office_name']);
+$parentOfficeCode = $po_item['parent_office_code'];
 }
 
 //INSERT STATEMENT
@@ -106,56 +127,80 @@ $wpdb->insert($po_table, array(
     'parent_office_code' => $parentOfficeCode
 ));
 
-//echo $organization.', '.$organizationDescription.', '.$organizationAcronym.', '.$officeCode.', '.$officeAcronym.', '.$officeName.', '.$parentOfficeCode.'<br />';
+echo $organization.', '.$organizationDescription.', '.$organizationAcronym.', '.$officeCode.', '.$officeAcronym.', '.$officeName.', '.$parentOfficeCode.'<br />';
 
-//echo '<hr />';
+echo '<hr />';
+}
+
+//COUNT STATEMENT
+$po_query_count = $wpdb->get_results('SELECT COUNT(*) - 1 as total_records from ' . $po_table);
+$po_query_count = (int)$po_query_count[0]->total_records;
+// var_dump((int)$po_query_count[0]->total_records);
+
+if ($po_json_api_count != $po_query_count) { 
+
+    $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
+    Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
+    // var_dump($err);
 }
 
 //Record Schedule
 
-$rs_query = "query schedulesQuery {
-  recordSchedules(
-    orderBy: [ID_ASC]
-  ) {
-    nodes {
-      id
-      scheduleItemNumber
-      scheduleNumber
-      scheduleTitle
-      itemNumber
-      itemTitle
-      functionCode
-      functionTitle
-      program
-      applicability
-      naraDisposalAuthorityRecordScheduleLevel
-      naraDisposalAuthorityItemLevel
-      finalDisposition
-      cutoffInstructions
-      dispositionInstructions
-      scheduleDescription
-      reservedFlag
-      dispositionSummary
-      guidance
-      retention
-      tenYear
-      epaApproval
-      naraApproval
-      previousNaraDisposalAuthority
-      status
-      custodians
-      reasonsForDisposition
-      relatedSchedules
-      entryDate
-      revisedDate
-      keywords
-      keywordsTitle
-      keywordsSubject
-      keywordsOrg
-      relatedTerms
-    }
-  }
-}";
+// $rs_query = "query schedulesQuery {
+//   recordSchedules(
+//     orderBy: [ID_ASC]
+//   ) {
+//     nodes {
+//       id
+//       scheduleItemNumber
+//       scheduleNumber
+//       scheduleTitle
+//       itemNumber
+//       itemTitle
+//       functionCode
+//       functionTitle
+//       program
+//       applicability
+//       naraDisposalAuthorityRecordScheduleLevel
+//       naraDisposalAuthorityItemLevel
+//       finalDisposition
+//       cutoffInstructions
+//       dispositionInstructions
+//       scheduleDescription
+//       reservedFlag
+//       dispositionSummary
+//       guidance
+//       retention
+//       tenYear
+//       epaApproval
+//       naraApproval
+//       previousNaraDisposalAuthority
+//       status
+//       custodians
+//       reasonsForDisposition
+//       relatedSchedules
+//       entryDate
+//       revisedDate
+//       keywords
+//       keywordsTitle
+//       keywordsSubject
+//       keywordsOrg
+//       relatedTerms
+//     }
+//   }
+// }";
+
+$rs_query = "query recSched {
+    ecms__record_schedule { 
+        __all_columns__ 
+        }
+    ecms__record_schedule__aggregate {
+        aggregate {
+            count
+        }
+    } 
+    }";
+    
 
 $rs_data = array ('query' => $rs_query);
 $rs_data = http_build_query($rs_data);
@@ -178,9 +223,14 @@ $wpdb->insert($error_table, array(
 ));
 }
 
-//var_dump($result);
+// var_dump($rs_result);
 
 $rs_json = json_decode($rs_result, true);
+
+// var_dump($rs_json['data']['ecms__record_schedule'][0]);
+
+$rs_json_api_count = $rs_json['data']['ecms__record_schedule__aggregate'][0];
+// var_dump($rs_json['data']['ecms__record_schedule__aggregate'][0]);
 
 $rs_table = $wpdb->prefix . 'epa_record_schedule';
 
@@ -231,118 +281,118 @@ $wpdb->insert($rs_table, array(
 'Related_Terms' => ''
 ));
 
-foreach ($rs_json['data']['recordSchedules']['nodes'] as $rs_item)
+foreach ($rs_json['data']['ecms__record_schedule'] as $rs_item)
 {
 foreach ($rs_item as $key => $value) {
 //echo $key.' => '.$value;
-$Schedule_Item_Number = $rs_item['scheduleItemNumber'];
-$Schedule_Number = $rs_item['scheduleNumber'];
-$Schedule_Title = addcslashes($rs_item['scheduleTitle'], "'");
-$Item_Number = $rs_item['itemNumber'];
-$Item_Title = addcslashes($rs_item['itemTitle'], "'");
-$Function_Code = addcslashes(intval($rs_item['functionCode']), "'");
-$Function_Title = $rs_item['functionTitle'];
+$Schedule_Item_Number = $rs_item['schedule_item_number'];
+$Schedule_Number = $rs_item['schedule_number'];
+$Schedule_Title = addcslashes($rs_item['schedule_title'], "'");
+$Item_Number = $rs_item['item_number'];
+$Item_Title = addcslashes($rs_item['item_title'], "'");
+$Function_Code = addcslashes(intval($rs_item['function_code']), "'");
+$Function_Title = $rs_item['function_title'];
 $Program = $rs_item['program'];
 $Applicability = $rs_item['applicability'];
-$NARA_Disposal_Authority_Record_Schedule_Level = addcslashes($rs_item['naraDisposalAuthorityRecordScheduleLevel'], "'");
-$NARA_Disposal_Authority_Item_Level = $rs_item['naraDisposalAuthorityItemLevel'];
-$Final_Disposition = addcslashes($rs_item['finalDisposition'], "'");
-$Cutoff_Instructions = addcslashes($rs_item['cutoffInstructions'], "'");
-$Disposition_Instructions = addcslashes($rs_item['dispositionInstructions'], "'");
-$Schedule_Description = addcslashes($rs_item['scheduleDescription'], "'");
-$Reserved_Flag = $rs_item['reservedFlag'];
-$Disposition_Summary = addcslashes($rs_item['dispositionSummary'], "'");
+$NARA_Disposal_Authority_Record_Schedule_Level = addcslashes($rs_item['nara_disposal_authority_record_schedule_level'], "'");
+$NARA_Disposal_Authority_Item_Level = $rs_item['nara_disposal_authority_item_level'];
+$Final_Disposition = addcslashes($rs_item['final_disposition'], "'");
+$Cutoff_Instructions = addcslashes($rs_item['cutoff_instructions'], "'");
+$Disposition_Instructions = addcslashes($rs_item['disposition_instructions'], "'");
+$Schedule_Description = addcslashes($rs_item['schedule_description'], "'");
+$Reserved_Flag = $rs_item['reserved_flag'];
+$Disposition_Summary = addcslashes($rs_item['disposition_summary'], "'");
 $Guidance = addcslashes($rs_item['guidance'], "'");
 $Retention = $rs_item['retention'];
-$Ten_Year = $rs_item['tenYear'];
-$EPA_Approval = date('Y-m-d', strtotime($rs_item['epaApproval']));
-$NARA_Approval = date('Y-m-d', strtotime($rs_item['naraApproval']));
-$Previous_NARA_Disposal_Authority = addcslashes($rs_item['previousNaraDisposalAuthority'], "'");
+$Ten_Year = $rs_item['ten_year'];
+$EPA_Approval = date('Y-m-d', strtotime($rs_item['epa_approval']));
+$NARA_Approval = date('Y-m-d', strtotime($rs_item['nara_approval']));
+$Previous_NARA_Disposal_Authority = addcslashes($rs_item['previous_nara_disposal_authority'], "'");
 $Status = $rs_item['status'];
 $Custodians = addcslashes($rs_item['custodians'], "'");
-$Reasons_For_Disposition = addcslashes($rs_item['reasonsForDisposition'], "'");
-$Related_Schedules = addcslashes($rs_item['relatedSchedules'], "'");
-$Entry_Date = date('Y-m-d', strtotime($rs_item['entryDate']));
-$Revised_Date = date('Y-m-d', strtotime($rs_item['revisedDate']));
+$Reasons_For_Disposition = addcslashes($rs_item['reasons_for_disposition'], "'");
+$Related_Schedules = addcslashes($rs_item['related_schedules'], "'");
+$Entry_Date = date('Y-m-d', strtotime($rs_item['entry_date']));
+$Revised_Date = date('Y-m-d', strtotime($rs_item['revised_date']));
 $Keywords = addcslashes($rs_item['keywords'], "'");
-$Keywords_Title = addcslashes($rs_item['keywordsTitle'], "'");
-$Keywords_Subject = addcslashes($rs_item['keywordsSubject'], "'");
-$Keywords_Org = addcslashes($rs_item['keywordsOrg'], "'");
-$Related_Terms = addcslashes($rs_item['relatedTerms'], "'");
+$Keywords_Title = addcslashes($rs_item['keywords_title'], "'");
+$Keywords_Subject = addcslashes($rs_item['keywords_subject'], "'");
+$Keywords_Org = addcslashes($rs_item['keywords_org'], "'");
+$Related_Terms = addcslashes($rs_item['related_terms'], "'");
 }
 
 //INSERT STATEMENT
 
-echo "INSERT INTO ".$rs_table." 
-(Schedule_Item_Number,
-Schedule_Number,
-Schedule_Title,
-Item_Number,
-Item_Title,
-Function_Code,
-Function_Title,
-Program,
-Applicability,
-NARA_Disposal_Authority_Record_Schedule_Level,
-NARA_Disposal_Authority_Item_Level,
-Final_Disposition,
-Cutoff_Instructions,
-Disposition_Instructions,
-Schedule_Description,
-Reserved_Flag,
-Disposition_Summary,
-Guidance,
-Retention,
-Ten_Year,
-Status,
-Revised_Date,
-Reasons_For_Disposition,
-Custodians,
-Related_Schedules,
-Previous_NARA_Disposal_Authority,
-Entry_Date,
-EPA_Approval,
-NARA_Approval,
-Keywords,
-Keywords_Title,
-Keywords_Subject,
-Keywords_Org,
-Related_Terms) 
-VALUES (
-'$Schedule_Item_Number',
-'$Schedule_Number',
-'$Schedule_Title',
-'$Item_Number',
-'$Item_Title',
-'$Function_Code',
-'$Function_Title',
-'$Program',
-'$Applicability',
-'$NARA_Disposal_Authority_Record_Schedule_Level',
-'$NARA_Disposal_Authority_Item_Level',
-'$Final_Disposition',
-'$Cutoff_Instructions',
-'$Disposition_Instructions',
-'$Schedule_Description',
-'$Reserved_Flag',
-'$Disposition_Summary',
-'$Guidance',
-'$Retention',
-'$Ten_Year',
-'$Status',
-'$Revised_Date',
-'$Reasons_For_Disposition',
-'$Custodians',
-'$Related_Schedules',
-'$Previous_NARA_Disposal_Authority',
-'$Entry_Date',
-'$EPA_Approval',
-'$NARA_Approval',
-'$Keywords',
-'$Keywords_Title',
-'$Keywords_Subject',
-'$Keywords_Org',
-'$Related_Terms'";
+// echo "INSERT INTO ".$rs_table." 
+// (Schedule_Item_Number,
+// Schedule_Number,
+// Schedule_Title,
+// Item_Number,
+// Item_Title,
+// Function_Code,
+// Function_Title,
+// Program,
+// Applicability,
+// NARA_Disposal_Authority_Record_Schedule_Level,
+// NARA_Disposal_Authority_Item_Level,
+// Final_Disposition,
+// Cutoff_Instructions,
+// Disposition_Instructions,
+// Schedule_Description,
+// Reserved_Flag,
+// Disposition_Summary,
+// Guidance,
+// Retention,
+// Ten_Year,
+// Status,
+// Revised_Date,
+// Reasons_For_Disposition,
+// Custodians,
+// Related_Schedules,
+// Previous_NARA_Disposal_Authority,
+// Entry_Date,
+// EPA_Approval,
+// NARA_Approval,
+// Keywords,
+// Keywords_Title,
+// Keywords_Subject,
+// Keywords_Org,
+// Related_Terms) 
+// VALUES (
+// '$Schedule_Item_Number',
+// '$Schedule_Number',
+// '$Schedule_Title',
+// '$Item_Number',
+// '$Item_Title',
+// '$Function_Code',
+// '$Function_Title',
+// '$Program',
+// '$Applicability',
+// '$NARA_Disposal_Authority_Record_Schedule_Level',
+// '$NARA_Disposal_Authority_Item_Level',
+// '$Final_Disposition',
+// '$Cutoff_Instructions',
+// '$Disposition_Instructions',
+// '$Schedule_Description',
+// '$Reserved_Flag',
+// '$Disposition_Summary',
+// '$Guidance',
+// '$Retention',
+// '$Ten_Year',
+// '$Status',
+// '$Revised_Date',
+// '$Reasons_For_Disposition',
+// '$Custodians',
+// '$Related_Schedules',
+// '$Previous_NARA_Disposal_Authority',
+// '$Entry_Date',
+// '$EPA_Approval',
+// '$NARA_Approval',
+// '$Keywords',
+// '$Keywords_Title',
+// '$Keywords_Subject',
+// '$Keywords_Org',
+// '$Related_Terms'";
 
 $wpdb->query("INSERT INTO ".$rs_table." 
 (Schedule_Item_Number,
@@ -416,5 +466,34 @@ VALUES (
 '$Related_Terms'
 )"  );
 
+}
+
+//COUNT STATEMENT
+$rs_query_count = $wpdb->get_results('SELECT COUNT(*) - 1 as total_records from ' . $rs_table);
+$rs_query_count = (int)$rs_query_count[0]->total_records;
+// var_dump($rs_query_count);
+
+if ($rs_json_api_count != $rs_query_count) { 
+
+    $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
+    Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
+    // var_dump($err);
+}
+
+
+// PHP program to Remove 
+  // Special Character From String
+  
+  // Function to remove the spacial 
+  function RemoveSpecialChar($str){
+	$str = str_replace("&", ' And ', $str); // Replaces all ampersand symbols with "And" string text.
+    $str = str_replace("Gov'T", 'Government', $str); // Replaces all instaces of "Gov't" to Government.
+    
+    // Using preg_replace() function 
+    // to replace the word 
+    $res = preg_replace('/[^a-zA-Z0-9_ -]/s',' ',$str);
+
+    // Returning the result 
+    return $res;
 }
 ?>

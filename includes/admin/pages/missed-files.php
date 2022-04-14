@@ -64,7 +64,7 @@ array_values($box_statuses);
 
 
 <div class="bootstrap-iso">
-	<h3>PATT Transfer</h3>
+	<h3>PATT Missed Files</h3>
 
 	<div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 	<!-- <div class="row wpsc_tl_action_bar" style="background-color:#1C5D8A !important;">
@@ -97,7 +97,7 @@ array_values($box_statuses);
 		<br />
 
     	  <!-- ECMS has been updated to be called ARMS instead -->
-		  <select id='searchByOverallStatus' aria-label='Search by Status'>
+		  <!-- <select id='searchByOverallStatus' aria-label='Search by Status'>
 			  <option value=''>-- Select A Status --</option>
 			  <option value='Processing'>Processing</option>
 			  <option value='Error'>Error</option>
@@ -114,50 +114,8 @@ array_values($box_statuses);
 			  <option value='metadata'>Metadata Preparation</option>
 			  <option value='arms'>ARMS Connection</option>
 			  <option value='published'>Publishing of Record</option>
-		</select>
+		</select> -->
 		<br /><br />
-
-		<?php	
-$user_digitization_center = get_user_meta( $current_user->ID, 'user_digization_center',true);
-
-if ( !empty($user_digitization_center) && $user_digitization_center == 'East' && $agent_permissions['label'] == 'Agent') { 
-?>
-<input type="hidden" id="searchByDigitizationCenter" value="East" />
-<?php 
-} 
-?>
-
-<?php
-if ( !empty($user_digitization_center) && $user_digitization_center == 'West' && $agent_permissions['label'] == 'Agent') { 
-?>
-<input type="hidden" id="searchByDigitizationCenter" value="West" />
-<?php 
-} 
-?>
-
-<?php
-if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))) { 
-?>
-				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
-					<option value=''>-- Select Digitization Center --</option>
-					<option value='East' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'East'){ echo 'selected'; } ?>>East</option>
-					<option value='West' <?php if(!empty($user_digitization_center) && $user_digitization_center == 'West'){ echo 'selected'; } ?>>West</option>
-					<option value='Not Assigned'>Not Assigned</option>
-				</select>
-    <br /><br />
-<?php 
-} elseif(($agent_permissions['label'] == 'Requester') || ($agent_permissions['label'] == 'Requester Pallet')) {
-?>
-				<select id='searchByDigitizationCenter' aria-label="Search by Digitization Center">
-					<option value=''>-- Select Digitization Center --</option>
-					<option value='East'>East</option>
-					<option value='West'>West</option>
-					<option value='Not Assigned'>Not Assigned</option>
-				</select>
-    <br /><br />
-<?php
-}
-?>	
 	                            </div>
 			    		</div>
 	
@@ -184,12 +142,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 <?php
 }
 ?>
-                <th class="datatable_header" scope="col" >Doc ID</th>
+                <th class="datatable_header" scope="col" >S3 Key</th>
                 <!-- <th class="datatable_header" scope="col" >Status</th> -->
-                <th class="datatable_header" scope="col" >Status</th>
-                <th class="datatable_header" scope="col" >Stages</th>
-				<th class="datatable_header" scope="col" >Digitization Center</th>
-                <th class="datatable_header" scope="col" >Duration</th>
+                <th class="datatable_header" scope="col" >Last Modified</th>
+                <!-- <th class="datatable_header" scope="col" >Stages</th>
+                <th class="datatable_header" scope="col" >Duration</th> -->
                 <!-- <th class="datatable_header" scope="col" >Box Status</th>                 -->
                 <!-- <th class="datatable_header" scope="col" >Digitization Center</th>
                 <th class="datatable_header" scope="col" >Program Office</th> -->
@@ -392,7 +349,7 @@ jQuery(document).ready(function(){
 		'serverMethod': 'post',
 		'searching': false, // Remove default Search Control
 		'ajax': {
-			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_doc_transfer_processing.php',
+			'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/missed_files_processing.php',
 			'data': function(data){
 				// Read values
 				var po_value = jQuery('#searchByProgramOffice').val();
@@ -479,12 +436,11 @@ jQuery(document).ready(function(){
 	}
 	?>
 
-			{ data: 'doc_id', 'class' : 'text_highlight'},
+			{ data: 's3_key', 'class' : 'text_highlight'},
 			// { data: 'dbid', visible: false},
-			{ data: 'status' },
-			{ data: 'received_stage', 'class' : 'stages_container'  },
-			{ data: 'location' },
-			{ data: 'duration', 'class' : 'text_highlight' },
+			{ data: 'last_modified' },
+			// { data: 'received_stage', 'class' : 'stages_container'  },
+			// { data: 'duration', 'class' : 'text_highlight' },
 			// { data: 'status' },       
 			// { data: 'location' },
 			// { data: 'acronym' },

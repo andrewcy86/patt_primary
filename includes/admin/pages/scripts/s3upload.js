@@ -79,8 +79,7 @@ S3MultiUpload.prototype.createMultipartUpload = function() {
         command: 'create',
         fileInfo: self.fileInfo,
         //key: self.file.lastModified + '_' + self.file.name
-		previous_key: jQuery('input[name=previous_s3_key]').val(),
-        key: 'temp_patt/' + jQuery('input[name=folderdocinfofile_id]').val() + '_' + self.file.name.replace(/\s/g, '')
+        key: unixnow + '_' + self.file.name.replace(/\s/g, '')
     }).done(function(data) {
         console.log('Done');
         //console.log({data:data});

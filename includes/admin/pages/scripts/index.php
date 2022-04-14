@@ -122,16 +122,7 @@ if (isset($_POST['command']))
 
 	if ($command=="create")
 	{
-
-        if($_REQUEST['previous_key'] != '')
-        {
 	    //echo setCORS(bucket());
-		$del=s3("deleteObject",[
-			'Bucket' => bucket(),
-            'Key' => $_REQUEST['previous_key']
-		]);
-        }
-        
 		$res=s3("createMultipartUpload",[
 			'Bucket' => bucket(),
             'Key' => $_REQUEST['key'],

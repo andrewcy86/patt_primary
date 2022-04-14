@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
   <head>
     <meta charset="utf-8" />
-<title>EPA Records Schedules | EPA@Work</title>
+<title>EPA Draft Records Schedules | EPA@Work</title>
 <meta name="description" content="A records schedule provides mandatory instructions on how long to keep records (retention) and when records can be destroyed and/or transferred to alternate storage facilities (disposition). Records schedules are also known as records disposition schedules, records retention schedules and records control schedules. />
 <meta name="Generator" content="Drupal 9 (https://www.drupal.org)" />
 <meta name="MobileOptimized" content="width" />
@@ -129,7 +129,7 @@
           <a href="https://work.epa.gov/records-management">Records Management</a>
       </li>
   <li>
-          EPA Records Schedules
+          EPA Draft Records Schedules
       </li>
 </ol>
 
@@ -160,7 +160,7 @@
   
     
 <div class="view-header">
-<h1>EPA Records Schedules</h1>
+<h1>EPA Draft Records Schedules</h1>
 </div>
 
 
@@ -173,7 +173,7 @@
 
  $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
  FROM " . $wpdb->prefix . "epa_record_schedule
- WHERE Deleted_Flag = 0 and Superseded_Flag = 0 and Reserved_Flag = 0 and id != '-99999'
+ WHERE Draft_Flag = 1 and id != '-99999'
  ORDER BY Schedule_Number ASC";
  $result = mysqli_query($conn, $query);  
  ?>
@@ -197,7 +197,7 @@
                           {  
                                echo '  
                                <tr>  
-                                    <td><a href="details.php?p=1&rs='.$row["Schedule_Number"].'">'.$row["Schedule_Number"].'</a></td>  
+                                    <td><a href="details.php?p=3&rs='.$row["Schedule_Number"].'">'.$row["Schedule_Number"].'</a></td>  
                                     <td>'.$row["Schedule_Title"].'</td>  
                                     <td>'.$row["Function_Code"].'</td>  
                                     <td>'.$row["Program"].'</td>  
