@@ -1201,8 +1201,12 @@ if( $save_enabled ) {
     height: 100px;
 }
 
+.ui-menu:nth-last-of-type(2) {
+  top: -45px !important;
+}
+
 .ui-menu:last-of-type {
-    top: 10px !important;
+  top: 10px !important;
 }
 </style>
 
@@ -1434,7 +1438,7 @@ jQuery(document).ready(function(){
 	
 	let accordion_notification = '';
 	
-	let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong><br />';
+	let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong>';
 	let accordion_start = '<div class="accordion" id="the-accordion">';
 	
 	let accordion_item_start_1 = '<div class="accordion-item"><h2 class="accordion-header" id="';
@@ -1478,7 +1482,8 @@ jQuery(document).ready(function(){
 		accordion_notification += accordion_item_mid_2;
 		accordion_notification += 'heading-' + index;
 		accordion_notification += accordion_item_mid_3;
-		accordion_notification += item[1];
+		//accordion_notification += item[1];
+    	accordion_notification += (item[1] != null ? item[1] : 'Box ' + item[0] + ' has an unassigned digitization center and/or shelf location.');
 		accordion_notification += accordion_item_end;
 		
 		

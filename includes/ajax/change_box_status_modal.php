@@ -456,7 +456,7 @@ print_r($status_list_assignable);
 		//console.log( 'yo' );
 		//console.log( restricted_reason_array );
 		
-		let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong><br />';
+		let accordion_pre_message = '<strong><div class="" id="alert-message">Click the Box number to view the restrictions.</div></strong>';
 		let accordion_start = '<div class="accordion" id="the-accordion">';
 
 		//let accordion_item_start = '<div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">';
