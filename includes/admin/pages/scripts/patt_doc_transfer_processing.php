@@ -394,12 +394,7 @@ if($searchValue != ''){
 
 ## Total number of records without filtering
 $sel = mysqli_query($con,"SELECT COUNT(*) as allcount
-FROM " . $wpdb->prefix . "epa_patt_arms_logs as a 
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdocinfofile_id = a.folderdocinfofile_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE a.ID <> -99999");
+FROM " . $wpdb->prefix . "epa_patt_arms_logs as a ");
 
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
