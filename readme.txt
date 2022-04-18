@@ -6,5 +6,3 @@ Requires at least: 4.0
 Tested up to: 5.3
 Stable tag: 2.1.1
 == Description ==
-
-------
