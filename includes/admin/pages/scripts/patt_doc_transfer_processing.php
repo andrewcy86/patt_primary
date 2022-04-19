@@ -59,7 +59,7 @@ $searchQuery = "";
 //$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
 
 // $BoxID_arr = explode(",", $_POST['searchByBoxID']);  
-
+/*
 $newBoxID_arr = array();
 $newPalletID_arr = array();
 
@@ -76,19 +76,20 @@ array_push($newPalletID_arr,$value);
 
 $newBoxID_str = str_replace(",", "|", implode(',', $newBoxID_arr));
 $newPalletID_str = str_replace(",", "|", implode(',', $newPalletID_arr));
+*/
 
 if($searchByDocID != ''){
     //used to be a.folderdocinfo_id
    $searchQuery .= "and (a.folderdocinfofile_id REGEXP '^(".$searchByDocID.")$' ) ";
 }
 
-if($newBoxID_str != ''){
-   $searchQuery .= " and (a.folderdocinfofile_id REGEXP '^(".$newBoxID_str.")$' ) ";
-}
+// if($newBoxID_str != ''){
+//    $searchQuery .= " and (a.folderdocinfofile_id REGEXP '^(".$newBoxID_str.")$' ) ";
+// }
 
-if($newPalletID_str != ''){
-   $searchQuery .= " and (a.pallet_id REGEXP '^(".$newPalletID_str.")$' ) ";
-}
+// if($newPalletID_str != ''){
+//    $searchQuery .= " and (a.pallet_id REGEXP '^(".$newPalletID_str.")$' ) ";
+// }
 
 if($searchByProgramOffice != ''){
    $searchQuery .= " and (c.office_acronym='".$searchByProgramOffice."') ";
