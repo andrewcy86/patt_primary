@@ -408,7 +408,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdoc
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE " . $stage_status . $overall_status . " AND 1 " . $searchQuery);
+WHERE 1 " . $stage_status . $overall_status . $searchQuery);
 
 // $sel = mysqli_query($con,"SELECT COUNT(*) as allcount
 // FROM " . $wpdb->prefix . "epa_patt_arms_logs");
@@ -456,7 +456,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdoc
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE " . $stage_status . $overall_status . " AND 1 " . $searchQuery;
+WHERE 1 " . $stage_status . $overall_status . $searchQuery;
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
