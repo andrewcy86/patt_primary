@@ -408,7 +408,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdoc
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE 1 " . $searchQuery);
+WHERE " . $stage_status . $overall_status . " AND 1 " . $searchQuery);
 
 // $sel = mysqli_query($con,"SELECT COUNT(*) as allcount
 // FROM " . $wpdb->prefix . "epa_patt_arms_logs");
@@ -448,7 +448,7 @@ $boxQuery = "
 SELECT *,
 CONCAT(
 	CASE 
-	WHEN received_stage = 2 THEN CONCAT('<span>',a.folderdocinfofile_id,'</span>')
+	WHEN a.received_stage = 2 THEN CONCAT('<span>',a.folderdocinfofile_id,'</span>')
 	ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=patttransferdetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>') 
 	END) as folderdocinfo_id_flag
 FROM " . $wpdb->prefix . "epa_patt_arms_logs as a
@@ -456,7 +456,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as g ON g.folderdoc
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON g.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-WHERE 1 " . $searchQuery;
+WHERE " . $stage_status . $overall_status . " AND 1 " . $searchQuery;
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
