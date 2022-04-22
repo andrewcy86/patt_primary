@@ -898,7 +898,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		console.log('num of tags: ');
 
 		// Removes 2nd entered tag.
-	    jQuery("#searchByID_tag").on("change", function() {
+	    jQuery("#searchByID_tag").on("paste", function() {
 		    console.log('we inside!!');
 		    setTimeout( function() {
 				console.log('the length: ');
@@ -923,7 +923,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 						jQuery("#searchByID").removeTag(tag_list[1]);
 						console.log('tag removed');
 						// Need to set alert: only one Box/Folder/File ID per Recall. 
-						// Issue with pasting IDs. 
+						// Issue with pasting IDs.
+                      	alert('Please only add 1 box id per recall request.');
+						return;
 					}
 				}
 				
