@@ -942,7 +942,33 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	}
 	
 	function onAddTag(tag) {
-	    
+      	let num_of_tags = jQuery('#searchByID_tagsinput').children('.tag').length;
+		console.log(num_of_tags);
+		
+		let last_tag = jQuery('#searchByID_tagsinput').children('.tag').last();
+		console.log(last_tag);
+		console.log(last_tag[0]['textContent']);
+		
+		if( num_of_tags > 1 ) {
+			//$('#tags').removeTag('bar');
+			console.log('remove ');
+			
+			let tag_list = jQuery('#searchByID').val().split(',');
+			let tag_exists = jQuery("#searchByID").tagExist(tag_list[1]);
+			
+			console.log(tag_list);
+			console.log(tag_exists);
+			
+			if( tag_exists ) {
+				jQuery("#searchByID").removeTag(tag_list[1]);
+				console.log('tag removed');
+				// Need to set alert: only one Box/Folder/File ID per Recall. 
+				// Issue with pasting IDs. 
+				alert('Please only add 1 box id per recall request.');
+				return;
+
+			}
+		}
 	    //dataTable.state.save();
 		dataTable.draw();
 		console.log( 'Search IDs: ' + jQuery( '#searchByID' ).val() );
@@ -1853,17 +1879,3 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 <?php
 endif;
 ?>
-
-
-
-
-
-
-
-
-
-	 
-	 
-
-	 
-	 
