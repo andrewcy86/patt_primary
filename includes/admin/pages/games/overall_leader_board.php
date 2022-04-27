@@ -18,6 +18,7 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
+ORDER BY overall_rank
 LIMIT 10
 ";
     

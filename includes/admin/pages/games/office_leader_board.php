@@ -80,7 +80,9 @@ ORDER BY points DESC ) FROM arms_game_receivers)
 ORDER BY office_code, points
 ) as a 
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
-where a.office_code = '".$parent_office_code."'  LIMIT 10";
+where a.office_code = '".$parent_office_code."'
+ORDER BY overall_rank
+LIMIT 10";
 
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
