@@ -11,6 +11,18 @@ $api_key = htmlspecialchars($_GET['api_key']);
 $lan_id = htmlspecialchars($_GET['lan_id']);
 $employee_id = htmlspecialchars($_GET['employee_id']);
 $office_code = htmlspecialchars($_GET['office_code']);
+$set_bulk_num = 1;
+
+//Add bulk number capability for bulk events
+if(htmlspecialchars($_GET['bulk_number']) != '') {
+$bulk_number = intval(htmlspecialchars($_GET['bulk_number']));
+} else {
+$bulk_number = 1;
+}
+
+if($bulk_number <= 0 || !is_int($bulk_number) || strpos( $_GET['bulk_number'], "." ) == true) {
+$set_bulk_num = 0;
+}
 
 //Check validity of event id/////////
 $event_id = htmlspecialchars($_GET['event_id']);
@@ -72,9 +84,9 @@ if (!empty($api_key)) {
     while ($api_result = mysqli_fetch_array($result_api_key)) {
         $set_api = $api_result["COUNT"];
     }
-    
+ 
     //Check to make sure the employee_id, office_code and event_id is present
-    if ($set_api == 1 && !empty($employee_id) && !empty($lan_id) && !empty($office_code) && !empty($event_id)) {
+    if ($set_api == 1 && !empty($employee_id) && !empty($lan_id) && !empty($office_code) && !empty($event_id) && $set_bulk_num == 1) {
         //echo 'API key exists, please proceed. <br/>';
         //Cross check event_id with the arms_game_events table to ensure it is valid
         $query_event_id  = "SELECT COUNT(id) AS COUNT
@@ -196,7 +208,8 @@ VALUES ('" . $lan_id . "','" . $employee_id . "', '" . $parent_office_code . "',
                 if ($get_event_activity_count == 0) {
                     //Insert into activities table
                     $insert_activity = "INSERT INTO arms_game_activities (receiver_id,event_id,app_id,counter,value,created_date,updated_date)
-VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '" . $dt . "', '" . $dt . "')";
+VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "','" . $bulk_number . "',0, '" . $dt . "', '" . $dt . "')";
+
                     
                     if ($conn->query($insert_activity) === true) {
                         //echo 'New activity created successfully <br/>';
@@ -206,7 +219,7 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '
                         array_push($success_array, 0);
                     }
                 } else {
-                    $new_counter_val = $get_activity_counter + 1;
+                    $new_counter_val = $get_activity_counter + $bulk_number;
                     
                     $update_activity_counter = "UPDATE arms_game_activities SET counter = '" . $new_counter_val . "', updated_date = '" . $dt . "' WHERE event_id = '" . $event_id . "' AND receiver_id = " . $receiver_db_id;
                     
@@ -231,7 +244,7 @@ VALUES ('" . $receiver_db_id . "', '" . $event_id . "', '" . $app_id . "',1,0, '
                 }
                 
                 //Update Points on the user table
-                $new_points_value = $get_event_value + $get_r_points_value;
+                $new_points_value = ($get_event_value * $bulk_number ) + $get_r_points_value;
                 //echo $new_points_value;
                 
                 $update_receiver_points = "UPDATE arms_game_receivers SET points = '" . $new_points_value . "', updated_date = '" . $dt . "' WHERE employee_id = '" . $employee_id."'";
@@ -543,6 +556,9 @@ VALUES ('" . $receiver_db_id . "', '" . $get_rewards_id . "','" . $dt . "', '" .
         }
     } else {
         //JSON response if api_key incorrect
+        if($set_bulk_num == 0) {
+           print_r( Patt_Custom_Func::json_response(400, 'bulk_number must be a whole number and must be greater than 0.'));
+        }
         if($set_api == 0) {
             print_r( Patt_Custom_Func::json_response(422, 'api_key of ' . $api_key . ' not found'));
         }
