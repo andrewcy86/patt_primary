@@ -82,7 +82,7 @@ ORDER BY office_code, points
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
 where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$lan_id."' )
 ";
-    
+    echo $query_receiver_info;
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
     $rows = array();
@@ -90,11 +90,11 @@ where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$
                     $rows[] = $r;
                     $profile_count++;
                 }
-if(!empty($rows) && $profile_count == 1) {
+if(!empty($rows)) {
     print json_encode($rows);
 }
 else {
-    print_r(Patt_Custom_Func::json_response(500, 'No results / more than 1 result could be retrieved for this user. Please submit a request with both employee_id and lan_id.'));
+    print_r(Patt_Custom_Func::json_response(500, 'No results could be retrieved for this user.'));
 }
     break;
 
@@ -252,11 +252,11 @@ where ( b.employee_id = '".$employee_id."' ".$both_identifiers." b.lan_id = '".$
                     $rows[] = $r;
                     $badges_count++;
                 }
-if(!empty($rows) && $badges_count == 1) {
+if(!empty($rows)) {
     print json_encode($rows);
 }
 else {
-    print_r(Patt_Custom_Func::json_response(500, 'No results / more than 1 result could be retrieved for this user. Please submit a request with both employee_id and lan_id.'));
+    print_r(Patt_Custom_Func::json_response(500, 'No results could be retrieved for this user.'));
 }
     break;
   default:
@@ -288,7 +288,7 @@ else {
         print_r( Patt_Custom_Func::json_response(400, 'Missing api_key field'));
     }
     if(empty($employee_id) && empty($lan_id)){
-        print_r( Patt_Custom_Func::json_response(400, 'Missing employee_id and lan_id field, must include one or the other in request'));
+        print_r( Patt_Custom_Func::json_response(400, 'Missing employee_id and lan_id field'));
     }
     if(empty($type)) {
         print_r( Patt_Custom_Func::json_response(400, 'Missing type field'));

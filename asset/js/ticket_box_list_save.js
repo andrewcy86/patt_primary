@@ -716,12 +716,14 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							let index_sp_access_rest = 15;
 							let index_use_rest = 16;
 							let index_sp_use_rest = 17;
+                          	let index_rights_holder = 18;
 							let index_source_type = 19;
 							let index_source_dim = 20;
 							let index_prog_office = 21; 
 							let index_prog_area = 22; 
 							let index_index_level = 23; 
-							let index_ess_rec = 24; 
+							let index_ess_rec = 24;
+                          	let index_folder_file_name = 25;  
 							let index_tags = 26; 
 							
 							// Required Fields - Checking for blanks // Names for Error Reporting
@@ -785,6 +787,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                    
 	                        let isBlank = false;
 	                        let count = 1;
+                          	var validate = false;
 					        var processLoopID = setInterval(function() {
 							    if ( count < arrayLength ) {
 							        jQuery('#processing_notification').text( 'Processing Row #' + count );    
@@ -994,6 +997,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                            } 
 			                            }
 			*/
+                                      
+                                       
+                                      
 			                            
 			                            // Disposition Schedule: validate that there is a ':' in the name so that php processing works.
 										if(
@@ -1012,6 +1018,78 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert( alert_message );
 			                                flag = true;
 										}
+                                      
+                                     let errorMessage = '';
+                                      
+                                      // Validation for temporary/disposable record schedules
+                                        if(
+                                          	flag != true && 
+			                            	count > 1 && 
+                                          (
+                                            parsedData[count][index_rec_sched].indexOf( ':' ) >= 1
+                                          )
+                                        ){
+                                            let schedule_item_number = parsedData[count][index_rec_sched];
+                                          	let index_of_colon = parsedData[count][index_rec_sched].indexOf( ':' );
+                                          
+											schedule_item_number = schedule_item_number.slice(0, schedule_item_number.indexOf(':'));
+                                          	schedule_item_number = schedule_item_number.replace(/[\[\]']+/g,'');
+
+                                            let digital_source = parsedData[count][index_source_dim];
+                                            let folder_file_name = parsedData[count][index_folder_file_name];
+                                          	let specific_access_restriction = parsedData[count][index_sp_access_rest];
+                                          	let specific_use_restriction = parsedData[count][index_sp_use_rest];
+                                          	let rights_holder = parsedData[count][index_rights_holder];
+
+											//console.log('schedule item number: ' + parsedData[count][index_source_dim]);
+                                           
+                                            
+                                            var xhr = jQuery.ajax({
+                                              //url: `does-not-exist.php`,
+                                              url: `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`,
+                                              type: 'get',
+                                              async: false,
+                                              success: function(data) {
+                                                if(data.records[0].Final_Disposition == 'Disposable'){
+                                                  if((specific_access_restriction == "Controlled / Copyright" || specific_use_restriction == "Controlled / Copyright") && (rights_holder == null || rights_holder == undefined)){
+                                                    let alert_message = '';
+                                                    alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
+                                                    alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
+                                                    alert( alert_message );
+                                                    flag = true;
+                                                    return;
+                                                	}
+                                                  
+                                                  if(digital_source == 'Digital Source' && folder_file_name == null || folder_file_name == undefined){
+                                                    let alert_message = '';
+                                                    alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
+                                                    alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
+                                                    alert( alert_message );
+                                                    flag = true;
+                                                    return;
+                                                	}
+                                                  
+                                                }
+                                              },
+                                              async: true,
+                                              error: function(xhr, status, error){
+                                                if(xhr.statusText == 'error'){
+                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
+                                                }
+     										  },
+                                              async: false,
+                                              complete: function(xhr, status, error){
+                                                if(xhr.statusText == 'error'){
+                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
+                                               	  validate = true;
+                                                }
+                                              }
+                                            });
+                                          
+                                         
+                                          }
+                                     
+                                          	
 	
 			
 										
@@ -1724,12 +1802,17 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 								        	jQuery('#file_upload_cr').val(1);
 					                        jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 					                        console.log( '#file_upload_cr has been update' );
+                                  
+                                          console.log('validate ' + validate);
+                                          if(validate == true) {
+                                            alert('404 Error: All records have been designated as permanent.');
+                                          }  
 		
 								       }
 							    count++ 
 							}, 1 ); //end of setInterval, 1ms
 	                        
-	                        
+	                      
 	                                                
 	                    } else {
 	                        

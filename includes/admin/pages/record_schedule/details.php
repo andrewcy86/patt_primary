@@ -227,14 +227,17 @@ while($row_main = mysqli_fetch_array($result_main))
    }
    
    if(!empty($row_main["NARA_Disposal_Authority_Record_Schedule_Level"])) {
-        echo'<p><strong>NARA Disposal Authority:</strong></p>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"];
+     // Remove if Soo's updated spreadsheet includes </li></ul> to end bulleted list
+        echo'<p><strong>NARA Disposal Authority:</strong></p>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"].'</ul>';
    }
+  
    
    if(!empty($row_main["Schedule_Description"])) {
         echo '<p><strong>Description:</strong></p>'.$row_main["Schedule_Description"];
    }
-   if(!empty($disposition_summary["Disposition_Summary"])) {
-       echo '<strong>Disposition Instructions:</strong><br/>';
+  
+   if(!empty($result_di)) {
+       echo '<p><strong>Disposition Instructions:</strong></p>';
        while($disposition_summary = mysqli_fetch_array($result_di)) {
             echo $disposition_summary["Disposition_Summary"];
         }
