@@ -82,7 +82,6 @@ ORDER BY office_code, points
 LEFT OUTER JOIN arms_game_levels b on a.level_id = b.id
 where ( a.employee_id = '".$employee_id."' ".$both_identifiers." a.lan_id = '".$lan_id."' )
 ";
-    echo $query_receiver_info;
     $result_receiver_info = mysqli_query($conn, $query_receiver_info);
     
     $rows = array();
