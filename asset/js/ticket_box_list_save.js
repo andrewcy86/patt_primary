@@ -462,6 +462,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
         flag = true;
         alert('File size exceed allowed limit!');
     }
+  
     
     let superfundx = jQuery('#super-fund').val();
     if( superfundx == '' ) {
@@ -669,6 +670,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                    console.log({one:parsedData[0]});
 		                console.log({one:parsedData[1]});
 		                //console.log({one:parsedData[1][0], eighteen:parsedData[1][18]});
+                      
+                      	// Prevents an empty new request form from being upload
+						if(parsedData[2][0] == undefined || parsedData[2][0] == null ){
+							flag = true;
+							alert('This is an incomplete new request file. Please upload a completed new request file.');
+						}
 		                
 	                    //if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {
 		                if( parsedData[1] !== undefined && parsedData[1] !== null ) {    

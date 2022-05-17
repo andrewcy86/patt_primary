@@ -237,7 +237,7 @@ print json_encode($result_arr);
   case "badges":
     $query_badges = "
 
-SELECT a.id, b.lan_id, b.employee_id, b.office_code, b.points, c.name as badge_title, c.description as badge_description, c.image_url as badge_image from
+SELECT c.id, b.lan_id, b.employee_id, b.office_code, b.points, c.name as badge_title, c.description as badge_description, c.image_url as badge_image from
 arms_game_achievements a
 LEFT JOIN arms_game_receivers b on a.receiver_id = b.id
 LEFT JOIN arms_game_rewards c on a.rewards_id = c.id
