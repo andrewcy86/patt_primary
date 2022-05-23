@@ -674,7 +674,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                       	// Prevents an empty new request form from being upload
 						if(parsedData[2][0] == undefined || parsedData[2][0] == null ){
 							flag = true;
-							alert('This is an incomplete new request file. Please upload a completed new request file.');
+							alert('This is an incomplete box list. Please upload a completed box list.');
 						}
 		                
 	                    //if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {

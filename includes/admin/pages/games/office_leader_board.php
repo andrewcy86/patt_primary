@@ -71,7 +71,7 @@ if (!empty($api_key) && !empty($office_code)) {
         
     $query_receiver_info = "
 
-SELECT a.id, a.lan_id, a.employee_id, a.points, b.name as level, a.rank as office_rank from (    
+SELECT a.id, a.lan_id, a.employee_id, a.points, b.name as level, a.rank as rank from (    
 SELECT id, lan_id, employee_id, office_code, points, level_id, RANK() OVER( PARTITION BY office_code ORDER BY points DESC) AS Rank, FIND_IN_SET( points, (
 SELECT GROUP_CONCAT( DISTINCT points
 ORDER BY points DESC ) FROM arms_game_receivers)
