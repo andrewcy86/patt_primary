@@ -95,6 +95,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     // CRON for recycle bin
     public function wppatt_recycle_bin_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/recycle_bin_cron.php';
+    }
+    
+    // CRON for PATT Transfer recycle bin
+    public function wppatt_transfer_recycle_bin_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/patt_transfer_recycle_bin_cron.php';
     }   
     
     // Review with Aaron

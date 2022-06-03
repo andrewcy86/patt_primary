@@ -529,105 +529,114 @@ WHERE id = '" . $box_ticketid . "'");
 
 $ticket_user = $ticket_details->customer_name;
 
+
+$received_timestamp = Date_Create($patt_arms_tranfer_log->received_stage_timestamp);
+$extraction_timestamp = Date_Create($patt_arms_tranfer_log->extraction_stage_timestamp);
+$keyword_id_timestamp = Date_Create($patt_arms_tranfer_log->keyword_id_stage_timestamp);
+$metadata_timestamp = Date_Create($patt_arms_tranfer_log->metadata_stage_timestamp);
+$arms_timestamp = Date_Create($patt_arms_tranfer_log->arms_stage_timestamp);
+$published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_timestamp);
+
 ?> -->
 
 
 <!-- Accordion 6 stage detail buttons/tabs html and css -->
 	<hr />
+	
 		
 	<!-- Buttons that show more details about the process of each stage -->
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Received_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->received_stage == 0) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->received_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->received_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->received_stage == 3) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			<span>Received</span>
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Extraction_stage" aria-expanded="false" aria-controls="collapseExample">
 	<?php if($patt_arms_tranfer_log->extraction_stage == 0) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+		<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->extraction_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->extraction_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->extraction_stage == 3) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			Text Extraction 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Keyword_id_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->keyword_id_stage == 0) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->keyword_id_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->keyword_id_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } ?>
 		<?php if($patt_arms_tranfer_log->keyword_id_stage == 3) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			Keyword ID 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Metadata_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->metadata_stage == 0) { ?>
-				<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } 
 		elseif($patt_arms_tranfer_log->metadata_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } 
 		elseif($patt_arms_tranfer_log->metadata_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } 
 		else { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			Metadata
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#ARMS_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->arms_stage == 0) { ?>
-				<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } 
 		elseif($patt_arms_tranfer_log->arms_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } 
 		elseif($patt_arms_tranfer_log->arms_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } 
 		else { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			ARMS 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
 	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Published_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->published_stage == 0) { ?>
-				<span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span>
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } 
 		elseif($patt_arms_tranfer_log->published_stage == 1) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Completed " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i></span></a>	
 		<?php } 
 		elseif($patt_arms_tranfer_log->published_stage == 2) { ?>
-			<span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="<?php echo "Error " . $received_timestamp->format('m/d/Y') . "\n" . $received_timestamp->format('h:ia'); ?>"><span class="badge" style="font-size: 1.1em; color: #B4081A; margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i></span></a>	
 		<?php } 
 		else { ?>
-			<span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span>	
+			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span class="badge" style="font-size: 1.1em; color: #dba617; margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i></span></a>	
 		<?php } ?>
 			Published 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
@@ -637,21 +646,21 @@ $ticket_user = $ticket_details->customer_name;
 	<?php if($patt_arms_tranfer_log->received_stage == 2 || $patt_arms_tranfer_log->received_stage == 3) { ?>
 		<div class="collapse mt-1" id="Received_stage">
 			<div class="well">
-				Recieved stage logs
+				<?php echo $patt_arms_tranfer_log->received_stage_log; ?>
 			</div>
 		</div>
 	<?php } ?>
 	<?php if($patt_arms_tranfer_log->extraction_stage == 2 || $patt_arms_tranfer_log->extraction_stage == 3) { ?>
 		<div class="collapse mt-1" id="Extraction_stage">
 			<div class="well">
-				Text Extraction stage logs
+				<?php echo $patt_arms_tranfer_log->extraction_stage_log; ?>
 			</div>
 		</div>
 	<?php } ?>
 	<?php if($patt_arms_tranfer_log->keyword_id_stage == 2 || $patt_arms_tranfer_log->keyword_id_stage == 3) { ?>
 		<div class="collapse mt-1" id="Keyword_id_stage">
 			<div class="well">
-				Keyword Identification stage logs
+				<?php echo $patt_arms_tranfer_log->keyword_id_stage_log; ?>
 			</div>
 		</div>
 	<?php } ?>
@@ -665,14 +674,14 @@ $ticket_user = $ticket_details->customer_name;
 	<?php if($patt_arms_tranfer_log->arms_stage == 2 || $patt_arms_tranfer_log->arms_stage == 3) { ?>
 		<div class="collapse mt-1" id="ARMS_stage">
 			<div class="well">
-				ARMS Connection stage logs
+				<?php echo $patt_arms_tranfer_log->arms_stage_log; ?>
 			</div>
 		</div>
 	<?php } ?>
 	<?php if($patt_arms_tranfer_log->published_stage == 2 || $patt_arms_tranfer_log->published_stage == 3) { ?>
 	<div class="collapse mt-1" id="Published_stage">
 		<div class="well">
-			Published stage logs
+			<?php echo $patt_arms_tranfer_log->published_stage_log; ?>
 		</div>
 	</div>
 	<?php } ?>

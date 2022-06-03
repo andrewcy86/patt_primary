@@ -1868,10 +1868,12 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 
 			do_action( 'wppatt_eidw_instant', $ticket_id );
 			
+          /*
+          Move to after Initial Review Complete in the auto assignment script.
 			if( $superfund ) {				
 				do_action( 'wppatt_sems_instant', $ticket_id );
 			} 
-
+		 */
 			
 			// Confirm site name and site id are valid (from api) 
 			if( $superfund ) {
@@ -2268,7 +2270,7 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>
 						<select id="super-fund" class="form-control wpsc_drop_down" name="super-fund" >
 							<option value=""><?php esc_html_e( 'Please Select', 'supportcandy' ); ?></option>
-							<option value="no"><?php esc_html_e( 'No', 'supportcandy' ); ?></option>
+							<option value="no" selected><?php esc_html_e( 'No', 'supportcandy' ); ?></option>
 							<option value="yes"><?php esc_html_e( 'Yes', 'supportcandy' ); ?></option>
 						</select>
 		          	</div>

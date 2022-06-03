@@ -25,6 +25,7 @@ $table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
 
 if(isset($_POST['postvarsbarcode'])){
    $barcode = $_POST['postvarsbarcode'];
+   $pagetype = $_POST['postvarspagetype'];
 
 //Determine if string is URL
     if(filter_var($barcode, FILTER_VALIDATE_URL) || preg_match("/^([0-9]{7})(?:,\s*(?1))*$/", $barcode))
@@ -87,8 +88,15 @@ if(!empty($request_info->id) && $request_info->active == 1) {
 			$request_url = admin_url( 'admin.php?page=wpsc-tickets', 'https' );
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
-			echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$requestid."' class='text_link' target='_blank'>" . $requestid . "</a>" . $status_icon . "<br />";
-			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
+
+if ($pagetype == 0) {
+    echo "<strong>Request ID:</strong> <a href='".$request_url."&id=".$requestid."' class='text_link' target='_blank'>" . $requestid . "</a>" . $status_icon . "<br />";
+} elseif ($pagetype == 1) {
+    echo "<strong>Request ID:</strong> " . $requestid . $status_icon . "<br />";
+} else {
+    echo "Please pass a page type.";
+}
+  			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
 			echo "<strong>Requestor Email:</strong> " . $request_info->customer_email . "<br />";
 			echo "<strong>Request Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle' aria-hidden='true' title='Request Status Color'></i><span class='sr-only'>Request Status Color</span></span>
 <br />";
@@ -151,10 +159,17 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id = " . $request_info->id
                 $boxlist_record_schedule = $info->record_schedule;
                 
                 $boxdetails_url = admin_url( 'admin.php?page=boxdetails', 'https' );
-                
+if ($pagetype == 0) {
 			$tbl .= '<tr>
             <td  width="35px" height="50px"></td>
             <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" class="text_link" target="_blank">' . $boxlist_id . '</a></td>';
+} elseif ($pagetype == 1) {
+			$tbl .= '<tr>
+            <td  width="35px" height="50px"></td>
+            <td data-order="'. $boxlist_dbid .'">' . $boxlist_id . '</td>';
+} else {
+    echo "Please pass a page type.";
+}                
             
             $type = 'box';
             $loc_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
@@ -240,10 +255,18 @@ WHERE " . $wpdb->prefix . "wpsc_epa_boxinfo.pallet_id = '" . $barcode ."'"
                 
                 $boxdetails_url = admin_url( 'admin.php?page=boxdetails', 'https' );
                 
+if ($pagetype == 0) {
 			$tbl .= '<tr>
             <td  width="35px" height="50px"></td>
             <td data-order="'. $boxlist_dbid .'"><a href="'.$boxdetails_url.'&id=' . $boxlist_id . '" class="text_link" target="_blank">' . $boxlist_id . '</a></td>';
-            
+} elseif ($pagetype == 1) {
+			$tbl .= '<tr>
+            <td  width="35px" height="50px"></td>
+            <td data-order="'. $boxlist_dbid .'">' . $boxlist_id . '</td>';
+} else {
+    echo "Please pass a page type.";
+}    
+              
             $type = 'box';
             $loc_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
             
@@ -361,8 +384,14 @@ if(Patt_Custom_Func::id_in_recall($barcode,$type) == 1){
 $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
 
-	
+if ($pagetype == 0) {
 			echo "<strong>Box ID:</strong> <a href='".$boxdetails_url."&id=" . $barcode . "' class='text_link' target='_blank'>" . $barcode . "</a>".$status_icon."<br />";
+} elseif ($pagetype == 1) {
+			echo "<strong>Box ID:</strong> " . $barcode .$status_icon."<br />";
+} else {
+    echo "Please pass a page type.";
+}    
+  
 			echo "<strong>Program Office:</strong> " . $box_details->program_office . "<br />";
 			echo "<strong>Record Schedule:</strong> " . $box_details->rsnum . "<br />";
 			echo "<strong>Digitization Center:</strong> " . $box_details->location . "</strong><br />";
@@ -419,7 +448,8 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
 				
 				$folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );
 
-				$tbl .= '
+if ($pagetype == 0) {
+$tbl .= '
     <tr>
             <td width="35px" height="50px"></td>
             <td data-order="'. $boxcontent_dbid .'"><a href="'.$folderfile_url.'&id=' . $boxcontent_id . '" class="text_link" target="_blank">' . $boxcontent_id . '</a></td>
@@ -429,6 +459,20 @@ $status_icon .= '<span style="font-size: 1em; color: #000;margin-left:4px;"><i c
             <td>' . $boxcontent_validation_icon . '</td>
             </tr>
             ';
+} elseif ($pagetype == 1) {
+$tbl .= '
+    <tr>
+            <td width="35px" height="50px"></td>
+            <td data-order="'. $boxcontent_dbid .'">' . $boxcontent_id . '</td>
+            <td>' . $boxcontent_title_truncated . '</td>
+            <td>' . $boxcontent_date . '</td>
+            <td>' . $boxcontent_contact . '</td>
+            <td>' . $boxcontent_validation_icon . '</td>
+            </tr>
+            ';
+} else {
+    echo "Please pass a page type.";
+}   
 			}
 			$tbl .= '</tbody></table>';
 
@@ -547,9 +591,13 @@ $folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );
 //Checking to see if folder/file is associated with a request that both 1) exists 2) is not archived
 if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfile_details->ticket_id) == 1) {	
 
+if ($pagetype == 0) {
             echo "<strong>Folder/File ID:</strong> <a href='".$folderfile_url."&id=" . $folderfile_folderdocinfofile_id . "' target='_blank'>" . $folderfile_folderdocinfofile_id . "</a>" . $status_icon . "<br />";
-
-
+} elseif ($pagetype == 1) {
+            echo $folderfile_folderdocinfofile_id . $status_icon . "<br />";
+} else {
+    echo "Please pass a page type.";
+}     
 			if(!empty($box_po)) {
 			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			}
@@ -681,7 +729,15 @@ if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfi
 //FAIL for all other barcodes       
 } else {
 
-echo 'Please enter a valid barcode.';
+if($pagetype == 0) {
+	echo 'Please enter a valid barcode.';
+}
+elseif($pagetype == 1) {
+	echo 'Please enter a valid ID.';
+}
+else {
+ echo 'Please enter a page type.'; 
+}
 
 }
 

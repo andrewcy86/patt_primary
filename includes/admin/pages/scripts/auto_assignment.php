@@ -22,6 +22,36 @@ id = '" . $tkid . "'
 	$ticket_details_status = $ticket_details->ticket_status;
 	($ticket_details_status == $request_shipped_tag->term_id || $ticket_details_status == $request_received_tag->term_id || $ticket_details_status == $request_new_request_tag->term_id || $ticket_details_status == $request_tabled_tag->term_id || $ticket_details_status == $request_initial_review_complete_tag->term_id) && 
 */    
+
+//Create SEMS placeholder
+
+$sems_check = $wpscfunction->get_ticket_meta($tkid,'super_fund');
+                
+if(in_array("true", $sems_check)) {		
+
+//Check to see if request has previously been in the initial review complete status
+$get_inital_review_complete_check = $wpdb->get_row("SELECT count(id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_timestamps_request
+WHERE request_id = '".$tkid."' and type = 'Initial SEMS API Call Complete' ");
+
+$get_initial_review_complete_check_count = $get_inital_review_complete_check->count;
+  
+  if($get_initial_review_complete_check_count == 0) {
+	do_action( 'wppatt_sems_instant', $tkid );
+    		
+    $get_date_timestamp = $wpdb->get_row("SELECT date_created, customer_name FROM ".$wpdb->prefix."wpsc_ticket
+			WHERE id = ".$tkid);
+			
+	$date_timestamp = $get_date_timestamp->date_created;
+    $customer_name = $get_date_timestamp->customer_name;
+			
+    $table_timestamp_request = $wpdb->prefix . 'wpsc_epa_timestamps_request';
+            
+    $wpdb->insert($table_timestamp_request, array('request_id' => $tkid, 'type' => 'Initial SEMS API Call Complete', 'user' => $customer_name, 'timestamp' => $date_timestamp) );
+  }
+  
+}
+
 if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != $dc_not_assigned_tag->term_id) {
 
 //Call Auto Assignment Function

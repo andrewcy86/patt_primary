@@ -160,6 +160,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_eidw_cron', array($frontend, 'wppatt_eidw_cron_schedule')); 
         // Add Recycle Bin Cron
         add_action( 'wppatt_recycle_bin_cron', array($frontend, 'wppatt_recycle_bin_cron_schedule')); 
+      	// Add Patt Transfer Recycle Bin Cron
+        add_action( 'wppatt_transfer_recycle_bin_cron', array($frontend, 'wppatt_transfer_recycle_bin_cron_schedule')); 
         // Add ECMS Ingestion Cron
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON
@@ -466,6 +468,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
             add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'patt-transfer-delete-init', 'patt_transfer_delete_init_page' );
           }
             
 			function custom_menu_item_redirect_external_link() {
@@ -627,6 +630,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           	function patt_transfer_init_page(){
               include_once( WPPATT_ABSPATH . 'includes/admin/pages/patt-transfer-init.php'
+              );
+            }
+          
+          	function patt_transfer_delete_init_page(){
+              include_once( WPPATT_ABSPATH . 'includes/admin/pages/patt-transfer-delete-init.php'
               );
             }
     

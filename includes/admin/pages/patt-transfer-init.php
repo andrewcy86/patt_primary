@@ -76,8 +76,17 @@ array_values($box_statuses);
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=patt-transfer';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="PATT Transfer List"></i><span class="sr-only">PATT Transfer List</span> <?php _e('PATT Transfer List','supportcandy')?> <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
+
+		<?php		
+	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+	{
+	?>
+		<button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn checkbox_depend" id="btn_delete_tickets" style="<?php echo $action_default_btn_css?>"><i class="fa fa-trash" aria-hidden="true" title="Archive"></i><span class="sr-only">Archive</span> <?php _e('Archive','supportcandy')?></button>
+	<?php
+	}
+	?>
   </div>
 	
 </div>
@@ -157,7 +166,19 @@ if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Admi
     <br /><br />
 <?php
 }
+
+$get_pending_delete_count = $wpdb->get_row(
+	"SELECT count(id) as count
+	FROM wpqa_epa_patt_arms_logs_archive"
+				);
+	
+$pending_delete_count = $get_pending_delete_count->count;
 ?>	
+
+<h4 class="widget_header"><i class="far fa-trash-alt" aria-hidden="true" title="Archive"></i><span class="sr-only">Archive</span> <a href="admin.php?page=patt-transfer-delete-init" style="text-decoration: underline;">Archive</a> <?php if ($pending_delete_count > 0) { ?><span class="update-plugins count-<?php echo $pending_delete_count ?>"><span class="update-count"><?php echo $pending_delete_count ?></span></span><?php }?></span>  
+<div class="large-tooltip" style="display:inline; padding-left:5px; width: 325px; position: absolute;"><a href="#" id="recycletooltip" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-recycle-bin'); ?>" aria-label="Archive Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></div>
+
+<hr class="widget_divider">
 	                            </div>
 			    		</div>
 	
@@ -180,20 +201,15 @@ if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Admi
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 {
 ?>
-                <!-- <th class="datatable_header" scope="col" ></th> -->
+                <th class="datatable_header" scope="col" ></th>
 <?php
 }
 ?>
                 <th class="datatable_header" scope="col" >Doc ID</th>
-                <!-- <th class="datatable_header" scope="col" >Status</th> -->
                 <th class="datatable_header" scope="col" >Status</th>
                 <th class="datatable_header" scope="col" >Stages</th>
 				<th class="datatable_header" scope="col" >Digitization Center</th>
                 <th class="datatable_header" scope="col" >Duration</th>
-                <!-- <th class="datatable_header" scope="col" >Box Status</th>                 -->
-                <!-- <th class="datatable_header" scope="col" >Digitization Center</th>
-                <th class="datatable_header" scope="col" >Program Office</th> -->
-                <!-- <th class="datatable_header" scope="col" >Validation</th> -->
             </tr>
         </thead>
     </table>
@@ -297,6 +313,22 @@ color: rgb(255, 255, 255) !important;
     overflow: hidden;
 }
 
+.update-plugins {
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    margin: 1px 0 -1px 2px;
+    padding: 0 5px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: #ca4a1f;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+    z-index: 26;
+}
 </style>
  
 <script>
@@ -441,30 +473,20 @@ jQuery(document).ready(function(){
 	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
-		// 'columnDefs': [
-		// {	'width' : 5,
-		// 	'targets': 0,	
-		// 	'checkboxes': {	
-		// 	   'selectRow': true	
-		// 	},
-		// },
-		// {
-        //     'targets': [ 1 ],
-        //     'orderData': [ 2 ]
-        // },
-        // {
-        //     'targets': [ 2 ],
-        //     'visible': false,
-        //     'searchable': false
-        // },
-		// { 'width': '100%', 'targets': 4 },
-		// { 'width': '5%', 'targets': 6 }
-		// ],
-		'select': {	
-			'style': 'multi'
-		},
-		'order': [[1, 'asc']],
-// 		'order': [[1, 'desc']],
+    'columnDefs': [	
+         {	
+            'width' : 5,
+            'targets': 0,	
+            'checkboxes': {	
+               'selectRow': true	
+            },	
+         },
+         { 'width': 100, 'targets': 4 },
+      ],
+      'select': {	
+         'style': 'multi'	
+      },
+      'order': [[1, 'asc']],
 	<?php
 	}
 	?>
@@ -473,7 +495,7 @@ jQuery(document).ready(function(){
 	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
-			// { data: 'box_id', 'title': 'Select All Checkbox'},
+			{ data: 'folderdocinfo_id', 'title': 'Select All Checkbox'},
 
 	<?php
 	}
@@ -605,6 +627,70 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 	dataTable.destroy();
 	location.reload();
 });
+
+//delete button
+jQuery('#btn_delete_tickets').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+	 var new_rows_selected = dataTable.rows( { selected: true } ).data();
+	 var selectedIds = dataTable.columns().checkboxes.selected()[0];
+	 var rows_selected_id_arr = [];
+
+	 dataTable.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+		var data = this.data();
+		console.log(rowIdx);
+		console.log(tableLoop);
+		console.log(rowLoop);
+		console.log('rows data ' + JSON.stringify(data.db_id));
+
+		// if(new_rows_selected[rowIdx].db_id != null){
+		// 	jQuery(".dt-checkboxes:checked").each(function() {
+        //         rows_selected_id_arr.push(new_rows_selected[rowIdx].db_id);
+        //     });
+			
+		// 	console.log('rows ' + JSON.stringify(new_rows_selected[rowIdx]));
+			
+		// }
+	 } );
+	 
+	 console.log('rows arr ' + selectedIds);
+	
+	//  console.log('rows ' + new_rows_selected);
+		   jQuery.post(
+	'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/delete_patt_transfer.php',{
+		// postvarsrequest_id : rows_selected_id_arr.join(",")
+		postvarsrequest_id : selectedIds.join(",")
+}, 
+   function (response) {
+      //if(!alert(response)){
+      //console.log('archive response: ' + response);
+       wpsc_modal_open('Delete Request');
+		  var data = {
+		    action: 'wpsc_delete_request',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
+    //       wpsc_get_ticket_list();
+          dataTable.column(0).checkboxes.deselectAll();
+      //}
+   });
+});
+
+jQuery('#tbl_templates_boxes').on('select.dt', function(e, dt, type, indexes) {
+   selectedIds.push(indexes[0]);
+   console.log(selectedIds);
+})
+
+jQuery('#tbl_templates_boxes').on('deselect.dt', function(e, dt, type, indexes) {
+   selectedIds.splice(selectedIds.indexOf(indexes[0]), 1);
+   console.log(selectedIds);
+})
 	
 
 	
@@ -631,6 +717,9 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 	 	//console.log('checked');
 		setTimeout(toggle_button_display, 1); //delay otherwise 
 	});
+
+	jQuery('#btn_delete_tickets').attr('disabled', 'disabled');
+	
 	
 	jQuery('#wpsc_box_destruction_btn').attr('disabled', 'disabled'); 
 	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled'); 
@@ -653,6 +742,8 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 			var checked_checkbox = jQuery('input[type="checkbox"]:checked');
 			console.log('test ' + checked_checkbox);
 
+			jQuery('#btn_delete_tickets').removeAttr('disabled');	
+
 			rows_selected.each((el)=> {
 				destroyed_boxes.forEach( function(element){
 				
@@ -671,6 +762,7 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
 			jQuery('#wpsc_individual_label_btn').removeAttr('disabled');	
 			jQuery('#wpsc_individual_pallet_label_btn').removeAttr('disabled');
 	  	} else {
+			jQuery('#btn_delete_tickets').attr('disabled', 'disabled');
 	  	    jQuery('#wpsc_box_destruction_btn').attr('disabled', 'disabled'); 
 	    	jQuery('#wppatt_assign_staff_btn').attr('disabled', 'disabled');    	
 	    	jQuery('#wppatt_change_status_btn').attr('disabled', 'disabled');    

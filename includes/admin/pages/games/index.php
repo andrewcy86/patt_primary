@@ -23,6 +23,9 @@
 <p><strong>office_code</strong>: (S) AA'ship Office Code</p>
 <p><strong>event_id</strong>: (I) See the events table for a complete list of event IDs.</p>
 <p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
+<br />
+<p><strong>Optional Parameters:<br /><br />bulk_number:</strong> (I) Number of times event should be triggered. Support bulk events.</p>
+  
 <h3>Get Receiver Data [POST]</h3>
 <p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/receiver.php</strong></p>
 <p><strong>Required Parameters:<br /></strong></p>

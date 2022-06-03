@@ -690,6 +690,15 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							
 							// removes asterisks from upload file headers
 		                    parsedData[1].forEach( function( item, i ) {
+                              if(item == null || item == undefined){
+									let alert_message = '';
+									alert_message += "Spreadsheet is not in the correct format. Please try again.";
+									
+									alert( alert_message );
+									flag = true;
+									
+									reset_page();
+								}
 			                    parsedData[1][i] = item.replaceAll( '*', '' );
 		                    });
 							                             
@@ -801,7 +810,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							    
 									
 									// Find the last line of filled out data
-									if(
+                                   	if (parsedData[count] == undefined) {
+										datatable.clear().draw();
+										alert('This box list may be corrupted. Please create a new box list and try again.');
+										flag = true;
+				
+										
+										reset_page();
+										//location.reload();
+                                  	}
+									else if(
 										count > 1 && 
 											(
 												( parsedData[count][0] == null && 
@@ -821,6 +839,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                            isBlank = false;
 		                            }
 		                            
+                                 
+                                  
 		                            // if row is not blank, then process it. Once the first blank is hit, then processing is finished.
 		                            if( !isBlank ) {
 									
@@ -884,10 +904,152 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										if( parsedData[count][index_source_type] ) {
 											parsedData[count][index_source_type] = parsedData[count][index_source_type].replace( '*', '' );
 										}
+                                      
+                                      
+                                      	let temp_record_schedule = false;
+										let errorMessage = '';
+                                      
+                                      
+                                      
+                                      // Validation for temporary/disposable record schedules
+                                        if(
+                                          	flag != true && 
+			                            	count > 1 && 
+                                          (
+                                            parsedData[count][index_rec_sched].indexOf( ':' ) >= 1
+                                          )
+                                        ){
+                                            let schedule_item_number = parsedData[count][index_rec_sched];
+                                          	let index_of_colon = parsedData[count][index_rec_sched].indexOf( ':' );
+                                          
+											schedule_item_number = schedule_item_number.slice(0, schedule_item_number.indexOf(':'));
+                                          	schedule_item_number = schedule_item_number.replace(/[\[\]']+/g,'');
+
+                                            let digital_source = parsedData[count][index_source_dim];
+                                            let folder_file_name = parsedData[count][index_folder_file_name];
+                                          	let specific_access_restriction = parsedData[count][index_sp_access_rest];
+                                          	let specific_use_restriction = parsedData[count][index_sp_use_rest];
+                                          	let rights_holder = parsedData[count][index_rights_holder];
+
+											//console.log('schedule item number: ' + parsedData[count][index_source_dim]);
+                                          
+                                          	let apiUrl = '';
+                                          	let apiHostname = window.location.host;
+                                          	let isDev = true;
+                                      		const apiPathname = '/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,'
+
+                                      		
+                                          
+                                            if(apiHostname == '086.info'){
+                                              //Dev Url
+                                              isDev = true;
+                                              apiUrl += `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`;
+                                            }
+                                          	else {
+                                              isDev = false;
+                                              apiUrl += window.location.protocol + "//" + window.location.host + apiPathname + `${schedule_item_number}`;
+                                            }
+                                          
+                                          
+                                            
+                                            var xhr = jQuery.ajax({
+                                              url: apiUrl,
+                                              type: 'get',
+                                              async: false,
+                                              success: function(data) {
+                                                if(data.records[0].Final_Disposition == 'Disposable'){
+													temp_record_schedule = true;
+                                                  console.log('this is a temp record');
+                                                  if((specific_access_restriction == "Controlled / Copyright" || specific_use_restriction == "Controlled / Copyright") && (rights_holder == null || rights_holder == undefined)){
+                                                    let alert_message = '';
+                                                    alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
+                                                    alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
+                                                    alert( alert_message );
+                                                    flag = true;
+                                                    return;
+                                                	}
+                                                  
+                                                  if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
+                                                    let alert_message = '';
+                                                    alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
+                                                    alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
+                                                    alert( alert_message );
+                                                    flag = true;
+                                                    return;
+                                                	}
+                                                  
+                                                }
+                                              },
+                                              async: true,
+                                              error: function(xhr, status, error){
+                                                if(xhr.statusText == 'error'){
+                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
+                                                }
+     										  },
+                                              async: false,
+                                              complete: function(xhr, status, error){
+                                                if(xhr.statusText == 'error'){
+                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
+                                               	  validate = true;
+                                                }
+                                              }
+                                            });
+                                          
+                                         
+                                          }
+                                      
+                                      
+                                      if( superfundx == 'no' && temp_record_schedule == true ) {
+                                        // ECMS Required Fields For Temp Records
+                                        arr_fields = [ 
+                                            'Box', 
+                                            'Folder Identifier', 
+                                            'Title', 
+                                            //'Description of Record',
+                                            'Parent/Child',
+                                            'Creation Date', 
+                                            'Creator',
+                                            'Record Type',
+                                            'Disposition Schedule & Item Number',
+                                            'EPA Contact',
+                                            'Access Restrictions',
+                                            'Use Restrictions',
+                                            'Source Type',
+                                            'Source Dimensions',
+                                            'Program Office', 
+                                            'Index Level', 
+                                            'Essential Records'
+                                        ];
+                                      }
+	
+										
 			                                
 			                            // Required fields Validation - Check for blank/null values
 			                            let invalid_index;
-			                            if( superfundx == 'no' ) {
+                                      	if(temp_record_schedule == true && superfundx == 'no'){
+											console.log('temp record schedule is ' + temp_record_schedule);
+                                          // ECMS Required Fields For Temp Records
+				                            invalid_index = [
+				                            	parsedData[count][index_box], // Box
+				                            	parsedData[count][index_folder_id], // Folder Identifier
+				                            	parsedData[count][index_title], // Title
+				                            	//parsedData[count][index_desc_record], // Description of Record
+				                            	parsedData[count][index_pcd], // Parent / Child
+				                            	parsedData[count][index_creation_date], // Creation Date
+				                            	parsedData[count][index_creator], // Creator 
+				                            	parsedData[count][index_rec_type], // Record Type 
+				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+				                            	parsedData[count][index_epa_contact], // EPA Contact 
+				                            	parsedData[count][index_access_rest], // Access Restrictions 
+				                            	parsedData[count][index_use_rest], // Use Restrictions 
+				                            	parsedData[count][index_source_type], // Source Type 
+				                            	parsedData[count][index_source_dim], // Source Dimensions 
+				                            	parsedData[count][index_prog_office], // Program Office
+				                            	parsedData[count][index_index_level], // Index Level
+				                            	parsedData[count][index_ess_rec]  // Essential Records
+				                            ];  
+										} 
+			                            else if( superfundx == 'no' ) {
 				                            // ECMS Required Fields
 				                            invalid_index = [
 				                            	parsedData[count][index_box], // Box
@@ -964,10 +1126,24 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 			                            
 			                            }
+                                      
+                                      	let creationDate = new Date(parsedData[count][index_creation_date]);
+										let closeDate = new Date(parsedData[count][index_close_date]);
+										let todayDate = new Date();
 										
 										
 										// Validate Creation date
-										if( 
+                                      	if(creationDate > todayDate){
+											let alert_message = '';
+												alert_message += "Invalid Creation Date for line " + (count + 1);
+												alert_message += ". \n\n";
+												alert_message += "Invalid value: " + parsedData[count][index_creation_date] + " \n\n";
+												alert_message += "Please enter a past or present date.";
+				                                
+				                                alert( alert_message );
+				                                flag = true;
+										}
+										else if( 
 			                            	flag != true && count > 1 && 
 			                            	date_reg.test( parsedData[count][index_creation_date] ) == false 
 			                            ) {
@@ -1026,7 +1202,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 										}
                                       
-                                     let errorMessage = '';
+                                    /* let errorMessage = '';
                                       
                                       // Validation for temporary/disposable record schedules
                                         if(
@@ -1058,6 +1234,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                               async: false,
                                               success: function(data) {
                                                 if(data.records[0].Final_Disposition == 'Disposable'){
+                                                  console.log('this is a temp record');
+                                                  
                                                   if((specific_access_restriction == "Controlled / Copyright" || specific_use_restriction == "Controlled / Copyright") && (rights_holder == null || rights_holder == undefined)){
                                                     let alert_message = '';
                                                     alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
@@ -1067,7 +1245,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                                     return;
                                                 	}
                                                   
-                                                  if(digital_source == 'Digital Source' && folder_file_name == null || folder_file_name == undefined){
+                                                  if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
                                                     let alert_message = '';
                                                     alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
                                                     alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
@@ -1094,7 +1272,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             });
                                           
                                          
-                                          }
+                                          } */
                                      
                                           	
 	
@@ -1157,7 +1335,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                            	date_time_reg.test( parsedData[count][index_close_date] ) == false 
 			                            ) {
 			                                
-			                                if( date_reg.test( parsedData[count][index_close_date] ) == false ) {
+			                                if( date_reg.test( parsedData[count][index_close_date] ) == false && temp_record_schedule != true) {
 				                                
 				                                if( 
 				                                	parsedData[count][index_close_date] == null || 
