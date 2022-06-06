@@ -12064,12 +12064,16 @@ namespace Tqdev\PhpCrudApi {
     
     if (file_exists($root_dir . '/.env')) {
         $dotenv->load();
+        $dotenv->required(['WP_HOME', 'WP_SITEURL']);
+        if (!env('DATABASE_URL')) {
+            $dotenv->required(['DB_NAME', 'DB_USER', 'DB_PASSWORD']);
+        }
     }
     
-$host = env('STAGE_DB_HOST'); /* Host name */
-$user = env('STAGE_DB_USER'); /* User */
-$password = env('STAGE_DB_PASS'); /* Password */
-$dbname = env('STAGE_DB_NAME'); /* Database name */
+    $host = DATABASE_URL; /* Host name */
+    $user = DB_USER; /* User */
+    $password = DB_PASSWORD; /* Password */
+    $dbname = DB_NAME; /* Database name */
 
     $config = new Config([
         // 'driver' => 'mysql',
