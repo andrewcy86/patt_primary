@@ -12,8 +12,6 @@
  **/
 
 // file: vendor/psr/http-factory/src/RequestFactoryInterface.php
-use function Env\env;
-
 namespace Psr\Http\Message {
 
     interface RequestFactoryInterface
@@ -12056,6 +12054,10 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\Config;
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
+
+    use function Env\env;
+
+require '/public/data/patt/patt-approot/vendor/autoload.php';
 
 $host = env('STAGE_DB_HOST'); /* Host name */
 $user = env('STAGE_DB_USER'); /* User */

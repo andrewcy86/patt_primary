@@ -1,5 +1,6 @@
 <?php
 use function Env\env;
+require '/public/data/patt/patt-approot/vendor/autoload.php';
 
 $host = env('STAGE_DB_HOST'); /* Host name */
 $user = env('STAGE_DB_USER'); /* User */
