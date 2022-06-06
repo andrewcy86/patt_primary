@@ -12055,9 +12055,6 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
 
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -5))); 
-include_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
-
 $host = STAGE_DB_HOST; /* Host name */
 $user = STAGE_DB_USER; /* User */
 $password = STAGE_DB_PASS; /* Password */
@@ -12069,8 +12066,9 @@ $dbname = STAGE_DB_NAME; /* Database name */
         'username' => $user,
         'password' => $password,
         'database' => $dbname,
-      	 'debug' => true,
-        'middlewares' => 'cors'
+      	'debug' => true,
+        'middlewares' => 'cors,apiKeyAuth',
+        'apiKeyAuth.keys' => '1b43e0c5-3131-4838-90d1-0c9d674f1202'
         // 'debug' => false
     ]);
     
