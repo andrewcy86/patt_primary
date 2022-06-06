@@ -12058,10 +12058,10 @@ namespace Tqdev\PhpCrudApi {
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -5))); 
 include_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
-$host = 'localhost'; /* Host name */
-$user = 'acy3_wp4'; /* User */
-$password = '8338p)[5Sr'; /* Password */
-$dbname = 'acy3_bedrocktest'; /* Database name */
+$host = STAGE_DB_HOST; /* Host name */
+$user = STAGE_DB_USER; /* User */
+$password = STAGE_DB_PASS; /* Password */
+$dbname = STAGE_DB_NAME/* Database name */
 
     $config = new Config([
         // 'driver' => 'mysql',
@@ -12070,7 +12070,7 @@ $dbname = 'acy3_bedrocktest'; /* Database name */
         'password' => $password,
         'database' => $dbname,
       	 'debug' => true,
-        'middlewares' => 'basicAuth'
+        'middlewares' => 'cors'
         // 'debug' => false
     ]);
     
