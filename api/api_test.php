@@ -1,4 +1,6 @@
 <?php
+use function Env\env;
+
 $host = env('STAGE_DB_HOST'); /* Host name */
 $user = env('STAGE_DB_USER'); /* User */
 $password = env('STAGE_DB_PASS'); /* Password */

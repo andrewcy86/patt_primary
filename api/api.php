@@ -12,6 +12,8 @@
  **/
 
 // file: vendor/psr/http-factory/src/RequestFactoryInterface.php
+use function Env\env;
+
 namespace Psr\Http\Message {
 
     interface RequestFactoryInterface
