@@ -1,12 +1,10 @@
 <?php
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -5))); 
-include_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
+$host = STAGE_DB_HOST; /* Host name */
+$user = STAGE_DB_USER; /* User */
+$password = STAGE_DB_PASS; /* Password */
+$dbname = STAGE_DB_NAME; /* Database name */
 
-$host = 'localhost'; /* Host name */
-$user = DB_USER; /* User */
-$password = DB_PASSWORD; /* Password */
-$dbname = DB_NAME; /* Database name */
-
+echo $host.'<br />';
 echo $user.'<br />';
 echo $password.'<br />';
 echo $dbname.'<br />';
