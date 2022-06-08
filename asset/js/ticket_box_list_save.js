@@ -955,12 +955,26 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             var xhr = jQuery.ajax({
                                               url: apiUrl,
                                               type: 'get',
+                                              headers: { 'X-API-Key': '1b43e0c5-3131-4838-90d1-0c9d674f1202' },
                                               async: false,
                                               success: function(data) {
                                                 if(data.records[0].Final_Disposition == 'Disposable'){
 													temp_record_schedule = true;
                                                   console.log('this is a temp record');
-                                                  if((specific_access_restriction == "Controlled / Copyright" || specific_use_restriction == "Controlled / Copyright") && (rights_holder == null || rights_holder == undefined)){
+
+                                                  if (specific_access_restriction != null || specific_access_restriction != undefined) {
+                                                    if (specific_access_restriction.includes("Controlled / Copyright")){
+                                                    access_restriction = 1;
+                                                    }
+                                                  } else if (specific_use_restriction != null || specific_use_restriction != undefined ) {
+                                                    if (specific_use_restriction.includes("Controlled / Copyright")){
+                                                    access_restriction = 1;
+                                                    }
+                                                  } else {
+                                                    access_restriction = 0;
+                                                  }
+
+                                                  if((access_restriction != 0) && (rights_holder == null || rights_holder == undefined)){
                                                     let alert_message = '';
                                                     alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
                                                     alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
@@ -968,6 +982,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                                     flag = true;
                                                     return;
                                                 	}
+                                            
                                                   
                                                   if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
                                                     let alert_message = '';
@@ -1329,7 +1344,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										
 										
 			                            // Validate Close Date
-			                            if( 
+			                            /* if( 
 			                            	flag != true && 
 			                            	count > 1 && 
 			                            	date_time_reg.test( parsedData[count][index_close_date] ) == false 
@@ -1356,7 +1371,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 					                            // If valid date without time, add time to date for insertion
 					                            //parsedData[count][index_close_date] = parsedData[count][index_close_date] + ' 00:00:01';
 				                            }
-			                            }
+			                            } */
 			
 			
 			                            // Box ID validation // Redundant. Can be removed.
@@ -1988,7 +2003,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 					                        jQuery('#wpsc_create_ticket_submit').removeAttr('disabled');
 					                        console.log( '#file_upload_cr has been update' );
                                   
-                                          console.log('validate ' + validate);
+                                          //console.log('validate ' + validate);
                                           if(validate == true) {
                                             alert('404 Error: All records have been designated as permanent.');
                                           }  
