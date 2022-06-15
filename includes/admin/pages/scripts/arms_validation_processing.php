@@ -32,7 +32,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
   display: table;
   clear: both;
 }
-
+  
 button {
   background: none!important;
   border: none;
@@ -44,6 +44,12 @@ button {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.highlight {
+  color: #FF0000;
+  text-decoration: line-through;
+  }
+
 </style>
 
 <?php
@@ -66,7 +72,7 @@ foreach ($str_arr as $value) {
     $office = $pieces[0];
     $obj_key = $pieces[1];
 
-    echo "<button id='button" . $i . "' value='" . $root . "arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $val_final . "</button><br />";
+    echo "<button class='button_process' onclick='$(this).addClass(\"highlight\");$(\"#frame\").attr(\"src\", this.value);' id='button" . $i . "' value='" . $root . "arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $val_final . "</button><br />";
 
     $i++;
 }
@@ -77,12 +83,6 @@ foreach ($str_arr as $value) {
      </iframe>
   </div>
 </div>
-
-<script>
-    $("button").click(function () {
-        $("#frame").attr("src", this.value);
-    });
-</script>
 <?php
 } else {
     echo "error";
