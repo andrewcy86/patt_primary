@@ -766,126 +766,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 	                        let count = 1;
                           	var validate = false;
                           	let temp_record_schedule = false;
+                          	let Final_Disposition = '';
                           
 					        var processLoopID = setInterval(function() {
 							    if ( count < arrayLength ) {
 							        jQuery('#processing_notification').text( 'Processing Row #' + count );
                                   
                                 
-							    
-                                  // Validation for temporary/disposable record schedules
-                                  if (parsedData[count][index_rec_sched] != null || parsedData[count][index_rec_sched] != undefined) {
-                                    if(
-                                      flag != true && 
-                                      count > 1 && 
-                                      (
-                                        parsedData[count][index_rec_sched].indexOf( ':' ) >= 1 
-                                      )
-                                    ){
-                                      let schedule_item_number = parsedData[count][index_rec_sched];
-                                      let index_of_colon = parsedData[count][index_rec_sched].indexOf( ':' );
-
-                                      schedule_item_number = schedule_item_number.slice(0, schedule_item_number.indexOf(':'));
-                                      schedule_item_number = schedule_item_number.replace(/[\[\]']+/g,'');
-
-                                      let digital_source = parsedData[count][index_source_dim];
-                                      let folder_file_name = parsedData[count][index_folder_file_name];
-                                      let specific_access_restriction = parsedData[count][index_sp_access_rest];
-                                      let specific_use_restriction = parsedData[count][index_sp_use_rest];
-                                      let rights_holder = parsedData[count][index_rights_holder];
-
-                                      //console.log('schedule item number: ' + parsedData[count][index_source_dim]);
-
-                                      let apiUrl = '';
-                                      let apiHostname = window.location.host;
-                                      let isDev = true;
-                                      const apiPathname = '/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,'
-
-
-
-                                      if(apiHostname == '086.info'){
-                                        //Dev Url
-                                        isDev = true;
-                                        apiUrl += `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`;
-                                      }
-                                      else {
-                                        isDev = false;
-                                        apiUrl += window.location.protocol + "//" + window.location.host + apiPathname + `${schedule_item_number}`;
-                                      }
-
-
-
-                                      var xhr = jQuery.ajax({
-                                        url: apiUrl,
-                                        type: 'get',
-                                        headers: { 'X-API-Key': '1b43e0c5-3131-4838-90d1-0c9d674f1202' },
-                                        async: false,
-                                        success: function(data) {
-                                          if(data.records[0].Final_Disposition == 'Disposable'){
-                                            temp_record_schedule = true;
-                                            console.log('this is a temp record');
-
-                                            if (specific_access_restriction != null || specific_access_restriction != undefined) {
-                                              if (specific_access_restriction.includes("Controlled / Copyright")){
-                                                access_restriction = 1;
-                                              }
-                                            } else if (specific_use_restriction != null || specific_use_restriction != undefined ) {
-                                              if (specific_use_restriction.includes("Controlled / Copyright")){
-                                                access_restriction = 1;
-                                              }
-                                            } else {
-                                              access_restriction = 0;
-                                            }
-
-                                            if((access_restriction != 0) && (rights_holder == null || rights_holder == undefined)){
-                                              let alert_message = '';
-                                              alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
-                                              alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
-                                              alert( alert_message );
-                                              flag = true;
-                                              return;
-                                            }
-
-
-                                            if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
-                                              let alert_message = '';
-                                              alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
-                                              alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
-                                              alert( alert_message );
-                                              flag = true;
-                                              return;
-                                            }
-
-                                          }
-                                        },
-                                        async: true,
-                                        error: function(xhr, status, error){
-                                          if(xhr.statusText == 'error'){
-                                            errorMessage = xhr.status + ': ' + xhr.statusText;
-                                          }
-                                        },
-                                        async: false,
-                                        complete: function(xhr, status, error){
-                                          if(xhr.statusText == 'error'){
-                                            errorMessage = xhr.status + ': ' + xhr.statusText;
-                                            validate = true;
-                                          }
-                                        }
-                                      });
-
-
-                                    }
-                                  } else {
-                                    let alert_message = '';
-                                    alert_message += "Blank value for column 'Disposition Schedule & Item Number' on line ";
-			                        alert_message += (count + 1) + ". \n\n Please enter in a Disposition Schedule & Item Number.";
-                                    alert(alert_message);
-                                    flag = true;
-                                  }
-                                  
-                                 
-                                  
-                                   
 									
 									// Find the last line of filled out data
                                    	if (parsedData[count] == undefined) {
@@ -985,6 +872,95 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       
                                       		prev_box_id = parsedData[count-1][index_box];
                                           	prev_folder_id = parsedData[count-1][index_folder_id];
+                                      
+                                      
+                                      let digital_source = parsedData[count][index_source_dim];
+                                      let folder_file_name = parsedData[count][index_folder_file_name];
+                                      let specific_access_restriction = parsedData[count][index_sp_access_rest];
+                                      let specific_use_restriction = parsedData[count][index_sp_use_rest];
+                                      let rights_holder = parsedData[count][index_rights_holder];
+                                      
+                                      
+                                  // Validation for temporary/disposable record schedules
+                                  if (parsedData[count][index_rec_sched] != null || parsedData[count][index_rec_sched] != undefined) {
+                                    if(
+                                      flag != true && 
+                                      count > 1 && 
+                                      (
+                                        parsedData[count][index_rec_sched].indexOf( ':' ) >= 1 
+                                      )
+                                    ){
+                                      let schedule_item_number = parsedData[count][index_rec_sched];
+                                      let index_of_colon = parsedData[count][index_rec_sched].indexOf( ':' );
+
+                                      schedule_item_number = schedule_item_number.slice(0, schedule_item_number.indexOf(':'));
+                                      schedule_item_number = schedule_item_number.replace(/[\[\]']+/g,'');
+
+                                      digital_source = parsedData[count][index_source_dim];
+                                      folder_file_name = parsedData[count][index_folder_file_name];
+                                      specific_access_restriction = parsedData[count][index_sp_access_rest];
+                                      specific_use_restriction = parsedData[count][index_sp_use_rest];
+                                      rights_holder = parsedData[count][index_rights_holder];
+
+                                      //console.log('schedule item number: ' + parsedData[count][index_source_dim]);
+
+                                      let apiUrl = '';
+                                      let apiHostname = window.location.host;
+                                      let isDev = true;
+                                      const apiPathname = '/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,'
+
+
+
+                                      if(apiHostname == '086.info'){
+                                        //Dev Url
+                                        isDev = true;
+                                        apiUrl += `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`;
+                                      }
+                                      else {
+                                        isDev = false;
+                                        apiUrl += window.location.protocol + "//" + window.location.host + apiPathname + `${schedule_item_number}`;
+                                      }
+
+
+
+                                      var xhr = jQuery.ajax({
+                                        url: apiUrl,
+                                        type: 'get',
+                                        headers: { 'X-API-Key': '1b43e0c5-3131-4838-90d1-0c9d674f1202' },
+                                        async: false,
+                                        success: function(data) {
+                                          if(data.records[0].Final_Disposition == 'Disposable'){
+                                            Final_Disposition = data.records[0].Final_Disposition;
+                                            temp_record_schedule = true;
+                                            console.log('this is a temp record');
+                                            console.log(Final_Disposition);
+                                          }
+                                        },
+                                        async: true,
+                                        error: function(xhr, status, error){
+                                          if(xhr.statusText == 'error'){
+                                            errorMessage = xhr.status + ': ' + xhr.statusText;
+                                          }
+                                        },
+                                        async: false,
+                                        complete: function(xhr, status, error){
+                                          if(xhr.statusText == 'error'){
+                                            errorMessage = xhr.status + ': ' + xhr.statusText;
+                                            validate = true;
+                                          }
+                                        }
+                                      });
+
+
+                                    }
+                                  } 
+                                    /*  else {
+                                    let alert_message = '';
+                                    alert_message += "Blank value for column 'Disposition Schedule & Item Number' on line ";
+			                        alert_message += (count + 1) + ". \n\n Please enter in a Disposition Schedule & Item Number.";
+                                    alert(alert_message);
+                                    flag = true;
+                                  } */
                                       
                                       		
 
@@ -1192,26 +1168,26 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                           
                                       
                                       const daysInMonth = function(m, y) {
-											switch (m - 1) {
-											  case 1:
-												return (y % 4 == 0 && y % 100) || y % 400 == 0 ? 29 : 28;
-											  case 8:
-												  return 30;
-											  case 3:
-												return 30;
-											  case 5:
-												return 30;
-											  case 10:
-												return 30;
-											  default:
-												return 31;
-											}
-										  }
-										  
-										  const isValidDate = function(m, d, y) {
-											//   if(d.indexOf('0') != 0 || d.indexOf('0') != -1)
-											return m-1 >= 0 && m-1 < 12 && d > 0 && d <= daysInMonth(m, y);
-										  }
+                                          switch (m + 1) {
+                                            case 1:
+                                              return (y % 4 == 0 && y % 100) || y % 400 == 0 ? 29 : 28;
+                                            case 8:
+                                                return 30;
+                                            case 3:
+                                              return 30;
+                                            case 5:
+                                              return 30;
+                                            case 10:
+                                              return 30;
+                                            default:
+                                              return 31;
+                                          }
+                                        }
+
+                                        const isValidDate = function(m, d, y) {
+                                          m = m-1;
+                                          return m >= 0 && m < 12 && d > 0 && d <= daysInMonth(m, y);
+                                        }
 
 										
 
@@ -1238,19 +1214,22 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       }
 
 										
-
-									
-										/*month = month.toString();
-										day = day.toString();
-										year = year.toString();*/
+										
 
 										if(month == 0 ){
 											month+= 1;
+										} 
+										else if(month == 2){
+											month-= 1;
 										}
                                       
-                                      console.log('isValidDate(month, day, year) ' + isValidDate(month, day, year));
-                                      console.log('month ' + month + ', day ' + day + ', year ' + year);
-
+                                      
+                                      /*DEBUG SECTION*/
+                                     /* console.log( creationDate );
+                                      console.log('month ' + month );
+                                      console.log('day ' + day );
+                                      console.log('year ' + year );
+                                      console.log(isValidDate(month, day, year)); */
                                       
 										
 										
@@ -1911,6 +1890,45 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert(alert_message);
 			                                flag = true;
 			                            }
+                                      
+                                      
+                                      	// Temp Record Files Validation Continued
+										if(flag != true && count > 1 && Final_Disposition == 'Disposable'){
+											// temp_record_schedule = true;
+											// console.log('this is a temp record');
+
+											if (specific_access_restriction != null || specific_access_restriction != undefined) {
+											  if (specific_access_restriction.includes("Controlled / Copyright")){
+												access_restriction = 1;
+											  }
+											} else if (specific_use_restriction != null || specific_use_restriction != undefined ) {
+											  if (specific_use_restriction.includes("Controlled / Copyright")){
+												access_restriction = 1;
+											  }
+											} else {
+											  access_restriction = 0;
+											}
+
+											if((access_restriction != 0) && (rights_holder == null || rights_holder == undefined)){
+											  let alert_message = '';
+											  alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
+											  alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
+											  alert( alert_message );
+											  flag = true;
+											  return;
+											}
+
+
+											if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
+											  let alert_message = '';
+											  alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
+											  alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
+											  alert( alert_message );
+											  flag = true;
+											  return;
+											}
+
+										}
 			                            
 			                            // Validate Program Area. If ECMS, must be blank.
 			                            if(
