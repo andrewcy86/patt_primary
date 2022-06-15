@@ -79,7 +79,7 @@ foreach ($str_arr as $value) {
 ?>  
   </div>
   <div class="column right">
-  <iframe id="frame" src="" width="100%" height="100%">
+  <iframe id="frame" src="" width="100%" height="1000px">
      </iframe>
   </div>
 </div>
