@@ -46,14 +46,15 @@ if(isset($_POST['postvarsobjects'])){
 
 <?php
 $i = 0;
-
+$root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
 foreach ($str_arr as $value) {
+	
+  	$val_final = trim($value);
+    $pieces = explode("/", $val_final);
+    $office = $pieces[0];
+    $obj_key = $pieces[1];
 
-    $pieces = explode("/", $value);
-    $office = $value[0];
-    $obj_key = $value[1];
-
-    echo "<button id='button" + i + "' value='https://pattawsstg01.aws.epa.gov/arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $value . "</button><br />";
+    echo "<button id='button" . $i . "' value='" . $root . "arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $val_final . "</button><br />";
 
     $i++;
 }
