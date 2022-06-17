@@ -157,7 +157,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
 jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
             alert('File upload failed. Please ensure the box list is not open in Excel.');
-            wpsc_get_create_ticket();
+  			return false;
+            //wpsc_get_create_ticket();
 });
 
 });
@@ -954,13 +955,13 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 
                                     }
                                   } 
-                                    /*  else {
+                                    else {
                                     let alert_message = '';
                                     alert_message += "Blank value for column 'Disposition Schedule & Item Number' on line ";
 			                        alert_message += (count + 1) + ". \n\n Please enter in a Disposition Schedule & Item Number.";
                                     alert(alert_message);
                                     flag = true;
-                                  } */
+                                  }
                                       
                                       		
 
@@ -989,7 +990,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 														(
 														parsedData[count][index_box] != 1 &&
 														parsedData[count-1][index_box] != parsedData[count][index_box] &&
-														parsedData[count][index_folder_id] != 1
+														parsedData[count][index_folder_id] != 1 ||
+														parsedData[count][index_folder_id] == 0
 														)
 												) {
 													let alert_message = '';
@@ -1015,6 +1017,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 													return;
 												}	
 											}
+                                      
+                                      console.log(parsedData[count-1][index_box]);
                                       
                                       
                                       // Required Fields - Checking for blanks // Names for Error Reporting
@@ -1164,6 +1168,40 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                            	parsedData[count][index_ess_rec]  // Essential Records
 				                            ];  
 				                        }
+                                      
+                                      
+                                      // D E B U G Data View
+			                            //console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
+			                            //console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
+                                      
+                                       // Validate - Check for blank/null values
+			                            if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( 
+			                            			( invalid_index.indexOf( null ) > -1 ) || 
+			                            			( invalid_index.indexOf( undefined ) > -1 ) ||
+			                            			( invalid_index.indexOf( '' ) > -1 ) 
+			                            		) 
+			                            ) {
+											let err_index;
+											
+											if( invalid_index.indexOf( null ) > -1 ) {
+												err_index = invalid_index.indexOf( null );
+											} else if( invalid_index.indexOf( undefined ) > -1  ) {
+												err_index = invalid_index.indexOf( undefined );
+											} else if( invalid_index.indexOf( '' ) > -1  ) {
+												err_index = invalid_index.indexOf( '' );
+											}
+											
+											let alert_message = '';
+			                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
+			                                alert_message += (count + 1) + ". This field is required.";
+			                                
+			                                alert( alert_message );
+			                                flag = true;
+			                            
+			                            }
 			                            
 			                           
                                       
@@ -1273,38 +1311,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                            }
                                       
                                       
-                                       // D E B U G Data View
-			                            //console.log( 'indexOf Null: ' + invalid_index.indexOf( null ) );
-			                            //console.log( 'indexOf Undefined: ' + invalid_index.indexOf( undefined ) );
+                                       
 			                            
-			                            // Validate - Check for blank/null values
-			                            if( 
-			                            	flag != true && 
-			                            	count > 1 && 
-			                            		( 
-			                            			( invalid_index.indexOf( null ) > -1 ) || 
-			                            			( invalid_index.indexOf( undefined ) > -1 ) ||
-			                            			( invalid_index.indexOf( '' ) > -1 ) 
-			                            		) 
-			                            ) {
-											let err_index;
-											
-											if( invalid_index.indexOf( null ) > -1 ) {
-												err_index = invalid_index.indexOf( null );
-											} else if( invalid_index.indexOf( undefined ) > -1  ) {
-												err_index = invalid_index.indexOf( undefined );
-											} else if( invalid_index.indexOf( '' ) > -1  ) {
-												err_index = invalid_index.indexOf( '' );
-											}
-											
-											let alert_message = '';
-			                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
-			                                alert_message += (count + 1) + ". This field is required.";
-			                                
-			                                alert( alert_message );
-			                                flag = true;
-			                            
-			                            }
+			                           
 			
 			/*							// Removed validation for date time, as time is no longer required. 
 			                            if( 

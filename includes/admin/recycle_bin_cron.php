@@ -22,10 +22,14 @@ $completed_dispositioned_term_id = $completed_dispositioned_tag->term_id;
 $box_completed_dispositioned_tag = get_term_by('slug', 'completed-dispositioned', 'wpsc_box_statuses'); //1258
 $box_cancelled_tag = get_term_by('slug', 'cancelled', 'wpsc_box_statuses'); //1057
 
+//Send all Initial Review Rejected requests to the Archive
+$initial_review_rejected_tag = get_term_by('slug', 'initial-review-rejected', 'wpsc_statuses'); //670
+$initial_review_rejected_term_id = $initial_review_rejected_tag->term_id;
+
 //Move a request to the recycle bin when a request is Completed/Dispositioned or Cancelled
 
 //get all active requests
-$get_total_request_count = $wpdb->get_results("SELECT wpqa_wpsc_ticket.id as ticket_id, request_id, ticket_status, date_updated, meta_key, meta_value
+$get_total_request_count = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_ticket.id as ticket_id, request_id, ticket_status, date_updated
 FROM " . $wpdb->prefix . "wpsc_ticket
 INNER JOIN wpqa_wpsc_ticketmeta
 ON wpqa_wpsc_ticket.id = wpqa_wpsc_ticketmeta.ticket_id
@@ -36,17 +40,22 @@ foreach($get_total_request_count as $item) {
     $request_id = $item->request_id;
     $ticket_status = $item->ticket_status;
     $date_updated = $item->date_updated;
-    $ticket_meta_key = $item->meta_key;
-    $ticket_meta_value = $item->meta_value;
+    // $ticket_meta_key = $item->meta_key;
+    // $ticket_meta_value = $item->meta_value;
     //echo $ticket_id;
     $recall_decline = 0;
     $status = 0;
-    
-  	$date_updated = date_create($date_updated);
+
+ 
+    $date_updated = date_create($date_updated);
     $date_updated_formatted = date_format($date_updated, "m/d/Y");
     $current_date = date_create();
     $current_date_formatted = date("m/d/Y");
-  
+
+    // var_dump($ticket_id);
+    // var_dump($expire_date_formatted);
+    // var_dump(strtotime($current_date_formatted) >= strtotime($expire_date_formatted));
+
     if(Patt_Custom_Func::id_in_recall($request_id, 'request') == 1 || Patt_Custom_Func::id_in_return($request_id, 'request') == 1) {
         $recall_decline = 1;
     }
@@ -57,6 +66,15 @@ foreach($get_total_request_count as $item) {
     foreach ($get_box_status as $box) {
 	    array_push($get_box_status_array, $box->box_status);
 	}
+
+    $get_ticket_meta = $wpdb->get_results("SELECT DISTINCT ticket_id, meta_key, meta_value  
+                        FROM " . $wpdb->prefix . "wpsc_ticketmeta WHERE ticket_id = '".$ticket_id."' AND meta_key = 'rejected_timestamp'");
+   
+
+    
+    
+    // var_dump($get_ticket_meta);
+    // var_dump($get_ticket_meta_array);
 	
 	//check if all boxes in a request are the same status
 	if( count(array_unique($get_box_status_array)) == 1 ) {
@@ -65,21 +83,37 @@ foreach($get_total_request_count as $item) {
             do_action('wpsc_after_edit_change_ticket_status',$ticket_id);
         }
         
-        /*if( in_array($box_cancelled_tag->term_id, $get_box_status_array) && $ticket_status != $cancelled_term_id && strtotime($current_date_formatted) >= strtotime($expire_date_formatted)) {
-            $wpscfunction->change_status($ticket_id, $cancelled_term_id);
-            do_action('wpsc_after_edit_change_ticket_status',$ticket_id);
-        }*/
-      
-      if( in_array($box_cancelled_tag->term_id, $get_box_status_array) && $ticket_status != $cancelled_term_id) {
-            if($ticket_meta_key == 'rejected_timestamp') {
-                $expire_date = (strtotime("+2 weeks", $ticket_meta_value));
-                $expire_date_formatted = date("m/d/y", $expire_date);
-        
-                if(strtotime($current_date_formatted) >= strtotime($expire_date_formatted)) {
-                    $wpscfunction->change_status($ticket_id, $cancelled_term_id);
-                    do_action('wpsc_after_edit_change_ticket_status',$ticket_id);
-                }
+        if( in_array($box_cancelled_tag->term_id, $get_box_status_array) && $ticket_status != $cancelled_term_id) {
+			if (count($get_ticket_meta) != 0) {
+				// list is not empty.
+				foreach ($get_ticket_meta as $ticket) {
+					// array_push($get_ticket_meta_array, $ticket->ticket_id);
+					$ticket_meta_id = $ticket->ticket_id;
+					$ticket_meta_key = $ticket->meta_key;
+					$ticket_meta_value = $ticket->meta_value;
+
+
+					if($ticket_meta_key == 'rejected_timestamp') {
+						$expire_date = (strtotime("+2 weeks", $ticket_meta_value));
+						$expire_date_formatted = date("m/d/y", $expire_date);
+						
+						// var_dump($item);
+						// var_dump($expire_date_formatted);
+				
+						if(strtotime($current_date_formatted) >= strtotime($expire_date_formatted)) {
+							$wpscfunction->change_status($ticket_id, $cancelled_term_id);
+							do_action('wpsc_after_edit_change_ticket_status',$ticket_id);
+						}
+						
+					}
+				}
+
+			} else {
+                $wpscfunction->change_status($ticket_id, $cancelled_term_id);
+                do_action('wpsc_after_edit_change_ticket_status',$ticket_id); 
             }
+
+			 
         }
     }
     
@@ -90,17 +124,17 @@ foreach($get_total_request_count as $item) {
     }
     
     //If all boxes are in the status of Completed/Dispositioned and in the correct request status they can be archived
-    if( count(array_unique($get_box_status_array)) == 1 && in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array ) && $ticket_status == $completed_dispositioned_term_id) {
+    if( count(array_unique($get_box_status_array)) == 1 && in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array ) && ($ticket_status == $completed_dispositioned_term_id || $ticket_status == $cancelled_term_id) ) {
         $status = 1;
     }
     
     //If all boxes are in the status of Cancelled and in the correct request status they can be archived
-    if( count(array_unique($get_box_status_array)) == 1 && in_array($box_cancelled_tag->term_id, $get_box_status_array ) && $ticket_status == $cancelled_term_id) {
+    if( count(array_unique($get_box_status_array)) == 1 && in_array($box_cancelled_tag->term_id, $get_box_status_array ) && ($ticket_status == $cancelled_term_id || $ticket_status == $completed_dispositioned_term_id) ) {
         $status = 1;
     }
     
     //If there are a mix of Completed/Dispositioned and Cancelled boxes and they are in the request status Completed/Dispositioned they can be archived
-    if( count(array_unique($get_box_status_array)) == 2 && ( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && in_array($box_cancelled_tag->term_id, $get_box_status_array) ) && $ticket_status == $completed_dispositioned_term_id) {
+    if( count(array_unique($get_box_status_array)) == 2 && ( in_array($box_completed_dispositioned_tag->term_id, $get_box_status_array) && in_array($box_cancelled_tag->term_id, $get_box_status_array) ) && ($ticket_status == $completed_dispositioned_term_id || $ticket_status == $cancelled_term_id) ) {
         $status = 1;
     }
 
