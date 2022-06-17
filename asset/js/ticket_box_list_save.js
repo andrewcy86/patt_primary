@@ -156,6 +156,7 @@ jQuery(document).ready(function(){
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
 jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
+			flag = true;
             alert('File upload failed. Please ensure the box list is not open in Excel.');
   			return false;
             //wpsc_get_create_ticket();
@@ -335,8 +336,10 @@ function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 		},
     error: function ( response ) {
             //alert('File upload failed. Please ensure the box list is not open in Excel.');
+			flag = true;
             console.log("Excel did not upload successfully");
-            wpsc_get_create_ticket();
+            //wpsc_get_create_ticket();
+			return false;
     }
 	
 	});		
@@ -2206,8 +2209,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
             },
             error: function(xhr, status, error){
             //alert('File upload failed. Please ensure the box list is not open in Excel.');
+			flag = true;
             console.log("Excel did not upload successfully");
-            wpsc_get_create_ticket();
+            //wpsc_get_create_ticket();
+			return false;
      }
         });
 
