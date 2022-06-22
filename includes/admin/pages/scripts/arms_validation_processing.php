@@ -19,11 +19,11 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 }
 
 .left {
-  width: 25%;
+  width: 450px;
 }
 
 .right {
-  width: 75%;
+  width: 750px;
 }
 
 /* Clear floats after the columns */
