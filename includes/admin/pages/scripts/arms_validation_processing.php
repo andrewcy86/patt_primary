@@ -50,6 +50,32 @@ button {
   text-decoration: line-through;
   }
 
+#paging {
+  padding: 0 20px 20px 20px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+#paging a {
+  color: #000;
+  background: #e0e0e0;
+  padding: 8px 12px;
+  margin-right: 5px;
+  text-decoration: none;
+}
+
+#paging a.aktif {
+  background: #000 !important;
+  color: #fff;
+}
+
+#paging a:hover {
+  border: 1px solid #000;
+}
+
+.hidden {
+  display: none;
+}
 </style>
 
 <?php
@@ -61,7 +87,7 @@ if(isset($_POST['postvarsobjects'])){
 
 <div class="row">
   <div class="column left">
-
+  <ul id="listPage">
 <?php
 $i = 0;
 $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
@@ -72,14 +98,15 @@ foreach ($str_arr as $value) {
     $office = $pieces[0];
     $obj_key = $pieces[1];
 
-    echo "<button class='button_process' onclick='$(this).addClass(\"highlight\");$(\"#frame\").attr(\"src\", this.value);' id='button" . $i . "' value='" . $root . "arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $val_final . "</button><br />";
+    echo "<li><button class='button_process' onclick='$(this).addClass(\"highlight\");$(\"#frame\").attr(\"src\", this.value);' id='button" . $i . "' value='" . $root . "arms-validation-test/?group_name=" . $office . "&object_key=" . $obj_key . "'>". $val_final . "</button></li>";
 
     $i++;
 }
 ?>  
+    </ul>
   </div>
   <div class="column right">
-  <iframe id="frame" src="" width="100%" height="1000px">
+  <iframe id="frame" src="" width="100%" height="500px">
      </iframe>
   </div>
 </div>
