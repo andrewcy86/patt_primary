@@ -162,6 +162,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_recycle_bin_cron', array($frontend, 'wppatt_recycle_bin_cron_schedule')); 
       	// Add Patt Transfer Recycle Bin Cron
         add_action( 'wppatt_transfer_recycle_bin_cron', array($frontend, 'wppatt_transfer_recycle_bin_cron_schedule')); 
+      	// Add Ticket List Cleanup
+        add_action( 'wppatt_ticket_list_cleanup_cron', array($frontend, 'wppatt_ticket_list_cleanup_cron_schedule'));  
         // Add ECMS Ingestion Cron
         add_action( 'wppatt_ecms_ingestion_cron', array($frontend, 'wppatt_ecms_ingestion_cron_schedule')); 
         // Message Cleanup CRON

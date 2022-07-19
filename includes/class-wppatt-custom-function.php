@@ -6904,7 +6904,7 @@ $comment .= '<strong>Reason: </strong><br />'.$comment;
 $comment .= ' <br />For more information <a href="'.admin_url( 'admin.php?pid=requestdetails&page=filedetails&id='.$folderfile_id ).'">Click here to go to the folder/file details page.</a><br /><br />
 This email is sent automatically. Please don\'t reply.';
 
-$recipient_email = 'ecms@epa.gov';
+$recipient_email = 'ndp@epa.gov';
 
 						if ( empty( $email_name ) )
 							$email_name = get_bloginfo( 'name' );
@@ -7723,7 +7723,7 @@ if($type == 'comment') {
 						}
 						$email_body = nl2br( $email_body );
 		
-						$recipient_email = 'ecms@epa.gov';
+						$recipient_email = 'ndp@epa.gov';
 						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body <hr /> $service_type : $status_code - $error</body></html>";
 		
 						// set headers to send html email
