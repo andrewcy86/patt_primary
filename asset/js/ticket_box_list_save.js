@@ -1,11 +1,32 @@
 var theFile = {};
 var success = 0;
 var ellipsis_limit = 30;
+let fileUploadFail = false;
+
 //console.log( 'nothing' );
 jQuery(document).ready(function(){
     Dropzone.autoDiscover = false;
     console.log( 'ticket_box_list_save.js loaded' );
     
+
+
+jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
+
+jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
+  alert('File upload failed. Please ensure the box list is not open in Excel.');
+  
+  if(jqXHR.statusText == 'error'){
+    fileUploadFail = true;
+  }
+  //exit;
+  //window.location.reload();
+
+  //wpsc_get_create_ticket();
+});
+
+});
+
+
     
     jQuery(document).ajaxComplete(function (event, xhr, settings) {
 	   
@@ -72,6 +93,7 @@ jQuery(document).ready(function(){
 			                this.removeAllFiles()
 			                this.addFile(file);
 				            }
+                    
 				            console.log('Do the image');
 				            jQuery(".dz-image").attr('id', "document-image" );
 				          });
@@ -153,18 +175,6 @@ jQuery(document).ready(function(){
     
 });
 
-jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
-
-jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
-            alert('File upload failed. Please ensure the box list is not open in Excel.');
-  			/*flag = true;
-  			reset_page();*/
-  			return;
-            //wpsc_get_create_ticket();
-});
-
-});
-
 /* Removes data from the box datatable if there is any error */
 function clearBoxTable() {
     var datatable = jQuery('#boxinfodatatable').DataTable();
@@ -233,6 +243,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 	
     let superfundx = jQuery('#super-fund').val();
     console.log({superfund:superfundx});
+  
+  	console.log('file upload fail var value: ' + fileUploadFail);
     
     if( superfundx == '' ) {
 		alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
@@ -277,7 +289,8 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
                 console.log("Excel uploaded successfully");
                 console.log(response);
                 let obj = JSON.parse( response );
-                console.log( obj.attachment_id );
+              	console.log( obj );
+                console.log( typeof obj.attachment_id );
                 
                 jQuery( '#attachment_upload_cr' ).val( obj.attachment_id );
                 
@@ -293,25 +306,6 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
 
 // Grabs the ticket_id and attachment_id and AJAX calls to link them in ticketmeta DB tablefunction 
-
-function link_ticket_id_and_attachment( ) {
-    console.log( 'link_ticket_id_and_attachment' );
-    var ticket_id_loop = setInterval(function() {
-    var txtInput = jQuery( '#ticket_id' ).val();
-    if ( txtInput !== '' ) {
-        
-        var attachment_id = jQuery( '#attachment_upload_cr' ).val();
-        console.log( 'ticket_id after: ' + txtInput );
-        ajax_link_ticket_id_and_attachment( attachment_id, txtInput );
-        success = 1;
-    }
-    
-    if (success > 0) {
-        console.log( 'success: '+ success);
-        clearInterval(ticket_id_loop);
-    }
-    }, 100);
-}
 
 function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 		
@@ -343,6 +337,26 @@ function ajax_link_ticket_id_and_attachment( attachment_id, ticket_id ) {
 	
 	});		
 
+}
+
+
+function link_ticket_id_and_attachment( ) {
+    console.log( 'link_ticket_id_and_attachment' );
+    var ticket_id_loop = setInterval(function() {
+    var txtInput = jQuery( '#ticket_id' ).val();
+    if ( txtInput !== '' ) {
+        
+        var attachment_id = jQuery( '#attachment_upload_cr' ).val();
+        console.log( 'ticket_id after: ' + txtInput );
+        ajax_link_ticket_id_and_attachment( attachment_id, txtInput );
+        success = 1;
+    }
+    
+    if (success > 0) {
+        console.log( 'success: '+ success);
+        clearInterval(ticket_id_loop);
+    }
+    }, 100);
 }
 
 
@@ -1052,6 +1066,28 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             'Essential Records'
                                         ];
                                       }
+                                      if( superfundx == 'yes' && temp_record_schedule == true ) {
+                                        // ECMS Required Fields For Temp Records
+                                        arr_fields = [ 
+                                            'Box', 
+                                            'Folder Identifier', 
+                                            'Title', 
+                                            //'Description of Record',
+                                            'Parent/Child',
+                                            'Creation Date', 
+                                            'Creator',
+                                            'Record Type',
+                                            'Disposition Schedule & Item Number',
+                                            'EPA Contact',
+                                            'Access Restrictions',
+                                            'Use Restrictions',
+                                            'Source Type',
+                                            'Source Dimensions',
+                                            'Program Office', 
+                                            'Index Level', 
+                                            'Essential Records'
+                                        ];
+                                      }
                                   
                                     else if( superfundx == 'no' ) {
                                         // ECMS Required Fields
@@ -1106,6 +1142,29 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       	if(temp_record_schedule == true && superfundx == 'no'){
 											console.log('temp record schedule is ' + temp_record_schedule);
                                           // ECMS Required Fields For Temp Records
+				                            invalid_index = [
+				                            	parsedData[count][index_box], // Box
+				                            	parsedData[count][index_folder_id], // Folder Identifier
+				                            	parsedData[count][index_title], // Title
+				                            	//parsedData[count][index_desc_record], // Description of Record
+				                            	parsedData[count][index_pcd], // Parent / Child
+				                            	parsedData[count][index_creation_date], // Creation Date
+				                            	parsedData[count][index_creator], // Creator 
+				                            	parsedData[count][index_rec_type], // Record Type 
+				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+				                            	parsedData[count][index_epa_contact], // EPA Contact 
+				                            	parsedData[count][index_access_rest], // Access Restrictions 
+				                            	parsedData[count][index_use_rest], // Use Restrictions 
+				                            	parsedData[count][index_source_type], // Source Type 
+				                            	parsedData[count][index_source_dim], // Source Dimensions 
+				                            	parsedData[count][index_prog_office], // Program Office
+				                            	parsedData[count][index_index_level], // Index Level
+				                            	parsedData[count][index_ess_rec]  // Essential Records
+				                            ];  
+										}
+                                      	else if(temp_record_schedule == true && superfundx == 'yes'){
+											console.log('temp record schedule is ' + temp_record_schedule);
+                                          // SEMS Required Fields For Temp Records
 				                            invalid_index = [
 				                            	parsedData[count][index_box], // Box
 				                            	parsedData[count][index_folder_id], // Folder Identifier
@@ -1840,6 +1899,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert( alert_message );
 			                                flag = true;
 			                            }
+                                      
+                                     let access_restriction = 0;
 			
 			                            // Validate Access Restriction (Yes) & Specific Access Restriction (blank)                            
 			                            if( 
