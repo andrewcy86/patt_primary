@@ -1066,8 +1066,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             'Essential Records'
                                         ];
                                       }
-                                      if( superfundx == 'yes' && temp_record_schedule == true ) {
-                                        // ECMS Required Fields For Temp Records
+                                      else if( superfundx == 'yes' && temp_record_schedule == true ) {
+                                        // SEMS Required Fields For Temp Records
                                         arr_fields = [ 
                                             'Box', 
                                             'Folder Identifier', 
@@ -1078,12 +1078,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             'Creator',
                                             'Record Type',
                                             'Disposition Schedule & Item Number',
+                                          	'Site Name',
+                                          	'Site ID #',
+                                          	'Program Area',
                                             'EPA Contact',
                                             'Access Restrictions',
                                             'Use Restrictions',
                                             'Source Type',
                                             'Source Dimensions',
-                                            'Program Office', 
+                                            'Program Office',
+                                          	'Program Area', 
                                             'Index Level', 
                                             'Essential Records'
                                         ];
@@ -1122,6 +1126,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             'Creator',
                                             'Record Type',
                                             'Disposition Schedule & Item Number',
+                                          	'Site Name',
+                                          	'Site ID #',
                                             'EPA Contact',
                                             'Access Restrictions',
                                             'Use Restrictions',
@@ -1151,7 +1157,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                            	parsedData[count][index_creation_date], // Creation Date
 				                            	parsedData[count][index_creator], // Creator 
 				                            	parsedData[count][index_rec_type], // Record Type 
-				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number
 				                            	parsedData[count][index_epa_contact], // EPA Contact 
 				                            	parsedData[count][index_access_rest], // Access Restrictions 
 				                            	parsedData[count][index_use_rest], // Use Restrictions 
@@ -1163,24 +1169,26 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                            ];  
 										}
                                       	else if(temp_record_schedule == true && superfundx == 'yes'){
-											console.log('temp record schedule is ' + temp_record_schedule);
                                           // SEMS Required Fields For Temp Records
 				                            invalid_index = [
 				                            	parsedData[count][index_box], // Box
 				                            	parsedData[count][index_folder_id], // Folder Identifier
 				                            	parsedData[count][index_title], // Title
-				                            	//parsedData[count][index_desc_record], // Description of Record
+				                            	parsedData[count][index_desc_record], // Description of Record
 				                            	parsedData[count][index_pcd], // Parent / Child
 				                            	parsedData[count][index_creation_date], // Creation Date
 				                            	parsedData[count][index_creator], // Creator 
 				                            	parsedData[count][index_rec_type], // Record Type 
-				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number
+                                              	parsedData[count][index_site_name], // Site Name
+                                              	parsedData[count][index_site_id], // Site #/OU
 				                            	parsedData[count][index_epa_contact], // EPA Contact 
 				                            	parsedData[count][index_access_rest], // Access Restrictions 
 				                            	parsedData[count][index_use_rest], // Use Restrictions 
 				                            	parsedData[count][index_source_type], // Source Type 
 				                            	parsedData[count][index_source_dim], // Source Dimensions 
 				                            	parsedData[count][index_prog_office], // Program Office
+                                              	parsedData[count][index_prog_area], // Program Area
 				                            	parsedData[count][index_index_level], // Index Level
 				                            	parsedData[count][index_ess_rec]  // Essential Records
 				                            ];  
@@ -1254,6 +1262,11 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 											} else if( invalid_index.indexOf( '' ) > -1  ) {
 												err_index = invalid_index.indexOf( '' );
 											}
+                                          	
+                                          	console.log(parsedData[count][index_prog_office]);
+                                          	console.log(invalid_index.indexOf( null ));
+                                          	console.log('arr fields err index: ' + arr_fields[17]);
+                                          	console.log('err index: ' + err_index);
 											
 											let alert_message = '';
 			                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
