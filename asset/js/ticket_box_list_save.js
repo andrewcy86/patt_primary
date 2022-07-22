@@ -1069,7 +1069,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       else if( superfundx == 'yes' && temp_record_schedule == true ) {
                                         // SEMS Required Fields For Temp Records
                                         arr_fields = [ 
-                                            'Box', 
+                                            'Box',  // total 21
                                             'Folder Identifier', 
                                             'Title', 
                                             //'Description of Record',
@@ -1080,7 +1080,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                             'Disposition Schedule & Item Number',
                                           	'Site Name',
                                           	'Site ID #',
-                                          	'Program Area',
                                             'EPA Contact',
                                             'Access Restrictions',
                                             'Use Restrictions',
@@ -1171,10 +1170,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       	else if(temp_record_schedule == true && superfundx == 'yes'){
                                           // SEMS Required Fields For Temp Records
 				                            invalid_index = [
-				                            	parsedData[count][index_box], // Box
+				                            	parsedData[count][index_box], // Box  20 total
 				                            	parsedData[count][index_folder_id], // Folder Identifier
 				                            	parsedData[count][index_title], // Title
-				                            	parsedData[count][index_desc_record], // Description of Record
+				                            	//parsedData[count][index_desc_record], // Description of Record
 				                            	parsedData[count][index_pcd], // Parent / Child
 				                            	parsedData[count][index_creation_date], // Creation Date
 				                            	parsedData[count][index_creator], // Creator 
@@ -1263,10 +1262,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 												err_index = invalid_index.indexOf( '' );
 											}
                                           	
-                                          	console.log(parsedData[count][index_prog_office]);
-                                          	console.log(invalid_index.indexOf( null ));
-                                          	console.log('arr fields err index: ' + arr_fields[17]);
-                                          	console.log('err index: ' + err_index);
+                                          
 											
 											let alert_message = '';
 			                                alert_message += "Blank value for column '" + arr_fields[err_index] + "' on line ";
