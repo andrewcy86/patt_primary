@@ -1276,7 +1276,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                           
                                       
                                       const daysInMonth = function(m, y) {
-                                          switch (m + 1) {
+                                          switch (m) {
                                             case 1:
                                               return (y % 4 == 0 && y % 100) || y % 400 == 0 ? 29 : 28;
                                             case 8:
@@ -1293,7 +1293,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                         }
 
                                         const isValidDate = function(m, d, y) {
-                                          m = m-1;
                                           return m >= 0 && m < 12 && d > 0 && d <= daysInMonth(m, y);
                                         }
 
@@ -1316,7 +1315,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										dayOfMonth = parsedData[count][index_creation_date].slice(dateFirstSlash);
 										dateSecondSlash = dayOfMonth.indexOf('/'); 
                                         
-                                        month = creationDate.getMonth();
+                                        month = parsedData[count][index_creation_date].slice(0, 2);
 										day = dayOfMonth.slice(0,dateSecondSlash);
 										year = creationDate.getFullYear();
                                       }
@@ -1324,12 +1323,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										
 										
 
-										if(month == 0 ){
-											month+= 1;
-										} 
-										else if(month == 2){
-											month-= 1;
-										}
+										// Months start from 0 - 11 instead of 1 - 12
+										month = month - 1;
                                       
                                       
                                       /*DEBUG SECTION*/
