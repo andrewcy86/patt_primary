@@ -43,6 +43,10 @@
 <p><strong>Required Parameters:<br /></strong></p>
 <p><strong>office_code</strong>: (S) AA'ship Office Code. Retrieves all receivers and their office rank for a specific AA'ship specified.</p>
 <p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
+<h3>AA Leader Board [POST]</h3>
+<p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/aa_leader_board.php</strong></p>
+<p><strong>Required Parameters:<br /></strong></p>
+<p><strong>api_key</strong>: (S) API Key issued for the specific application submitting to the gamification engine.</p>
 <h3>Overall Leader Board [POST]</h3>
 <p><strong>/web/app/mu-plugins/pattracking/includes/admin/pages/games/overall_leader_board.php</strong></p>
 <p><strong>Required Parameters:</strong></p>

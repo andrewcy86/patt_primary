@@ -376,7 +376,32 @@ jQuery(document).ready(function(){
       },
       'order': [[1, 'asc']],
     'columns': [
-       { data: 'request_id' }, 
+       { 
+         data: 'request_id',
+         render: function(ticket_id) {       
+          <?php $get_ticketmeta = $wpdb->get_results("SELECT DISTINCT ticket_id, request_id FROM wpqa_wpsc_ticketmeta 
+              INNER JOIN wpqa_wpsc_ticket
+              ON wpqa_wpsc_ticket.id = wpqa_wpsc_ticketmeta.ticket_id
+              WHERE ticket_id NOT IN 
+              (SELECT ticket_id FROM wpqa_wpsc_ticketmeta WHERE META_KEY = 'box_list_post_id' AND meta_value REGEXP'^[0-9]*$' AND meta_value <> '' )");
+
+              foreach($get_ticketmeta as $item) {
+                $ticketmeta_ticket_id = $item->ticket_id;
+                $request_id = $item->request_id;
+          ?>
+
+                if(<?php echo $ticketmeta_ticket_id ?> == ticket_id) {
+                  //return '<input type="checkbox" class="dt-checkboxes" aria-label="Checkbox" disabled>';
+                  return '';
+                } 
+          <?php    
+              }
+          ?>
+          		else {
+                  return '<input type="checkbox" class="dt-checkboxes" aria-label="Checkbox">';
+                }
+        }
+       }, 
        { data: 'request_id_flag', 'class' : 'text_highlight' },
        { data: 'ticket_priority' },
        { data: 'ticket_status' },
@@ -500,7 +525,30 @@ function wpsc_get_restore_bulk_ticket_1(){
    var form = this;
       var rows_selected = dataTable.column(0).checkboxes.selected();
 
-        var ticket_id=String(rows_selected.join(","));
+      var ticket_id=String(rows_selected.join(","));	
+  		  ticket_id = ticket_id.split(",");
+  
+  		 <?php $get_ticketmeta = $wpdb->get_results("SELECT DISTINCT ticket_id, request_id FROM wpqa_wpsc_ticketmeta 
+              INNER JOIN wpqa_wpsc_ticket
+              ON wpqa_wpsc_ticket.id = wpqa_wpsc_ticketmeta.ticket_id
+              WHERE ticket_id NOT IN 
+              (SELECT ticket_id FROM wpqa_wpsc_ticketmeta WHERE META_KEY = 'box_list_post_id' AND meta_value REGEXP'^[0-9]*$' AND meta_value <> '' )");
+
+              foreach($get_ticketmeta as $item) {
+                $ticketmeta_ticket_id = $item->ticket_id;
+                $request_id = $item->request_id;
+          ?>
+				for(var i = 0; i < rows_selected.length; i++){
+                  if(<?php echo $ticketmeta_ticket_id ?> == rows_selected[i]) {
+                    ticket_id.pop();
+                  }
+                } 
+          <?php    
+              }
+          ?>
+  
+        // Converted the ticket id array back into a string for post request		
+  		ticket_id = String(ticket_id);
 
       var data = {
           action: 'wpsc_tickets',
