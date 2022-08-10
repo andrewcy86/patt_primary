@@ -691,7 +691,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                       	// Prevents an empty new request form from being upload
 						if(parsedData[2][0] == undefined || parsedData[2][0] == null ){
 							flag = true;
-							alert('This is an incomplete box list. Please upload a completed box list.');
+							alert('This is an incomplete box list. Please start the box column with 1.');
 						}
                       
                       	if(parsedData[2][0] != undefined && parsedData[2][0] != null && parsedData[2][0] != 1 ){
@@ -949,8 +949,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                           if(data.records[0].Final_Disposition == 'Disposable'){
                                             Final_Disposition = data.records[0].Final_Disposition;
                                             temp_record_schedule = true;
-                                            console.log('this is a temp record');
-                                            console.log(Final_Disposition);
+                                            /*console.log('this is a temp record');
+                                            console.log(Final_Disposition);*/
                                           }
                                         },
                                         async: true,
@@ -974,68 +974,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                     else {
                                     let alert_message = '';
                                     alert_message += "Blank value for column 'Disposition Schedule & Item Number' on line ";
-			                        alert_message += (count + 1) + ". \n\n Please enter in a Disposition Schedule & Item Number.";
+			                        alert_message += (count + 1) + ". \n\n Please select a Disposition Schedule & Item Number.";
                                     alert(alert_message);
                                     flag = true;
                                   }
-                                      
-                                      		
-
-											// Validate Box column has sequential box ordering
-											if( 
-												flag != true && 
-												count > 1 && 
-													(
-													parsedData[count][index_box] > 0 &&
-													parsedData[count-1][index_box] >= 1 &&
-													prev_box_id != parsedData[count][index_box] &&
-													(parsedData[count][index_box]) - prev_box_id != 1
-													)
-											) {
-												let alert_message = '';
-												alert_message += 'Box ID number should be in sequential order.';
-												// alert_message += 'number has changed to ' + (parsedData[count][index_box] - prev_box_id) + ' from ' +  prev_box_id;
-												alert( alert_message );
-												flag = true;
-												return;
-											} else {
-												// Validate Folder Identifier column has sequential box ordering
-												if( 
-													flag != true && 
-													count > 1 && 
-														(
-														parsedData[count][index_box] != 1 &&
-														parsedData[count-1][index_box] != parsedData[count][index_box] &&
-														parsedData[count][index_folder_id] != 1 ||
-														parsedData[count][index_folder_id] == 0
-														)
-												) {
-													let alert_message = '';
-														alert_message += 'Please start a new box list folder identifier column with the number 1.';
-														// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
-														// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
-														alert( alert_message );
-														flag = true;
-														return;
-												}
-
-												if(flag != true && 
-													count > 1 && 
-													parsedData[count][index_folder_id] > 1 &&
-													(parsedData[count][index_folder_id]) - prev_folder_id != 1
-												){
-													let alert_message = '';
-													alert_message += 'Folder identifier number should be in sequential order.';
-													// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
-													// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
-													alert( alert_message );
-													flag = true;
-													return;
-												}	
-											}
-                                      
-                                      console.log(parsedData[count-1][index_box]);
-                                      
                                       
                                       // Required Fields - Checking for blanks // Names for Error Reporting
                                     let arr_fields;
@@ -1272,6 +1214,66 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 			                            
 			                            }
+                                      
+                                      		
+
+											// Validate Box column has sequential box ordering
+											if( 
+												flag != true && 
+												count > 1 && 
+													(
+													parsedData[count][index_box] > 0 &&
+													parsedData[count-1][index_box] >= 1 &&
+													prev_box_id != parsedData[count][index_box] &&
+													(parsedData[count][index_box]) - prev_box_id != 1
+													)
+											) {
+												let alert_message = '';
+												alert_message += 'Box ID number should be in sequential order.';
+												// alert_message += 'number has changed to ' + (parsedData[count][index_box] - prev_box_id) + ' from ' +  prev_box_id;
+												alert( alert_message );
+												flag = true;
+												return;
+											} else {
+												// Validate Folder Identifier column has sequential box ordering
+												if( 
+													flag != true && 
+													count > 1 && 
+														(
+														parsedData[count][index_box] != 1 &&
+														parsedData[count-1][index_box] != parsedData[count][index_box] &&
+														parsedData[count][index_folder_id] != 1 ||
+														parsedData[count][index_folder_id] == 0
+														)
+												) {
+													let alert_message = '';
+														alert_message += 'Please start a new box list folder identifier column with the number 1.';
+														// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+														// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+														alert( alert_message );
+														flag = true;
+														return;
+												}
+
+												if(flag != true && 
+													count > 1 && 
+													parsedData[count][index_folder_id] > 1 &&
+													(parsedData[count][index_folder_id]) - prev_folder_id != 1
+												){
+													let alert_message = '';
+													alert_message += 'Folder identifier number should be in sequential order.';
+													// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+													// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+													alert( alert_message );
+													flag = true;
+													return;
+												}	
+											}
+                                      
+                                      console.log(parsedData[count-1][index_box]);
+                                      
+                                      
+                                    
 			                            
 			                           
                                       
@@ -1940,7 +1942,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                let alert_message = '';
 			                                alert_message += 'Discrepancy between Use Restriction and Specific Use Restriction. \n\n ';
 			                                alert_message += 'Use Restriction value: "No", while Specific Use Restiction is "';
-			                                alert_message += parsedData[count][index_sp_access_rest] + '" on line '+ (count + 1) + '. \n\n ';
+			                                alert_message += parsedData[count][index_sp_use_rest] + '" on line '+ (count + 1) + '. \n\n ';
 			                                alert_message += 'If Use Restriction is "No" then Specific Use Restriction must be blank.';
 			                                
 			                                alert(alert_message);
