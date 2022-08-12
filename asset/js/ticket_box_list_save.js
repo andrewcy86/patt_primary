@@ -949,8 +949,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                           if(data.records[0].Final_Disposition == 'Disposable'){
                                             Final_Disposition = data.records[0].Final_Disposition;
                                             temp_record_schedule = true;
-                                            /*console.log('this is a temp record');
-                                            console.log(Final_Disposition);*/
+                                            console.log('this is a temp record');
+                                            console.log(Final_Disposition);
                                           }
                                         },
                                         async: true,
@@ -1158,7 +1158,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                        } else if( superfundx == 'yes' ) {
 					                        // SEMS Required Fields
 					                        invalid_index = [
-				                            	parsedData[count][index_box], // Box
+				                            	parsedData[count][index_box], // Box  20 total
 				                            	parsedData[count][index_folder_id], // Folder Identifier
 				                            	parsedData[count][index_title], // Title
 				                            	parsedData[count][index_desc_record], // Description of Record
@@ -1166,14 +1166,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                            	parsedData[count][index_creation_date], // Creation Date
 				                            	parsedData[count][index_creator], // Creator 
 				                            	parsedData[count][index_rec_type], // Record Type 
-				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number 
+				                            	parsedData[count][index_rec_sched], // Disposition Schedule & Item Number
+                                              	parsedData[count][index_site_name], // Site Name
+                                              	parsedData[count][index_site_id], // Site #/OU
 				                            	parsedData[count][index_epa_contact], // EPA Contact 
 				                            	parsedData[count][index_access_rest], // Access Restrictions 
 				                            	parsedData[count][index_use_rest], // Use Restrictions 
 				                            	parsedData[count][index_source_type], // Source Type 
 				                            	parsedData[count][index_source_dim], // Source Dimensions 
 				                            	parsedData[count][index_prog_office], // Program Office
-				                            	parsedData[count][index_prog_area], // Program Area
+                                              	parsedData[count][index_prog_area], // Program Area
 				                            	parsedData[count][index_index_level], // Index Level
 				                            	parsedData[count][index_ess_rec]  // Essential Records
 				                            ];  
@@ -1995,6 +1997,49 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 											  flag = true;
 											  return;
 											}
+                                          
+                                           // Validate Rights Holder When Access or Use Restriction is 'Yes'                          
+			                            if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( (parsedData[count][index_rights_holder] == null || parsedData[count][index_rights_holder] == undefined) && 
+			                            			( parsedData[count][index_use_rest] == 'Yes' ||
+			                            			  parsedData[count][index_access_rest] == 'Yes'
+			                            			)
+			                            		)
+			                            ) {
+			                                let alert_message = '';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
+			                                alert_message += 'Use Restriction or Access Restriction value: "Yes", while Rights Holder is blank on line ';
+			                                alert_message += (count + 1) + '. \n\n ';
+			                                alert_message += 'If Use Restriction or Access Restriction is "Yes" then Rights Holder must be filled in.'
+			                                
+			                                alert(alert_message);
+			                                flag = true;
+			                            }
+
+                                          
+                                          //console.log('rights holder: ' + parsedData[count][index_rights_holder]);
+                                          
+                                        // Validate Rights Holder When Access or Use Restriction is 'No'                           
+			                            if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( (parsedData[count][index_rights_holder] != null || parsedData[count][index_rights_holder] != undefined) && 
+			                            			( parsedData[count][index_use_rest] == 'No' &&
+			                            			  parsedData[count][index_access_rest] == 'No'
+			                            			)
+			                            		)
+			                            ) {
+			                                let alert_message = '';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
+			                                alert_message += 'Use Restriction and Access Restriction values: "No", while Rights Holder is not blank on line ';
+			                                alert_message += (count + 1) + '. \n\n ';
+			                                alert_message += 'If Use Restriction and Access Restriction is "No" then Rights Holder must be blank.'
+			                                
+			                                alert(alert_message);
+			                                flag = true;
+			                            }
 
 
 											if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
