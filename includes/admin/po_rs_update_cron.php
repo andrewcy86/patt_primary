@@ -14,24 +14,6 @@ global $current_user, $wpscfunction, $wpdb;
 $endpoint = "https://data.epa.gov/dmapservice/query";
 $count = 0;
 
-//Program Office
-// $po_query = "query officeQuery {
-//   programOffices(
-//     orderBy: [ID_ASC, ORGANIZATION_DESC]
-//   ) {
-//     nodes {
-//       id
-//       organization
-//       organizationDescription
-//       organizationAcronym
-//       officeCode
-//       officeAcronym
-//       officeName
-//       parentOfficeCode
-//     }
-//   }
-// }";
-
 $po_query = "query programOffice {
     ecms__program_office { 
         __all_columns__ 
@@ -62,9 +44,15 @@ if ($po_result === FALSE) {
 
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
-    // var_dump($err);
-}
+    // var_dump($err); 
+} else {
 
+    //TRUNCATE STATEMENT
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
+
+    $wpdb->query("TRUNCATE TABLE $po_table");
+
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 1");
 
 $po_json = json_decode($po_result, true);
 // var_dump($po_json);
@@ -81,13 +69,6 @@ $organizationDescription = $po_json['data']['ecms__program_office'][0]['organiza
 
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 
-//TRUNCATE STATEMENT
-
-$wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
-
-$wpdb->query("TRUNCATE TABLE $po_table");
-
-$wpdb->query("SET FOREIGN_KEY_CHECKS = 1");
 //Insert -99999
 $wpdb->insert($po_table, array(
     'id' => '-99999',
@@ -144,51 +125,8 @@ if ($po_json_api_count != $po_query_count) {
     // var_dump($err);
 }
 
+}
 //Record Schedule
-
-// $rs_query = "query schedulesQuery {
-//   recordSchedules(
-//     orderBy: [ID_ASC]
-//   ) {
-//     nodes {
-//       id
-//       scheduleItemNumber
-//       scheduleNumber
-//       scheduleTitle
-//       itemNumber
-//       itemTitle
-//       functionCode
-//       functionTitle
-//       program
-//       applicability
-//       naraDisposalAuthorityRecordScheduleLevel
-//       naraDisposalAuthorityItemLevel
-//       finalDisposition
-//       cutoffInstructions
-//       dispositionInstructions
-//       scheduleDescription
-//       reservedFlag
-//       dispositionSummary
-//       guidance
-//       retention
-//       tenYear
-//       epaApproval
-//       naraApproval
-//       previousNaraDisposalAuthority
-//       status
-//       custodians
-//       reasonsForDisposition
-//       relatedSchedules
-//       entryDate
-//       revisedDate
-//       keywords
-//       keywordsTitle
-//       keywordsSubject
-//       keywordsOrg
-//       relatedTerms
-//     }
-//   }
-// }";
 
 $rs_query = "query recSched {
     ecms__record_schedule { 
@@ -221,7 +159,7 @@ $wpdb->insert($error_table, array(
     'Error_Message' => '',
     'Service_Type' => 'PO RS Cron'
 ));
-}
+} else {
 
 // var_dump($rs_result);
 
@@ -261,19 +199,38 @@ $wpdb->insert($rs_table, array(
 'Disposition_Instructions' => '',
 'Schedule_Description' => '',
 'Reserved_Flag' => 0,
+
+'Superseded_Flag' => 0,
+'Deleted_Flag' => 0,
+'Draft_Flag' => 0,
+'System_Flag' => 0,
+'Calendar_Year_Flag' => 0,
+'Fiscal_Year_Flag' => 0,
+
 'Disposition_Summary' => '',  
 'Guidance' => '',
-'Retention' => NULL,
-'Ten_Year' => '-99999',
-'Status' => '',
-'Revised_Date' => '',
-'Reasons_For_Disposition' => '', 
-'Custodians' => '', 
-'Related_Schedules' => '', 
-'Previous_NARA_Disposal_Authority' => '',
-'Entry_Date' => '', 
+'Retention_Year' => '',
+'Retention_Month' => '',
+'Retention_Day' => '',
+
+'Ten_Year' => 0,
+
+'DNUL_Flag' => 0,
+'Last_Modified_Flag' => 0,
+
 'EPA_Approval' => '',
 'NARA_Approval' => '',
+'Previous_NARA_Disposal_Authority' => '',
+
+'Status' => '',
+'Custodians' => '',
+'Reasons_For_Disposition' => '', 
+'Related_Schedules' => '', 
+'Entry_Date' => '', 
+'Revised_Date' => '',
+
+'Action' => '',
+
 'Keywords' => '',
 'Keywords_Title' => '',
 'Keywords_Subject' => '',
@@ -301,10 +258,26 @@ $Cutoff_Instructions = addcslashes($rs_item['cutoff_instructions'], "'");
 $Disposition_Instructions = addcslashes($rs_item['disposition_instructions'], "'");
 $Schedule_Description = addcslashes($rs_item['schedule_description'], "'");
 $Reserved_Flag = $rs_item['reserved_flag'];
+
+$Superseded_Flag = addcslashes($rs_item['superseded_flag'], "'");
+$Deleted_Flag = addcslashes($rs_item['deleted_flag'], "'");
+$Draft_Flag = addcslashes($rs_item['draft_flag'], "'");
+$System_Flag = addcslashes($rs_item['system_flag'], "'");
+$Calendar_Year_Flag = addcslashes($rs_item['calendar_year_flag'], "'");
+$Fiscal_Year_Flag = addcslashes($rs_item['fiscal_year_flag'], "'");
+
 $Disposition_Summary = addcslashes($rs_item['disposition_summary'], "'");
 $Guidance = addcslashes($rs_item['guidance'], "'");
-$Retention = $rs_item['retention'];
+
+$Retention_Year = addcslashes($rs_item['retention_year'], "'");
+$Retention_Month = addcslashes($rs_item['retention_month'], "'");
+$Retention_Day = addcslashes($rs_item['retention_day'], "'");
+
 $Ten_Year = $rs_item['ten_year'];
+
+$DNUL_Flag = addcslashes($rs_item['dnul_flag'], "'");
+$Last_Modified_Flag = addcslashes($rs_item['last_modified_flag'], "'");
+
 $EPA_Approval = date('Y-m-d', strtotime($rs_item['epa_approval']));
 $NARA_Approval = date('Y-m-d', strtotime($rs_item['nara_approval']));
 $Previous_NARA_Disposal_Authority = addcslashes($rs_item['previous_nara_disposal_authority'], "'");
@@ -314,6 +287,9 @@ $Reasons_For_Disposition = addcslashes($rs_item['reasons_for_disposition'], "'")
 $Related_Schedules = addcslashes($rs_item['related_schedules'], "'");
 $Entry_Date = date('Y-m-d', strtotime($rs_item['entry_date']));
 $Revised_Date = date('Y-m-d', strtotime($rs_item['revised_date']));
+
+$Action = addcslashes($rs_item['action'], "'");
+
 $Keywords = addcslashes($rs_item['keywords'], "'");
 $Keywords_Title = addcslashes($rs_item['keywords_title'], "'");
 $Keywords_Subject = addcslashes($rs_item['keywords_subject'], "'");
@@ -322,77 +298,6 @@ $Related_Terms = addcslashes($rs_item['related_terms'], "'");
 }
 
 //INSERT STATEMENT
-
-// echo "INSERT INTO ".$rs_table." 
-// (Schedule_Item_Number,
-// Schedule_Number,
-// Schedule_Title,
-// Item_Number,
-// Item_Title,
-// Function_Code,
-// Function_Title,
-// Program,
-// Applicability,
-// NARA_Disposal_Authority_Record_Schedule_Level,
-// NARA_Disposal_Authority_Item_Level,
-// Final_Disposition,
-// Cutoff_Instructions,
-// Disposition_Instructions,
-// Schedule_Description,
-// Reserved_Flag,
-// Disposition_Summary,
-// Guidance,
-// Retention,
-// Ten_Year,
-// Status,
-// Revised_Date,
-// Reasons_For_Disposition,
-// Custodians,
-// Related_Schedules,
-// Previous_NARA_Disposal_Authority,
-// Entry_Date,
-// EPA_Approval,
-// NARA_Approval,
-// Keywords,
-// Keywords_Title,
-// Keywords_Subject,
-// Keywords_Org,
-// Related_Terms) 
-// VALUES (
-// '$Schedule_Item_Number',
-// '$Schedule_Number',
-// '$Schedule_Title',
-// '$Item_Number',
-// '$Item_Title',
-// '$Function_Code',
-// '$Function_Title',
-// '$Program',
-// '$Applicability',
-// '$NARA_Disposal_Authority_Record_Schedule_Level',
-// '$NARA_Disposal_Authority_Item_Level',
-// '$Final_Disposition',
-// '$Cutoff_Instructions',
-// '$Disposition_Instructions',
-// '$Schedule_Description',
-// '$Reserved_Flag',
-// '$Disposition_Summary',
-// '$Guidance',
-// '$Retention',
-// '$Ten_Year',
-// '$Status',
-// '$Revised_Date',
-// '$Reasons_For_Disposition',
-// '$Custodians',
-// '$Related_Schedules',
-// '$Previous_NARA_Disposal_Authority',
-// '$Entry_Date',
-// '$EPA_Approval',
-// '$NARA_Approval',
-// '$Keywords',
-// '$Keywords_Title',
-// '$Keywords_Subject',
-// '$Keywords_Org',
-// '$Related_Terms'";
 
 $wpdb->query("INSERT INTO ".$rs_table." 
 (Schedule_Item_Number,
@@ -411,12 +316,31 @@ Cutoff_Instructions,
 Disposition_Instructions,
 Schedule_Description,
 Reserved_Flag,
+
+Superseded_Flag,
+Deleted_Flag,
+Draft_Flag,
+System_Flag,
+Calendar_Year_Flag,
+Fiscal_Year_Flag,
+
 Disposition_Summary,
 Guidance,
-Retention,
+
+Retention_Year,
+Retention_Month,
+Retention_Day,
+
 Ten_Year,
+
+DNUL_Flag,
+Last_Modified_Flag,
+
 Status,
 Revised_Date,
+
+Action,
+
 Reasons_For_Disposition,
 Custodians,
 Related_Schedules,
@@ -446,12 +370,31 @@ VALUES (
 '$Disposition_Instructions',
 '$Schedule_Description',
 '$Reserved_Flag',
+
+'$Superseded_Flag',
+'$Deleted_Flag',
+'$Draft_Flag',
+'$System_Flag',
+'$Calendar_Year_Flag',
+'$Fiscal_Year_Flag',
+
 '$Disposition_Summary',
 '$Guidance',
-'$Retention',
+
+'$Retention_Year',
+'$Retention_Month',
+'$Retention_Day',
+
 '$Ten_Year',
+
+'$DNUL_Flag',
+'$Last_Modified_Flag',
+
 '$Status',
 '$Revised_Date',
+
+'$Action',
+
 '$Reasons_For_Disposition',
 '$Custodians',
 '$Related_Schedules',
@@ -480,7 +423,7 @@ if ($rs_json_api_count != $rs_query_count) {
     // var_dump($err);
 }
 
-
+}
 // PHP program to Remove 
   // Special Character From String
   
