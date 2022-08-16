@@ -8,21 +8,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-//$endpoint = RS_PO_ENDPOINT;
-
 // Endpoint needs to be added into environment variable for staging environment
 $endpoint = "https://data.epa.gov/dmapservice/query";
 $count = 0;
 
+$po_table = $wpdb->prefix . 'wpsc_epa_program_office';
+$rs_table = $wpdb->prefix . 'epa_record_schedule';
+
 $po_query = "query programOffice {
-    ecms__program_office { 
-        __all_columns__ 
-        }
-    ecms__program_office__aggregate {
-        aggregate {
-            count
-        }
-    } 
+
+ecms__program_office {
+
+     __all_columns__
+
+}
+
 }";
 
 $po_data = array ('query' => $po_query);
@@ -57,7 +57,7 @@ if ($po_result === FALSE) {
 $po_json = json_decode($po_result, true);
 // var_dump($po_json);
 
-$po_json_api_count = $po_json['data']['ecms__program_office__aggregate'][0];
+//$po_json_api_count = $po_json['data']['ecms__program_office__aggregate'][0];
 // var_dump($po_json['data']['ecms__program_office__aggregate'][0]);
 
 // $organizationDescription = $po_json['data']['programOffices']['nodes'][0]['organizationDescription'];
@@ -66,8 +66,6 @@ $organizationDescription = $po_json['data']['ecms__program_office'][0]['organiza
 // var_dump($po_json['data']['ecms__program_office']);
 
 //echo $organizationDescription;
-
-$po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 
 //Insert -99999
 $wpdb->insert($po_table, array(
@@ -81,8 +79,13 @@ $wpdb->insert($po_table, array(
     'parent_office_code' => ''
 ));
 
+$po_count = 0;
+  
 foreach ($po_json['data']['ecms__program_office'] as $po_item)
 {
+
+$po_count++;
+  
 // print_r('test' . $id);
 
 foreach ($po_item as $key => $value) {
@@ -118,7 +121,7 @@ $po_query_count = $wpdb->get_results('SELECT COUNT(*) - 1 as total_records from 
 $po_query_count = (int)$po_query_count[0]->total_records;
 // var_dump((int)$po_query_count[0]->total_records);
 
-if ($po_json_api_count != $po_query_count) { 
+if ($po_count != $po_query_count) { 
 
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
@@ -129,15 +132,14 @@ if ($po_json_api_count != $po_query_count) {
 //Record Schedule
 
 $rs_query = "query recSched {
-    ecms__record_schedule { 
-        __all_columns__ 
-        }
-    ecms__record_schedule__aggregate {
-        aggregate {
-            count
-        }
-    } 
-    }";
+
+ecms__record_schedule {
+
+     __all_columns__
+
+}
+
+}";
     
 
 $rs_data = array ('query' => $rs_query);
@@ -154,23 +156,18 @@ $rs_context  = stream_context_create($rs_options);
 $rs_result = file_get_contents($endpoint, false, $rs_context);
 
 if ($rs_result === FALSE) { 
-$wpdb->insert($error_table, array(
-    'Status_Code' => $http_response_header[0],
-    'Error_Message' => '',
-    'Service_Type' => 'PO RS Cron'
-));
+$err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
+Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
 } else {
 
-// var_dump($rs_result);
+//var_dump($rs_result);
 
 $rs_json = json_decode($rs_result, true);
 
-// var_dump($rs_json['data']['ecms__record_schedule'][0]);
+//var_dump($rs_json['data']['ecms__record_schedule'][0]);
 
-$rs_json_api_count = $rs_json['data']['ecms__record_schedule__aggregate'][0];
-// var_dump($rs_json['data']['ecms__record_schedule__aggregate'][0]);
-
-$rs_table = $wpdb->prefix . 'epa_record_schedule';
+//$rs_json_api_count = $rs_json['data']['ecms__record_schedule__aggregate'][0];
+//var_dump($rs_json['data']['ecms__record_schedule__aggregate'][0]);
 
 //TRUNCATE STATEMENT
 
@@ -238,8 +235,11 @@ $wpdb->insert($rs_table, array(
 'Related_Terms' => ''
 ));
 
+$rs_count = 0;
+  
 foreach ($rs_json['data']['ecms__record_schedule'] as $rs_item)
 {
+$rs_count++;
 foreach ($rs_item as $key => $value) {
 //echo $key.' => '.$value;
 $Schedule_Item_Number = $rs_item['schedule_item_number'];
@@ -416,7 +416,7 @@ $rs_query_count = $wpdb->get_results('SELECT COUNT(*) - 1 as total_records from 
 $rs_query_count = (int)$rs_query_count[0]->total_records;
 // var_dump($rs_query_count);
 
-if ($rs_json_api_count != $rs_query_count) { 
+if ($rs_count != $rs_query_count) { 
 
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
