@@ -215,7 +215,8 @@ $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
 //gets all folder/files for every user
-$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
@@ -254,20 +255,8 @@ $totalRecordwithFilter = $records['allcount'];
 $docQuery = "SELECT DISTINCT
 a.id as dbid,
 a.folderdocinfofile_id as folderdocinfo_id,
-CONCAT(
-CASE 
-WHEN d.box_destroyed > 0 AND a.freeze <> 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #B4081A;\"></span>')
-WHEN d.box_destroyed > 0 AND a.freeze = 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
-ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
-END) as folderdocinfo_id_flag,
-CONCAT(
-'<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = b.ticket_priority),
-';color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = b.ticket_priority),
-';\">',
-(SELECT name from " . $wpdb->prefix . "terms where term_id = b.ticket_priority),
-'</span>') as ticket_priority,
+f.name as location,
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id,
 CASE 
 WHEN b.ticket_priority = 621
 THEN
@@ -284,29 +273,8 @@ THEN
 ELSE
 999
 END
- as ticket_priority_order,
-CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym,
-CONCAT(
-CASE 
-WHEN a.validation = 1 THEN CONCAT('[',
-CONCAT (
-CASE
-WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
-u.user_login
-,'\">',
-(
-    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))) > 15 THEN
-        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID)), 15), '...')
-    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))
-    END
-)
-,'</a>' )
-ELSE u.user_login
-END
-)
-,']')
-ELSE ''
-END) as validation
+ as ticket_priority_order
+
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
@@ -355,6 +323,105 @@ $freeze_icon = '';
 $damaged_icon = '';
 $type = 'folderfile';
 
+$folder_db_id = $row['dbid'];
+  
+// GET VALIDATION
+if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ';
+}
+else if (Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) != 1 && Patt_Custom_Func::id_in_rescan($row['folderdocinfo_id'],$type) == 1) {
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> <span style="color: #B4081A;"><strong>[Re-scan]</strong></span>';
+}
+else {
+    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
+}
+
+$validation_query = $wpdb->get_row("SELECT
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym,
+CONCAT(
+CASE 
+WHEN a.validation = 1 THEN CONCAT('[',
+CONCAT (
+CASE
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+u.user_login
+,'\">',
+(
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = u.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = u.ID))
+    END
+)
+,'</a>' )
+ELSE u.user_login
+END
+)
+,']')
+ELSE ''
+END) as validation
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
+WHERE a.id = ".$folder_db_id);
+  
+$validation = $validation_query->validation;
+
+$acronym_query = $wpdb->get_row("SELECT
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
+WHERE a.id = ".$folder_db_id);
+
+$acronym = $acronym_query->acronym;
+
+$priority_query = $wpdb->get_row("SELECT
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id,
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = b.ticket_priority),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = b.ticket_priority),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = b.ticket_priority),
+'</span>') as ticket_priority
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
+WHERE a.id = ".$folder_db_id);
+  
+$priority = $priority_query->ticket_priority;
+  
+$folderdocinfoidflag_query = $wpdb->get_row("SELECT
+CONCAT(
+CASE 
+WHEN d.box_destroyed > 0 AND a.freeze <> 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #B4081A;\"></span>')
+WHEN d.box_destroyed > 0 AND a.freeze = 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
+ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
+END) as folderdocinfo_id_flag
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
+WHERE a.id = ".$folder_db_id);
+
+$folderdocinfoidflag = $folderdocinfoidflag_query->folderdocinfo_id_flag;
+ 
 if(Patt_Custom_Func::id_in_return($row['folderdocinfo_id'],$type) == 1){
 $decline_icon = '<span style="font-size: 1em; color: #B4081A;margin-left:4px;"><i class="fas fa-undo" aria-hidden="true" title="Declined"></i><span class="sr-only">Declined</span></span>';
 }
@@ -379,27 +446,17 @@ if(Patt_Custom_Func::id_in_freeze($row['folderdocinfo_id'],$type) == 1) {
     $freeze_icon = ' <span style="font-size: 1em; color: #005C7A;"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span></span>';
 }
 
-if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ';
-}
-else if (Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) != 1 && Patt_Custom_Func::id_in_rescan($row['folderdocinfo_id'],$type) == 1) {
-    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span> <span style="color: #B4081A;"><strong>[Re-scan]</strong></span>';
-}
-else {
-    $validation_icon = '<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" aria-hidden="true" title="Not Validated"></i><span class="sr-only">Not Validated</span></span>';
-}
-
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
      "dbid"=>$row['dbid'],
      //"folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$decline_icon.$recall_icon,
-	 "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
-     "ticket_priority"=>$row['ticket_priority'],
+	 "folderdocinfo_id_flag"=>$folderdocinfoidflag.$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
+     "ticket_priority"=>$priority,
 //      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
      "request_id"=>$row['request_id'],
      "location"=>$row['location'],
-     "acronym"=>$row['acronym'],
-     "validation"=>$validation_icon. ' ' .$row['validation']
+     "acronym"=>$acronym,
+     "validation"=>$validation_icon. ' ' .$validation
      //"ticket_priority"=>$row['ticket_priority']
    );
 }
