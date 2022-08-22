@@ -1,7 +1,9 @@
 <?php
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
-	
+
+global $wpdb, $current_user, $wpscfunction;
+
 $host = DB_HOST; /* Host name */
 $user = DB_USER; /* User */
 $password = DB_PASSWORD; /* Password */
@@ -251,30 +253,12 @@ $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 $boxQuery = "
-SELECT
+SELECT 
 a.id as request_id,
 a.request_id as patt_request_id,
+a.date_updated as date_updated,
 CONCAT(
 '<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
-
-CONCAT(
-'<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
-';color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
-';\">',
-(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
-'</span>') as ticket_priority,
-
-CONCAT(
-'<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
-';color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
-';\">',
-(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_status),
-'</span>') as ticket_status,
-
 CASE 
 WHEN a.ticket_priority = 621
 THEN
@@ -315,37 +299,14 @@ THEN
 ELSE
 999
 END
- as ticket_status_order,
-
-CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)) as full_name,
-CONCAT (
-CASE
-WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
-g.user_login
-,'\">',
-
-(
-    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))) > 15 THEN
-        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID)), 15), '...')
-    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = g.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = g.ID))
-    END
-)
-
-,'</a>' )
-ELSE g.user_login
-END
-) as customer_name,
-
-a.date_updated as date_updated,
-
-GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
+ as ticket_status_order
 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files k ON k.box_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = b.id
 
 LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
 LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
@@ -357,7 +318,6 @@ LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
 LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
    GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = k.id AND h.folderdoc_id <> '-99999')
-   
    
 LEFT JOIN (   SELECT a.box_id, a.return_id
    FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
@@ -373,10 +333,87 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
+/*
+WHERE a.active <> 0 AND a.id <> -99999 
+group by a.request_id";
+*/
+
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
+
+$request_id = $row['request_id'];
+
+// GET LOCATION
+$location_query = $wpdb->get_row("SELECT GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR ', ') as location 
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as c ON b.storage_location_id = c.id
+INNER JOIN " . $wpdb->prefix . "terms d ON d.term_id = c.digitization_center
+WHERE a.id = ".$request_id);
+$location = $location_query->location;
+  
+// GET CUSTOMER NAME AND FULL NAME
+$customer_query = $wpdb->get_row("SELECT 
+CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = b.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = b.ID)) as full_name,
+CONCAT (
+CASE
+WHEN ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = b.ID) <> '') AND ((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = b.ID) <> '') THEN CONCAT ( '<a href=\"#\" style=\"color: #000000 !important;\" data-toggle=\"tooltip\" data-placement=\"left\" data-html=\"true\" aria-label=\"Name\" title=\"',
+b.user_login
+,'\">',
+
+(
+    CASE WHEN length(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = b.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = b.ID))) > 15 THEN
+        CONCAT(LEFT(CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = b.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = b.ID)), 15), '...')
+    ELSE CONCAT((SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'first_name' AND user_id = b.ID), ' ', (SELECT meta_value FROM " . $wpdb->prefix . "usermeta WHERE meta_key = 'last_name' AND user_id = b.ID))
+    END
+)
+
+,'</a>' )
+ELSE b.user_login
+END
+) as customer_name
+
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+LEFT JOIN " . $wpdb->prefix . "users b ON b.user_email = a.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = b.ID
+WHERE a.id = ".$request_id);
+$full_name_pre = $customer_query->full_name;
+$customer_name = $customer_query->customer_name;
+$full_name = '<span style="display: none;" aria-label="'.$full_name_pre.'"></span>';
+
+//GET Ticket Status
+$status_query = $wpdb->get_row("SELECT 
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_background_color' AND term_id = a.ticket_status),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_status_color' AND term_id = a.ticket_status),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_status),
+'</span>') as ticket_status
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+WHERE a.id = ".$request_id);
+
+$status = $status_query->ticket_status;
+  
+//GET Ticket Priority
+$priority_query = $wpdb->get_row("SELECT
+CONCAT(
+'<span class=\"wpsp_admin_label\" style=\"background-color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
+';color:',
+(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
+';\">',
+(SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
+'</span>') as ticket_priority
+FROM " . $wpdb->prefix . "wpsc_ticket as a
+WHERE a.id = ".$request_id);
+
+$priority = $priority_query->ticket_priority;
+
+
 $seconds = time() - strtotime($row['date_updated']); 
 
 $decline_icon = '';
@@ -396,7 +433,6 @@ if(Patt_Custom_Func::id_in_recall($row['patt_request_id'],$type) == 1){
 //$recall_icon = '<span style="margin-left:4px;"><img src="'.WPPATT_PLUGIN_URL.'asset/images/recall.gif" alt="Recall"/></span>';
 $recall_icon = '<span style="font-size: 1em; color: #000;margin-left:4px;"><i class="far fa-registered" aria-hidden="true" title="Recall"></i><span class="sr-only">Recall</span></span>';
 }
-$full_name = '<span style="display: none;" aria-label="'.$row['full_name'].'"></span>';
 
 if(Patt_Custom_Func::id_in_unauthorized_destruction($row['patt_request_id'],$type) == 1) {
     $unauthorized_destruction_icon = ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span></span>';
@@ -414,14 +450,13 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
     $box_destroyed_icon = ' <span style="font-size: 1em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
 }
 
-
    $data[] = array(
      "request_id"=>$row['request_id'],
      "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
-     "ticket_priority"=>$row['ticket_priority'],
-     "ticket_status"=>$row['ticket_status'],
-     "customer_name"=>$row['customer_name'].$full_name,
-     "location"=>$row['location'],
+     "ticket_priority"=>$priority,
+     "ticket_status"=>$status,
+     "customer_name"=>$customer_name.$full_name,
+     "location"=> $location,
      //"ticket_priority"=>$row['ticket_priority'],
      "date_updated"=>calculate_time_span($seconds),
    );
@@ -429,7 +464,7 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
 ## Response
 $response = array(
   "draw" => intval($draw),
-  "docQuery" => $boxQuery,
+  //"docQuery" => $boxQuery,
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data

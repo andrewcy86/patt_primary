@@ -98,11 +98,11 @@ if($searchByStatus != ''){
 }
 
 //Get term_ids for Recall status slugs
-$status_recall_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );	 // 878
+$status_recall_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );              // 878
 $status_recall_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' ); //734
 $status_recall_complete_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-complete' ); //733
 
-$status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' );	 // 791
+$status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' );       // 791
 $status_decline_completed_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-complete' ); //754
     
 if($searchByRecallDecline != ''){
@@ -135,141 +135,141 @@ if($searchByECMSSEMS != ''){
 
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
 if( $is_requester == 'true' ){
-	$user_name = $current_user->display_name;
-	
-	$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
+              $user_name = $current_user->display_name;
+              
+              $get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
     $user_list = implode(",", $get_aa_ship_groups);
-	
-	if(!empty($user_list)) {
-	    $searchQuery .= " and ( (b.customer_name ='".$user_name."') OR um.user_id IN ($user_list) ) ";
-	}
-	else {
-	    $searchQuery .= " and (b.customer_name ='".$user_name."') ";
-	}
+              
+              if(!empty($user_list)) {
+                  $searchQuery .= " and ( (b.customer_name ='".$user_name."') OR um.user_id IN ($user_list) ) ";
+              }
+              else {
+                  $searchQuery .= " and (b.customer_name ='".$user_name."') ";
+              }
 }
 
 
 // Search by User code
 if($searchByUser != ''){
-	if( $searchByUser == 'mine' ) {
-		$box_ids_for_user = '';
-		$mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id = ".$current_user->ID;
-		$mini_records = mysqli_query($con, $mini_query);
-		while ($rox = mysqli_fetch_assoc($mini_records)) {
-			$box_ids_for_user .= $rox['box_id'].", ";
-		}
-		$box_ids_for_user = substr($box_ids_for_user, 0, -2);
-		
-		if( $box_ids_for_user == null ) {
-			$searchQuery .= " and (a.id IN (-99999)) ";
-		} else {
-			$searchQuery .= " and (a.id IN (".$box_ids_for_user.")) ";
-		}
-		
-		
-	} elseif( $searchByUser == 'not assigned' ) {
-		
-		// Register Box Status Taxonomy
-		if( !taxonomy_exists('wpsc_box_statuses') ) {
-			$args = array(
-				'public' => false,
-				'rewrite' => false
-			);
-			register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
-		}
-		
-		// Get List of Box Statuses
-		$box_statuses = get_terms([
-			'taxonomy'   => 'wpsc_box_statuses',
-			'hide_empty' => false,
-			'orderby'    => 'meta_value_num',
-			'order'    	 => 'ASC',
-			'meta_query' => array('order_clause' => array('key' => 'wpsc_box_status_load_order')),
-		]);
-		
-		// List of box status that do not need agents assigned.
-		$ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
-// 		$ignore_box_status = []; //show all box status
-		
-		$term_id_array = array();
-		foreach( $box_statuses as $key=>$box ) {
-			if( in_array( $box->name, $ignore_box_status ) ) {
-				unset($box_statuses[$key]);
-				
-			} else {
-				$term_id_array[] = $box->term_id;
-			}
-		}
-		array_values($box_statuses);
-		
-		$search_in_box_statuses = '';
-		foreach( $box_statuses as $status ) {
-			$search_in_box_statuses .= $status->term_id.', ';
-		}
-		$search_in_box_statuses = substr($search_in_box_statuses, 0, -2);
-		
-		$box_ids_for_user = '';
-		
-		//Box status slugs
-		$digitized_not_validated_tag = get_term_by('slug', 'closed', 'wpsc_box_statuses'); //6
-		$qa_qc_tag = get_term_by('slug', 'q-a', 'wpsc_box_statuses'); //65
-		$destruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
-		$scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); //671
-		$scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
-		$validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
-		$rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
-		
-		// Get all distinct box_id that have been assigned.
-		$mini_query = "select box_id 
-						from 
-							" . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus 
-						where 
-							status_id IN (".$digitized_not_validated_tag->term_id.", ".$qa_qc_tag->term_id.", ".$destruction_approval_tag->term_id.", '".$scanning_digitization_tag->term_id."', ".$scanning_preparation_tag->term_id.", ".$validation_tag->term_id.", ".$rescan_tag->term_id.") 
-						group by 
-							box_id 
-						having count(distinct status_id) = 7 ";
-		$mini_records = mysqli_query($con, $mini_query); 
-		while ($rox = mysqli_fetch_assoc($mini_records)) {
-			$box_ids_for_user .= $rox['box_id'].", ";
-		}
-		$box_ids_for_user = substr($box_ids_for_user, 0, -2);
-		
-		$searchQuery .= " and (a.id NOT IN (".$box_ids_for_user.")) ";
-	} elseif( $searchByUser == 'search for user' ) {
-		$search_true = (isset($searchByUserAAVal) ) ? true : false;
-		$array_of_wp_user_id = Patt_Custom_Func::translate_user_id($searchByUserAAVal, 'wp_user_id');
-		$user_id_str = '';
- 		if( $search_true ) {
-			foreach( $array_of_wp_user_id as $id ) {
-				$user_id_str .= $id.', ';
-			}
-			$user_id_str = substr($user_id_str, 0, -2);
-			
-			$box_ids_for_users = '';
-			$mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id IN (".$user_id_str.")";
-			$mini_records = mysqli_query($con, $mini_query);
-			while ($rox = mysqli_fetch_assoc($mini_records)) {
-				$box_ids_for_users .= $rox['box_id'].", ";
-			}
-			$box_ids_for_users = substr($box_ids_for_users, 0, -2);
-			
-			if( $user_id_str == '' ) {
-				
-			} else {
-				if( $box_ids_for_users == null ) {
-					$searchQuery .= " and (a.id IN (-99999)) ";
-				} else {
-					$searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";
-				}
-				
-				//$searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";	
-			}
-		
-		}
-		
+              if( $searchByUser == 'mine' ) {
+                             $box_ids_for_user = '';
+                             $mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id = ".$current_user->ID;
+                             $mini_records = mysqli_query($con, $mini_query);
+                             while ($rox = mysqli_fetch_assoc($mini_records)) {
+                                           $box_ids_for_user .= $rox['box_id'].", ";
+                             }
+                             $box_ids_for_user = substr($box_ids_for_user, 0, -2);
+                             
+                             if( $box_ids_for_user == null ) {
+                                           $searchQuery .= " and (a.id IN (-99999)) ";
+                             } else {
+                                           $searchQuery .= " and (a.id IN (".$box_ids_for_user.")) ";
+                             }
+                             
+                             
+              } elseif( $searchByUser == 'not assigned' ) {
+                             
+                             // Register Box Status Taxonomy
+                             if( !taxonomy_exists('wpsc_box_statuses') ) {
+                                           $args = array(
+                                                          'public' => false,
+                                                          'rewrite' => false
+                                           );
+                                           register_taxonomy( 'wpsc_box_statuses', 'wpsc_ticket', $args );
+                             }
+                             
+                             // Get List of Box Statuses
+                             $box_statuses = get_terms([
+                                           'taxonomy'   => 'wpsc_box_statuses',
+                                           'hide_empty' => false,
+                                           'orderby'    => 'meta_value_num',
+                                           'order'                  => 'ASC',
+                                           'meta_query' => array('order_clause' => array('key' => 'wpsc_box_status_load_order')),
+                             ]);
+                             
+                             // List of box status that do not need agents assigned.
+                             $ignore_box_status = ['Pending', 'Ingestion', 'Completed', 'Dispositioned'];
+//                         $ignore_box_status = []; //show all box status
+                             
+                             $term_id_array = array();
+                             foreach( $box_statuses as $key=>$box ) {
+                                           if( in_array( $box->name, $ignore_box_status ) ) {
+                                                          unset($box_statuses[$key]);
+                                                          
+                                           } else {
+                                                          $term_id_array[] = $box->term_id;
+                                           }
+                             }
+                             array_values($box_statuses);
+                             
+                             $search_in_box_statuses = '';
+                             foreach( $box_statuses as $status ) {
+                                           $search_in_box_statuses .= $status->term_id.', ';
+                             }
+                             $search_in_box_statuses = substr($search_in_box_statuses, 0, -2);
+                             
+                             $box_ids_for_user = '';
+                             
+                             //Box status slugs
+                             $digitized_not_validated_tag = get_term_by('slug', 'closed', 'wpsc_box_statuses'); //6
+                             $qa_qc_tag = get_term_by('slug', 'q-a', 'wpsc_box_statuses'); //65
+                             $destruction_approval_tag = get_term_by('slug', 'destruction-approval', 'wpsc_box_statuses'); //68
+                             $scanning_digitization_tag = get_term_by('slug', 'scanning-digitization', 'wpsc_box_statuses'); //671
+                             $scanning_preparation_tag = get_term_by('slug', 'scanning-preparation', 'wpsc_box_statuses'); //672
+                             $validation_tag = get_term_by('slug', 'verification', 'wpsc_box_statuses'); //674
+                             $rescan_tag = get_term_by('slug', 're-scan', 'wpsc_box_statuses'); //743
+                             
+                             // Get all distinct box_id that have been assigned.
+                             $mini_query = "select box_id 
+                                                                                      from 
+                                                                                                     " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus 
+                                                                                      where 
+                                                                                                     status_id IN (".$digitized_not_validated_tag->term_id.", ".$qa_qc_tag->term_id.", ".$destruction_approval_tag->term_id.", '".$scanning_digitization_tag->term_id."', ".$scanning_preparation_tag->term_id.", ".$validation_tag->term_id.", ".$rescan_tag->term_id.") 
+                                                                                      group by 
+                                                                                                     box_id 
+                                                                                      having count(distinct status_id) = 7 ";
+                             $mini_records = mysqli_query($con, $mini_query); 
+                             while ($rox = mysqli_fetch_assoc($mini_records)) {
+                                           $box_ids_for_user .= $rox['box_id'].", ";
+                             }
+                             $box_ids_for_user = substr($box_ids_for_user, 0, -2);
+                             
+                             $searchQuery .= " and (a.id NOT IN (".$box_ids_for_user.")) ";
+              } elseif( $searchByUser == 'search for user' ) {
+                             $search_true = (isset($searchByUserAAVal) ) ? true : false;
+                             $array_of_wp_user_id = Patt_Custom_Func::translate_user_id($searchByUserAAVal, 'wp_user_id');
+                             $user_id_str = '';
+                            if( $search_true ) {
+                                           foreach( $array_of_wp_user_id as $id ) {
+                                                          $user_id_str .= $id.', ';
+                                           }
+                                           $user_id_str = substr($user_id_str, 0, -2);
+                                           
+                                           $box_ids_for_users = '';
+                                           $mini_query = "select distinct box_id from " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus where user_id IN (".$user_id_str.")";
+                                           $mini_records = mysqli_query($con, $mini_query);
+                                           while ($rox = mysqli_fetch_assoc($mini_records)) {
+                                                          $box_ids_for_users .= $rox['box_id'].", ";
+                                           }
+                                           $box_ids_for_users = substr($box_ids_for_users, 0, -2);
+                                           
+                                           if( $user_id_str == '' ) {
+                                                          
+                                           } else {
+                                                          if( $box_ids_for_users == null ) {
+                                                                        $searchQuery .= " and (a.id IN (-99999)) ";
+                                                          } else {
+                                                                        $searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";
+                                                          }
+                                                          
+                                                          //$searchQuery .= " and (a.id IN (".$box_ids_for_users.")) ";        
+                                           }
+                             
+                             }
+                             
 
-	}
-	
+              }
+              
 
 }
 
@@ -278,7 +278,7 @@ if($searchByUser != ''){
 $searchForValue = ',';
 
 if($searchGeneric != ''){
-    
+   
 if(strpos($searchGeneric, $searchForValue) !== false){
     
 //Strip spaces, breaks, tabs
@@ -389,38 +389,9 @@ $totalRecordwithFilter = $records['allcount'];
 $boxQuery = "
 SELECT DISTINCT
 a.box_id, a.id as dbid, f.name as box_status, a.box_previous_status as box_previous_status, f.term_id as term,
-CONCAT(
 
-CASE WHEN 
-(
-SELECT sum(c.freeze = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
-WHERE c.box_id = a.id
-) <> 0 AND
-a.box_destroyed > 0 
-
-
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important;\">',a.box_id,'</a>')
-
-WHEN a.box_destroyed > 0 
-
-
-THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.box_id,'</a>')
-
-
-ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
-END) as box_id_flag,
 
 a.pallet_id as pallet_id,
-
-CONCAT(
-'<span class=\"wpsp_admin_label\" style=\"background-color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = b.ticket_priority),
-';color:',
-(SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = b.ticket_priority),
-';\">',
-(SELECT name from " . $wpdb->prefix . "terms where term_id = b.ticket_priority),
-'</span>') as ticket_priority,
 
 CASE 
 WHEN b.ticket_priority = 621
@@ -438,7 +409,7 @@ THEN
 ELSE
 999
 END
- as ticket_priority_order,
+as ticket_priority_order,
 
 CASE 
 WHEN a.box_status = 748
@@ -480,22 +451,11 @@ THEN
 ELSE
 999
 END
- as box_status_order,
+as box_status_order,
 
-CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
+b.request_id as request_id_new,
 e.name as location, 
-c.office_acronym as acronym,
-CONCAT(
-CASE 
-WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = a.id) != 0
-THEN
-CONCAT((SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
-WHERE c.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif
-WHERE fdif.box_id = a.id))
-ELSE '-'
-END
-) as validation
+c.office_acronym as acronym
 
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 
@@ -527,15 +487,102 @@ $data = array();
 // $assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents()" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
-	
-	$status_term_id = $row['term'];
-	$status_background = get_term_meta($status_term_id, 'wpsc_box_status_background_color', true);
-	$status_color = get_term_meta($status_term_id, 'wpsc_box_status_color', true);
-	$status_style = "background-color:".$status_background.";color:".$status_color.";";
-	
-	$waiting_shelved_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-shelved' );	 //816
-    $waiting_rlo_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-on-rlo' );	 //1056
-    $cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'cancelled' );	 //1057
+              $request_id = $row['request_id_new'];
+  
+  
+              // Get Box ID Flag
+              $box_id_flag_query = $wpdb->get_row("SELECT 
+    CONCAT( 
+    CASE WHEN 
+    (
+    SELECT sum(c.freeze = 1) 
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
+    WHERE c.box_id = a.id
+    ) <> 0 AND
+    a.box_destroyed > 0 
+
+
+    THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important;\">',a.box_id,'</a>')
+
+    WHEN a.box_destroyed > 0 
+
+
+    THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.box_id,'</a>')
+
+
+    ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
+    END) as box_id_flag
+              
+              FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
+
+    INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+    LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
+    INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+    WHERE a.id = " .$row['dbid']);
+  
+              $box_id_flag = $box_id_flag_query->box_id_flag;
+  
+              // Get Ticket Priority
+              $priority_query = $wpdb->get_row("SELECT
+    CONCAT(
+    '<span class=\"wpsp_admin_label\" style=\"background-color:',
+    (SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_background_color' AND term_id = a.ticket_priority),
+    ';color:',
+    (SELECT meta_value from " . $wpdb->prefix . "termmeta where meta_key = 'wpsc_priority_color' AND term_id = a.ticket_priority),
+    ';\">',
+    (SELECT name from " . $wpdb->prefix . "terms where term_id = a.ticket_priority),
+    '</span>') as ticket_priority
+    FROM " . $wpdb->prefix . "wpsc_ticket as a
+    WHERE a.id = ".$request_id);
+
+    $priority = $priority_query->ticket_priority;
+  
+  
+              
+              // Create request id link
+              $request_id_query = $wpdb->get_row("SELECT CONCAT('<a href=admin.php?page=wpsc-tickets&id=',a.request_id,'>',a.request_id,'</a>') as request_id_link
+    FROM " . $wpdb->prefix . "wpsc_ticket as a
+    WHERE a.id = ".$request_id);
+  
+              $request_id_link = $request_id_query->request_id_link;
+  
+              
+              // Get Validaion
+              $validation_query = $wpdb->get_row("SELECT CONCAT(
+    CASE 
+    WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = a.id) != 0
+    THEN
+    CONCAT((SELECT sum(c.validation = 1) 
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
+    WHERE c.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif
+    WHERE fdif.box_id = a.id))
+    ELSE '-'
+    END
+    ) as validation
+
+    FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
+
+    INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
+    LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
+    INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
+    WHERE a.id = " .$row['dbid']);
+  
+              $validation = $validation_query->validation;
+              
+              $status_term_id = $row['term'];
+              $status_background = get_term_meta($status_term_id, 'wpsc_box_status_background_color', true);
+              $status_color = get_term_meta($status_term_id, 'wpsc_box_status_color', true);
+              $status_style = "background-color:".$status_background.";color:".$status_color.";";
+              
+              $waiting_shelved_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-shelved' );          //816
+    $waiting_rlo_term_id = Patt_Custom_Func::get_term_by_slug( 'waiting-on-rlo' );             //1056
+    $cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'cancelled' );            //1057
 
 $get_term_name = $wpdb->get_row("SELECT name
 FROM " . $wpdb->prefix . "terms WHERE term_id = ".$row['box_previous_status']);
@@ -551,14 +598,14 @@ if ($status_term_id == $waiting_shelved_term_id && $row['box_previous_status'] !
 } else {
     $box_status = "<span class='wpsp_admin_label' style='".$status_style."'>".$row['box_status']."</span>";
 }
-	
-	//$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(666)" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
+              
+              //$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(666)" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
 
-if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){	
-	$assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>';
+if(Patt_Custom_Func::display_box_user_icon($row['dbid']) == 1){             
+              $assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-user-friends" aria-hidden="true" title="Assigned Agents"></i><span class="sr-only">Assigned Agents</span></span>';
     
-    if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){	
-	    $assigned_agents_icon .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_to_do(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>';
+    if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){       
+                  $assigned_agents_icon .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_to_do(\''.$row['box_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Box Status Completion"></i><span class="sr-only">Box Status Completion</span></span>';
     }
     
 } else {
@@ -624,22 +671,22 @@ $pallet_id = 'Unassigned';
 $pallet_id = $row['pallet_id'];
 }
 
-	$data[] = array(
-		"box_id"=>$row['box_id'],
-		"box_id_flag"=>$row['box_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
-		"dbid"=>$row['dbid'],
-	    //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
-		//"ticket_priority"=>$row['ticket_priority_text'],
-		"pallet_id"=>$pallet_id,
-		"ticket_priority"=>$row['ticket_priority'],
-		"status"=>$box_status,
-		"request_id"=>$row['request_id'],
-		"location"=>$row['location'],
-		"acronym"=>$row['acronym'],
-// 		"acronym"=>$searchQuery,
-// 		"acronym"=>$searchByUserAAVal,
-		"validation"=>$validation_icon . ' ' . $row['validation'],
-	);
+              $data[] = array(
+                             "box_id"=>$row['box_id'],
+              "box_id_flag"=>$box_id_flag.$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon.$assigned_agents_icon, 
+                             "dbid"=>$row['dbid'],
+                  //"box_id_column"=>array("dbid"=>$row['dbid'],"box_id"=>$row['box_id'].$freeze_icon.$unauthorized_destruction_icon.$decline_icon.$recall_icon.$assigned_agents_icon),
+                             //"ticket_priority"=>$row['ticket_priority_text'],
+                             "pallet_id"=>$pallet_id,
+                             "ticket_priority"=>$priority,
+                             "status"=>$box_status,
+                             "request_id"=>$request_id_link,
+                             "location"=>$row['location'],
+                             "acronym"=>$row['acronym'],
+//                         "acronym"=>$searchQuery,
+//                         "acronym"=>$searchByUserAAVal,
+                             "validation"=>$validation_icon . ' ' . $validation,
+              );
 }
 ## Response
 
@@ -662,7 +709,7 @@ $response = array(
   "box_ids_for_user" => $box_ids_for_user,
   "is_requester" => $is_requester,
   
-		"test111"=>$boxQuery,
+                             "test111"=>$boxQuery,
 "test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php'
 );
 
