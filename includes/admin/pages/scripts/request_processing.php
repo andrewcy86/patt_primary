@@ -257,6 +257,7 @@ SELECT
 a.id as request_id,
 a.request_id as patt_request_id,
 a.date_updated as date_updated,
+
 CONCAT(
 '<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
 CASE 
