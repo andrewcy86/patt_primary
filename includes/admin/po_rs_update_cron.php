@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $current_user, $wpscfunction, $wpdb;
 
 // Endpoint needs to be added into environment variable for staging environment
-$endpoint = "https://data.epa.gov/dmapservice/query";
+$endpoint = "https://data.epa.gov/dmapservice/gateway-query. ";
 $count = 0;
 
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
