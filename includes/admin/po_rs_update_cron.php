@@ -9,38 +9,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $current_user, $wpscfunction, $wpdb;
 
 // Endpoint needs to be added into environment variable for staging environment
-$endpoint = "https://data.epa.gov/dmapservice/gateway-query. ";
 $count = 0;
 
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 $rs_table = $wpdb->prefix . 'epa_record_schedule';
 
-$po_query = "query programOffice {
+$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
+$qry_po = '{"query":"query programOffice {ecms__program_office {__all_columns__}}"}';
+$qry_rs = '{"query":"query recSched {ecms__record_schedule {__all_columns__}}"}';
 
-ecms__program_office {
+$headers = array();
+$headers[] = 'Content-Type: application/json';
 
-     __all_columns__
+$ch_po = curl_init();
 
-}
+curl_setopt($ch_po, CURLOPT_URL, $endpoint);
+curl_setopt($ch_po, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch_po, CURLOPT_ENCODING, '');
+curl_setopt($ch_po, CURLOPT_MAXREDIRS, 10);
+curl_setopt($ch_po, CURLOPT_TIMEOUT, 0);
+curl_setopt($ch_po, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($ch_po, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+curl_setopt($ch_po, CURLOPT_POSTFIELDS, $qry_po);
+curl_setopt($ch_po, CURLOPT_POST, 1);
+curl_setopt($ch_po, CURLOPT_HTTPHEADER, $headers);
 
-}";
+$po_result = curl_exec($ch_po);
 
 $po_data = array ('query' => $po_query);
 $po_data = http_build_query($po_data);
 
-$po_options = array(
-  'http' => array(
-    'method'  => 'POST',
-    'content' => $po_data
-  )
-);
-
-$po_context  = stream_context_create($po_options);
-$po_result = file_get_contents($endpoint, false, $po_context);
-// var_dump('po results: ' . $po_result);
-// var_dump($po_context);
-
-if ($po_result === FALSE) { 
+if (curl_errno($ch_po)) { 
 
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
@@ -131,31 +130,25 @@ if ($po_count != $po_query_count) {
 }
 //Record Schedule
 
-$rs_query = "query recSched {
+$ch_rs = curl_init();
 
-ecms__record_schedule {
+curl_setopt($ch_rs, CURLOPT_URL, $endpoint);
+curl_setopt($ch_rs, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch_rs, CURLOPT_ENCODING, '');
+curl_setopt($ch_rs, CURLOPT_MAXREDIRS, 10);
+curl_setopt($ch_rs, CURLOPT_TIMEOUT, 0);
+curl_setopt($ch_rs, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($ch_rs, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+curl_setopt($ch_rs, CURLOPT_POSTFIELDS, $qry_rs);
+curl_setopt($ch_rs, CURLOPT_POST, 1);
+curl_setopt($ch_rs, CURLOPT_HTTPHEADER, $headers);
 
-     __all_columns__
-
-}
-
-}";
-    
+$rs_result = curl_exec($ch_rs);
 
 $rs_data = array ('query' => $rs_query);
 $rs_data = http_build_query($rs_data);
 
-$rs_options = array(
-  'http' => array(
-    'method'  => 'POST',
-    'content' => $rs_data
-  )
-);
-
-$rs_context  = stream_context_create($rs_options);
-$rs_result = file_get_contents($endpoint, false, $rs_context);
-
-if ($rs_result === FALSE) { 
+if (curl_errno($ch_rs)) { 
 $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
 Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
 } else {
