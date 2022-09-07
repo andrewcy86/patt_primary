@@ -27,6 +27,14 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />   -->
 
 <style>
+table.dataTable thead {background-color:#32312f; text-color: white;}                                                                                 table.dataTable thead tr th,
+table.dataTable thead tr td {
+    color: white;
+    text-align: center;                                                                                             
+}
+* {
+ font-family: Segoe UI !important;
+}                                                                                                  
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 
@@ -129,7 +137,7 @@
           <a href="https://work.epa.gov/records-management">Records Management</a>
       </li>
   <li>
-          EPA Deleted Records Schedules
+          Schedule Deletions
       </li>
 </ol>
 
@@ -163,7 +171,9 @@
 <h1>EPA Deleted Records Schedules</h1>
 </div>
 
+<div class="alert alert-info" role="alert">Browse the <a href="#rschedule">deleted schedules listing</a> below. During the current transition to the new consolidated records schedules, the old schedules (designated with a 3 digit number, e.g., 597) are still in effect until the consolidated schedule is approved by NARA and posted as "final" on the records site. The list of which schedules have been superseded and which schedules have not been superseded can be found on the <a href="https://patt.epa.gov/app/mu-plugins/pattracking/includes/admin/pages/record_schedule/superseded.php">Superseded Schedules page</a>.
 
+</div>
 <?php  
  
  header("X-Frame-Options: allow-from https://work.epa.gov");
@@ -171,7 +181,7 @@
  include 'db_connection.php';
  $conn = OpenCon();
 
- $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
+ $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, NARA_Disposal_Authority_Item_Level, Schedule_Title, Program, Applicability, Action
  FROM " . $wpdb->prefix . "epa_record_schedule
  WHERE Deleted_Flag = 1 and id != '-99999'
  ORDER BY Schedule_Number ASC";
@@ -184,12 +194,12 @@
                      <table id="rschedule" class="table table-striped table-bordered stripe">  
                           <thead>  
                                <tr>  
-                                <th>No.</th>
+                                <th>EPA No.</th>
+                                <th>NARA No.</th>
                                 <th>Title</th>
-                                <th>Function</th>
                                 <th>Program</th>
                                 <th>Applicability</th>
-                                <th>Revised</th>
+                                <th>Action</th>
                                </tr>  
                           </thead>  
                           <?php  
@@ -197,12 +207,12 @@
                           {  
                                echo '  
                                <tr>  
-                                    <td>'.$row["Schedule_Number"].'</td>  
-                                    <td>'.$row["Schedule_Title"].'</td>  
-                                    <td>'.$row["Function_Code"].'</td>  
+                                    <td>'.$row["Schedule_Number"].'</td>
+                                    <td>'.$row["NARA_Disposal_Authority_Item_Level"].'</td>
+                                    <td>'.$row["Schedule_Title"].'</td>    
                                     <td>'.$row["Program"].'</td>  
                                     <td>'.$row["Applicability"].'</td>
-                                    <td>'.$row["Revised_Date"].'</td>
+                                    <td>'.$row["Action"].'</td>
                                </tr>  
                                ';  
                           }  

@@ -1206,12 +1206,10 @@ public static function id_in_physical_location( $identifier, $type ) {
     if($type == 'box' || $type == 'box_archive') {
         
         //If $identifier is a box ID
-        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, 
-        a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location, b.pallet_id
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location, b.pallet_id
         FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
         INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.scan_list_id = a.id
-        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL 
-        OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
         AND b.box_id = '" .  $identifier . "'");
 
         $scanning_id = $get_physical_location_id->scanning_id;
@@ -1221,22 +1219,14 @@ public static function id_in_physical_location( $identifier, $type ) {
         $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
         $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
         $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-        $receiving_dock = $get_physical_location_id->receiving_dock;
-        $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-        $express_staging_area = $get_physical_location_id->express_staging_area;
-        $express_pallet = $get_physical_location_id->express_pallet;
-        $destruction = $get_physical_location_id->destruction;
-        $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
         $shelf_location = $get_physical_location_id->shelf_location;
         $pallet_id = $get_physical_location_id->pallet_id;
         
         if(empty($pallet_id)) {
-            $get_physical_location_no_pallet = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id,
-            a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location
+            $get_physical_location_no_pallet = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location
             FROM " . $wpdb->prefix . "wpsc_epa_scan_list a
             INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON b.box_id = a.box_id
-            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL
-            OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
+            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
             AND b.box_id = '" .  $identifier . "'");
     
             $scanning_id = $get_physical_location_no_pallet->scanning_id;
@@ -1246,12 +1236,6 @@ public static function id_in_physical_location( $identifier, $type ) {
             $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
             $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
             $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-            $receiving_dock = $get_physical_location_id->receiving_dock;
-            $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-            $express_staging_area = $get_physical_location_id->express_staging_area;
-            $express_pallet = $get_physical_location_id->express_pallet;
-            $destruction = $get_physical_location_id->destruction;
-            $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
             $shelf_location = $get_physical_location_no_pallet->shelf_location;
         }
         
@@ -1276,24 +1260,6 @@ public static function id_in_physical_location( $identifier, $type ) {
         elseif(!empty($scanning_location_area_id)) {
             return $scanning_location_area_id;
         }
-        elseif(!empty($receiving_dock)) {
-            return $receiving_dock;
-        }
-        elseif(!empty($oversized_tube_shelves)) {
-            return $oversized_tube_shelves;
-        }
-        elseif(!empty($express_staging_area)) {
-            return $express_staging_area;
-        }
-        elseif(!empty($express_pallet)) {
-            return $express_pallet;
-        }
-        elseif(!empty($destruction)) {
-            return $destruction;
-        }
-        elseif(!empty($shipping_dock_area)) {
-            return $shipping_dock_area;
-        }
         elseif(!empty($shelf_location)) {
             return $shelf_location;
         }
@@ -1303,13 +1269,11 @@ public static function id_in_physical_location( $identifier, $type ) {
     }
     
     if($type == 'folderfile') {
-        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id,
-        a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location, b.pallet_id
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location, b.pallet_id
         FROM wpqa_wpsc_epa_scan_list a
         INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
         INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
-        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL 
-        OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
         AND c.folderdocinfofile_id = '" .  $identifier . "'");
 
         $scanning_id = $get_physical_location_id->scanning_id;
@@ -1319,23 +1283,15 @@ public static function id_in_physical_location( $identifier, $type ) {
         $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
         $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
         $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-        $receiving_dock = $get_physical_location_id->receiving_dock;
-        $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-        $express_staging_area = $get_physical_location_id->express_staging_area;
-        $express_pallet = $get_physical_location_id->express_pallet;
-        $destruction = $get_physical_location_id->destruction;
-        $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
         $shelf_location = $get_physical_location_id->shelf_location;
         $pallet_id = $get_physical_location_id->pallet_id;
         
         if(empty($pallet_id)) {
-            $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, 
-            a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location
+            $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location
             FROM wpqa_wpsc_epa_scan_list a
             INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
             INNER JOIN wpqa_wpsc_epa_folderdocinfo_files c ON c.box_id = b.id
-            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL 
-            OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
+            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
             AND c.folderdocinfofile_id = '" .  $identifier . "'");
     
             $scanning_id = $get_physical_location_id->scanning_id;
@@ -1345,12 +1301,6 @@ public static function id_in_physical_location( $identifier, $type ) {
             $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
             $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
             $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-            $receiving_dock = $get_physical_location_id->receiving_dock;
-            $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-            $express_staging_area = $get_physical_location_id->express_staging_area;
-            $express_pallet = $get_physical_location_id->express_pallet;
-            $destruction = $get_physical_location_id->destruction;
-            $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
             $shelf_location = $get_physical_location_id->shelf_location;
         }
         
@@ -1374,24 +1324,6 @@ public static function id_in_physical_location( $identifier, $type ) {
         }
         elseif(!empty($scanning_location_area_id)) {
             return $scanning_location_area_id;
-        }
-        elseif(!empty($receiving_dock)) {
-            return $receiving_dock;
-        }
-        elseif(!empty($oversized_tube_shelves)) {
-            return $oversized_tube_shelves;
-        }
-        elseif(!empty($express_staging_area)) {
-            return $express_staging_area;
-        }
-        elseif(!empty($express_pallet)) {
-            return $express_pallet;
-        }
-        elseif(!empty($destruction)) {
-            return $destruction;
-        }
-        elseif(!empty($shipping_dock_area)) {
-            return $shipping_dock_area;
         }
         elseif(!empty($shelf_location)) {
             return $shelf_location;
@@ -1401,13 +1333,29 @@ public static function id_in_physical_location( $identifier, $type ) {
         }
     }
     if($type == 'folderfile_archive') {
-        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id,
-        a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location, b.pallet_id
+    $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location, b.pallet_id
+    FROM wpqa_wpsc_epa_scan_list a
+    INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+    INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
+    WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
+    AND c.folderdocinfofile_id = '" .  $identifier . "'");
+
+    $scanning_id = $get_physical_location_id->scanning_id;
+    $stagingarea_id = $get_physical_location_id->stagingarea_id;
+    $cart_id = $get_physical_location_id->cart_id;
+    $validation_location_area_id = $get_physical_location_id->validation_location_area_id;
+    $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
+    $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
+    $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
+    $shelf_location = $get_physical_location_id->shelf_location;
+    $pallet_id = $get_physical_location_id->pallet_id;
+    
+    if(empty($pallet_id)) {
+        $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, a.shelf_location
         FROM wpqa_wpsc_epa_scan_list a
-        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.scan_list_id = a.id
+        INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
         INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
-        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL 
-        OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
+        WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL OR a.shelf_location IS NOT NULL)
         AND c.folderdocinfofile_id = '" .  $identifier . "'");
 
         $scanning_id = $get_physical_location_id->scanning_id;
@@ -1417,87 +1365,38 @@ public static function id_in_physical_location( $identifier, $type ) {
         $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
         $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
         $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-        $receiving_dock = $get_physical_location_id->receiving_dock;
-        $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-        $express_staging_area = $get_physical_location_id->express_staging_area;
-        $express_pallet = $get_physical_location_id->express_pallet;
-        $destruction = $get_physical_location_id->destruction;
-        $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
         $shelf_location = $get_physical_location_id->shelf_location;
-        $pallet_id = $get_physical_location_id->pallet_id;
-        
-        if(empty($pallet_id)) {
-            $get_physical_location_id = $wpdb->get_row("SELECT DISTINCT a.scanning_id, a.stagingarea_id, a.cart_id, a.validation_location_area_id, a.qaqc_location_area_id, a.scanning_prep_location_area_id, a.scanning_location_area_id, 
-            a.receiving_dock, a.oversized_tube_shelves, a.express_staging_area, a.express_pallet, a.destruction, a.shipping_dock_area, a.shelf_location
-            FROM wpqa_wpsc_epa_scan_list a
-            INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.box_id = a.box_id
-            INNER JOIN wpqa_wpsc_epa_folderdocinfo_files_archive c ON c.box_id = b.id
-            WHERE (a.scanning_id IS NOT NULL OR a.stagingarea_id IS NOT NULL OR a.cart_id IS NOT NULL OR a.validation_location_area_id IS NOT NULL OR a.qaqc_location_area_id IS NOT NULL OR a.scanning_prep_location_area_id IS NOT NULL OR a.scanning_location_area_id IS NOT NULL
-            OR a.receiving_dock IS NOT NULL OR a.oversized_tube_shelves IS NOT NULL OR a.express_staging_area IS NOT NULL OR a.express_pallet IS NOT NULL OR a.destruction IS NOT NULL OR a.shipping_dock_area IS NOT NULL OR a.shelf_location IS NOT NULL)
-            AND c.folderdocinfofile_id = '" .  $identifier . "'");
-
-            $scanning_id = $get_physical_location_id->scanning_id;
-            $stagingarea_id = $get_physical_location_id->stagingarea_id;
-            $cart_id = $get_physical_location_id->cart_id;
-            $validation_location_area_id = $get_physical_location_id->validation_location_area_id;
-            $qaqc_location_area_id = $get_physical_location_id->qaqc_location_area_id;
-            $scanning_prep_location_area_id = $get_physical_location_id->scanning_prep_location_area_id;
-            $scanning_location_area_id = $get_physical_location_id->scanning_location_area_id;
-            $receiving_dock = $get_physical_location_id->receiving_dock;
-            $oversized_tube_shelves = $get_physical_location_id->oversized_tube_shelves;
-            $express_staging_area = $get_physical_location_id->express_staging_area;
-            $express_pallet = $get_physical_location_id->express_pallet;
-            $destruction = $get_physical_location_id->destruction;
-            $shipping_dock_area = $get_physical_location_id->shipping_dock_area;
-            $shelf_location = $get_physical_location_id->shelf_location;
-        }
-            
-        if(!empty($scanning_id)) {
-            return $scanning_id;
-        }
-        elseif(!empty($stagingarea_id)) {
-            return $stagingarea_id;
-        }
-        elseif(!empty($cart_id)) {
-            return $cart_id;
-        }
-        elseif(!empty($validation_location_area_id)) {
-            return $validation_location_area_id;
-        }
-        elseif(!empty($qaqc_location_area_id)) {
-            return $qaqc_location_area_id;
-        }
-        elseif(!empty($scanning_prep_location_area_id)) {
-            return $scanning_prep_location_area_id;
-        }
-        elseif(!empty($scanning_location_area_id)) {
-            return $scanning_location_area_id;
-        }
-        elseif(!empty($receiving_dock)) {
-            return $receiving_dock;
-        }
-        elseif(!empty($oversized_tube_shelves)) {
-            return $oversized_tube_shelves;
-        }
-        elseif(!empty($express_staging_area)) {
-            return $express_staging_area;
-        }
-        elseif(!empty($express_pallet)) {
-            return $express_pallet;
-        }
-        elseif(!empty($destruction)) {
-            return $destruction;
-        }
-        elseif(!empty($shipping_dock_area)) {
-            return $shipping_dock_area;
-        }
-        elseif(!empty($shelf_location)) {
-            return $shelf_location;
-        }
-        else {
-            return false;
-        }
     }
+        
+    if(!empty($scanning_id)) {
+        return $scanning_id;
+    }
+    elseif(!empty($stagingarea_id)) {
+        return $stagingarea_id;
+    }
+    elseif(!empty($cart_id)) {
+        return $cart_id;
+    }
+    elseif(!empty($validation_location_area_id)) {
+        return $validation_location_area_id;
+    }
+    elseif(!empty($qaqc_location_area_id)) {
+        return $qaqc_location_area_id;
+    }
+    elseif(!empty($scanning_prep_location_area_id)) {
+        return $scanning_prep_location_area_id;
+    }
+    elseif(!empty($scanning_location_area_id)) {
+        return $scanning_location_area_id;
+    }
+    elseif(!empty($shelf_location)) {
+        return $shelf_location;
+    }
+    else {
+        return false;
+    }
+}
+    
 }
 
 /**
@@ -4989,19 +4888,7 @@ public static function id_in_recall( $identifier, $type ) {
 						$assigned_agents[] = $agent_term_id;
 					}
 				} 
-			} 
-          /*elseif ( $change_to_type == 'user_id') {
-              if( is_array($array_of_users) ) {
-					foreach ( $array_of_users as $user_id ) {
-						/*$key = array_search( $user_id, array_column($agent_ids, 'wp_user_id'));
-						$agent_user_id = $agent_ids[$key]['agent_term_id']; //current user agent term id
-						$assigned_agents[] = $agent_user_id;*/
-                    /*  $assigned_agents[] = $user_id;
-                      
-                      //var_dump($user_id);
-					}
-				} 
-            }*/
+			}
 			
 			return $assigned_agents;
 		}
@@ -6865,12 +6752,6 @@ return $patt_type;
 				));
 				
 				$insert_id = $wpdb->insert_id;
-              
-              	/*// Find the requestor group that the current requestor is associated with and get user ids in requestor group
-                $requestor_group_array = Patt_Custom_Func::get_requestor_group($user_id);
-                    
-                // Combine the requestor group array to the array_of_users
-                $array_of_users = array_merge($array_of_users,$requestor_group_array);*/
 				
 				$wp_user_id_array = Patt_Custom_Func::translate_user_id($array_of_users,'wp_user_id');
 				

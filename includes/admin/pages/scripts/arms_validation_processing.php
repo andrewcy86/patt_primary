@@ -50,7 +50,7 @@ button {
   text-decoration: line-through;
   }
 
-#paging {
+  #paging {
   padding: 0 20px 20px 20px;
   font-size: 13px;
   margin-top: 10px;
@@ -87,7 +87,7 @@ if(isset($_POST['postvarsobjects'])){
 
 <div class="row">
   <div class="column left">
-  <ul id="listPage">
+<ul id="listPage">
 <?php
 $i = 0;
 $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
@@ -102,14 +102,19 @@ foreach ($str_arr as $value) {
 
     $i++;
 }
-?>  
-    </ul>
+?> 
+</ul>
   </div>
   <div class="column right">
   <iframe id="frame" src="" width="100%" height="500px">
      </iframe>
   </div>
 </div>
+<script>
+$(window).load(function() {
+     alert("hi 2");
+});
+</script>
 <?php
 } else {
     echo "error";

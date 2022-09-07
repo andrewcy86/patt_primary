@@ -62,7 +62,7 @@ color: rgb(255, 255, 255) !important;
   <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
   <div class="col-sm-12">
-         <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="Request List"></i><span class="sr-only">Request List</span> <?php _e('Ticket List','supportcandy')?> <a href="#" aria-label="Request list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+         <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=patt-transfer';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul" aria-hidden="true" title="PATT Transfer List"></i><span class="sr-only">PATT Transfer List</span> <?php _e('PATT Transfer List','supportcandy')?> <a href="#" aria-label="Patt Transfer list button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-request-list-button'); ?>" aria-label="Request Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
 		 <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>  margin-right: 30px !important;"><i class="fas fa-retweet" aria-hidden="true" title="Reset Filters"></i><span class="sr-only">Reset Filters</span> <?php _e('Reset Filters','supportcandy')?></button>
          <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn" id="btn_restore_tickets" style="<?php echo $action_default_btn_css?>"><i class="fa fa-window-restore" aria-hidden="true" title="Restore"></i><span class="sr-only">Restore</span> <?php _e('Restore','supportcandy')?></button>
 <?php
@@ -112,31 +112,28 @@ $high_tag = get_term_by('slug', 'medium', 'wpsc_priorities');
 $critical_tag = get_term_by('slug', 'high', 'wpsc_priorities');
 ?>
 
-        <select id='searchByStatus' aria-label="Search by Status">
-           <option value=''>-- Select Status --</option>
-			<option value="<?php echo $new_request_tag->term_id; ?>">New Request</option>
-			<option value="<?php echo $tabled_tag->term_id; ?>">Tabled</option>
-			<option value="<?php echo $initial_review_complete_tag->term_id; ?>">Initial Review Complete</option>
-			<option value="<?php echo $initial_review_rejected_tag->term_id; ?>">Initial Review Rejected</option>
-			<option value="<?php echo $shipped_tag->term_id; ?>">Shipped</option>
-			<option value="<?php echo $received_tag->term_id; ?>">Received</option>
-			<option value="<?php echo $in_progress_tag->term_id; ?>">In Process</option>
-			<option value="<?php echo $ecms_tag->term_id; ?>">ARMS</option>
-			<option value="<?php echo $sems_tag->term_id; ?>">SEMS</option>
-			<option value="<?php echo $completed_dispositioned_tag->term_id; ?>">Completed/Dispositioned</option>
-			<option value="<?php echo $cancelled_tag->term_id; ?>">Cancelled</option>
-         </select>
-<br /><br />
-        <select id='searchByPriority' aria-label="Search by Priority">
-           <option value=''>-- Select Priority --</option>
-			<option value="<?php echo $not_assigned_tag->term_id; ?>">Not Assigned</option>
-			<option value="<?php echo $normal_tag->term_id; ?>">Normal</option>
-			<option value="<?php echo $high_tag->term_id; ?>">High</option>
-			<option value="<?php echo $critical_tag->term_id; ?>">Critical</option>
-         </select>
-<br /><br />
+<!-- ECMS has been updated to be called ARMS instead -->
+<!-- <select id='searchByOverallStatus' aria-label='Search by Status'>
+			  <option value=''>-- Select A Status --</option>
+			  <option value='Processing'>Processing</option>
+			  <option value='Error'>Error</option>
+			  <option value='Transferred'>Completed/Transferred</option>
+			  <option value='Published'>Published</option>
+		  </select>
+		<br /><br />
 
-<?php	
+		<select id='searchByStage' aria-label='Search by Stage'>
+			  <option value=''>-- Select A Stage --</option>
+			  <option value='received'>Received from Digitization Center</option>
+			  <option value='text_extraction'>Text Extraction</option>
+			  <option value='keyword_id'>Keyword/Identifier Extraction</option>
+			  <option value='metadata'>Metadata Preparation</option>
+			  <option value='arms'>ARMS Connection</option>
+			  <option value='published'>Publishing of Record</option>
+		</select>
+		<br /><br /> -->
+
+		<?php	
 $user_digitization_center = get_user_meta( $current_user->ID, 'user_digization_center',true);
 
 if ( !empty($user_digitization_center) && $user_digitization_center == 'East' && $agent_permissions['label'] == 'Agent') { 
@@ -177,21 +174,8 @@ if ( !empty($user_digitization_center) && (($agent_permissions['label'] == 'Admi
 <?php
 }
 ?>
-       <!-- ECMS has been updated to be called ARMS instead -->
-       <select id='searchByECMSSEMS' aria-label='Search by ARMS or SEMS'>
-       <option value=''>-- Select ARMS or SEMS --</option>
-       <option value='ECMS'>ARMS</option>
-       <option value='SEMS'>SEMS</option>
-     </select>
-<br /><br />
-				<select id='searchByUser'>
-					<option value=''>-- Select User --</option>
-					<option value='mine'>Mine</option>
-					<option value='not assigned'>All Requests</option>
-					<option value='search for user'>Search for User</option>
-				</select>
 
-	<br /><br />				
+	<!-- <br /><br />				 -->		
 				<form id="frm_get_ticket_assign_agent">
 					<div id="assigned_agent">
 						<div class="form-group wpsc_display_assign_agent ">
@@ -344,27 +328,36 @@ jQuery(document).ready(function(){
         console.log('the data');
 	      console.log(data);
           // Read values
-		  var sbu = jQuery('#searchByUser').val();  
-		  var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
-		  var aaName = jQuery("#user_search").val();	 
-          var rs_user = jQuery('#current_user').val();
-          var ss = jQuery('#searchByStatus').val();
-          var sp = jQuery('#searchByPriority').val();
+		  var po_value = jQuery('#searchByProgramOffice').val();
+          var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
           var sg = jQuery('#searchGeneric').val();
-          var requestid = jQuery('#searchByRequestID').val();
+
+          var docid = jQuery('#searchByDocID').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
-          var es = jQuery('#searchByECMSSEMS').val();
-          // Append to data
-          data.searchGeneric = sg;
-          data.searchByRequestID = requestid;
-          data.searchByStatus = ss;
-          data.searchByPriority = sp;
-          data.searchByDigitizationCenter = dc;
-          data.searchByECMSSEMS = es;
-          data.currentUser = rs_user;
-          data.searchByUser = sbu;
-		  data.searchByUserAAVal = aaVal;
-		  data.searchByUserAAName = aaName;
+          var sp = jQuery('#searchByPriority').val();
+          var rd = jQuery('#searchByRecallDecline').val();
+          var sbos = jQuery('#searchByOverallStatus').val();
+          // Create a jquery object to hold the value of the searchByStage select field
+          var sbst = jQuery('#searchByStage').val();
+          var sbs = jQuery('#searchByStatus').val(); 
+          var sbu = jQuery('#searchByUser').val();  
+          var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
+          var aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get(); 
+         //console.log({is_requester:is_requester});
+         // Append to data
+         data.searchGeneric = sg;
+         // Append the value of the searchByStage select field to data object
+         data.searchByDocID = docid;
+         data.searchByProgramOffice = po;
+         data.searchByDigitizationCenter = dc;
+         data.searchByPriority = sp;
+         data.searchByRecallDecline = rd;
+         data.searchByOverallStatus = sbos;
+         data.searchByStage = sbst
+         data.searchByStatus = sbs;
+         data.searchByUser = sbu;
+         data.searchByUserAAVal = aaVal;
+         data.searchByUserAAName = aaName;
        }
     },
     'lengthMenu': [[10, 25, 50, 100], [10, 25, 50, 100]],

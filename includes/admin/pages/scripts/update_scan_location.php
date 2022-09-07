@@ -225,6 +225,258 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                         $GLOBALS[$record_updated] = false; 
                         $GLOBALS[$evaluated] = true;     
                     }
+                  
+                  	if(preg_match('/\b(VAL-\d\d-e|VAL-\d\d-w)\b/i', $value)) {
+                        $column_name = 'validation_location_area_id';
+                        
+                                            /* Change the box status has been changed to "In Validation Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'In Validation Area'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(QAQC-\d\d-e|QAQC-\d\d-w)\b/i', $value)) {
+                        $column_name = 'qaqc_location_area_id';
+                        
+                                            /* Change the box status has been changed to "In QA/QC Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'In QA/QC Area'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(SLA-\d\d-e|SLA-\d\d-w)\b/i', $value)) {
+                        $column_name = 'scanning_location_area_id';
+                        
+                                            /* Change the box status has been changed to "In Scanning Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'In Scanning Area'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(RD-\d\d-e|RD-\d\d-w)\b/i', $value)) {
+                        $column_name = 'receiving_dock';
+                        
+                                            /* Change the box status has been changed to "Receiving Dock"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'Receiving Dock'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(OS-\d\d-e|OS-\d\d-w)\b/i', $value)) {
+                        $column_name = 'oversized_tube_shelves';
+                        
+                                            /* Change the box status has been changed to "Oversized Tube Shelves"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'Oversized Tube Shelves'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(DES-\d\d-e|DES-\d\d-w)\b/i', $value)) {
+                        $column_name = 'destruction';
+                        
+                                            /* Change the box status has been changed to "Destruction"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'Destruction'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+
+                    if(preg_match('/\b(SDA-\d\d-e|SDA-\d\d-w)\b/i', $value)) {
+                        $column_name = 'shipping_dock_area';
+                        
+                                            /* Change the box status has been changed to "Shipping Dock Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'Shipping Dock Area'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
                     
                     if(preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $value)) {
                         

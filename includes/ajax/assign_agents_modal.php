@@ -755,6 +755,10 @@ echo "</pre>";
 			
 			
 			<div class="col-sm-4">
+              	<!-- removes the digitized - not validated box status text -->
+			<?php
+				if( $status->name != 'Digitized - Not Validated') {
+			?>
 			    <?php
 			    if($status->name == 'QA/QC') {
 			    ?>
@@ -766,14 +770,18 @@ echo "</pre>";
 				else { ?>
 				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> </label>
 				<?php } ?>
+              <!-- closing bracket for if statement that removes the digitized - not validated box status text -->
+			  <?php } ?>
 			</div>
 			
 			
 			<div class="col-sm-8">
 	<!-- 			<label class="wpsc_ct_field_label">Search Digitization Staff: </label> -->
 	
-				<form id="frm_get_ticket_assign_agent">
+				<form id="frm_get_ticket_assign_agent" action = "<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/assign_staff_processing.php" method = "POST">
 					<div id="assigned_agent">
+                      <!-- removes the digitized - not validated input field -->
+						<?php if( $status->term_id != '6') { ?>
 						<div class="form-group wpsc_display_assign_agent ">
 						    <input class="form-control  wpsc_assign_agents ui-autocomplete-input term-<?php echo $status->term_id; ?>" name="assigned_agent"  type="text" autocomplete="off" aria-label="Search agent ..." placeholder="<?php _e('Search agent ...','supportcandy')?>" />
 							<ui class="wpsp_filter_display_container"></ui>
@@ -804,6 +812,8 @@ echo "</pre>";
 								}
 							}
 						?>
+                      <!-- closing bracket for if statement that removes the digitized - not validated input field -->
+					<?php } ?>
 				  </div>
 						<input type="hidden" name="action" value="wpsc_tickets" />
 						<input type="hidden" name="setting_action" value="set_change_assign_agent" />
@@ -1201,13 +1211,7 @@ if( $save_enabled ) {
     height: 100px;
 }
 
-.ui-menu:nth-last-of-type(2) {
-  top: -45px !important;
-}
 
-.ui-menu:last-of-type {
-  top: 10px !important;
-}
 </style>
 
 <script>
@@ -1312,6 +1316,22 @@ jQuery(document).ready(function(){
 	}).focus(function() {
 			jQuery(this).autocomplete("search", "");
 	});
+  
+  
+  	//
+	// Auto Complete for last type of assign agents
+	//
+
+	jQuery(".ui-autocomplete-input").eq(6).autocomplete({
+			minLength: 0,
+			position: { my: "left bottom", at: "left top" }
+	});
+	
+	jQuery('.wpsc_assign_agents').last().autocomplete({
+			minLength: 0,
+			position: { my: "left bottom", at: "left top" }
+	});
+  
 
 	// Checks if ticket status of any item inhibits it's editing
 	var items_and_status = <?php echo json_encode($ticket_id_array, true); ?>;

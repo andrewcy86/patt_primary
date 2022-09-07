@@ -53,101 +53,182 @@ else {
 }
 
 ## Custom Field value
-$searchByRequestID = str_replace(",", "|", $_POST['searchByRequestID']);
+$searchByProgramOffice = $_POST['searchByProgramOffice'];
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
-$searchGeneric = $_POST['searchGeneric'];
-$searchByRequest = $_POST['searchRequest'];
-$searchByStatus = $_POST['searchByStatus'];
 $searchByPriority = $_POST['searchByPriority'];
-$searchByECMSSEMS = $_POST['searchByECMSSEMS']; // ECMS has been updated to be called ARMS instead
-$currentUser = $_POST['currentUser'];
-## User Search
-//throwing Undefined Index error
-if(isset($_POST['searchByUser'])) {
-    $searchByUser = $_POST['searchByUser'];
-}
-else {
-    $searchByUser = '';
-}
+$searchByRecallDecline = $_POST['searchByRecallDecline'];
+$searchByOverallStatus = $_POST['searchByOverallStatus']; // ECMS has been updated to be called ARMS instead
+$searchByStage = $_POST['searchByStage'];
+$searchGeneric = $_POST['searchGeneric'];
+$searchByStatus = $_POST['searchByStatus'];
+$searchByUser = $_POST['searchByUser'];
+$searchByUserAAVal = $_REQUEST['searchByUserAAVal'];
+$searchByUserAAName = $_REQUEST['searchByUserAAName'];
 
-if(isset($_POST['searchByUserAAVal'])) {
-    $searchByUserAAVal = $_POST['searchByUserAAVal'];
-}
-else {
-    $searchByUserAAVal = '';
-}
+## Custom Field value
+$searchByDocID = str_replace(",", "|", $_POST['searchByDocID']);
 
-$searchByUserAAName = str_replace(",", "|", $_POST['searchByUserAAName']);
-$searchByUserAANameQuoted = str_replace(",", "','", $_POST['searchByUserAAName']);
-$searchByUserAANameQuoted = "'".$searchByUserAANameQuoted."'";
 
 ## Search 
-$searchQuery = " ";
-$searchHaving = " ";
-$locationarray = array("east", "west", "east cui", "west cui", "not assigned");
+$searchQuery = "";
 
-if($searchByUser == 'mine') {
-   $searchQuery .= " and (a.customer_name ='".$currentUser."') ";    
+//Add Pallet Support
+//Extract ID and determine if it is Box or Pallet
+//$searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
+
+// $BoxID_arr = explode(",", $_POST['searchByBoxID']);  
+
+$newBoxID_arr = array();
+$newPalletID_arr = array();
+
+foreach($BoxID_arr as $key => $value) {
+//Check if Box ID
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $value)) {
+array_push($newBoxID_arr,$value);
+}
+//Check if Pallet ID
+if (preg_match("/^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/", $value)) {
+array_push($newPalletID_arr,$value);
+}
 }
 
-if($searchByUser == 'search for user') {
-	if( strlen($searchByUserAAName) == 0  ) {
-		//$searchQuery .= "";
-	} else {
-		$searchQuery .= " and (a.customer_name IN (".$searchByUserAANameQuoted.")) ";	
-	}
-	}
+$newBoxID_str = str_replace(",", "|", implode(',', $newBoxID_arr));
+$newPalletID_str = str_replace(",", "|", implode(',', $newPalletID_arr));
 
-if($searchByRequest != '' && $searchByRequest != 'all' ){
-   $searchQuery .= " and (a.customer_name='".$searchByRequest."') ";
+if($searchByDocID != ''){
+    //used to be a.folderdocinfo_id
+   $searchQuery .= "and (a.folderdocinfofile_id REGEXP '^(".$searchByDocID.")$' ) ";
 }
 
-if($searchByRequestID != ''){
-   $searchQuery .= " and (a.request_id REGEXP '^(".$searchByRequestID.")$' ) ";
+if($newBoxID_str != ''){
+   $searchQuery .= " and (a.folderdocinfofile_id REGEXP '^(".$newBoxID_str.")$' ) ";
 }
 
-if($searchByStatus != ''){
-   $searchQuery .= " and (a.ticket_status='".$searchByStatus."') ";
+if($newPalletID_str != ''){
+   $searchQuery .= " and (a.pallet_id REGEXP '^(".$newPalletID_str.")$' ) ";
 }
 
-if($searchByPriority != ''){
-   $searchQuery .= " and (a.ticket_priority='".$searchByPriority."') ";
+if($searchByProgramOffice != ''){
+   $searchQuery .= " and (c.office_acronym='".$searchByProgramOffice."') ";
 }
 
 if($searchByDigitizationCenter != ''){
-   $searchHaving = " HAVING location like '%".$searchByDigitizationCenter."%' ";
+   $searchQuery .= " and (f.name ='".$searchByDigitizationCenter."') ";
 }
 
-$ecms_sems = '';
-
-if($searchByECMSSEMS != ''){
-    if($searchByECMSSEMS == 'ECMS') {
-        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "false" ';
-    }
-    
-    if($searchByECMSSEMS == 'SEMS') {
-        $ecms_sems = ' AND z.meta_key = "super_fund" AND z.meta_value = "true" ';
-    }
+if($searchByPriority != ''){
+   $searchQuery .= " and (b.ticket_priority='".$searchByPriority."') ";
 }
+
+if($searchByStatus != ''){
+   $searchQuery .= " and (a.status ='".$searchByStatus."') ";
+}
+
+$overall_status = '';
+
+if($searchByOverallStatus != ''){
+    if($searchByOverallStatus == 'Processing') {
+        $overall_status = ' AND status = "Processing" ';
+    }
+	if($searchByOverallStatus == 'Error') {
+        $overall_status = ' AND status = "Error" ';
+    }
+	if($searchByOverallStatus == 'Transferred') {
+        $overall_status = ' AND status = "Transferred" ';
+    }
+	if($searchByOverallStatus == 'Published') {
+        $overall_status = ' AND status = "Published" ';
+    }
+
+}
+
+$stage_status = '';
+
+if($searchByStage != ''){
+	if($searchByStage == 'received') {
+		$stage_status = ' AND received_stage = 1 ';
+	}
+	if($searchByStage == 'text_extraction') {
+		$stage_status = ' AND extraction_stage = 1 ';
+	}
+	if($searchByStage == 'keyword_id') {
+		$stage_status = ' AND keyword_id_stage = 1 ';
+	}
+	if($searchByStage == 'metadata') {
+		$stage_status = ' AND metadata_stage = 1 ';
+	}
+	if($searchByStage == 'arms') {
+		$stage_status = ' AND arms_stage = 1 ';
+	}
+	if($searchByStage == 'published') {
+		$stage_status = ' AND published_stage = 1 ';
+	}
+}
+
+
+
+
+//IF Search Generic Contains Commas
+
+$searchForValue = ',';
 
 if($searchGeneric != ''){
-if(in_array(strtolower($searchGeneric), $locationarray)){
-   $searchHaving = " HAVING location like '%".$searchGeneric."%' ";
-} else {
-   $searchQuery .= " and (a.request_id like '%".$searchGeneric."%' or
-      a.customer_name like '%".$searchGeneric."%') ";    
+    
+if(strpos($searchGeneric, $searchForValue) !== false){
+    
+//Strip spaces, breaks, tabs
+$search_request_ids = preg_replace('/\s+/', '', $searchGeneric);
+
+//Determine if ALL values are request IDs
+   $var=explode(',',$search_request_ids);
+   
+   $count_var = count($var);
+   
+   $count_match = 0;
+   foreach($var as $data)
+    {
+
+    $get_request = $wpdb->get_row("SELECT COUNT(id) as count
+FROM " . $wpdb->prefix . "wpsc_ticket WHERE request_id = ".$data);
+
+    $request_id_match = $get_request->count;
+    
+    if($request_id_match != 0) {
+    $count_match++;
+    }
+    
+    if($count_var == $count_match) {
+    
+    $searchQuery .= " and b.request_id IN (".$search_request_ids.") ";
+    
+    } else {
+    $searchQuery .= "";
+    }
+    
 }
 
+} else {
+
+//    $searchQuery .= " and (a.folderdocinfofile_id like '%".$searchGeneric."%' or 
+//       (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
+//       b.request_id like '%".$searchGeneric."%' or
+//       c.office_acronym like '%".$searchGeneric."%') ";
+
+		$searchQuery .= " and (a.folderdocinfofile_id like '%".$searchGeneric."%' or 
+			status like '%".$searchGeneric."%') ";
+}
 }
 
 if($searchValue != ''){
-if(in_array(strtolower($searchGeneric), $locationarray)){
-   $searchHaving = " HAVING location like '%".$searchGeneric."%' ";
-} else {
-   $searchQuery .= " and (a.request_id like '%".$searchGeneric."%' or
-      a.customer_name like '%".$searchGeneric."%') ";    
+//    $searchQuery .= " and (a.folderdocinfofile_id like '%".$searchValue."%' or
+//       (a.pallet_id like '%".$searchGeneric."%' and a.pallet_id <> '') or
+//       b.request_id like '%".$searchValue."%' or
+//       c.office_acronym like '%".$searchValue."%') ";
+
+		$searchQuery .= " and (a.folderdocinfofile_id like '%".$searchValue."%' or
+			status like '%".$searchGeneric."%')  ";
 }
-}
+
 
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $sel = mysqli_query($con,"select count(*) as allcount from " . $wpdb->prefix . "epa_patt_arms_logs_archive");

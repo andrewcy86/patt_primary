@@ -808,8 +808,8 @@ if($rescan_count > 0) {
 	    dataTable.column(0).checkboxes.deselectAll();
 		dataTable.state.clear();
 		dataTable.destroy();
-		rescan.state.clear();
-		rescan.destroy();
+		//rescan.state.clear();
+		//rescan.destroy();
 		recall.state.clear();
 		recall.destroy();
 		decline.state.clear();

@@ -42,46 +42,31 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     (c.index_level = 2 AND s.digitization_center <> 666 AND a.box_destroyed = 0)) 
     AND a.ticket_id = " .$GLOBALS['id']);
 
-//print_r($box_ids);
- 
-//    foreach($box_ids as $item)
-//    {
-
-//REVIEW
-/*
-$folderfile_info = $wpdb->get_results("SELECT d.folderdocinfofile_id, d.title
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo b
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c ON c.id = b.storage_location_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files d ON d.box_id = b.id
-WHERE ((d.index_level = 2 AND c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.box_destroyed = 0) OR 
-(d.index_level = 2 AND d.freeze = 1)) AND
-d.box_id = " .$item->id);*/
-
-//print_r($folderfile_info);
-
 $maxcols = 3;
 $i = 0;
 
 $batch_of = 30;
 
 $batch = array_chunk($folderfile_info, $batch_of);
-//print_r($batch);
+
 foreach($batch as $b) {
 
 //set table margins
-$obj_pdf->SetMargins(8,16,0);
-//$obj_pdf->SetHeaderMargin(10);
-//$obj_pdf->SetFooterMargin(16);
+$obj_pdf->SetMargins(2,15,0);
 
 //Open the table and its first row
 
 $tbl   =  '<style>
                 .tableWithOuterBorder{
-                    border-spacing: 80px 2px;
+                    font-size: 9px; 
+                    padding-top: 4px;
+                    padding-bottom: 8px;
+                    padding-left: 32.5px;
+                    padding-right: -25px;
                 }
                 </style>';
                 
-$tbl .= '<table class="tableWithOuterBorder" style="width: 638px; font-size: 9px;" cellspacing="10" nobr="true">';
+$tbl .= '<table class="tableWithOuterBorder">';
 $tbl .= '<tr>';
 
 foreach($b as $info){
@@ -96,16 +81,10 @@ foreach($b as $info){
         $tbl .= '</tr><tr>';
     }
 
-    $tbl .= '<td style="width: 180px;"><tcpdf method="write1DBarcode" params="'.$folderfile_barcode.'" /><span style="text-align: center;">'. $folderfile_title_truncate .'</span></td>';
+    $tbl .= '<td style="width: 190px;padding-left:8px;"><tcpdf method="write1DBarcode" params="'.$folderfile_barcode.'" /><span style="text-align: center; width: 200px;font-size: 8px;">'. $folderfile_title_truncate .'</span></td>';
 
     $i++;
 
-}
-
-//Add empty <td>'s to even up the amount of cells in a row:
-while ($i <= $maxcols-1) {
-    $tbl .= '<td style="width: 180px;">&nbsp;</td>';
-    $i++;
 }
 
 //Close the table row and the table
@@ -128,8 +107,24 @@ $final_array = array();
 
 $folderfile_array= explode(',', $GLOBALS['id']);
 
+$tbl   =  '<style>
+                .tableWithOuterBorder{
+                    font-size: 9px; 
+                    padding-top: 4px;
+                    padding-bottom: 8px;
+                    padding-left: 32.5px;
+                    padding-right: -25px;
+                }
+                </style>';
+                
+$tbl .= '<table class="tableWithOuterBorder">';
+$tbl .= '<tr>';  
+  
 foreach($folderfile_array as $item) {
 
+//set table margins
+$obj_pdf->SetMargins(2,15,0);  
+  
 //REVIEW
 $folderfile_info = $wpdb->get_row("SELECT d.folderdocinfofile_id, d.title
 FROM " . $wpdb->prefix . "wpsc_epa_boxinfo b
@@ -157,14 +152,6 @@ $batch = array_chunk($final_array, $batch_of);
 foreach($batch as $b) {
 
 //Open the table and its first row
-$tbl   =  '<style>
-                .tableWithOuterBorder{
-                    border-spacing: 80px 2px;
-                }
-                </style>';
-                
-$tbl .= '<table class="tableWithOuterBorder" style="width: 638px; font-size: 9px;" cellspacing="10" nobr="true">';
-$tbl .= '<tr>';
 
 foreach($b as $info){
 
@@ -178,17 +165,12 @@ $folderfile_title = $info->title;
         $tbl .= '</tr><tr>';
     }
 
-    $tbl .= '<td style="width: 180px;"><tcpdf method="write1DBarcode" params="'.$folderfile_barcode.'" /><span style="text-align: center;">'. $folderfile_title_truncate .'</span></td>';
+      $tbl .= '<td style="width: 190px; padding-left: 8px;"><tcpdf method="write1DBarcode" params="'.$folderfile_barcode.'" /><span style="text-align: center; width: 200px;font-size: 8px;">'. $folderfile_title_truncate .'</span></td>';
 
     $i++;
 
 }
 
-//Add empty <td>'s to even up the amount of cells in a row:
-while ($i <= $maxcols-1) {
-    $tbl .= '<td style="width: 180px;">&nbsp;</td>';
-    $i++;
-}
 
 //Close the table row and the table
 $tbl .= '</tr>';

@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
   <head>
     <meta charset="utf-8" />
-<title>EPA Records Schedules | EPA@Work</title>
+<title>EPA Records Schedules in Final Status | EPA@Work</title>
 <meta name="description" content="A records schedule provides mandatory instructions on how long to keep records (retention) and when records can be destroyed and/or transferred to alternate storage facilities (disposition). Records schedules are also known as records disposition schedules, records retention schedules and records control schedules. />
 <meta name="Generator" content="Drupal 9 (https://www.drupal.org)" />
 <meta name="MobileOptimized" content="width" />
@@ -27,6 +27,14 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />   -->
 
 <style>
+table.dataTable thead {background-color:#32312f; text-color: white;}                                                                                 table.dataTable thead tr th,
+table.dataTable thead tr td {
+    color: white;
+    text-align: center;                                                                                             
+}
+* {
+ font-family: Segoe UI !important;
+}                                                                                              
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 
@@ -129,7 +137,7 @@
           <a href="https://work.epa.gov/records-management">Records Management</a>
       </li>
   <li>
-          EPA Records Schedules
+          EPA Records Schedules in Final Status
       </li>
 </ol>
 
@@ -157,13 +165,17 @@
   
     
       <div class="views-element-container"><div class="view view-mass-mailers view-id-mass_mailers view-display-id-page_1 js-view-dom-id-e1386f114016194050874f8e478fd8ffd15730aaf22446fc444969a212213320">
-  
-    
+                                          
 <div class="view-header">
-<h1>EPA Records Schedules</h1>
+<h1>EPA Records Schedules in Final Status</h1>
 </div>
+                        
+<div class="alert alert-info" role="alert">Final schedules are approved by the National Archives and Records Administration (NARA). Browse the <a href="#rschedule">final schedules</a> below. Consolidated schedules that are still waiting for NARA approval can be found on the <a href="https://patt.epa.gov/app/mu-plugins/pattracking/includes/admin/pages/record_schedule/superseded.php">superseded schedules page</a>.</div>
 
-
+<div>
+<h2>Final Schedules Listing</h1>
+</div>
+                        
 <?php  
  
  header("X-Frame-Options: allow-from https://work.epa.gov");
@@ -173,7 +185,7 @@
 
  $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
  FROM " . $wpdb->prefix . "epa_record_schedule
- WHERE Deleted_Flag = 0 and Superseded_Flag = 0 and Reserved_Flag = 0 and id != '-99999'
+ WHERE Superseded_Flag = 0 and Deleted_Flag = 0 and Draft_Flag = 0 and Reserved_Flag = 0 and id != '-99999'
  ORDER BY Schedule_Number ASC";
  $result = mysqli_query($conn, $query);  
  ?>

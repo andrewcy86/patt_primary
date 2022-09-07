@@ -426,6 +426,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 
             add_submenu_page( '', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo-init', 'todo_init_page' );
             add_submenu_page( 'wpsc-tickets', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo', 'todo_page' );
+            
+            // Only users with the role of Admin or Manager should see this link
+            add_submenu_page( 'wpsc-tickets', 'Assign Staff', '', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
 
             add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
@@ -476,7 +479,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 			function custom_menu_item_redirect_external_link() {
 		        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
 		        if($menu_redirect == 'qlik-report' ) {
-		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/e7de7eb5-7201-4b43-83b4-29355c68a0f4/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
+		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/41138155-102d-4dd0-830f-3cb769dfa117/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
 		            exit();
 		        }
 			}
@@ -563,6 +566,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function file_details(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/folder-file-details.php'
+            );
+            }
+          
+          	function assign_staff_dashboard(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/assign-staff-init.php'
             );
             }
             

@@ -258,7 +258,6 @@ a.id as request_id,
 a.request_id as patt_request_id,
 a.date_updated as date_updated,
 GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location,
-
 CONCAT(
 '<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
 CASE 
@@ -466,7 +465,7 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
 ## Response
 $response = array(
   "draw" => intval($draw),
-  //"docQuery" => $boxQuery,
+  "docQuery" => $boxQuery,
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data

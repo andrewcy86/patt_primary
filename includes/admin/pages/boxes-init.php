@@ -1011,7 +1011,7 @@ function get_display_user_html(user_name, termmeta_user_val) {
 		var html_str = '<div class="form-group wpsp_filter_display_element wpsc_assign_agents ">'
 						+'<div class="flex-container searched-user staff-badge" style="">'
 							+user_name
-							+'<span  class="remove-user staff-close" ><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only">Remove User</span></span>'
+							+'<span  class="remove-user staff-close" ><i class="fa fa-times" aria-hidden="true" title="Remove User"></i><span class="sr-only"></span></span>'
 						+'<input type="hidden" name="assigned_agent[]" value="'+termmeta_user_val+'" />'
 						+'</div>'
 					+'</div>';		

@@ -42,7 +42,13 @@
     const reg_palletid = /^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/i;
     const reg_stagingarea = /^\b(sa-e-\d+|sa-w-\d+)\b$/i;
 
-    const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i; 
+    const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i;
+  	const reg_validation = /^\b(VAL-\d\d-e|VAL-\d\d-w)\b$/i; 
+    const reg_qaqc = /^\b(QAQC-\d\d-e|QAQC-\d\d-w)\b$/i; 
+    const reg_receiving_dock = /^\b(RD-\d\d-e|RD-\d\d-w)\b$/i; 
+    const reg_oversized_tube = /^\b(OS-\d\d-e|OS-\d\d-w)\b$/i; 
+    const reg_destruction = /^\b(DES-\d\d-e|DES-\d\d-w)\b$/i;
+    const reg_shipping_dock_area = /^\b(SDA-\d\d-e|SDA-\d\d-w)\b$/i; 
     
     var POST_count = 0;
     
@@ -156,6 +162,30 @@
                             }else if(reg_scanning.test(text_vals)){
                                 
                                  scanid_values.push(text_vals);
+
+                            }else if(reg_validation.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_qaqc.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_receiving_dock.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_oversized_tube.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_destruction.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_shipping_dock_area.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
 
                             }else if(reg_physicalLocation.test(text_vals)){
                                 

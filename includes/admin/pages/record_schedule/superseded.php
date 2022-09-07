@@ -27,6 +27,14 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />   -->
 
 <style>
+table.dataTable thead {background-color:#32312f; text-color: white;}                                                                                 table.dataTable thead tr th,
+table.dataTable thead tr td {
+    color: white;
+    text-align: center;                                                                                             
+}
+* {
+ font-family: Segoe UI !important;
+}                                                                                                 
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 
@@ -163,7 +171,16 @@
 <h1>EPA Superseded Records Schedules</h1>
 </div>
 
+<div class="alert alert-info" role="alert">About 350 records schedules will be consolidated into 21 new schedules. The schedules that have been or will soon be superseded are available below along with their associated consolidated schedule(s). If you have any questions, please contact the <a href="https://usepa.sharepoint.com/sites/oei/ermd/nrmp/SitePages/records-help-desk.aspx">Records Help Desk</a>.
+</div>
 
+<h2>Consolidated Schedules Approved by NARA</h2>
+<p>The table below shows the superseded schedules and the consolidated schedules that have been approved by NARA.</p>
+<ul>
+  <li>Replace the superseded schedules with the consolidated schedules in file plans.</li>
+  <li>Use the consolidated schedules for disposition purposes, i.e., transfer to the FRC or destruction
+(unless they are subject to a hold due to litigation, a FOIA request, or an audit).</li>
+</ul>  
 <?php  
  
  header("X-Frame-Options: allow-from https://work.epa.gov");
@@ -171,7 +188,7 @@
  include 'db_connection.php';
  $conn = OpenCon();
 
- $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
+ $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Superseded_By_Schedule_Number, Superseded_By_Schedule_Title
  FROM " . $wpdb->prefix . "epa_record_schedule
  WHERE id != '-99999' and Superseded_Flag = 1
  ORDER BY Schedule_Number ASC";
@@ -184,12 +201,10 @@
                      <table id="rschedule" class="table table-striped table-bordered stripe">  
                           <thead>  
                                <tr>  
-                                <th>No.</th>
-                                <th>Title</th>
-                                <th>Function</th>
-                                <th>Program</th>
-                                <th>Applicability</th>
-                                <th>Revised</th>
+                                <th>Old Schedule No.</th>
+                                  <th>Old Schedule Title</th>
+                                <th>Superseded by Schedule No.</th>
+                                <th>Superseded by Schedule Title</th>
                                </tr>  
                           </thead>  
                           <?php  
@@ -199,11 +214,8 @@
                                <tr>  
                                     <td><a href="details.php?p=2&rs='.$row["Schedule_Number"].'">'.$row["Schedule_Number"].'</a></td>  
                                     <td>'.$row["Schedule_Title"].'</td>  
-                                    <td>'.$row["Function_Code"].'</td>  
-                                    <td>'.$row["Program"].'</td>  
-                                    <td>'.$row["Applicability"].'</td>
-                                    <td>'.$row["Revised_Date"].'</td>
-                               </tr>  
+                                    <td><a href="details.php?p=1&rs='.$row["Superseded_By_Schedule_Number"].'">'.$row["Superseded_By_Schedule_Number"].'</a></td>   
+                                    <td>'.$row["Superseded_By_Schedule_Title"].'</td>  
                                ';  
                           }  
                           CloseCon($conn);

@@ -176,6 +176,10 @@ $wpdb->insert($rs_table, array(
 'Schedule_Item_Number' => '-99999',
 'Schedule_Number' => '-99999',
 'Schedule_Title' => '',
+  
+'Superseded_By_Schedule_Number' => '',
+'Superseded_By_Schedule_Title' => '',
+  
 'Item_Number' => '',
 'Item_Title' => '',
 'Function_Code' => '',
@@ -238,6 +242,10 @@ foreach ($rs_item as $key => $value) {
 $Schedule_Item_Number = $rs_item['schedule_item_number'];
 $Schedule_Number = $rs_item['schedule_number'];
 $Schedule_Title = addcslashes($rs_item['schedule_title'], "'");
+  
+$Superseded_By_Schedule_Number = $rs_item['superseded_by_schedule_number'];
+$Superseded_By_Schedule_Title = addcslashes($rs_item['superseded_by_schedule_title'], "'");
+  
 $Item_Number = $rs_item['item_number'];
 $Item_Title = addcslashes($rs_item['item_title'], "'");
 $Function_Code = addcslashes(intval($rs_item['function_code']), "'");
@@ -296,6 +304,10 @@ $wpdb->query("INSERT INTO ".$rs_table."
 (Schedule_Item_Number,
 Schedule_Number,
 Schedule_Title,
+
+Superseded_By_Schedule_Number,
+Superseded_By_Schedule_Title,
+
 Item_Number,
 Item_Title,
 Function_Code,
@@ -350,6 +362,10 @@ VALUES (
 '$Schedule_Item_Number',
 '$Schedule_Number',
 '$Schedule_Title',
+
+'$Superseded_By_Schedule_Number',
+'$Superseded_By_Schedule_Title',
+
 '$Item_Number',
 '$Item_Title',
 '$Function_Code',

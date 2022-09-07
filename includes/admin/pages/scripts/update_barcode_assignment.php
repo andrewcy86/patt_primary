@@ -57,8 +57,12 @@ $request_array = array($received_tag->term_id, $in_progress_tag->term_id, $ecms_
 ////////
 //Determine if location entered is valid
 ////////
- if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location)){
-
+// if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location)){
+ if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) ||
+ preg_match('/\b(RD-\d\d-E|RD-\d\d-W)\b/i', $location) || preg_match('/\b(OS-\d\d-E|OS-\d\d-W)\b/i', $location) || preg_match('/\b(EXA-\d\d-E|EXA-\d\d-W)\b/i', $location) || preg_match('/\b(EXP-\d\d-E|EXP-\d\d-W)\b/i', $location) || 
+ preg_match('/\b(PREP-\d\d-E|PREP-\d\d-W)\b/i', $location) || preg_match('/\b(QAQC-\d\d-E|QAQC-\d\d-W)\b/i', $location) || preg_match('/\b(VAL-\d\d-E|VAL-\d\d-W)\b/i', $location) || preg_match('/\b(DES-\d\d-E|DES-\d\d-W)\b/i', $location) ||
+ preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location)){
+   
 ////////
 //Determine if box/pallet entered is valid
 ////////
@@ -429,7 +433,9 @@ $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
 Patt_Custom_Func::pallet_cleanup();
 
 } else {
-$boxscn_scanlist_update = array('cart_id' => NULL, 'scanning_id' => $location, 'stagingarea_id' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
+$boxscn_scanlist_update = array('cart_id' => NULL, 'scanning_id' => $location, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $boxscn_scanlist_where = array('id' => $boxscn_dbid);
 $wpdb->update($table_scan_list , $boxscn_scanlist_update, $boxscn_scanlist_where);
 }
@@ -493,7 +499,9 @@ $box_boxinfodbid_where = array('box_id' => $box_crt);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
 Patt_Custom_Func::pallet_cleanup();
 } else {
-$boxcrt_scanlist_update = array('cart_id' => $location, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
+$boxcrt_scanlist_update = array('cart_id' => $location, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $boxcrt_scanlist_where = array('id' => $boxcrt_dbid);
 $wpdb->update($table_scan_list , $boxcrt_scanlist_update, $boxcrt_scanlist_where);
 }
@@ -508,6 +516,540 @@ if($boxcrt_update == 1) {
  echo 'Box location has been set to '.$location.'.';   
 }
 }
+
+   	////////
+    //Insert Box Location > Validation Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(VAL-\d\d-E|VAL-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_val){
+        
+        //Update Boxinfo Table
+        $boxval_boxinfo_update = array('location_status_id' => 7);
+        $boxval_boxinfo_where = array('box_id' => $box_val);
+        $wpdb->update($table_box, $boxval_boxinfo_update, $boxval_boxinfo_where);
+        
+        $get_boxval_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_val . "' LIMIT 1");
+        $boxval_ticket_id = $get_boxval_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxval_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_val . "'");
+        //$boxcrt_id_count = $check_boxval_id->count;
+        $boxval_dbid = $check_boxval_id->id;
+        
+        if (empty($boxval_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_val,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_val . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_val);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxval_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => $location, 
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxval_scanlist_where = array('id' => $boxval_dbid);
+        $wpdb->update($table_scan_list , $boxval_scanlist_update, $boxval_scanlist_where);
+        }
+        
+        $boxval_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxval_ticket_id,$location,$box_val,$userinfo);
+        
+        }
+        
+        if($boxval_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+
+    ////////
+    //Insert Box Location > QA/QC Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(QAQC-\d\d-E|QAQC-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_qaqc){
+        
+        //Update Boxinfo Table
+        $boxqaqc_boxinfo_update = array('location_status_id' => 8);
+        $boxqaqc_boxinfo_where = array('box_id' => $box_qaqc);
+        $wpdb->update($table_box, $boxqaqc_boxinfo_update, $boxqaqc_boxinfo_where);
+        
+        $get_boxqaqc_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_qaqc . "' LIMIT 1");
+        $boxqaqc_ticket_id = $get_boxqaqc_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxqaqc_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_qaqc . "'");
+        //$boxcrt_id_count = $check_boxqaqc_id->count;
+        $boxqaqc_dbid = $check_boxqaqc_id->id;
+        
+        if (empty($boxqaqc_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_qaqc,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_qaqc . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_qaqc);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxqaqc_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => $location, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxqaqc_scanlist_where = array('id' => $boxqaqc_dbid);
+        $wpdb->update($table_scan_list , $boxqaqc_scanlist_update, $boxqaqc_scanlist_where);
+        }
+        
+        $boxqaqc_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxqaqc_ticket_id,$location,$box_qaqc,$userinfo);
+        
+        }
+        
+        if($boxqaqc_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+    ////////
+    //Insert Box Location > Scanning Prep Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(PREP-\d\d-E|PREP-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_prep){
+        
+        //Update Boxinfo Table
+        $boxprep_boxinfo_update = array('location_status_id' => 9);
+        $boxprep_boxinfo_where = array('box_id' => $box_prep);
+        $wpdb->update($table_box, $boxprep_boxinfo_update, $boxprep_boxinfo_where);
+        
+        $get_boxprep_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_prep . "' LIMIT 1");
+        $boxprep_ticket_id = $get_boxprep_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxprep_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_prep . "'");
+        //$boxcrt_id_count = $check_boxprep_id->count;
+        $boxprep_dbid = $check_boxprep_id->id;
+        
+        if (empty($boxprep_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_prep,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_prep . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_prep);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxprep_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => $location, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxprep_scanlist_where = array('id' => $boxprep_dbid);
+        $wpdb->update($table_scan_list , $boxprep_scanlist_update, $boxprep_scanlist_where);
+        }
+        
+        $boxprep_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxprep_ticket_id,$location,$box_prep,$userinfo);
+        
+        }
+        
+        if($boxprep_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+    
+
+
+    ////////
+    //Insert Box Location > Scanning Location Area Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(SLA-\d\d-E|SLA-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_sla){
+        
+        //Update Boxinfo Table
+        $boxsla_boxinfo_update = array('location_status_id' => 10);
+        $boxsla_boxinfo_where = array('box_id' => $box_sla);
+        $wpdb->update($table_box, $boxsla_boxinfo_update, $boxsla_boxinfo_where);
+        
+        $get_boxsla_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_sla . "' LIMIT 1");
+        $boxsla_ticket_id = $get_boxsla_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxsla_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_sla . "'");
+        //$boxcrt_id_count = $check_boxsla_id->count;
+        $boxsla_dbid = $check_boxsla_id->id;
+        
+        if (empty($boxsla_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_sla,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_sla . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_sla);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxsla_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => $location, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxsla_scanlist_where = array('id' => $boxsla_dbid);
+        $wpdb->update($table_scan_list , $boxsla_scanlist_update, $boxsla_scanlist_where);
+        }
+        
+        $boxsla_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxsla_ticket_id,$location,$box_sla,$userinfo);
+        
+        }
+        
+        if($boxsla_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+
+    ////////
+    //Insert Box Location > Receiving Dock Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(RD-\d\d-E|RD-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_rd){
+        
+        //Update Boxinfo Table
+        $boxrd_boxinfo_update = array('location_status_id' => 11);
+        $boxrd_boxinfo_where = array('box_id' => $box_rd);
+        $wpdb->update($table_box, $boxrd_boxinfo_update, $boxrd_boxinfo_where);
+        
+        $get_boxrd_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_rd . "' LIMIT 1");
+        $boxrd_ticket_id = $get_boxrd_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxrd_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_rd . "'");
+        //$boxcrt_id_count = $check_boxrd_id->count;
+        $boxrd_dbid = $check_boxrd_id->id;
+        
+        if (empty($boxrd_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_rd,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_rd . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_rd);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxrd_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => $location,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxrd_scanlist_where = array('id' => $boxrd_dbid);
+        $wpdb->update($table_scan_list , $boxrd_scanlist_update, $boxrd_scanlist_where);
+        }
+        
+        $boxrd_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxrd_ticket_id,$location,$box_rd,$userinfo);
+        
+        }
+        
+        if($boxrd_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+    ////////
+    //Insert Box Location > Oversized Tube Shelves Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(OS-\d\d-E|OS-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_os){
+        
+        //Update Boxinfo Table
+        $boxos_boxinfo_update = array('location_status_id' => 12);
+        $boxos_boxinfo_where = array('box_id' => $box_os);
+        $wpdb->update($table_box, $boxos_boxinfo_update, $boxos_boxinfo_where);
+        
+        $get_boxos_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_os . "' LIMIT 1");
+        $boxos_ticket_id = $get_boxos_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxos_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_os . "'");
+        //$boxcrt_id_count = $check_boxos_id->count;
+        $boxos_dbid = $check_boxos_id->id;
+        
+        if (empty($boxos_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_os,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_os . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_os);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxos_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => $location, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxos_scanlist_where = array('id' => $boxos_dbid);
+        $wpdb->update($table_scan_list , $boxos_scanlist_update, $boxos_scanlist_where);
+        }
+        
+        $boxos_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxdes_ticket_id,$location,$box_os,$userinfo);
+        
+        }
+        
+        if($boxos_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+
+    ////////
+    //Insert Box Location > Destruction Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(DES-\d\d-E|DES-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_des){
+        
+        //Update Boxinfo Table
+        $boxdes_boxinfo_update = array('location_status_id' => 15);
+        $boxdes_boxinfo_where = array('box_id' => $box_des);
+        $wpdb->update($table_box, $boxdes_boxinfo_update, $boxdes_boxinfo_where);
+        
+        $get_boxdes_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_des . "' LIMIT 1");
+        $boxdes_ticket_id = $get_boxdes_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxdes_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_des . "'");
+        //$boxcrt_id_count = $check_boxdes_id->count;
+        $boxdes_dbid = $check_boxdes_id->id;
+        
+        if (empty($boxdes_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_des,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_des . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_des);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxdes_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => $location, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxdes_scanlist_where = array('id' => $boxdes_dbid);
+        $wpdb->update($table_scan_list , $boxdes_scanlist_update, $boxdes_scanlist_where);
+        }
+        
+        $boxdes_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxrd_ticket_id,$location,$box_des,$userinfo);
+        
+        }
+        
+        if($boxdes_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
+
+
+    ////////
+    //Insert Box Location > Shipping Dock Area Information
+    ////////
+    //Check if location is on a cart
+    //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
+    if(preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+
+        //Update wpqa_wpsc_epa_boxinfo table with box location
+        foreach($boxpallet_arr as $box_sda){
+        
+        //Update Boxinfo Table
+        $boxsda_boxinfo_update = array('location_status_id' => 16);
+        $boxsda_boxinfo_where = array('box_id' => $box_sda);
+        $wpdb->update($table_box, $boxsda_boxinfo_update, $boxsda_boxinfo_where);
+        
+        $get_boxsda_ticket_id = $wpdb->get_row(
+        "SELECT DISTINCT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo
+        WHERE box_id = '" . $box_sda . "' LIMIT 1");
+        $boxsda_ticket_id = $get_boxsda_ticket_id->ticket_id;
+        
+        //Insert into Scan List Table
+        //Does location exist in Scan List Table?
+        
+        $check_boxsda_id = $wpdb->get_row(
+        "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_sda . "'");
+        //$boxcrt_id_count = $check_boxsda_id->count;
+        $boxsda_dbid = $check_boxsda_id->id;
+        
+        if (empty($boxsda_dbid)) {
+        $wpdb->insert(
+                        $table_scan_list,
+                        array(
+                            'box_id' => $box_sda,
+                            'cart_id' => $location
+                        )
+        );  
+        // Get back DB ID
+        $get_box_id = $wpdb->get_row(
+        "SELECT DISTINCT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
+        WHERE box_id = '" . $box_sda . "'");
+        $box_id_dbid = $get_box_id->id;
+        // Update Box Info Table
+        $box_boxinfodbid_update = array('scan_list_id' => $box_id_dbid);
+        $box_boxinfodbid_where = array('box_id' => $box_sda);
+        $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
+        Patt_Custom_Func::pallet_cleanup();
+        } else {
+        $boxsda_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => $location, 'shelf_location' => NULL, 'date_modified' => $date);
+        $boxsda_scanlist_where = array('id' => $boxsda_dbid);
+        $wpdb->update($table_scan_list , $boxsda_scanlist_update, $boxsda_scanlist_where);
+        }
+        
+        $boxsda_update = 1;
+        //Insert audit log information
+        do_action('wpppatt_after_assign_box_location',$boxsda_ticket_id,$location,$box_sda,$userinfo);
+        
+        }
+        
+        if($boxsda_update == 1) {
+            echo 'Box location has been set to '.$location.'.';   
+        }
+    }
 
 } //END Check for valid/invalid box/pallet check
 

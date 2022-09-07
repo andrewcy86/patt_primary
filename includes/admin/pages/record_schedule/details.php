@@ -63,6 +63,9 @@ echo 'EPA Draft Records Schedules | EPA@Work';
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />   -->
 
 <style>
+* {
+ font-family: Segoe UI !important;
+}                                                                                                  
 .usa-nav__secondary{margin:-45px;}
 </style>
 </head>
@@ -203,9 +206,10 @@ while($row_breadcrumb = mysqli_fetch_array($title_main))
   
       <?php
 if ($page_type == 1) {
-echo '<div class="alert alert-info" role="alert">Final schedules are approved by the National Archives and Records Administration (NARA). Browse the final schedules below. Consolidated schedules that are still waiting for NARA approval can be found on the superseded schedules page.</div>';
+  
+//echo '<div class="alert alert-info" role="alert">Final schedules are approved by the National Archives and Records Administration (NARA). Browse the final schedules below. Consolidated schedules that are still waiting for NARA approval can be found on the superseded schedules page.</div>';
 } elseif ($page_type == 2) {
-echo '<div class="alert alert-info" role="alert"><strong>This schedule is superseded by a consolidated schedule; to know which consolidated schedule, refer to superseded schedules. It may not be used to retire or destroy records. If you have any questions, please contact the Records Help Desk.</strong></div>';
+echo '<div class="alert alert-info" role="alert"><strong>This schedule is superseded by a consolidated schedule; to know which consolidated schedule, refer to <a href="https://patt.epa.gov/app/mu-plugins/pattracking/includes/admin/pages/record_schedule/superseded.php">superseded schedules</a>. It may not be used to retire or destroy records. If you have any questions, please contact the <a href="#">Records Help Desk</a>.</strong></div>';
 } elseif ($page_type == 3) {
 echo '<div class="alert alert-info" role="alert"><strong>This schedule is in draft. It may not be used to retire or destroy records. If you have any questions, please contact the Records Help Desk.</strong></div>';
 }
@@ -214,21 +218,26 @@ while($row_main = mysqli_fetch_array($result_main))
   {  
    echo '
    <div class="view-header"><h1>EPA Records Schedule '.$row_main["Schedule_Number"].'</h1></div>
-   <div class="container">
-   <strong>Status: </strong>'.$row_main["Status"].', '. $row_main["Revised_Date"] . '<br />
-   <strong>Title: </strong>'.$row_main["Schedule_Title"].'<br />  
-   <strong>Program: </strong>'.$row_main["Program"].'<br />   
-   <strong>Applicability: </strong>'.$row_main["Applicability"].'<br />';
+   <div class="container">';
+   if($page_type == 2){
+     echo '<strong>Status: </strong>'.$row_main["Status"].', '. $row_main["Revised_Date"] . ' (Superseded)<br /><br />';
+   }
+  else {
+    echo '<strong>Status: </strong>'.$row_main["Status"].', '. $row_main["Revised_Date"] . '<br /><br />';
+  }
+   echo 
+   '<strong>Title: </strong>'.$row_main["Schedule_Title"].'<br /><br />  
+   <strong>Program: </strong>'.$row_main["Program"].'<br /><br />   
+   <strong>Applicability: </strong>'.$row_main["Applicability"].'<br /><br />';
    if(!empty($row_main["Function_Title"])) {
-     echo '<strong>Function: </strong>'.$row_main["Function_Code"].' - '.$row_main["Function_Title"];
+     echo '<strong>Function: </strong>'.$row_main["Function_Code"].' - '.$row_main["Function_Title"] . '<br /><br />';
    }
    else {
-     echo '<strong>Function: </strong>'.$row_main["Function_Code"];
+     echo '<strong>Function: </strong>'.$row_main["Function_Code"] . '<br /><br />';
    }
    
    if(!empty($row_main["NARA_Disposal_Authority_Record_Schedule_Level"])) {
-     // Remove if Soo's updated spreadsheet includes </li></ul> to end bulleted list
-        echo'<p><strong>NARA Disposal Authority:</strong></p>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"].'</ul>';
+        echo'<strong>NARA Disposal Authority:</strong>'.$row_main["NARA_Disposal_Authority_Record_Schedule_Level"].'</ul>';
    }
   
    
@@ -244,7 +253,7 @@ while($row_main = mysqli_fetch_array($result_main))
    }
    
    if(!empty($row_main["Guidance"])) {
-        echo '<strong>Gudiance:</strong><br />'.$row_main["Guidance"].'</br>';
+        echo '<strong>Gudiance:</strong><br /><br />'.$row_main["Guidance"].'</br>';
    }
    
    if(!empty($row_main["Reasons_For_Disposition"])) {
@@ -252,19 +261,20 @@ while($row_main = mysqli_fetch_array($result_main))
    }
    
    echo'
-   <strong>Custodians: </strong>'.$row_main["Custodians"].'</br>
-   <strong>Related Schedules: </strong>'.$row_main["Related_Schedules"].'</br>
-   <strong>Previous NARA Disposal Authority: </strong>'.$row_main["Previous_NARA_Disposal_Authority"].'</br>
-   <strong>Entry: </strong>'.$row_main["Entry_Date"].'</br>';
+   <strong>Custodians: </strong><br /><br />'.$row_main["Custodians"].'
+   <strong>Related Schedules: </strong><br /><br />'.$row_main["Related_Schedules"];
+  if(!empty($row_main["Previous_NARA_Disposal_Authority"])) {
+	echo '<strong>Previous NARA Disposal Authority: </strong><br /><br />'.$row_main["Previous_NARA_Disposal_Authority"];
+    }
+   echo '<strong>Entry: </strong>'.$row_main["Entry_Date"].'</br></br>';
    if($row_main["EPA_Approval"] == '00/00/0000') {
-        echo '<strong>EPA Approval: </strong>Not Applicable</br>';
+        echo '<strong>EPA Approval: </strong>Not Applicable</br></br>';
    }
    else {
-        echo '<strong>EPA Approval: </strong>'.$row_main["EPA_Approval"].'</br>';
+        echo '<strong>EPA Approval: </strong>'.$row_main["EPA_Approval"].'</br></br>';
    }
    echo '<strong>NARA Approval: </strong>'.$row_main["NARA_Approval"].'</br>';
 }
-
 
       ?>
       

@@ -690,13 +690,21 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                       
                       	// Prevents an empty new request form from being upload
 						if(parsedData[2][0] == undefined || parsedData[2][0] == null ){
-							flag = true;
-							alert('This is an incomplete box list. Please start the box column with 1.');
+                          	let alert_msg = '';
+                          	alert_msg += "Blank value for column 'Box' on line ";
+                          	alert_msg += "3. This field is required.";
+
+                          	alert( alert_msg );
+                          	flag = true;
 						}
                       
                       	if(parsedData[2][0] != undefined && parsedData[2][0] != null && parsedData[2][0] != 1 ){
-							flag = true;
-							alert('Please start the box column with 1.');
+							let alert_msg = '';
+                          	alert_msg += "Blank value for column 'Box' on line ";
+                          	alert_msg += "3. This field is required";
+
+                          	alert( alert_msg );
+                          	flag = true;
 						}
                       
                       	
@@ -1250,6 +1258,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 												) {
 													let alert_message = '';
 														alert_message += 'Please start a new box list folder identifier column with the number 1.';
+                                                  		
+                                                  		// DEBUG Messages
 														// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
 														// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
 														alert( alert_message );
@@ -1425,81 +1435,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 										}
                                       
-                                    /* let errorMessage = '';
-                                      
-                                      // Validation for temporary/disposable record schedules
-                                        if(
-                                          	flag != true && 
-			                            	count > 1 && 
-                                          (
-                                            parsedData[count][index_rec_sched].indexOf( ':' ) >= 1
-                                          )
-                                        ){
-                                            let schedule_item_number = parsedData[count][index_rec_sched];
-                                          	let index_of_colon = parsedData[count][index_rec_sched].indexOf( ':' );
-                                          
-											schedule_item_number = schedule_item_number.slice(0, schedule_item_number.indexOf(':'));
-                                          	schedule_item_number = schedule_item_number.replace(/[\[\]']+/g,'');
 
-                                            let digital_source = parsedData[count][index_source_dim];
-                                            let folder_file_name = parsedData[count][index_folder_file_name];
-                                          	let specific_access_restriction = parsedData[count][index_sp_access_rest];
-                                          	let specific_use_restriction = parsedData[count][index_sp_use_rest];
-                                          	let rights_holder = parsedData[count][index_rights_holder];
-
-											//console.log('schedule item number: ' + parsedData[count][index_source_dim]);
-                                           
-                                            
-                                            var xhr = jQuery.ajax({
-                                              //url: `does-not-exist.php`,
-                                              url: `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`,
-                                              type: 'get',
-                                              async: false,
-                                              success: function(data) {
-                                                if(data.records[0].Final_Disposition == 'Disposable'){
-                                                  console.log('this is a temp record');
-                                                  
-                                                  if((specific_access_restriction == "Controlled / Copyright" || specific_use_restriction == "Controlled / Copyright") && (rights_holder == null || rights_holder == undefined)){
-                                                    let alert_message = '';
-                                                    alert_message += "The Specific Access Restriction and/or Specific Use Restriction columns appears to have 'Controlled / Copyright' selected on Line " + (count+1) + ". \n\n";
-                                                    alert_message += "The Rights Holder column is now required on Line " + (count+1) + " and currently has an empty value.";									
-                                                    alert( alert_message );
-                                                    flag = true;
-                                                    return;
-                                                	}
-                                                  
-                                                  if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
-                                                    let alert_message = '';
-                                                    alert_message += "The Source Dimensions column appears to have 'Digital Source' selected on Line " + (count+1) + ". \n\n";
-                                                    alert_message += "The Folder/Filename column is now required on Line " + (count+1) + " and currently has an empty value.";									
-                                                    alert( alert_message );
-                                                    flag = true;
-                                                    return;
-                                                	}
-                                                  
-                                                }
-                                              },
-                                              async: true,
-                                              error: function(xhr, status, error){
-                                                if(xhr.statusText == 'error'){
-                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
-                                                }
-     										  },
-                                              async: false,
-                                              complete: function(xhr, status, error){
-                                                if(xhr.statusText == 'error'){
-                                                  errorMessage = xhr.status + ': ' + xhr.statusText;
-                                               	  validate = true;
-                                                }
-                                              }
-                                            });
-                                          
-                                         
-                                          } */
-                                     
-                                          	
-	
-			
 										
 										// Validate Site Name & Site ID. Both must be filled in, or both blank. No Halfsies. 
 			                            if(
@@ -1523,14 +1459,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert( alert_message );
 			                                flag = true;
 			                            }
-			                            
-			                            // Validate Site Name & Site ID. Both must be filled in, or both blank. No Halvesis. 
-	/*
-			                            if( 
-			                            	flag != true && 
-			                            	count > 1 && 
+                                      
+                                      	// Site ID Validation
+			                            if(
+			                            	flag != true && count > 1 && 
 			                            		(
-			                            			( parsedData[count][index_site_name] == null && 
+				                            		( parsedData[count][index_site_name] == null && 
 				                            		  parsedData[count][index_site_id] != null 
 				                            		)
 				                            	||
@@ -1541,15 +1475,14 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                            ) {
 			                                let alert_message = '';
 											alert_message += ' Discrepancy between Site Name and Site ID. \n\n ';
-											alert_message += 'Site Name is blank while Site ID has a value of "' + parsedData[count][index_site_id];
-											alert_message += '" on line '+ (count + 1) + '. \n\n ';
+											alert_message += 'Site ID has a value of "'+parsedData[count][index_site_id];
+											alert_message += '" while Site Name is blank on line '+ (count + 1) + '. \n\n ';
 											alert_message += 'Both Site Name and Site ID must be filled in, or both must be blank.';
 			                                
 			                                alert( alert_message );
 			                                flag = true;
 			                            }
-	*/
-										
+                                      
 										
 			                            // Validate Close Date
 			                            /*let closeDateFirstSlash = 0;
@@ -1998,8 +1931,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 											  return;
 											}
                                           
-                                           // Validate Rights Holder When Access or Use Restriction is 'Yes'                          
-			                            if( 
+                                        // Validate Rights Holder When Access or Use Restriction is 'Yes'                          
+			                          /*  if( 
 			                            	flag != true && 
 			                            	count > 1 && 
 			                            		( (parsedData[count][index_rights_holder] == null || parsedData[count][index_rights_holder] == undefined) && 
@@ -2039,7 +1972,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                
 			                                alert(alert_message);
 			                                flag = true;
-			                            }
+			                            } */
 
 
 											if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
@@ -2052,6 +1985,50 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 											}
 
 										}
+                                      
+                                      // Validate Rights Holder When Access or Use Restriction is 'Yes' - Perm Records                          
+			                            if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( (parsedData[count][index_rights_holder] == null || parsedData[count][index_rights_holder] == undefined) && 
+			                            			( parsedData[count][index_use_rest] == 'Yes' ||
+			                            			  parsedData[count][index_access_rest] == 'Yes'
+			                            			)
+			                            		)
+			                            ) {
+			                                let alert_message = '';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
+			                                alert_message += 'Use Restriction or Access Restriction value: "Yes", while Rights Holder is blank on line ';
+			                                alert_message += (count + 1) + '. \n\n ';
+			                                alert_message += 'If Use Restriction or Access Restriction is "Yes" then Rights Holder must be filled in.'
+			                                
+			                                alert(alert_message);
+			                                flag = true;
+			                            }
+
+                                          
+                                          //console.log('rights holder: ' + parsedData[count][index_rights_holder]);
+                                          
+                                        // Validate Rights Holder When Access or Use Restriction is 'No' - Perm Records                         
+			                            if( 
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		( (parsedData[count][index_rights_holder] != null || parsedData[count][index_rights_holder] != undefined) && 
+			                            			( parsedData[count][index_use_rest] == 'No' &&
+			                            			  parsedData[count][index_access_rest] == 'No'
+			                            			)
+			                            		)
+			                            ) {
+			                                let alert_message = '';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
+			                                alert_message += 'Use Restriction and Access Restriction values: "No", while Rights Holder is not blank on line ';
+			                                alert_message += (count + 1) + '. \n\n ';
+			                                alert_message += 'If Use Restriction and Access Restriction is "No" then Rights Holder must be blank.'
+			                                
+			                                alert(alert_message);
+			                                flag = true;
+			                            }
+
 			                            
 			                            // Validate Program Area. If ECMS, must be blank.
 			                            if(
