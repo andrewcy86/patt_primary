@@ -428,7 +428,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo', 'todo_page' );
             
             // Only users with the role of Admin or Manager should see this link
-            add_submenu_page( 'wpsc-tickets', 'Assign Staff', '', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
+            //add_submenu_page( 'wpsc-tickets', 'Assign Staff', '', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
 
             add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
