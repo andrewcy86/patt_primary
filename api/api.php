@@ -12055,12 +12055,11 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
   
-// DO NOT COPY OVER TO STAGING AND PROD
-$host = 'localhost'; /* Host name */
-$user = 'acy3_wp4'; /* User */
-$password = '8338p)[5Sr'; /* Password */
-$dbname = 'acy3_bedrocktest'; /* Database name */
-//
+$host = DB_HOST; /* Host name */
+$user = DB_USER; /* User */
+$password = DB_PASSWORD; /* Password */
+$dbname = DB_NAME; /* Database name */
+
     $config = new Config([
         // 'driver' => 'mysql',
         'address' => $host,
