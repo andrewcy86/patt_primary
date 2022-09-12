@@ -12055,10 +12055,10 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
   
-$host = DB_HOST; /* Host name */
-$user = DB_USER; /* User */
-$password = DB_PASSWORD; /* Password */
-$dbname = DB_NAME; /* Database name */
+    $host = DATABASE_URL; /* Host name */
+    $user = DB_USER; /* User */
+    $password = DB_PASSWORD; /* Password */
+    $dbname = DB_NAME; /* Database name */
 
     $config = new Config([
         // 'driver' => 'mysql',
