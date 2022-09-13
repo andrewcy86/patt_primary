@@ -13,7 +13,8 @@ jQuery(document).ready(function(){
 jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
 
 jQuery(document).ajaxError(function (evt, jqXHR, settings, err) {
-  alert('File upload failed. Please ensure the box list is not open in Excel.');
+  alert('File upload failed. Please ensure the box list is not open in Excel or \n'
+        + 'there was a network request error.');
   
   if(jqXHR.statusText == 'error'){
     fileUploadFail = true;
@@ -932,14 +933,12 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       let apiUrl = '';
                                       let apiHostname = window.location.host;
                                       let isDev = true;
-                                      const apiPathname = '/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,'
-
-
-
+                                      const apiPathname = '/app/mu-plugins/pattracking/includes/admin/pages/games/get_rs.php?api_key=fcaaf49f-865e-4899-845f-e9b7cc214d1e&filter=Schedule_Item_Number,eq,'
+                                      
                                       if(apiHostname == '086.info'){
                                         //Dev Url
                                         isDev = true;
-                                        apiUrl += `https://086.info/wordpress6/web/app/mu-plugins/pattracking/api/api.php/records/wpqa_epa_record_schedule?filter=Schedule_Item_Number,eq,${schedule_item_number}`;
+                                        apiUrl += `https://086.info/wordpress6/app/mu-plugins/pattracking/includes/admin/pages/games/get_rs.php?api_key=fcaaf49f-865e-4899-845f-e9b7cc214d1e&filter=Schedule_Item_Number,eq,${schedule_item_number}`;
                                       }
                                       else {
                                         isDev = false;
@@ -951,7 +950,6 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       var xhr = jQuery.ajax({
                                         url: apiUrl,
                                         type: 'get',
-                                        headers: { 'X-API-Key': '1b43e0c5-3131-4838-90d1-0c9d674f1202' },
                                         async: false,
                                         success: function(data) {
                                           if(data.records[0].Final_Disposition == 'Disposable'){
