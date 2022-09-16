@@ -65,15 +65,31 @@ if($searchByDigitizationCenter != ''){
 
 
 // ## Total number of records without filtering
-$query = mysqli_query($con, "SELECT COUNT(recall_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest");
+$query = mysqli_query($con, "SELECT COUNT(DISTINCT recall_id) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
+INNER JOIN wpqa_users u ON u.ID = b.user_id
+INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
+INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
+INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID);
 
 $records = mysqli_fetch_assoc($query);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
-$query = mysqli_query($con, "SELECT COUNT(recall_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest");
+$query = mysqli_query($con, "SELECT COUNT(DISTINCT a.recall_id) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
+INNER JOIN wpqa_users u ON u.ID = b.user_id
+INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
+INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
+INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID . "" . $searchHaving);
 
 /*$query = mysqli_query($con, "SELECT COUNT(a.recall_id) as allcount 
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
@@ -85,7 +101,7 @@ $records = mysqli_fetch_assoc($query);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Base Query for Recalls assigned to current user
-$baseQuery = "SELECT a.recall_id, a.request_date, c.name as recall_status, a.recall_status_id, u.display_name, t.name as digitization_center,
+$baseQuery = "SELECT DISTINCT a.recall_id, a.request_date, c.name as recall_status, a.recall_status_id, t.name as digitization_center,
 a.recall_approved, a.recall_complete,
 
 CASE
@@ -113,7 +129,7 @@ INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
 INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
 INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
 INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) " . $searchHaving . " AND a.recall_status_id NOT IN (".$recall_recall_denied_tag.",".$recall_recall_cancelled_tag.") AND a.id != '-99999' AND b.user_id != " . $get_current_user_id . "
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID . "" . $searchHaving ."
 
 order by a.id, ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
@@ -122,6 +138,24 @@ $data = array();
 
 ## Row Data
 while ($row = mysqli_fetch_assoc($recallRecords)) {
+  
+  	$recall_id = $row['recall_id'];
+  
+  	// Get user name foe employee assigend column
+  	$user_display_name_query = $wpdb->get_row("SELECT DISTINCT u.display_name
+
+
+                      FROM wpqa_wpsc_epa_recallrequest a
+                      INNER JOIN wpqa_wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
+                      INNER JOIN wpqa_terms c ON c.term_id = a.recall_status_id
+                      INNER JOIN wpqa_users u ON u.ID = b.user_id
+                      INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
+                      INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+                      INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
+                      INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
+                      WHERE a.recall_id = " . $recall_id . " AND u.ID <> " . $current_user->ID);
+  	
+  $user_display_name = $user_display_name_query->display_name;
 
    	// Makes the Status column pretty
 	$status_term_id = $row['recall_status_id'];
@@ -170,7 +204,7 @@ $action_status = '';
 		"recall_id"=>"<a href='".$subfolder_path."/wp-admin/admin.php?page=recalldetails&id=R-".$row['recall_id']."' >R-".$row['recall_id']."</a>" . $icons, 		
 		"request_date"=> date('m/d/Y', strtotime( $row['request_date'] )),
 		"recall_status"=>"<span class='wpsp_admin_label' style='".$status_style."'>".$row['recall_status']."</span>",
-      	"employee_assigned"=>$row['display_name'],
+      	"employee_assigned"=>$user_display_name,
     	"digitization_center"=>$row['digitization_center'],
       	"action_status"=>$action_status,
       	"action"=>$row['action'],

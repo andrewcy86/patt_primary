@@ -399,6 +399,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Set Barcode Scanning Page
           add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
           
+          // Add Admin/Manager Page
+          add_action( 'wpsc_add_admin_manager_page', 'epa_admin_manager_menu_items');
+          
           // Add threaded comment to Recall description comments 
           add_action('wp_ajax_wppatt_recall_threaded_comment_reply', array($backend, 'recall_threaded_comment_reply')); 
           
@@ -427,8 +430,6 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo-init', 'todo_init_page' );
             add_submenu_page( 'wpsc-tickets', 'To-Do List', 'To-Do List', 'wpsc_agent', 'todo', 'todo_page' );
             
-            // Only users with the role of Admin or Manager should see this link
-            //add_submenu_page( 'wpsc-tickets', 'Assign Staff', '', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
 
             add_submenu_page( 'wpsc-tickets', 'RFID Settings', 'RFID Settings', 'wpsc_agent', 'rfid-settings', 'rfid_settings_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
@@ -437,6 +438,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'Requester Groups', 'Requester Groups', 'wpsc_agent', 'groups', 'requester_groups_page' );         
             
             }
+          
+          function epa_admin_manager_menu_items(){
+            // Only users with the role of Admin or Manager should see this link
+            add_submenu_page( 'wpsc-tickets', 'Assign Staff', 'Assign Staff', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
+          }
             
           function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
