@@ -265,7 +265,8 @@ group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOr
 ## Fetch records Count
 $boxQueryCount = "
 SELECT
-a.id as request_id
+a.id as request_id,
+GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
@@ -313,7 +314,8 @@ group by a.request_id";
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $TotalCount = "
 SELECT
-a.id as request_id
+a.id as request_id,
+GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
