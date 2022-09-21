@@ -272,6 +272,7 @@ WHERE
 ## Base Query for Records  // UPDATED: for Title and Date moved from folderdocinfo to folderdocinfo_files
 $baseQuery = "
 SELECT
+	count(*) OVER() AS total_count,
     " . $wpdb->prefix . "wpsc_epa_return.id,
     " . $wpdb->prefix . "wpsc_epa_return.return_id,
     " . $wpdb->prefix . "wpsc_epa_return.return_date,
@@ -359,14 +360,14 @@ WHERE
 
 
 ## Total number of records with filtering
-$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
+/*$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
 $outterFilterQuery_end = " GROUP BY " . $wpdb->prefix . "wpsc_epa_return.return_id ) AS innerTable WHERE 1 ";
 
 $query_3 = $outterFilterQuery_start.$baseQuery.$outterFilterQuery_end.$searchQuery;
 
 $sel = mysqli_query($con, $query_3);
 $records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
+$totalRecordwithFilter = $records['allcount'];*/
 
 
 ## Return (Decline) Query
@@ -384,6 +385,8 @@ $data = array();
 $test = array();
 
 while ($row = mysqli_fetch_assoc($returnRecords)) {
+  
+  	$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['return_status_id'];
@@ -456,6 +459,11 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
      "validation"=>$row['validation']
    );
 */
+}
+
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
 }
 
 

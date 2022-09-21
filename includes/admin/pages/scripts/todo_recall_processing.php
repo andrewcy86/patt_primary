@@ -33,23 +33,25 @@ $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 $get_current_user_id = $_POST['searchByUser'];
 
 // ## Total number of records without filtering
-$query = mysqli_query($con, "SELECT COUNT(recall_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest");
-
-$records = mysqli_fetch_assoc($query);
-$totalRecords = $records['allcount'];
-
-## Total number of records with filtering
 $query = mysqli_query($con, "SELECT COUNT(a.recall_id) as allcount 
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
 WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag.",".$recall_recall_cancelled_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id);
+
 $records = mysqli_fetch_assoc($query);
-$totalRecordwithFilter = $records['allcount'];
+$totalRecords = $records['allcount'];
+
+
 
 ## Base Query for Recalls assigned to current user
-$baseQuery = "SELECT a.recall_id, a.request_date, c.name as recall_status, a.recall_status_id
+$baseQuery = "SELECT
+COUNT(a.recall_id) OVER() as total_count,
+a.recall_id, 
+a.request_date, 
+c.name as recall_status, 
+a.recall_status_id
+
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
@@ -62,6 +64,8 @@ $data = array();
 
 ## Row Data
 while ($row = mysqli_fetch_assoc($recallRecords)) {
+  
+  	$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['recall_status_id'];
@@ -80,6 +84,10 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
    
    // Clear icons
    $icons = '';
+}
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
 }
 
 

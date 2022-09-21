@@ -135,82 +135,11 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 
-    
-    
-/*
-## Base Query for Records  // UPDATED: before dropping folderdocinfo table
-$baseQuery = "
-SELECT
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.expiration_date,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.request_date,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.request_receipt_date,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.return_date,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.updated_date,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.comments,
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_status_id,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id,
-    " . $wpdb->prefix . "wpsc_epa_storage_location.id AS location_id,
-    T2.name AS digitization_center,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.box_id,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.location_status_id,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.box_destroyed,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.date_created,
-    " . $wpdb->prefix . "wpsc_epa_boxinfo.date_updated,
-    FDIF.title,
-    FDIF.folderdocinfofile_id AS folderdoc_id,
-    " . $wpdb->prefix . "wpsc_epa_program_office.office_acronym,
-    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.company_name AS shipping_carrier,
-    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.tracking_number,
-    " . $wpdb->prefix . "wpsc_epa_shipping_tracking.status,
-    " . $wpdb->prefix . "wpsc_ticket.customer_name,
-    CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
-        ': ',
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
-    ) AS Record_Schedule,
-    CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
-        ': ',
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
-    ) AS Schedule_Item_Number,
-    CONCAT(
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Item_Number,
-        ': ',
-        " . $wpdb->prefix . "epa_record_schedule.Schedule_Title
-    ) AS Schedule_Title,
-    T1.name AS recall_status,
-    GROUP_CONCAT(
-        " . $wpdb->prefix . "wpsc_epa_recallrequest_users.user_id
-    ) AS user_id,
-    CASE WHEN folderdoc_id = -99999 THEN GROUP_CONCAT(FDIF2.title) ELSE FDIF.title
-END AS all_titles
-FROM
-    " . $wpdb->prefix . "wpsc_epa_recallrequest
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo ON " . $wpdb->prefix . "wpsc_epa_boxinfo.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.box_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users ON " . $wpdb->prefix . "wpsc_epa_recallrequest_users.recallrequest_id = " . $wpdb->prefix . "wpsc_epa_recallrequest.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF ON FDIF.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.folderdoc_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_program_office ON " . $wpdb->prefix . "wpsc_epa_program_office.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.program_office_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking ON " . $wpdb->prefix . "wpsc_epa_shipping_tracking.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.shipping_tracking_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_ticket ON " . $wpdb->prefix . "wpsc_ticket.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.ticket_id
-LEFT JOIN " . $wpdb->prefix . "epa_record_schedule ON " . $wpdb->prefix . "epa_record_schedule.id = " . $wpdb->prefix . "wpsc_epa_recallrequest.record_schedule_id
-LEFT JOIN " . $wpdb->prefix . "terms T1 ON
-    T1.term_id = " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_status_id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_storage_location ON " . $wpdb->prefix . "wpsc_epa_storage_location.id = " . $wpdb->prefix . "wpsc_epa_boxinfo.storage_location_id
-LEFT JOIN " . $wpdb->prefix . "terms T2 ON
-    T2.term_id = " . $wpdb->prefix . "wpsc_epa_storage_location.digitization_center
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo FDI ON
-    FDI.box_id = " . $wpdb->prefix . "wpsc_epa_boxinfo.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.folderdocinfo_id = FDI.id    
-WHERE
-    " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
-*/
 
 ## Base Query for Records  // UPDATED: folderdocinfo_files JOINED to recallrequest rather than via FDI
 $baseQuery = "
 SELECT
+	count(*) OVER() AS total_count,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_approved,
@@ -277,15 +206,6 @@ LEFT JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files FDIF2 ON FDIF2.box_i
 WHERE
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
 
-## Total number of records with filtering
-$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
-$outterFilterQuery_end = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id ) AS innerTable WHERE 1 ";
-
-$query_3 = $outterFilterQuery_start.$baseQuery.$outterFilterQuery_end.$searchQuery;
-
-$sel = mysqli_query($con, $query_3);
-$records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
 
 
 ## Recall Query
@@ -302,6 +222,8 @@ $recallRecords = mysqli_query($con, $recallQuery);
 $data = array();
 
 while ($row = mysqli_fetch_assoc($recallRecords)) {
+  	
+  	$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['recall_status_id'];
@@ -369,6 +291,9 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 */
 }
 
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
 
 ## Response
 $response = array(

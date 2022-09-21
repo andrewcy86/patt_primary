@@ -65,7 +65,7 @@ if($searchByDigitizationCenter != ''){
 
 
 // ## Total number of records without filtering
-$query = mysqli_query($con, "SELECT COUNT(DISTINCT recall_id) as allcount 
+$query = mysqli_query($con, "SELECT COUNT(DISTINCT a.recall_id) as allcount 
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
@@ -79,30 +79,18 @@ WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_
 $records = mysqli_fetch_assoc($query);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$query = mysqli_query($con, "SELECT COUNT(DISTINCT a.recall_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
-INNER JOIN wpqa_users u ON u.ID = b.user_id
-INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
-INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
-INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
-INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID . "" . $searchHaving);
 
-/*$query = mysqli_query($con, "SELECT COUNT(a.recall_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND a.recall_status_id NOT IN (".$recall_recall_denied_tag.",".$recall_recall_cancelled_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id);
-*/
-$records = mysqli_fetch_assoc($query);
-$totalRecordwithFilter = $records['allcount'];
 
 ## Base Query for Recalls assigned to current user
-$baseQuery = "SELECT DISTINCT a.recall_id, a.request_date, c.name as recall_status, a.recall_status_id, t.name as digitization_center,
-a.recall_approved, a.recall_complete,
+$baseQuery = "SELECT DISTINCT
+DENSE_RANK() OVER(ORDER BY a.recall_id) AS total_count,
+a.recall_id, 
+a.request_date, 
+c.name as recall_status, 
+a.recall_status_id, 
+t.name as digitization_center,
+a.recall_approved, 
+a.recall_complete,
 
 CASE
 
@@ -140,6 +128,7 @@ $data = array();
 while ($row = mysqli_fetch_assoc($recallRecords)) {
   
   	$recall_id = $row['recall_id'];
+  	$totalRecordwithFilter = $row['total_count'];
   
   	// Get user name foe employee assigend column
   	$user_display_name_query = $wpdb->get_row("SELECT DISTINCT u.display_name
@@ -212,6 +201,11 @@ $action_status = '';
    
    // Clear icons
    $icons = '';
+}
+
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
 }
 
 

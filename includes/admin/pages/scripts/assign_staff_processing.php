@@ -46,6 +46,8 @@ $searchByUser = $_POST['searchByUser'];
 $is_requester = $_POST['is_requester'];
 $user_search = $_POST['user_search'];
 
+
+
 ## User Search
 //throwing Undefined Index error
 /*if(isset($_POST['searchByUser'])) {
@@ -74,6 +76,8 @@ $qa_qc_term_id = Patt_Custom_Func::get_term_by_slug( 'q-a' );	 //65
 $validation_term_id = Patt_Custom_Func::get_term_by_slug( 'verification' );	 //674
 $destruction_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-approval' );	 //68
 $destruction_of_source_term_id = Patt_Custom_Func::get_term_by_slug( 'destruction-of-source' );	 //1272
+
+//$totalRecordwithFilter = '';
 
 
 function findZero($var){
@@ -320,53 +324,24 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE a.id <> -99999 AND b.active <> 0 AND (userStatus.user_id <> 1) ");
+WHERE a.id <> -99999 AND b.active <> 0 AND (userStatus.user_id <> " . $current_user->ID . ") ");
 
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
+// filter results
+$sel = mysqli_query($con,"SELECT DISTINCT
+COUNT(DISTINCT a.box_id) AS allcount
+
+
 FROM wpqa_wpsc_epa_boxinfo_userstatus as userStatus
 
 INNER JOIN wpqa_wpsc_epa_boxinfo a ON a.id = userStatus.box_id
 INNER JOIN wpqa_terms f ON f.term_id = a.box_status
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
-LEFT JOIN wpqa_users g ON g.ID = userStatus.user_id
-LEFT JOIN wpqa_wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN wpqa_terms t ON t.term_id = d.digitization_center
 
+WHERE (b.active <> 0) AND (a.id <> -99999) AND (userStatus.user_id <> " . $current_user->ID . ") " .$searchQuery );
 
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
-
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) AND (userStatus.user_id <> 1) ".$searchQuery);
-/*$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
-
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); */ //(b.active <> 0) AND
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
@@ -374,7 +349,9 @@ $totalRecordwithFilter = $records['allcount'];
 //REVIEW
 $boxQuery = "
 SELECT DISTINCT
-a.box_id, a.id as dbid, a.box_previous_status as box_previous_status,
+a.box_id, 
+a.id as dbid, 
+a.box_previous_status as box_previous_status,
 CASE
 
 WHEN (
@@ -504,158 +481,8 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
-WHERE (b.active <> 0) AND (a.id <> -99999) AND (userStatus.user_id <> 1) " . $searchHaving . " AND 1 ".$searchQuery."
+WHERE (b.active <> 0) AND (a.id <> -99999) AND (userStatus.user_id <> " . $current_user->ID . ") " . $searchHaving . " AND 1 ".$searchQuery."
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
-/*$boxQuery = "
-SELECT DISTINCT
-a.box_id, a.id as dbid, a.box_previous_status as box_previous_status,
-CASE
-WHEN h.scanning_id IS NOT NULL
-THEN h.scanning_id
-WHEN h.stagingarea_id IS NOT NULL
-THEN h.stagingarea_id
-WHEN h.cart_id IS NOT NULL
-THEN h.cart_id
-WHEN h.shelf_location IS NOT NULL
-THEN h.shelf_location
-    ELSE '-'
-END as physical_location,
-
-CASE
-
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 0
-THEN '<strong>Scanning Preparation</strong>'
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 1
-THEN '<strong>Scanning/Digitization</strong>'
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 2
-THEN '<strong>QA/QC</strong>'
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 3
-THEN '<strong>Validation</strong>'
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 4
-THEN '<strong>Destruction Approved</strong>'
-WHEN (
-SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM " . $wpdb->prefix . "wpsc_epa_storage_location WHERE id=a.storage_location_id
-) = 5
-THEN '<strong>Destruction of Source</strong>'
-    ELSE 'Error'
-END as action,
-
-f.name as box_status, f.term_id as term,
-
-
-CASE 
-WHEN b.ticket_priority = 621
-THEN
-1
-WHEN b.ticket_priority = 9
-THEN
-2
-WHEN b.ticket_priority = 8
-THEN
-3
-WHEN b.ticket_priority = 7
-THEN
-4
-ELSE
-999
-END
- as ticket_priority_order,
- 
-
-
-CASE 
-WHEN a.box_status = 748
-THEN
-1
-WHEN a.box_status = 816
-THEN
-2
-WHEN a.box_status = 672
-THEN
-3
-WHEN a.box_status = 671
-THEN
-4
-WHEN a.box_status = 65
-THEN
-5
-WHEN a.box_status = 6
-THEN
-6
-WHEN a.box_status = 673
-THEN
-7
-WHEN a.box_status = 674
-THEN
-8
-WHEN a.box_status = 743
-THEN
-9
-WHEN a.box_status = 68
-THEN
-10
-WHEN a.box_status = 67
-THEN
-11
-WHEN a.box_status = 66
-THEN
-12
-ELSE
-999
-END
- as box_status_order,
-CONCAT(
-CASE 
-WHEN (SELECT count(id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files WHERE box_id = a.id) != 0
-THEN
-CONCAT((SELECT sum(c.validation = 1) 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files c
-WHERE c.box_id = a.id), '/', (SELECT count(fdif.id) FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files fdif
-WHERE fdif.box_id = a.id))
-ELSE '-'
-END
-) as validation, u.display_name, t.name as digitization_center,
-d.scanning_preparation, d.scanning_digitization, d.qa_qc, 
-d.validation, d.destruction_approved, d.destruction_of_source,
-b.request_id as request_id_new
-
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
-
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
-INNER JOIN " . $wpdb->prefix . "users as u ON u.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms t ON t.term_id = d.digitization_center
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo_userstatus userStatus ON userStatus.user_id = g.ID
-
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
-
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $searchHaving . "" . $ecms_sems_box . " AND 1 ".$searchQuery."
-order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;*/
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
@@ -663,7 +490,7 @@ $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
   	$request_id = $row['request_id_new'];
-  
+  	
   
   	// Get Box ID Flag
   	$box_id_flag_query = $wpdb->get_row("SELECT 
@@ -776,55 +603,13 @@ while ($row = mysqli_fetch_assoc($boxRecords)) {
     INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.ticket_id = b.id
     LEFT JOIN " . $wpdb->prefix . "users g ON g.ID = userStatus.user_id
     INNER JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
-    WHERE a.id = " .$row['dbid'] . " AND (g.ID <> 1) ");
+    WHERE a.id = " .$row['dbid'] . " AND (g.ID <> " . $current_user->ID . ") ");
   
   	$customer_name = $customer_name_query->customer_name;
   
-  	// Get Employee Action
-  	/*$employee_action_query = $wpdb->get_row("SELECT CONCAT(
-    CASE
-
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 0
-    THEN '<strong>Scanning Preparation</strong>'
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 1
-    THEN '<strong>Scanning/Digitization</strong>'
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 2
-    THEN '<strong>QA/QC</strong>'
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 3
-    THEN '<strong>Validation</strong>'
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 4
-    THEN '<strong>Destruction Approved</strong>'
-    WHEN (
-    SELECT (scanning_preparation+scanning_digitization+qa_qc+validation+destruction_approved+destruction_of_source) FROM wpqa_wpsc_epa_storage_location WHERE id=a.storage_location_id
-    ) = 5
-    THEN '<strong>Destruction of Source</strong>'
-        ELSE 'Error'
-    END 
-    ) as action
-    
-    FROM wpqa_wpsc_epa_boxinfo as a
-
-    INNER JOIN wpqa_terms f ON f.term_id = a.box_status
-    INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
-    LEFT JOIN wpqa_users g ON g.user_email = b.customer_email
-    LEFT JOIN wpqa_usermeta um ON um.user_id = g.ID
-    INNER JOIN wpqa_users as u ON u.user_email = b.customer_email
-    LEFT JOIN wpqa_wpsc_ticketmeta as z ON z.ticket_id = b.id
-    INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-    INNER JOIN wpqa_terms t ON t.term_id = d.digitization_center 
-    WHERE a.id = " .$row['dbid']);
-    
-  	$employee_action = $employee_action_query->action; */
+  	
+  
+  
 	
 	$status_term_id = $row['term'];
 	$status_background = get_term_meta($status_term_id, 'wpsc_box_status_background_color', true);
@@ -1014,8 +799,10 @@ $action_status = '';
       	"action_status"=>$action_status,
 	);
 }
-## Response
 
+
+
+## Response
 $obj = array(
             'username'=>$lv_username,
             'address'=>$lv_address,

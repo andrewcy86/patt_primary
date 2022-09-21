@@ -272,37 +272,17 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
 
 WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems_box . " ");
-//$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
-//$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_ticket WHERE id <> -99999 AND active <> 0");
+
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_epa_scan_list as h ON h.box_id = a.box_id
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
 
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems_box . " AND 1 ".$searchQuery); //(b.active <> 0) AND
-$records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 //REVIEW
 $boxQuery = "
 SELECT DISTINCT
+DENSE_RANK() OVER(ORDER BY a.box_id) AS total_count,
 a.box_id, a.id as dbid, a.box_previous_status as box_previous_status,
 CASE
 WHEN h.scanning_id IS NOT NULL
@@ -478,6 +458,8 @@ $data = array();
 // $assigned_agents_icon = '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick="view_assigned_agents()" class="assign_agents_icon"><i class="fas fa-user-friends" title="Assigned Agents"></i></span>';
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
+  
+  	$totalRecordwithFilter = $row['total_count'];
 	
 	$status_term_id = $row['term'];
 	$status_background = get_term_meta($status_term_id, 'wpsc_box_status_background_color', true);
@@ -582,8 +564,12 @@ else {
 		"physical_location"=>$row['physical_location'],
 	);
 }
-## Response
 
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
+
+## Response
 $obj = array(
             'username'=>$lv_username,
             'address'=>$lv_address,

@@ -49,6 +49,8 @@ $searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $searchGeneric = $_POST['searchGeneric'];
 $is_requester = $_POST['is_requester'];
 
+$totalRecordwithFilter = '';
+
 ## Search 
 $searchQuery = " ";
 if($searchByDocID != ''){
@@ -213,46 +215,10 @@ WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . "
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-//gets all folder/files for every user
-$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
-
-LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS g ON (g.box_id = d.id AND g.folderdoc_id = '-99999')
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = a.id AND h.folderdoc_id <> '-99999')
-   
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS i ON i.box_id = d.id
-LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.folderdoc_id )  AS j ON j.folderdoc_id = a.id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery);
-$records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
-
 ## Fetch records
 //SQL query using functions to generate icons
 $docQuery = "SELECT DISTINCT
+count(*) OVER() AS total_count,
 a.id as dbid,
 a.folderdocinfofile_id as folderdocinfo_id,
 f.name as location,
@@ -279,12 +245,10 @@ FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
 LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
@@ -324,7 +288,8 @@ $damaged_icon = '';
 $type = 'folderfile';
 
 $folder_db_id = $row['dbid'];
-  
+$totalRecordwithFilter = $row['total_count'];
+
 // GET VALIDATION
 if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
     $validation_icon = '<span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span></span> ';
@@ -459,6 +424,10 @@ if(Patt_Custom_Func::id_in_freeze($row['folderdocinfo_id'],$type) == 1) {
      "validation"=>$validation_icon. ' ' .$validation
      //"ticket_priority"=>$row['ticket_priority']
    );
+}
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
 }
 
 ## Response

@@ -60,6 +60,8 @@ $searchByPriority = $_POST['searchByPriority'];
 $searchByRecallDecline = $_POST['searchByRecallDecline'];
 $searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $currentUser = $_POST['currentUser'];
+
+$totalRecordwithFilter = '';
 ## User Search
 //throwing Undefined Index error
 if(isset($_POST['searchByUser'])) {
@@ -181,6 +183,7 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 ## Fetch records
 $boxQuery = "
 SELECT
+count(*) OVER() AS total_count,
 a.id as request_id,
 a.request_id as patt_request_id,
 a.date_updated as date_updated,
@@ -261,56 +264,6 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
-
-## Fetch records Count
-$boxQueryCount = "
-SELECT
-a.id as request_id,
-GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location
-FROM " . $wpdb->prefix . "wpsc_ticket as a
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON b.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = b.id
-
-LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = k.id AND h.folderdoc_id <> '-99999')
-   
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY box_id ) AS i ON i.box_id = b.id
-LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
-
-WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
-group by a.request_id ".$searchHaving;
-
-$boxRecordsCount = mysqli_query($con, $boxQueryCount);
-
-$filtercount = 0;
-
-while ($row = mysqli_fetch_assoc($boxRecordsCount)) {
-$filtercount++;
-}
-/*
-WHERE a.active <> 0 AND a.id <> -99999 
-group by a.request_id";
-*/
-
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $TotalCount = "
 SELECT
@@ -362,7 +315,7 @@ $data = array();
 while ($row = mysqli_fetch_assoc($boxRecords)) {
 
 $request_id = $row['request_id'];
-  
+$totalRecordwithFilter = $row['total_count'];
 // GET LOCATION
 $location_query = $wpdb->get_row("SELECT GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR ', ') as location 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
@@ -479,12 +432,17 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
      "date_updated"=>calculate_time_span($seconds),
    );
 }
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
+
 ## Response
 $response = array(
   "draw" => intval($draw),
   "docQuery" => $TotalCount,
   "iTotalRecords" => $totalRecords,
-  "iTotalDisplayRecords" => $filtercount,
+  "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data
 );
 

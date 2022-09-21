@@ -34,24 +34,25 @@ $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 $get_current_user_id = $_POST['searchByUser'];
 
 // ## Total number of records without filtering
-$query = mysqli_query($con, "SELECT COUNT(return_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_return");
+$query = mysqli_query($con, "SELECT COUNT(a.return_id) as allcount 
+FROM " . $wpdb->prefix . "wpsc_epa_return a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
+INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id");
 
 $records = mysqli_fetch_assoc($query);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$query = mysqli_query($con, "SELECT COUNT(a.return_id) as allcount
-FROM " . $wpdb->prefix . "wpsc_epa_return a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
-WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag.",".$decline_decline_complete_tag.",".$decline_decline_cancelled_tag.",".$decline_decline_expired_tag.") AND a.id != '-99999' AND b.user_id = " . $get_current_user_id);
-$records = mysqli_fetch_assoc($query);
-$totalRecordwithFilter = $records['allcount'];
 
 ## Base Query for Declines assigned to current user
-$baseQuery = "SELECT a.return_id, c.name as decline_status, a.return_date, a.return_status_id, d.tracking_number
+$baseQuery = "SELECT 
+COUNT(a.return_id) OVER() as total_count,
+a.return_id, 
+c.name as decline_status, 
+a.return_date, 
+a.return_status_id, 
+d.tracking_number
+
 FROM " . $wpdb->prefix . "wpsc_epa_return a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
@@ -63,6 +64,8 @@ $data = array();
 
 ## Row Data
 while ($row = mysqli_fetch_assoc($declineRecords)) {
+  
+  	$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['return_status_id'];
@@ -85,6 +88,10 @@ while ($row = mysqli_fetch_assoc($declineRecords)) {
    $icons = '';
 }
 
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
 
 ## Response
 $response = array(

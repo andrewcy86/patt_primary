@@ -45,7 +45,7 @@ $searchByUser = $_POST['searchByUser'];
 $searchByUserAAVal = $_REQUEST['searchByUserAAVal'];
 $searchByUserAAName = $_REQUEST['searchByUserAAName'];
 $is_requester = $_POST['is_requester'];
-
+$totalRecordwithFilter = '';
 
 ## Search 
 $searchQuery = " ";
@@ -357,39 +357,16 @@ WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . " ");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
-INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
-INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
-
-LEFT JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = u.ID
-
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS f ON (f.box_id = a.id)
-
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY a.box_id ) AS g ON g.box_id = a.id
-
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery); //(b.active <> 0) AND
-$records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
-
 ## Fetch records
 //REVIEW
 $boxQuery = "
 SELECT DISTINCT
-a.box_id, a.id as dbid, f.name as box_status, a.box_previous_status as box_previous_status, f.term_id as term,
-
+count(*) OVER() AS total_count,
+a.box_id, 
+a.id as dbid, 
+f.name as box_status, 
+a.box_previous_status as box_previous_status, 
+f.term_id as term,
 
 a.pallet_id as pallet_id,
 
@@ -461,13 +438,11 @@ FROM " . $wpdb->prefix . "wpsc_epa_boxinfo as a
 
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = a.box_status
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON a.ticket_id = b.id
-LEFT JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON a.program_office_id = c.office_code
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN " . $wpdb->prefix . "terms e ON e.term_id = d.digitization_center
 
 LEFT JOIN " . $wpdb->prefix . "users u ON u.user_email = b.customer_email
-LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = u.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
@@ -488,7 +463,7 @@ $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
   	$request_id = $row['request_id_new'];
-  
+  	$totalRecordwithFilter = $row['total_count'];
   
   	// Get Box ID Flag
   	$box_id_flag_query = $wpdb->get_row("SELECT 
@@ -696,7 +671,10 @@ $obj = array(
             'location'=>array('id'=>$lv_locationId)
     );
     
-    
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
+
 $response = array(
   "draw" => intval($draw),
   "iTotalRecords" => $totalRecords,
