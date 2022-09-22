@@ -34,7 +34,11 @@ table.dataTable thead tr td {
 }
 * {
  font-family: Segoe UI !important;
-}                                                                                                 
+}
+:focus {
+    outline: 0 !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}                                                                                                    
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 
@@ -168,7 +172,7 @@ table.dataTable thead tr td {
   
     
 <div class="view-header">
-<h1>EPA Superseded Records Schedules</h1>
+<h1>Superseded Schedules</h1>
 </div>
 
 <div class="alert alert-info" role="alert">About 350 records schedules will be consolidated into 21 new schedules. The schedules that have been or will soon be superseded are available below along with their associated consolidated schedule(s). If you have any questions, please contact the <a href="https://usepa.sharepoint.com/sites/oei/ermd/nrmp/SitePages/records-help-desk.aspx">Records Help Desk</a>.

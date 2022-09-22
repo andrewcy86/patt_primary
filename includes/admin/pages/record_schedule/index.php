@@ -34,7 +34,11 @@ table.dataTable thead tr td {
 }
 * {
  font-family: Segoe UI !important;
-}                                                                                              
+}
+:focus {
+    outline: 0 !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}                                                                                                    
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 

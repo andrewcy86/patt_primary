@@ -34,7 +34,11 @@ table.dataTable thead tr td {
 }
 * {
  font-family: Segoe UI !important;
-}                                                                                                  
+}  
+:focus {
+    outline: 0 !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}                                                                                          
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 
@@ -168,7 +172,7 @@ table.dataTable thead tr td {
   
     
 <div class="view-header">
-<h1>EPA Deleted Records Schedules</h1>
+<h1>Schedule Deletions</h1>
 </div>
 
 <div class="alert alert-info" role="alert">Browse the <a href="#rschedule">deleted schedules listing</a> below. During the current transition to the new consolidated records schedules, the old schedules (designated with a 3 digit number, e.g., 597) are still in effect until the consolidated schedule is approved by NARA and posted as "final" on the records site. The list of which schedules have been superseded and which schedules have not been superseded can be found on the <a href="https://patt.epa.gov/app/mu-plugins/pattracking/includes/admin/pages/record_schedule/superseded.php">Superseded Schedules page</a>.

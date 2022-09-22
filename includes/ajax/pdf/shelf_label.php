@@ -6,22 +6,19 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
 
 //Check to see if URL has the correct Request ID
-//if (isset($_GET['id']))
-//{
 
     //Set SuperGlobal ID variable to be used in all functions below
+	$url_id = $_GET['id'] ?? '';
+    $url_dc = $_GET['dc'] ?? '';
+
+	$invalid_shelf_id = 0;
+
+	if(!empty($url_dc) || !empty($url_id)) {
+   
+
     $GLOBALS['id'] = $_GET['id'];
     $GLOBALS['dc'] = $_GET['dc'];
 
-if (isset($_GET['dc'])) {
-
-  if ($_GET['dc'] == 'E') {
-    $dc = '62';
-  }
-
-  if ($_GET['dc'] == 'W') {
-    $dc = '2';
-  }
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
    
@@ -40,16 +37,28 @@ if (isset($_GET['dc'])) {
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
-    $shelf_info = $wpdb->get_results("
-    SELECT shelf_id
-    FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-    WHERE digitization_center = ". $dc ."
-    ");
-
 $maxcols = 3;
 $i = 0;
 
 $batch_of = 30;
+
+if(!empty($url_dc)) {
+  
+if (preg_match("/^(E|W)/", $GLOBALS['dc'])) {
+  
+    if ($GLOBALS['dc'] == 'E') {
+      $dc = '62';
+    }
+  
+    if ($GLOBALS['dc'] == 'W') {
+      $dc = '2';
+    }
+  
+      $shelf_info = $wpdb->get_results("
+    SELECT shelf_id
+    FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+    WHERE digitization_center = ". $dc ."
+    ");
   
 //print_r($shelf_info);
 $new_shelf_id = array();
@@ -75,10 +84,6 @@ foreach($batch as $b) {
 
 //set table margins
 $obj_pdf->SetMargins(2,15,0);
-//$obj_pdf->SetRightMargin(500);
-//$obj_pdf->SetHeaderMargin(-5);
-//$obj_pdf->SetFooterMargin(16);
-
 //Open the table and its first row
 
 $tbl   =  '<style>
@@ -140,11 +145,123 @@ $obj_pdf->AddPage();
 $obj_pdf->writeHTML($tbl, true, false, false, false, '');
 
 }       //endforeach
-    
 //Generate PDF
 $obj_pdf->Output('shelf_label_printout.pdf', 'I');
+
+} else {
+echo 'Enter either E or W for digitization center.';
+}
+}
+      
+if(!empty($url_id)) {
+
+$shelfid_array= explode(',', $GLOBALS['id']);
+
+foreach($shelfid_array as $item) {
+  
+        $pre_pieces = explode("_", $item);
+        $pre_aisle = preg_replace("/[^0-9]/", "", $pre_pieces[0] );
+        $pre_bay = preg_replace("/[^0-9]/", "", $pre_pieces[1] );
+        $pre_shelf = preg_replace("/[^0-9]/", "", $pre_pieces[2] );
+        $pre_position = preg_replace("/[^0-9]/", "", $pre_pieces[3] );
+  		$pre_dc= $pre_pieces[4];
+
+  if ($pre_dc == 'E') {
+    $dc_val = '62';
+  }
+
+  if ($pre_dc == 'W') {
+    $dc_val = '2';
+  }
+
+if($pre_position == 1 || $pre_position == 2 || $pre_position == 3) {
+  
+$shelf_id_pre = $pre_aisle . '_' . $pre_bay . '_' . $pre_shelf;
+  
+  //Check Each Self ID
+$shelf_info = $wpdb->get_row("SELECT count(id) as count
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE  
+digitization_center = '" .$dc_val."' AND
+shelf_id = '" .$shelf_id_pre."'
+
+");
+
+if($shelf_info->count != 1) {
+$invalid_shelf_id = 1;
+}
   
 } else {
-   echo "Pass request ID in URL";
+$invalid_shelf_id = 1; 
 }
+  
+
+}
+  
+if (preg_match("/^(\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?1))*$/", $GLOBALS['id']) && $invalid_shelf_id != 1) {
+
+    $tbl   =  '<style>
+    .tableWithOuterBorder{
+        font-size: 9px; 
+        padding-top: 4px;
+        padding-bottom: 8px;
+        padding-left: 32.5px;
+        padding-right: -25px;
+    }
+    </style>';
+    
+    $tbl .= '<table class="tableWithOuterBorder">';
+    $tbl .= '<tr>'; 
+    
+    //set table margins
+    $obj_pdf->SetMargins(2,15,0);  
+    
+    $batch = array_chunk($shelfid_array, $batch_of);
+    
+    //print_r($batch);
+    foreach($batch as $b) {
+    
+    //Open the table and its first row
+    
+    foreach($b as $info){
+        $pieces = explode("_", $info);
+        $aisle = preg_replace("/[^0-9]/", "", $pre_pieces[0] );
+        $bay = preg_replace("/[^0-9]/", "", $pre_pieces[1] );
+        $shelf = preg_replace("/[^0-9]/", "", $pre_pieces[2] ); 
+        $position = preg_replace("/[^0-9]/", "", $pre_pieces[3] );
+        
+        $shelf_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($info, 'C128', '', '', 57, 17, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>false, 'font'=>'helvetica', 'fontsize'=>8), 'N'));
+      
+        if ($i == $maxcols) {
+            $i = 0;
+            $tbl .= '</tr><tr>';
+        }
+        $tbl .= '<td style="width: 190px; padding-left: 8px;"><tcpdf method="write1DBarcode" params="'.$shelf_barcode.'" /><span style="text-align: center;">Aisle: '. $aisle .' Bay: '. $bay .' Shelf: '. $shelf .' Position: '. $position .'</span></td>';
+    
+        $i++;
+    
+    }
+    
+    
+    //Close the table row and the table
+    $tbl .= '</tr>';
+    $tbl .= '</table>';
+    
+    $obj_pdf->AddPage();
+    
+    $obj_pdf->writeHTML($tbl, true, false, false, false, '');
+    
+    }
+    //Generate PDF
+$obj_pdf->Output('shelf_label_printout.pdf', 'I');
+
+} else {
+echo 'Enter a valid shelf ID.';
+}
+}
+      
+      
+} else {
+echo 'Please enter either dc or id parameter in the url.';
+    }
 ?>

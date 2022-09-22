@@ -288,7 +288,7 @@ $boxcommaList = implode(', ', $todo_boxes_array);
                   
                 <select id='searchByUserLocation' aria-label="Search by User">
 					<option value=''>-- Select Employee Assigned --</option>
-					<option value='Not Assigned'>Not Assigned</option>
+					<!--<option value='Not Assigned'>Not Assigned</option>-->
 					<option value='All Staff'>Search All Staff</option>
 					<option value='East'>Search NDC East Staff</option>
 					<option value='West'>Search NDC West Staff</option>
@@ -414,7 +414,7 @@ $boxcommaList = implode(', ', $todo_boxes_array);
 
 	if ($recall_count > 0) {
 	?>
-	<h3>Recall(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
+	<h3>Recall(s) assigned:</h3>
 
 	<div class="table-responsive" style="overflow-x:auto;">
 	<table id="tbl_templates_recall_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
@@ -443,7 +443,7 @@ $boxcommaList = implode(', ', $todo_boxes_array);
 
 	if ($decline_count > 0) {
 	?>
-	<h3>Decline(s) assigned to <?php echo esc_html( $current_user->user_login ); ?>:</h3>
+	<h3>Decline(s) assigned:</h3>
 
 	<div class="table-responsive" style="overflow-x:auto;">
 	<table id="tbl_templates_decline_todo" class="display nowrap" cellspacing="5" cellpadding="5" width="100%">
@@ -767,7 +767,7 @@ $boxcommaList = implode(', ', $todo_boxes_array);
                   	console.log('Names:');
                     console.log(aaName);
                   console.log(as);
-                  console.log(sdc);
+                  console.log('sg ' + sg);
                     //console.log('Val:');
                     //console.log(aaVal);
                   
