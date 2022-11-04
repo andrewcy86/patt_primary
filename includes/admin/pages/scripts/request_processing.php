@@ -122,8 +122,12 @@ if($searchByPriority != ''){
 }
 
 if($searchByDigitizationCenter != ''){
-   $searchHaving = " HAVING location like '%".$searchByDigitizationCenter."%' ";
+   $searchQuery = " AND e.name like '%".$searchByDigitizationCenter."%' ";
 }
+
+/*if($searchByDigitizationCenter != ''){
+   $searchHaving = " HAVING location like '%".$searchByDigitizationCenter."%' ";
+}*/
 
 //Get term_ids for Recall status slugs
 $status_recall_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );	 // 878
@@ -242,24 +246,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = 
 LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
 LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
 
-LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
 
-LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
-   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = k.id AND h.folderdoc_id <> '-99999')
-   
-LEFT JOIN (   SELECT a.box_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY box_id ) AS i ON i.box_id = b.id
-LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
-   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
-   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
-   WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
-   GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
 
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
@@ -299,7 +286,7 @@ LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
    GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
 
 WHERE a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
-group by a.request_id ".$searchHaving;
+group by a.request_id ";
 
 $sel = mysqli_query($con,$TotalCount);
 
@@ -440,7 +427,7 @@ if (empty($totalRecordwithFilter)) {
 ## Response
 $response = array(
   "draw" => intval($draw),
-  "docQuery" => $TotalCount,
+  "docQuery" => $boxQuery,
   "iTotalRecords" => $totalRecords,
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data

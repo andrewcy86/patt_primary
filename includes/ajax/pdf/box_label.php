@@ -546,7 +546,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $ecms_sems_indicator = 'SEMS';
             }
             else {
-                $ecms_sems_indicator = 'ECMS';
+                $ecms_sems_indicator = 'ARMS';
             }
             
             $obj_pdf->SetFont('helvetica', 'B', 40);

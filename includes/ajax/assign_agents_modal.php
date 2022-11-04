@@ -2449,7 +2449,21 @@ wpsc_modal_close();
 //Disable refresh
 //window.location.reload();
 <?php } ?>
-} 
+}
+  
+  	//
+	// Auto Complete for last type of assign agents
+	//
+
+	jQuery(".ui-autocomplete-input").eq(5).autocomplete({
+			minLength: 0,
+			position: { my: "left bottom", at: "left top" }
+	});
+	
+	jQuery('.wpsc_assign_agents').last().autocomplete({
+			minLength: 0,
+			position: { my: "left bottom", at: "left top" }
+	});
 </script>
 
 
