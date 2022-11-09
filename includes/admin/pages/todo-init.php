@@ -183,6 +183,13 @@ if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['labe
 <?php } ?>
 		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Box Labels"></i><span class="sr-only">Reprint Box Labels</span> Reprint Box Labels</button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_pallet_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags" aria-hidden="true" title="Reprint Pallet Labels"></i><span class="sr-only">Reprint Pallet Labels</span> Reprint Pallet Labels</button>-->
+    
+<?php 
+if($agent_permissions['label'] == 'Administrator' || $agent_permissions['label'] == 'Manager') {
+?>
+        <button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn checkbox_depend" id="btn_location_scanner_mobile" style="<?php echo $action_default_btn_css?>" onclick="window.location.href = '<?php echo WP_HOME . '/barcode-location';?>'"><i class="fas fa-barcode" aria-hidden="true" title="Barcode Scanner"></i><span class="sr-only">Barcode Scanner</span> Barcode Scanner</button>
+		<button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn checkbox_depend" id="btn_location_scanner_desktop" style="<?php echo $action_default_btn_css?>" onclick="window.location.href = '<?php echo WP_HOME . '/barcode-manual-location';?>'"><i class="fas fa-barcode" aria-hidden="true" title="Barcode Scanner"></i><span class="sr-only">Barcode Scanner Manual</span> Barcode Scanner</button>
+<?php } ?>
   </div>
 
 </div>
@@ -438,6 +445,18 @@ color: rgb(255, 255, 255) !important;
 
 .wpsc_loading_icon {
 	margin-top: 0px !important;
+}
+  
+@media only screen and (max-width: 768px) {
+#btn_location_scanner_desktop {
+  display: none !important;
+}
+}
+
+@media screen and (min-width: 769px) {
+#btn_location_scanner_mobile {
+  display: none !important;
+}  
 }
 
 </style>

@@ -1907,8 +1907,9 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										if(flag != true && count > 1 && Final_Disposition == 'Disposable'){
 											// temp_record_schedule = true;
 											// console.log('this is a temp record');
-
-											if (specific_access_restriction != null || specific_access_restriction != undefined) {
+											
+                                          	// Specific Use and Access Restriction Validation For Temp
+											/*if (specific_access_restriction != null || specific_access_restriction != undefined) {
 											  if (specific_access_restriction.includes("Controlled / Copyright")){
 												access_restriction = 1;
 											  }
@@ -1927,50 +1928,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 											  alert( alert_message );
 											  flag = true;
 											  return;
-											}
+											}*/
                                           
-                                        // Validate Rights Holder When Access or Use Restriction is 'Yes'                          
-			                          /*  if( 
-			                            	flag != true && 
-			                            	count > 1 && 
-			                            		( (parsedData[count][index_rights_holder] == null || parsedData[count][index_rights_holder] == undefined) && 
-			                            			( parsedData[count][index_use_rest] == 'Yes' ||
-			                            			  parsedData[count][index_access_rest] == 'Yes'
-			                            			)
-			                            		)
-			                            ) {
-			                                let alert_message = '';
-			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
-			                                alert_message += 'Use Restriction or Access Restriction value: "Yes", while Rights Holder is blank on line ';
-			                                alert_message += (count + 1) + '. \n\n ';
-			                                alert_message += 'If Use Restriction or Access Restriction is "Yes" then Rights Holder must be filled in.'
-			                                
-			                                alert(alert_message);
-			                                flag = true;
-			                            }
-
-                                          
-                                          //console.log('rights holder: ' + parsedData[count][index_rights_holder]);
-                                          
-                                        // Validate Rights Holder When Access or Use Restriction is 'No'                           
-			                            if( 
-			                            	flag != true && 
-			                            	count > 1 && 
-			                            		( (parsedData[count][index_rights_holder] != null || parsedData[count][index_rights_holder] != undefined) && 
-			                            			( parsedData[count][index_use_rest] == 'No' &&
-			                            			  parsedData[count][index_access_rest] == 'No'
-			                            			)
-			                            		)
-			                            ) {
-			                                let alert_message = '';
-			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
-			                                alert_message += 'Use Restriction and Access Restriction values: "No", while Rights Holder is not blank on line ';
-			                                alert_message += (count + 1) + '. \n\n ';
-			                                alert_message += 'If Use Restriction and Access Restriction is "No" then Rights Holder must be blank.'
-			                                
-			                                alert(alert_message);
-			                                flag = true;
-			                            } */
 
 
 											if(digital_source == 'Digital Source' && (folder_file_name == null || folder_file_name == undefined)){
@@ -1985,47 +1944,47 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 										}
                                       
                                       // Validate Rights Holder When Access or Use Restriction is 'Yes' - Perm Records                          
-			                            if( 
+			                          /*  if( 
 			                            	flag != true && 
 			                            	count > 1 && 
 			                            		( (parsedData[count][index_rights_holder] == null || parsedData[count][index_rights_holder] == undefined) && 
-			                            			( parsedData[count][index_use_rest] == 'Yes' ||
-			                            			  parsedData[count][index_access_rest] == 'Yes'
+			                            			( parsedData[count][index_use_rest] == 'Yes'
+			                            			  //parsedData[count][index_access_rest] == 'Yes'
 			                            			)
 			                            		)
 			                            ) {
 			                                let alert_message = '';
-			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
-			                                alert_message += 'Use Restriction or Access Restriction value: "Yes", while Rights Holder is blank on line ';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction. \n\n ';
+			                                alert_message += 'Use Restriction value: "Yes", while Rights Holder is blank on line ';
 			                                alert_message += (count + 1) + '. \n\n ';
-			                                alert_message += 'If Use Restriction or Access Restriction is "Yes" then Rights Holder must be filled in.'
+			                                alert_message += 'If Use Restriction is "Yes" then Rights Holder must be filled in.'
 			                                
 			                                alert(alert_message);
 			                                flag = true;
-			                            }
+			                            } */
 
                                           
                                           //console.log('rights holder: ' + parsedData[count][index_rights_holder]);
                                           
                                         // Validate Rights Holder When Access or Use Restriction is 'No' - Perm Records                         
-			                            if( 
+			                            /*if( 
 			                            	flag != true && 
 			                            	count > 1 && 
 			                            		( (parsedData[count][index_rights_holder] != null || parsedData[count][index_rights_holder] != undefined) && 
-			                            			( parsedData[count][index_use_rest] == 'No' &&
-			                            			  parsedData[count][index_access_rest] == 'No'
+			                            			( parsedData[count][index_use_rest] == 'No'
+			                            			  //parsedData[count][index_access_rest] == 'No'
 			                            			)
 			                            		)
 			                            ) {
 			                                let alert_message = '';
-			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction and Access Restriction. \n\n ';
-			                                alert_message += 'Use Restriction and Access Restriction values: "No", while Rights Holder is not blank on line ';
+			                                alert_message += 'Discrepancy between Rights Holder and Use Restriction. \n\n ';
+			                                alert_message += 'Use Restriction: "No", while Rights Holder is not blank on line ';
 			                                alert_message += (count + 1) + '. \n\n ';
-			                                alert_message += 'If Use Restriction and Access Restriction is "No" then Rights Holder must be blank.'
+			                                alert_message += 'If Use Restriction is "No" then Rights Holder must be blank.'
 			                                
 			                                alert(alert_message);
 			                                flag = true;
-			                            }
+			                            }*/
 
 			                            
 			                            // Validate Program Area. If ECMS, must be blank.
