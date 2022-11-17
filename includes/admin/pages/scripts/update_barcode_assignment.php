@@ -11,6 +11,7 @@ $table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
 
 if(isset($_POST['postvarslocation']) && isset($_POST['postvarsboxpallet']) && isset($_POST['postvarsuser']) && isset($_POST['postvarspage'])){
    $location = $_POST['postvarslocation'];
+   $location = strtoupper($location);
    $boxpallet = $_POST['postvarsboxpallet'];
    $userinfo = $_POST['postvarsuser'];
    $pageinfo = $_POST['postvarspage'];

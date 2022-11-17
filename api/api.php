@@ -12342,11 +12342,12 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\RequestFactory;
     use Tqdev\PhpCrudApi\ResponseUtils;
 
-    $host = DB_HOST; /* Host name */
-    $user = DB_USER; /* User */
-    $password = DB_PASSWORD; /* Password */
-    $dbname = DB_NAME; /* Database name */
-
+// DO NOT COPY OVER TO STAGING AND PROD
+$host = 'localhost'; /* Host name */
+$user = 'acy3_wp4'; /* User */
+$password = '8338p)[5Sr'; /* Password */
+$dbname = 'acy3_bedrocktest'; /* Database name */
+//
     $config = new Config([
         // 'driver' => 'mysql',
         'address' => $host,
@@ -12358,7 +12359,6 @@ namespace Tqdev\PhpCrudApi {
         'apiKeyAuth.keys' => '1b43e0c5-3131-4838-90d1-0c9d674f1202'
         // 'debug' => false
     ]);
-    
     $request = RequestFactory::fromGlobals();
     $api = new Api($config);
     $response = $api->handle($request);

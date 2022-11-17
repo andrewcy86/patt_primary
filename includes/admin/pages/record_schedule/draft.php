@@ -27,6 +27,19 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />   -->
 
 <style>
+table.dataTable thead {background-color:#32312f; text-color: white;}                                                                                 table.dataTable thead tr th,
+table.dataTable thead tr td {
+    color: white;
+    text-align: center;                                                                                             
+}
+* {
+ font-family: Segoe UI !important;
+}  
+:focus {
+    outline: 0 !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}                                                                                                     
+                                                                                                 
 .usa-nav__secondary{margin:-45px;}
 .dataTables_wrapper input{border-style:solid; border-width:1px; border-color:#333;}
 .table-bordered{border-top:solid; border-width:1px; border-color:#333;}                                                                                                 

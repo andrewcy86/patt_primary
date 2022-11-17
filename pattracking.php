@@ -435,7 +435,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
             
-            add_submenu_page( 'wpsc-tickets', 'Requester Groups', 'Requester Groups', 'wpsc_agent', 'groups', 'requester_groups_page' );         
+            add_submenu_page( 'wpsc-tickets', 'RLO Groups', 'RLO Groups', 'wpsc_agent', 'groups', 'requester_groups_page' );         
             
             }
           
@@ -485,7 +485,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 			function custom_menu_item_redirect_external_link() {
 		        $menu_redirect = isset($_GET['page']) ? $_GET['page'] : false;
 		        if($menu_redirect == 'qlik-report' ) {
-		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/e7de7eb5-7201-4b43-83b4-29355c68a0f4/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
+		            echo '<script>window.location.replace("https://qlikviz.epa.gov/sense/app/41138155-102d-4dd0-830f-3cb769dfa117/sheet/874b516d-5221-4a1c-bcac-227b26978e87/state/analysis");</script>';
 		            exit();
 		        }
 			}

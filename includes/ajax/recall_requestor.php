@@ -251,7 +251,7 @@ function wppatt_set_requestor(){
 	
 	var new_requestors = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();
  	var old_requestors = <?php echo json_encode($old_assigned_agents); ?>;
-	console.log(new_requestors);
+	console.log('new requestors: ' + new_requestors);
 	
 	// Another check to ensure you can't save 0 users
 	if( new_requestors.length > 0 ) {

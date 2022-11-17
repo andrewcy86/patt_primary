@@ -65,16 +65,15 @@ if($searchByDigitizationCenter != ''){
 
 
 // ## Total number of records without filtering
-$query = mysqli_query($con, "SELECT COUNT(DISTINCT a.recall_id) as allcount 
+$query = mysqli_query($con, "SELECT COUNT(*) as allcount 
 FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
 INNER JOIN wpqa_users u ON u.ID = b.user_id
-INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
-INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.id = a.box_id
 INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
 INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID);
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID != " . $current_user->ID);
 
 $records = mysqli_fetch_assoc($query);
 $totalRecords = $records['allcount'];
@@ -82,8 +81,8 @@ $totalRecords = $records['allcount'];
 
 
 ## Base Query for Recalls assigned to current user
-$baseQuery = "SELECT DISTINCT
-DENSE_RANK() OVER(ORDER BY a.recall_id) AS total_count,
+$baseQuery = "SELECT 
+COUNT(*) OVER() AS total_count,
 a.recall_id, 
 a.request_date, 
 c.name as recall_status, 
@@ -113,11 +112,10 @@ FROM " . $wpdb->prefix . "wpsc_epa_recallrequest a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
 INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.recall_status_id
 INNER JOIN wpqa_users u ON u.ID = b.user_id
-INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
-INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.id = a.box_id
 INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
 INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
-WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID <> " . $current_user->ID . "" . $searchHaving ."
+WHERE (a.recall_approved = 0 OR a.recall_complete = 0) AND u.ID != " . $current_user->ID . "" . $searchHaving ."
 
 order by a.id, ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
@@ -138,8 +136,7 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
                       INNER JOIN wpqa_wpsc_epa_recallrequest_users b ON b.recallrequest_id = a.id
                       INNER JOIN wpqa_terms c ON c.term_id = a.recall_status_id
                       INNER JOIN wpqa_users u ON u.ID = b.user_id
-                      INNER JOIN wpqa_wpsc_ticket d ON d.id = a.box_id
-                      INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.ticket_id = d.id
+                      INNER JOIN wpqa_wpsc_epa_boxinfo e ON e.id = a.box_id
                       INNER JOIN wpqa_wpsc_epa_storage_location f ON e.storage_location_id = f.id
                       INNER JOIN wpqa_terms t ON t.term_id = f.digitization_center
                       WHERE a.recall_id = " . $recall_id . " AND u.ID <> " . $current_user->ID);

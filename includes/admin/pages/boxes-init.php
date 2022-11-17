@@ -370,6 +370,11 @@ jQuery(document).ready(function(){
 */
 	var agent_permission_label = '<?php echo $agent_permissions["label"] ?>';
 	var is_requester = false;
+  	var is_requester_pallet = false;
+  	if(agent_permission_label == 'Requester Pallet' ){
+      is_requester_pallet = true;
+    }
+  
 	if( agent_permission_label == 'Requester' || agent_permission_label == 'Requester Pallet' ) {
 		is_requester = true;
 	}
@@ -457,8 +462,9 @@ jQuery(document).ready(function(){
 				var sbs = jQuery('#searchByStatus').val(); 
 				var sbu = jQuery('#searchByUser').val();  
 				var aaVal = jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get();     
-				var aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get(); 
-				//console.log({is_requester:is_requester});
+				var aaName = jQuery(".searched-user").map(function(){return jQuery(this).text();}).get();
+              	//var is_requester = is_requester;
+				console.log({is_requester:is_requester});
 				// Append to data
 				data.searchGeneric = sg;
 				data.searchByBoxID = boxid;
@@ -472,6 +478,7 @@ jQuery(document).ready(function(){
 				data.searchByUserAAVal = aaVal;
 				data.searchByUserAAName = aaName;
 				data.is_requester = is_requester;
+              	data.is_requester_pallet = is_requester_pallet;
 			
 			}
 		},

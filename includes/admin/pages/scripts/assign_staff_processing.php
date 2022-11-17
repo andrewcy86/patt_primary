@@ -302,14 +302,13 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(DISTINCT a.box_id) as allcount 
+$sel = mysqli_query($con,"select count(a.box_id) as allcount 
 FROM wpqa_wpsc_epa_boxinfo_userstatus as userStatus
 
 INNER JOIN wpqa_wpsc_epa_boxinfo a ON a.id = userStatus.box_id
 INNER JOIN wpqa_terms f ON f.term_id = a.box_status
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 LEFT JOIN wpqa_users g ON g.ID = userStatus.user_id
-LEFT JOIN wpqa_wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN wpqa_terms t ON t.term_id = d.digitization_center
 
@@ -330,7 +329,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 // filter results
-$sel = mysqli_query($con,"SELECT DISTINCT
+/*$sel = mysqli_query($con,"SELECT DISTINCT
 COUNT(DISTINCT a.box_id) AS allcount
 
 
@@ -343,12 +342,13 @@ INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 WHERE (b.active <> 0) AND (a.id <> -99999) AND (userStatus.user_id <> " . $current_user->ID . ") " .$searchQuery );
 
 $records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];
+$totalRecordwithFilter = $records['allcount'];*/
 
 ## Fetch records
 //REVIEW
 $boxQuery = "
-SELECT DISTINCT
+SELECT 
+COUNT(*) OVER() AS total_count,
 a.box_id, 
 a.id as dbid, 
 a.box_previous_status as box_previous_status,
@@ -466,7 +466,6 @@ INNER JOIN wpqa_wpsc_epa_boxinfo a ON a.id = userStatus.box_id
 INNER JOIN wpqa_terms f ON f.term_id = a.box_status
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 LEFT JOIN wpqa_users g ON g.ID = userStatus.user_id
-LEFT JOIN wpqa_wpsc_ticketmeta as z ON z.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN wpqa_terms t ON t.term_id = d.digitization_center
 
@@ -490,7 +489,7 @@ $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
   	$request_id = $row['request_id_new'];
-  	
+  	$totalRecordwithFilter = $row['total_count'];
   
   	// Get Box ID Flag
   	$box_id_flag_query = $wpdb->get_row("SELECT 
@@ -801,6 +800,9 @@ $action_status = '';
 }
 
 
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
 
 ## Response
 $obj = array(

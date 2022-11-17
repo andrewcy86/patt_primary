@@ -45,38 +45,24 @@ INNER JOIN wpqa_wpsc_epa_storage_location h ON g.storage_location_id = h.id
 INNER JOIN wpqa_terms t ON t.term_id = h.digitization_center
 INNER JOIN wpqa_users u ON u.ID = b.user_id
 
-WHERE a.return_complete = 0 AND u.ID <> " . $current_user->ID);
+WHERE a.return_complete = 0 AND u.ID != " . $current_user->ID);
 
 $records = mysqli_fetch_assoc($query);
 $totalRecords = $records['allcount'];
 
-## Total number of records with filtering
-$query = mysqli_query($con, "SELECT COUNT(DISTINCT a.return_id) as allcount 
-FROM " . $wpdb->prefix . "wpsc_epa_return a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
-INNER JOIN wpqa_wpsc_epa_return_items e ON e.return_id = a.id
-INNER JOIN wpqa_wpsc_epa_boxinfo g ON g.id = e.box_id
-INNER JOIN wpqa_wpsc_epa_storage_location h ON g.storage_location_id = h.id
-INNER JOIN wpqa_terms t ON t.term_id = h.digitization_center
-INNER JOIN wpqa_users u ON u.ID = b.user_id
 
-WHERE a.return_complete = 0 AND u.ID <> " . $current_user->ID);
-
-/*$query = mysqli_query($con, "SELECT COUNT(a.return_id) as allcount
-FROM " . $wpdb->prefix . "wpsc_epa_return a
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_return_users b ON b.return_id = a.id
-INNER JOIN " . $wpdb->prefix . "terms c ON c.term_id = a.return_status_id
-INNER JOIN " . $wpdb->prefix . "wpsc_epa_shipping_tracking d ON d.id = a.shipping_tracking_id
-WHERE a.return_complete = 0 AND a.return_status_id NOT IN (".$decline_received_tag.",".$decline_decline_complete_tag.",".$decline_decline_cancelled_tag.",".$decline_decline_expired_tag.") AND a.id != '-99999' AND b.user_id != " . $get_current_user_id);
-*/
-$records = mysqli_fetch_assoc($query);
-$totalRecordwithFilter = $records['allcount'];
 
 ## Base Query for Declines assigned to current user
-$baseQuery = "SELECT DISTINCT a.return_id, c.name as decline_status, a.return_date, a.return_status_id, a.return_initiated, a.return_complete,
-d.tracking_number, t.name as digitization_center,
+$baseQuery = "SELECT DISTINCT
+DENSE_RANK() OVER(ORDER BY a.return_id) AS total_count,
+a.return_id, 
+c.name as decline_status, 
+a.return_date, 
+a.return_status_id, 
+a.return_initiated, 
+a.return_complete,
+d.tracking_number, 
+t.name as digitization_center,
 
 CASE
 
@@ -105,7 +91,7 @@ INNER JOIN wpqa_wpsc_epa_storage_location h ON g.storage_location_id = h.id
 INNER JOIN wpqa_terms t ON t.term_id = h.digitization_center
 INNER JOIN wpqa_users u ON u.ID = b.user_id
 
-WHERE a.return_complete = 0 AND u.ID <> " . $current_user->ID . "
+WHERE a.return_complete = 0 AND u.ID != " . $current_user->ID . "
 ORDER BY a.id, ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $declineRecords = mysqli_query($con, $baseQuery);
 $data = array();
@@ -114,6 +100,7 @@ $data = array();
 while ($row = mysqli_fetch_assoc($declineRecords)) {
   
   	$return_id = $row['return_id'];
+  	$totalRecordwithFilter = $row['total_count'];
   
   	// Get user name foe employee assigend column
   	$user_display_name_query = $wpdb->get_row("SELECT DISTINCT u.display_name
@@ -190,6 +177,10 @@ $action_status = '';
    $icons = '';
 }
 
+
+if (empty($totalRecordwithFilter)) {
+  $totalRecordwithFilter = 0;
+}
 
 ## Response
 $response = array(

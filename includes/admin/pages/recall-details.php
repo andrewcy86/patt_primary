@@ -327,7 +327,8 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 ?>
 <!-- PATT Begin -->
 <!-- <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="window.open('<?php echo $print_button_link ?>','_blank')"><i aria-hidden="true" class="fas fa-tags" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button> -->
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="print_label();"><i aria-hidden="true" class="fas fa-tags" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button>
+<!-- <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_pdf_label_btn" style="" onclick="print_label();"><i aria-hidden="true" class="fas fa-tags" title="Print Label"></i><span class="sr-only">Print Label</span> Print Label</button> -->
+      <?php do_action('wpsc_after_indidual_ticket_static_action_btn',$recall_obj->ticket_id);?>
 		<!-- PATT End -->
 		
 		

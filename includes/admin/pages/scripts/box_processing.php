@@ -26,13 +26,13 @@ $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 $searchValue = $_POST['search']['value']; // Search value
 
-if($columnName == 'ticket_priority') {
+/*if($columnName == 'ticket_priority') {
 $columnName = 'ticket_priority_order';
 } elseif($columnName == 'status') {
 $columnName = 'box_status_order';
 } else {
-$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
-}
+$columnName = $_POST['columns'][0]['data']; // Column name
+}*/
 ## Custom Field value
 $searchByProgramOffice = $_POST['searchByProgramOffice'];
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
@@ -45,10 +45,17 @@ $searchByUser = $_POST['searchByUser'];
 $searchByUserAAVal = $_REQUEST['searchByUserAAVal'];
 $searchByUserAAName = $_REQUEST['searchByUserAAName'];
 $is_requester = $_POST['is_requester'];
+$is_requester_pallet = $_POST['is_requester_pallet'];
 $totalRecordwithFilter = '';
 
+if($is_requester_pallet == 'true') {
+$columnName = $_POST['columns'][0]['data']; // Column name
+} else {
+$columnName = ' a.box_id '; 
+}
+
 ## Search 
-$searchQuery = " ";
+$searchQuery = "";
 
 //Add Pallet Support
 //Extract ID and determine if it is Box or Pallet
@@ -139,13 +146,15 @@ if( $is_requester == 'true' ){
 	
 	$get_aa_ship_groups = Patt_Custom_Func::get_requestor_group($current_user->ID);
     $user_list = implode(",", $get_aa_ship_groups);
+  
+  	 $searchQuery .= " and ( (b.customer_name ='".$current_user->display_name."') ) ";
 	
-	if(!empty($user_list)) {
+	/*if(!empty($user_list)) {
 	    $searchQuery .= " and ( (b.customer_name ='".$user_name."') OR um.user_id IN ($user_list) ) ";
 	}
 	else {
 	    $searchQuery .= " and (b.customer_name ='".$user_name."') ";
-	}
+	}*/
 }
 
 
@@ -454,8 +463,11 @@ LEFT JOIN (   SELECT a.box_id, a.return_id
    WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
    GROUP  BY a.box_id ) AS g ON g.box_id = a.id
    
-WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery." 
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $searchQuery . " AND 1 ".$ecms_sems."
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+
+/*. $ecms_sems . " AND 1 ".$searchQuery." 
+order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;*/
 
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();

@@ -279,12 +279,6 @@ $boxcommaList = implode(', ', $todo_boxes_array);
 		if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
 		{
 		?>
-				<!--<select id='searchByUser' aria-label="Search by User">
-					<option value=''>-- Select User --</option>
-					<option value='mine'>Mine</option>
-					<option value='not assigned'>Not Assigned</option>
-					<option value='search for user'>Search for User</option>
-				</select>-->
                   
                 <select id='searchByUserLocation' aria-label="Search by User">
 					<option value=''>-- Select Employee Assigned --</option>
@@ -727,21 +721,26 @@ $boxcommaList = implode(', ', $todo_boxes_array);
 				jQuery('#searchByStatus').val(data.sbs);
               
               	jQuery('#searchByUser').val(data.sbu);
-				jQuery('#user_search').val(data.aaName);
-				
-				// If data values aren't defined then set them as blank arrays.
-				if( typeof data.aaVal == 'undefined' ) {
-					data.aaVal = [];
-					data.aaName = [];				
-				}
-				
-				data.aaVal.forEach( function(val, key) {
-					let html_str = get_display_user_html(data.aaName[key], val); 
-					jQuery('#assigned_agents').append(html_str);
-				});
-				//let html_str = get_display_user_html(ui.item.label, ui.item.flag_val);
-				//jQuery('#assigned_agents').append(html_str);
-				//jQuery("input[name='assigned_agent[]']").map(function(){return jQuery(this).val();}).get(); //load saved users   
+                  <?php		
+              if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
+              {
+              ?>
+                          jQuery('#searchByUser').val(data.sbu);
+                          jQuery('#user_search').val(data.aaName);
+
+                          // If data values aren't defined then set them as blank arrays.
+                          if( typeof data.aaVal == 'undefined' ) {
+                              //console.log('undefined!!!');
+                              data.aaVal = [];
+                              data.aaName = [];				
+                              //console.log(data);
+                          }
+
+                          data.aaVal.forEach( function(val, key) {
+                              let html_str = get_display_user_html(data.aaName[key], val); 
+                              jQuery('#assigned_agents').append(html_str);
+                          });
+              <?php } ?>
 			},
 			'serverMethod': 'post',
 			'searching': false, // Remove default Search Control

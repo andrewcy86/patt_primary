@@ -88,9 +88,7 @@ date_default_timezone_set('America/New_York');
                         " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id",ARRAY_A );
 
                         // get column names
-                        // JM - 10/26/2022 - Removed Request Priority, replaced with Current Box Status
-                        //$box_columnNamesList = ['Request ID','Box ID','Request Priority','Current Box Status','Request Created Date', 'Timestamp Status', 'Timestamp', 'Date Difference'];
-                        $box_columnNamesList = ['Request ID', 'Box ID', 'Current Box Status', 'Request Created Date', 'Timestamp Status', 'Timestamp', 'Date Difference'];
+                        $box_columnNamesList = ['Request ID','Box ID','Request Priority','Current Box Status','Request Created Date', 'Timestamp Status', 'Timestamp', 'Date Difference'];
                         
 
                         $box_csv_output.="Last Updated: ".date("Y-m-d H:i",time()).",,,,,,";

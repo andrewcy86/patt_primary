@@ -391,15 +391,13 @@ jQuery(document).ready(function(){
           ?>
 
                 if(<?php echo $ticketmeta_ticket_id ?> == ticket_id) {
-                  //return '<input type="checkbox" class="dt-checkboxes" aria-label="Checkbox" disabled>';
                   return '';
                 } 
           <?php    
               }
           ?>
-          		else {
-                  return '<input type="checkbox" class="dt-checkboxes" aria-label="Checkbox">';
-                }
+
+           return '<input type="checkbox" class="dt-checkboxes" aria-label="Checkbox">';
         }
        }, 
        { data: 'request_id_flag', 'class' : 'text_highlight' },
