@@ -445,9 +445,24 @@ function wpsc_delete_approval_widget(action, request_id, attachment_id){
 // Associated document upload tabs shows only if files uploaded option selected
 jQuery(document).on('change' ,'#are-these-documents-used-for-the-following', function(){
     jQuery('#wpsc_frm_create_ticket .request-associated-docs').hide();
+  	jQuery('#wpsc_frm_create_ticket .date_dropdown').hide();
     var selected_val = jQuery(this).val();
     if( 'files_uploaded' == selected_val ) {
         jQuery('#wpsc_frm_create_ticket .request-associated-docs').show();
+      	jQuery('#wpsc_frm_create_ticket .date_dropdown').show();
+    }
+  	else {
+        jQuery('#wpsc_frm_create_ticket .due_date_calendar').hide();
+        jQuery('#wpsc_frm_create_ticket #date').val('no');
+    }
+} );
+
+// Due Date option shows only if a date is needed
+jQuery(document).on('change' ,'#date', function(){
+    jQuery('#wpsc_frm_create_ticket .due_date_calendar').hide();
+    var selected_val = jQuery(this).val();
+    if( 'yes' == selected_val ) {
+        jQuery('#wpsc_frm_create_ticket .due_date_calendar').show();
     }
 } );
 

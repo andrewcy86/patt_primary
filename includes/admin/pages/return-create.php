@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+
 //$GLOBALS['id'] = $_GET['id'];
 //$recall_submit_successful = $_GET['success'];
 //$recall_submit_successful_id = $_GET['id'];
@@ -644,6 +646,62 @@ margin: 0px 0px 25px 15px;
 	}); // End jQuery Ready
 	
 	function onAddTag(tag) {
+      	// Should only apply to requesters
+		// Wrap this in an if stmt for requesters
+		<?php
+			global $current_user, $wpscfunction, $wpdb;
+
+			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Agent') ) {
+
+				// Get requestor group ids
+				$requestor_group_ids_arr = Patt_Custom_Func::get_requestor_group($current_user->ID);
+
+				if(!empty($requestor_group_ids_arr[0])){
+					$user_id_1 = $requestor_group_ids_arr[0];
+				}
+				else {
+					$user_id_1 = 0;
+				}
+
+				if(!empty($requestor_group_ids_arr[1])){
+					$user_id_2 = $requestor_group_ids_arr[1];
+				} else {
+					$user_id_2 = 0;
+				}
+				
+
+				$final_box_list_arr = array();
+
+				// Get array of box lists that associated with requestor group ids
+				$get_box_list_arr = $wpdb->get_results("
+				SELECT b.box_id
+				FROM wpqa_wpsc_epa_boxinfo as b
+				INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
+				INNER JOIN wpqa_users as d ON c.customer_name = d.display_name
+				WHERE d.ID = 1 OR d.ID = 4");
+				//WHERE d.ID = " . $user_id_1 . " OR d.ID = " . $user_id_2);
+				
+
+				foreach($get_box_list_arr as $box_list_id) {
+					$box_id = $box_list_id->box_id;
+
+					array_push($final_box_list_arr, $box_id);
+				}
+		?>
+		
+				// Check if tag is equal to any of the box lists within the returned array
+				var box_list_id_arr = <?php echo json_encode($final_box_list_arr); ?>;
+				console.log('box list arr ' + JSON.stringify(box_list_id_arr));
+				console.log('box list arr count ' + box_list_id_arr.length);
+
+				if(!box_list_id_arr.includes(tag)){
+					alert('Please only add a box id associated with your requestor group.');
+					jQuery("#searchByID").removeTag(tag);
+					return;
+				}
+		
+		<?php	} ?>
+      
 	    dataTable.state.save();
 		dataTable.draw();
 		console.log('Search IDs: '+jQuery('#searchByID').val());

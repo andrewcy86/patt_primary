@@ -234,7 +234,15 @@ THEN
 ELSE
 999
 END
- as ticket_status_order
+ as ticket_status_order,
+ 
+ CONCAT (
+   CASE
+   WHEN (z.meta_key = 'due_date') 
+   THEN CONCAT (z.meta_value)
+   ELSE 'No Due Date'
+   END
+   ) as due_date
 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
@@ -409,6 +417,7 @@ if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
 }
 
    $data[] = array(
+     "due_date"=>$row['due_date'],
      "request_id"=>$row['request_id'],
      "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$priority,
