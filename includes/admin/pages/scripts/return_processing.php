@@ -420,7 +420,7 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 	}
 	
 	if(($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager')){	
-    //$icons .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Decline To Do</span></span>';
+    $icons .= ' <span style="font-size: 1.0em; color: #8b0000;" onclick="edit_decline_to_do(\''.$row['return_id'].'\')" class="assign_agents_icon"><i class="fas fa-clipboard-check" aria-hidden="true" title="Decline To Do"></i><span class="sr-only">Decline To Do</span></span>';
     
     
     $decline_expired_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-expired' );

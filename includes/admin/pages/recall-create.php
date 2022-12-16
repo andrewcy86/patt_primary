@@ -1005,8 +1005,6 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
 				INNER JOIN wpqa_users as d ON c.customer_name = d.display_name
                 WHERE d.ID = " . $user_id_1 . " OR d.ID = " . $user_id_2);
-				//WHERE d.ID = 1 OR d.ID = 4");
-				//WHERE d.ID = " . $user_id_1 . " OR d.ID = " . $user_id_2);
 				
 
 				foreach($get_box_list_arr as $box_list_id) {
@@ -1014,18 +1012,47 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 
 					array_push($final_box_list_arr, $box_id);
 				}
+              
+              $final_folderfile_list_arr = array();
+
+              // Get array of folder/files that are associated with requestor group ids
+              $get_folderfile_arr = $wpdb->get_results("
+				SELECT a.folderdocinfofile_id 
+				FROM wpqa_wpsc_epa_folderdocinfo_files as a
+				INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
+				INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+				INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
+				INNER JOIN wpqa_users as c ON b.customer_name = c.display_name
+                WHERE c.ID = " . $user_id_1 . " OR c.ID = " . $user_id_2);
+				
+
+
+              foreach($get_folderfile_arr as $folderfile) {
+                $folderfile_id = $folderfile->folderdocinfofile_id;
+
+                array_push($final_folderfile_list_arr, $folderfile_id);
+              }
 		?>
 		
-				// Check if tag is equal to any of the box lists within the returned array
+				// Check if tag is equal to any of the box lists or folder/files within the returned array
 				var box_list_id_arr = <?php echo json_encode($final_box_list_arr); ?>;
+                var folderfile_list_arr = <?php echo json_encode($final_folderfile_list_arr); ?>;
 				console.log('box list arr ' + JSON.stringify(box_list_id_arr));
 				console.log('box list arr count ' + box_list_id_arr.length);
+      			console.log('box list arr ' + JSON.stringify(folderfile_list_arr));
+				console.log('box list arr count ' + folderfile_list_arr.length);
 
-				if(!box_list_id_arr.includes(tag)){
-					alert('Please only add a box id associated with your requestor group.');
+				if(!box_list_id_arr.includes(String(tag)) && !folderfile_list_arr.includes(String(tag))){
+					alert('Please only add a box or folder/file id associated with your requestor group.');
 					jQuery("#searchByID").removeTag(tag);
 					return;
 				}
+      
+      			/*if(!folderfile_list_arr.includes(tag)){
+					alert('Please only add a folder/file id associated with your requestor group.');
+					jQuery("#searchByID").removeTag(tag);
+					return;
+				}*/
       
       	<?php } ?>
 	
