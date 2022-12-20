@@ -61,7 +61,7 @@ if ( ($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 <!--       <button type="button" id="wppatt_change_status_btn" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-retweet"></i><span class="sr-only" title="Change Status">Change Status</span> Change Status</button>       -->
   
 <!--       <button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=recalldetails&id=R-0000001';" class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-vial" title="Recall Details"></i><span class="sr-only">Recall Details</span> Recall Details: R-0000001 </button> -->
-      r
+      
 <!--       <button type="button" id="wppatt_return_btn"  class="btn btn-sm wpsc_action_btn" style="<?php echo $create_recall_btn_css?>"><i class="fas fa-truck-loading" title="Recall"></i><span class="sr-only">Recall </span> Recall </button> -->
 <!-- PATT End -->      
       
