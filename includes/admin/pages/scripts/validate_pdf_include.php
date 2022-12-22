@@ -33,7 +33,7 @@ if ($obj_id = 'LDF_1_2_6_ldf_09019588800598d8'){
 
 if ($obj_id != '') {
 //echo WPPATT_UPLOADS;
-header("Content-type: application/pdf");
+//header("Content-type: application/pdf");
 
 //echo $filename;
 
@@ -58,8 +58,7 @@ $request = $s3->createPresignedRequest($cmd, '+20 minutes');
 
 $presignedUrl = (string)$request->getUri();
 
-echo $presignedUrl;
-
+echo '<iframe src="'+$presignedUrl+'"></iframe>';
 
 } else {
 echo 'PDF Failed to render.';
