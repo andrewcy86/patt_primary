@@ -51,9 +51,4 @@ $presignedUrl = (string)$request->getUri();
 
 ?>
 
-<body>
-<?php echo $presignedUrl; ?>
-
-<iframe src="<?php echo $presignedUrl; ?>"></iframe>
-
-</body>
+<iframe src="<?php echo $presignedUrl; ?>" width="100%" height="100%"></iframe>
