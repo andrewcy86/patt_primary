@@ -11,7 +11,7 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
-$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 
 $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
