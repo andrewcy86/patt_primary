@@ -49,13 +49,12 @@ $postvarspid = $pages[0];
     
     $folderdocinfofile_id_initial = $get_folderdocid_initial->folderdocinfofile_id;  
     $folderdocinfofile_id_count = $get_folderdocid_initial->count;
+    $switch_file_hash = $get_folderdocid_initial->folderdocinfofile_id;
     
 echo $box_status;
 
 echo $box_ticket_status;
 echo $folderdocinfofile_id_validation;
-
-$switch_file_hash = $folderdocinfofile_id_initial;
 
 if($folderdocinfofile_id_count == 0) {
 echo'<script type="text/javascript" id="runscript">switchFile("");switchInfo("");</script>';
@@ -121,7 +120,7 @@ if ($next >= 0 && $next < count($pages)) {
     WHERE id = '".$pages[$next]."'");
     
     $folderdocinfofile_id_next = $get_folderdocid_next->folderdocinfofile_id;    
-    $folderdocinfofile_id_next->$get_folderdocid_next->folderdocinfofile_id;
+    $switch_file_hash = $get_folderdocid_next->folderdocinfofile_id;
     
     echo '<button class="btn" onclick="getPaging(' . $pages[$next] . ');switchInfo(\'' . $folderdocinfofile_id_next . '\');switchFile(\'' . $switch_file_hash . '\');">Next <i class="fas fa-angle-right" aria-hidden="true" title="Next"></i><span class="sr-only">Next</span></button>';
 
