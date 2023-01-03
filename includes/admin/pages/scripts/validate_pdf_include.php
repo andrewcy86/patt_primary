@@ -15,6 +15,8 @@ $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
 
 $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
+$obj_id = htmlspecialchars($_GET["obj_id"]);
+
 require_once($dir."/vendor/autoload.php");
 
 function bucket() {
@@ -51,4 +53,6 @@ $presignedUrl = (string)$request->getUri();
 
 ?>
 
-<iframe src="<?php echo $presignedUrl; ?>" width="100%" height="100%"></iframe>
+<?php echo $obj_id; ?>
+
+<iframe src="<?php echo $presignedUrl; ?>" frameborder="0" scrolling="no" seamless="seamless" style="display:block; width:100%; height:100vh;"></iframe>

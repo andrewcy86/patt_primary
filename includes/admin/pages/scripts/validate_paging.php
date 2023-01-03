@@ -60,7 +60,7 @@ if($folderdocinfofile_id_count == 0) {
 echo'<script type="text/javascript" id="runscript">switchFile("");switchInfo("");</script>';
 } else {  
 echo'<script type="text/javascript" id="runscript">
-switchFile("LDF_1_2_6_ldf_09019588800598d8");switchInfo(\'' . $folderdocinfofile_id_initial . '\');
+switchFile(\'' . $folderdocinfofile_id_initial . '\');switchInfo(\'' . $folderdocinfofile_id_initial . '\');
 </script>';
 }
 
