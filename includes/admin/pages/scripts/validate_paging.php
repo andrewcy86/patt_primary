@@ -94,7 +94,8 @@ $key = array_search($current, $pages);
     WHERE id = '".$pages[$key]."'");
 
     $folderdocinfofile_id_current = $get_folderdocid_current->folderdocinfofile_id;  
-    
+    $switch_file_hash = $get_folderdocid_current->folderdocinfofile_id;
+
 // previous page
 $prev = $key - 1;
 if ($prev >= 0 && $prev < count($pages)) {
@@ -104,6 +105,7 @@ if ($prev >= 0 && $prev < count($pages)) {
     WHERE id = '".$pages[$prev]."'");
     
     $folderdocinfofile_id_prev = $get_folderdocid_prev->folderdocinfofile_id;
+    $switch_file_hash->$get_folderdocid_prev->folderdocinfofile_id;
 
     echo '<button class="btn" onclick="getPaging(' . $pages[$prev] . ');switchInfo(\'' . $folderdocinfofile_id_prev . '\');switchFile(\'' . $switch_file_hash . '\');"><i class="fas fa-angle-left" aria-hidden="true" title="Previous"></i><span class="sr-only">Previous</span>  Previous</button>&nbsp;&nbsp;&nbsp;';
         
@@ -119,6 +121,7 @@ if ($next >= 0 && $next < count($pages)) {
     WHERE id = '".$pages[$next]."'");
     
     $folderdocinfofile_id_next = $get_folderdocid_next->folderdocinfofile_id;    
+    $folderdocinfofile_id_next->$get_folderdocid_next->folderdocinfofile_id;
     
     echo '<button class="btn" onclick="getPaging(' . $pages[$next] . ');switchInfo(\'' . $folderdocinfofile_id_next . '\');switchFile(\'' . $switch_file_hash . '\');">Next <i class="fas fa-angle-right" aria-hidden="true" title="Next"></i><span class="sr-only">Next</span></button>';
 
