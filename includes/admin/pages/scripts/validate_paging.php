@@ -104,7 +104,7 @@ if ($prev >= 0 && $prev < count($pages)) {
     WHERE id = '".$pages[$prev]."'");
     
     $folderdocinfofile_id_prev = $get_folderdocid_prev->folderdocinfofile_id;
-    $switch_file_hash->$get_folderdocid_prev->folderdocinfofile_id;
+    $switch_file_hash = $get_folderdocid_prev->folderdocinfofile_id;
 
     echo '<button class="btn" onclick="getPaging(' . $pages[$prev] . ');switchInfo(\'' . $folderdocinfofile_id_prev . '\');switchFile(\'' . $switch_file_hash . '\');"><i class="fas fa-angle-left" aria-hidden="true" title="Previous"></i><span class="sr-only">Previous</span>  Previous</button>&nbsp;&nbsp;&nbsp;';
         
