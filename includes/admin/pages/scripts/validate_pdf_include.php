@@ -55,8 +55,10 @@ $s3 = new Aws\S3\S3Client([
     
     $response = curl_exec($curl);
     
-    $new_response = str_replace("file:content","file_content",$response);
+    $find = ["file:content", "arms:disposition_date", "arms:epa_contact"];
+    $replace   = ["file_content", "disposition_date", "epa_contact"];
     
+    $new_response = str_replace($find, $replace, $response);
     
     curl_close($curl);
     
@@ -65,31 +67,59 @@ $s3 = new Aws\S3\S3Client([
     $child2exists = count($decoded->entries[0]->uid);
 
     if ($child2exists == 1) {
-        
+
         $uid = $decoded->entries[0]->uid;
         $file_key = $decoded->entries[0]->properties->file_content->digest;
+        $file_name = $decoded->entries[0]->properties->file_content->name;
 
-        $cmd = $s3->getCommand('GetObject', [
+        $disposition_date = $decoded->entries[0]->properties->disposition_date;
+        $custodian = $decoded->entries[0]->properties->epa_contact;
+
+        $obj_data = $s3->headObject([
             'Bucket' => bucket(),
-            'Key' => 'nuxeodev/'.$file_key,
-            #'ResponseContentDisposition' => 'inline; filename="'.$file_key.'.pdf"',
-            'ResponseContentDisposition' => 'inline',
-            'ResponseContentType' => 'application/pdf'
-            
-        ]);
+            'Key'    => 'nuxeodev/'.$file_key
+         ]);
+
+         if($obj_data['ContentLength'] <= 500000000) {
+            $cmd = $s3->getCommand('GetObject', [
+                'Bucket' => bucket(),
+                'Key' => 'nuxeodev/'.$file_key,
+                //'Key' => $file_key,
+                'ResponseContentDisposition' => 'inline; filename="'.$file_name.'"',
+                'ResponseContentType' => 'application/pdf'
+                
+            ]);
+            } else {
+              $cmd = $s3->getCommand('GetObject', [
+                'Bucket' => bucket(),
+                'Key' => 'nuxeodev/'.$file_key,
+                //'Key' => $file_key,
+                'ResponseContentDisposition' => 'attachment; filename="'.$file_name.'"',
+                'ResponseContentType' => 'application/pdf'
+                
+            ]); 
+            }
         
         $request = $s3->createPresignedRequest($cmd, '+20 minutes');
         
         $presignedUrl = (string)$request->getUri();
 ?>
+
+<?php
+if($obj_data['ContentLength'] <= 500000000) {
+?>
 <iframe src="<?php echo $presignedUrl; ?>" frameborder="0" scrolling="no" seamless="seamless" style="display:block; width:100%; height:100vh;"></iframe>
+<?php
+} else {
+?>
+<a href="<?php echo $presignedUrl; ?>">Click here to Download</a>
+<?php
+}
+?>
+
 <?php 
 
     } else {
         echo "PDF Not Found. Check ARMS";
     }
 ?>
-
-<?php echo $obj_id; ?>
-
-

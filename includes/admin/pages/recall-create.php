@@ -986,12 +986,13 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					$user_id_1 = $requestor_group_ids_arr[0];
 				}
 				else {
-					$user_id_1 = 0;
+					$user_id_1 = $current_user->ID;
 				}
 
 				if(!empty($requestor_group_ids_arr[1])){
 					$user_id_2 = $requestor_group_ids_arr[1];
-				} else {
+				} 
+              	else {
 					$user_id_2 = 0;
 				}
 				

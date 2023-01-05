@@ -660,7 +660,7 @@ margin: 0px 0px 25px 15px;
 					$user_id_1 = $requestor_group_ids_arr[0];
 				}
 				else {
-					$user_id_1 = 0;
+					$user_id_1 = $current_user->ID;
 				}
 
 				if(!empty($requestor_group_ids_arr[1])){
