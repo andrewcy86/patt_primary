@@ -273,9 +273,9 @@ if( in_array($status_id, $alert_arr) ) {
 <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" aria-hidden="true" title="Alert"></i><span class="sr-only">Alert</span></span> Editing is disabled and cannot be completed in the <?php echo $status_name; ?> status.
 </div>
 
-/*<div class="alert alert-warning" role="alert">
+<div class="alert alert-warning" role="alert">
 <span style="font-size: 1em; color: #FFC300;"><i class="fas fa-exclamation-triangle" aria-hidden="true" title="Alert"></i><span class="sr-only">Alert</span></span> Rejections are final.
-</div>*/
+</div>
 <?php
 }
 ?>
