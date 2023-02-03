@@ -7,6 +7,7 @@
  * @package WordPress
  * @subpackage Twenty_Nineteen
  * @since 1.0.0 
+ * Related Files barcode_validate.php, barcode_lookup.php, arms_validate.php, validate_paging.php, arms_validation_processing.php, validate_pdf_include.php, update_validate.php
  */
 
 global $wpdb, $current_user, $wpscfunction;
@@ -66,7 +67,18 @@ $s3 = new Aws\S3\S3Client([
 
     $child2exists = count($decoded->entries[0]->uid);
 
-    if ($child2exists == 1) {
+    $object_key_check = 0;
+
+    $folderfile_details = $wpdb->get_row(
+		"SELECT object_key FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" . $obj_id . "'"
+	);
+
+    if(!empty($folderfile_details->object_key) && $folderfile_details->object_key == $decoded->entries[0]->uid) {
+        $object_key_check = 1;
+    }
+
+    if ($child2exists == 1 && $object_key_check == 1) {
 
         $uid = $decoded->entries[0]->uid;
         $file_key = $decoded->entries[0]->properties->file_content->digest;
@@ -120,6 +132,6 @@ if($obj_data['ContentLength'] <= 500000000) {
 <?php 
 
     } else {
-        echo "PDF Not Found. Check ARMS";
+        echo "PDF Not Found or does not exist in ARMS. Check ARMS";
     }
 ?>

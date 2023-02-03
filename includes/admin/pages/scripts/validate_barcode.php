@@ -16,7 +16,7 @@ if(isset($_POST['postvarsbarcode']) && isset($_POST['postvarsuser'])){
    $barcode = $_POST['postvarsbarcode'];
    $user_id = $_POST['postvarsuser'];
 
-$get_folderdocinfo_id = $wpdb->get_row("SELECT id, box_id
+$get_folderdocinfo_id = $wpdb->get_row("SELECT id, box_id, object_key
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE folderdocinfofile_id = '".$barcode."'");
 
@@ -73,6 +73,40 @@ if( ($total_files - $total_validation) == 0) {
   $data_where_box_status = array('id' => $get_folderdocinfo_box_id_val);
   $wpdb->update($table_box, $data_update_box_status, $data_where_box_status);
 }
+
+$curl = curl_init();
+
+//Call disposition endpoint
+
+//Check to see if diposition exists
+
+//Check for litigation hold
+
+//Check for AA'ship and Custodian
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/site/automation/ARMSDeclareRecord',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS =>'{"input": "6926ebe1-b53d-4ff1-aa32-3fab7a82d6f8","params": {"disposition": "2027-09-08T19:13:04.107Z","retention": "false","legalhold": "false","sensitive": "false","aaship": "H0000000","move": "true","custodian": "BFONTENO"}}',
+  CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json+nxrequest',
+    'Accept: application/json',
+    'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+  ),
+));
+
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+
+//Handle Error and Print to alert user.
 
 echo '<div class="alert alert-success"><i class="fas fa-check-circle" aria-hidden="true" title="Validated"></i><span class="sr-only">Validated</span> '.$barcode.' has been set to validated.</div>';
 

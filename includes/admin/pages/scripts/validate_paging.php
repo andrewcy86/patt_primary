@@ -1,5 +1,9 @@
 <?php
 
+/*
+* Related Files barcode_validate.php, barcode_lookup.php, arms_validate.php, validate_paging.php, arms_validation_processing.php, validate_pdf_include.php, update_validate.php
+*/
+
 global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));

@@ -256,7 +256,7 @@ LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
 
 
 
-WHERE 1 ".$searchQuery." AND a.active <> 0 AND b.id <> -99999 " . $ecms_sems . "
+WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)

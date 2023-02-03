@@ -16,7 +16,7 @@ if(isset($_POST['postvarsbarcode']) && isset($_POST['postvarsuser'])){
    $barcode = $_POST['postvarsbarcode'];
    $user_id = $_POST['postvarsuser'];
 
-$get_folderdocinfo_id = $wpdb->get_row("SELECT id, box_id
+$get_folderdocinfo_id = $wpdb->get_row("SELECT id, box_id, object_key
 FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
 WHERE folderdocinfofile_id = '".$barcode."'");
 
@@ -46,6 +46,8 @@ $data_where = array('id' => $get_folderdocinfo_id_val);
 $wpdb->update($wpdb->prefix.'wpsc_epa_folderdocinfo_files', $data_update, $data_where);
 
 do_action('wpppatt_after_rescan_document', $box_ticket_id, $barcode);
+
+//Perform Deletion
 
 echo '<div class="alert alert-danger" role="alert"><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span> '.$barcode.' has been set to re-scan.</div>';
 

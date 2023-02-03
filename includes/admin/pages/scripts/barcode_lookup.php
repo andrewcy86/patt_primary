@@ -1,5 +1,9 @@
 <?php
 
+/*
+* Related Files barcode_validate.php, barcode_lookup.php, arms_validate.php, validate_paging.php, arms_validation_processing.php, validate_pdf_include.php, update_validate.php
+*/
+
 global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
@@ -511,7 +515,8 @@ $folderfile_details = $wpdb->get_row(
     b.specific_use_restriction,
     b.rights_holder,
     b.source_dimensions,
-    b.program_area
+    b.program_area,
+    b.object_key
 	
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
     INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo c ON c.id = b.box_id
@@ -589,7 +594,7 @@ $folderfile_url = admin_url( 'admin.php?page=filedetails', 'https' );
    $box_po = Patt_Custom_Func::get_program_office_by_id($folderfile_folderdocinfofile_id, $type);
     
 //Checking to see if folder/file is associated with a request that both 1) exists 2) is not archived
-if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfile_details->ticket_id) == 1) {	
+if(!empty($folderfile_details->id) &&  Patt_Custom_Func::ticket_active($folderfile_details->ticket_id) == 1 && !empty($folderfile_details->object_key)) {	
 
 if ($pagetype == 0) {
             echo "<strong>Folder/File ID:</strong> <a href='".$folderfile_url."&id=" . $folderfile_folderdocinfofile_id . "' target='_blank'>" . $folderfile_folderdocinfofile_id . "</a>" . $status_icon . "<br />";
@@ -723,7 +728,8 @@ if ($pagetype == 0) {
 			}
 
 } else {
- echo 'Folder/file does not exist or is archived.';
+ echo "<strong>Folder/File ID:</strong> <a href='".$folderfile_url."&id=" . $folderfile_folderdocinfofile_id . "' target='_blank'>" . $folderfile_folderdocinfofile_id . "</a><br />";
+ echo 'Folder/file does not exist, is archived or has not yet been transferred to ARMS.';
 }
 
 //FAIL for all other barcodes       
