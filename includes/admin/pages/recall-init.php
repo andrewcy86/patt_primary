@@ -266,12 +266,12 @@ $box_id = $convert_box_id->id;
 <div id="test_test"></div>
 
 
-<link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
+<!--<link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>-->
   
 <script>
 
@@ -610,6 +610,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	
 	jQuery(document).on('keypress',function(e) {
 	    if(e.which == 13) {
+          	dataTable.state.save();
 	        dataTable.draw();
 	    }
 	});
@@ -620,6 +621,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 	});
 	
 	jQuery("#searchByDigitizationCenter").change(function(){
+      	dataTable.state.save();
 	    dataTable.draw();
 	});
 	
@@ -630,9 +632,11 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
 
     function onAddTag(tag) {
+      	dataTable.state.save();
     	dataTable.draw();
     }
     function onRemoveTag(tag) {
+      	dataTable.state.save();
     	dataTable.draw();
     }
 
