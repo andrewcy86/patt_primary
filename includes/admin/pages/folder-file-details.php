@@ -524,7 +524,7 @@ $recall_icon = '<span style="color: #000;margin-left:4px;"><i class="far fa-regi
 }
 echo $decline_icon.$recall_icon;
 		  ?>
-		  <!-- NDP wants to disable editing metadata
+		  <!-- NDP wants to disable editing metadata -->
 		  <?php 
 		  if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
@@ -533,7 +533,7 @@ echo $decline_icon.$recall_icon;
 			    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-folder-id-edit-icon'); ?>"><i class="far fa-question-circle"></i></a>
                 <?php }
 		  ?>
-		  -->
+		  
       </h3>
 
     </div>
@@ -576,7 +576,7 @@ echo $decline_icon.$recall_icon;
     			}
 			}
 
-			if (!empty($folderfile_date)) {
+			if (!empty($folderfile_date) && $folderfile_date != '0000-00-00') {
 			    echo "<strong>Creation Date:</strong> <p class='normal_p'>" . Patt_Custom_Func::get_converted_date($folderfile_date) . "</p><br />";
 			}
 			
@@ -607,8 +607,9 @@ echo $decline_icon.$recall_icon;
 			}
 			if (!empty($folderfile_site_id)) {
 				echo "<strong>Site ID #:</strong> <p class='normal_p'>" . $folderfile_site_id . "</p><br />";
+              // echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor(\''.$folderfile_folderdocinfofile_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit EPA Contact"></i><span class="sr-only">Edit EPA Contact</span></button>';
 			}
-			if (!empty($folderfile_close_date)) {
+			if (!empty($folderfile_close_date) && $folderfile_close_date != '0000-00-00') {
 			    echo "<strong>Close Date:</strong> <p class='normal_p'>" . Patt_Custom_Func::get_converted_date($folderfile_close_date) . "</p><br />";
 			}
 			
@@ -1338,6 +1339,7 @@ jQuery('#doc_relationship').on('click', function(){
 } );
 
 		function wpsc_get_folderfile_editor(doc_id){
+          console.log('doc id ' + doc_id);
 <?php
 			if ($folderfile_index_level == '1') { 
 ?>
@@ -1375,6 +1377,136 @@ function wpsc_get_epa_contact_editor(folderdocinfofile_id) {
 		jQuery('#wpsc_cat_name').focus();
 	});  
 }
+  
+function wpsc_get_epa_site_name_editor() {
+		//alert('edit tracking');
+		var shipping_tracking = jQuery('#shipping_tracking').text();
+		var shipping_carrier = jQuery('#shipping_carrier').text();
+		//alert('shipping tracking: '+shipping_tracking+' carrier: '+shipping_carrier);
+		
+		wpsc_modal_open('Edit Site Name');
+		
+		var data = {
+		    action: 'wppatt_recall_get_shipping',
+		    recall_id: recall_id,
+		    recall_ids: [recall_id],
+		    shipping_tracking: shipping_tracking,
+		    shipping_carrier: shipping_carrier,
+		    ticket_id: ticket_id,
+		    from_page: 'recall-details'		    
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	}
+  
+  function wpsc_get_epa_site_id_editor() {
+		//alert('edit tracking');
+		var shipping_tracking = jQuery('#shipping_tracking').text();
+		var shipping_carrier = jQuery('#shipping_carrier').text();
+		//alert('shipping tracking: '+shipping_tracking+' carrier: '+shipping_carrier);
+		
+		wpsc_modal_open('Edit Site ID');
+		
+		var data = {
+		    action: 'wppatt_recall_get_shipping',
+		    recall_id: recall_id,
+		    recall_ids: [recall_id],
+		    shipping_tracking: shipping_tracking,
+		    shipping_carrier: shipping_carrier,
+		    ticket_id: ticket_id,
+		    from_page: 'recall-details'		    
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	}
+  
+  function wpsc_get_epa_title_editor() {
+		//alert('edit tracking');
+		var shipping_tracking = jQuery('#shipping_tracking').text();
+		var shipping_carrier = jQuery('#shipping_carrier').text();
+		//alert('shipping tracking: '+shipping_tracking+' carrier: '+shipping_carrier);
+		
+		wpsc_modal_open('Edit Title');
+		
+		var data = {
+		    action: 'wppatt_recall_get_shipping',
+		    recall_id: recall_id,
+		    recall_ids: [recall_id],
+		    shipping_tracking: shipping_tracking,
+		    shipping_carrier: shipping_carrier,
+		    ticket_id: ticket_id,
+		    from_page: 'recall-details'		    
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	}
+  
+  function wpsc_get_epa_creator_editor() {
+		//alert('edit tracking');
+		var shipping_tracking = jQuery('#shipping_tracking').text();
+		var shipping_carrier = jQuery('#shipping_carrier').text();
+		//alert('shipping tracking: '+shipping_tracking+' carrier: '+shipping_carrier);
+		
+		wpsc_modal_open('Edit Creator');
+		
+		var data = {
+		    action: 'wppatt_recall_get_shipping',
+		    recall_id: recall_id,
+		    recall_ids: [recall_id],
+		    shipping_tracking: shipping_tracking,
+		    shipping_carrier: shipping_carrier,
+		    ticket_id: ticket_id,
+		    from_page: 'recall-details'		    
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	}
+  
+  function wpsc_get_epa_creation_date_editor() {
+		//alert('edit tracking');
+		var shipping_tracking = jQuery('#shipping_tracking').text();
+		var shipping_carrier = jQuery('#shipping_carrier').text();
+		//alert('shipping tracking: '+shipping_tracking+' carrier: '+shipping_carrier);
+		
+		wpsc_modal_open('Edit Creation Date');
+		
+		var data = {
+		    action: 'wppatt_recall_get_shipping',
+		    recall_id: recall_id,
+		    recall_ids: [recall_id],
+		    shipping_tracking: shipping_tracking,
+		    shipping_carrier: shipping_carrier,
+		    ticket_id: ticket_id,
+		    from_page: 'recall-details'		    
+		};
+		jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+// 		    jQuery('#wpsc_popup_body').html(response_str);		    
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		}); 
+	}
 </script>
 
 
