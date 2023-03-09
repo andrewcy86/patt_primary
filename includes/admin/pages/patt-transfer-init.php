@@ -495,7 +495,7 @@ jQuery(document).ready(function(){
 	if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet'))
 	{
 	?>
-			{ data: 'folderdocinfo_id', 'title': 'Select All Checkbox'},
+			{ data: 'db_id', 'title': 'Select All Checkbox'},
 
 	<?php
 	}

@@ -164,6 +164,14 @@ $wpdb->update($table_name, $data_update, $data_where);
 
 if ($get_validation_val == 0){
 
+// Move record from Unpublished to the Org folder
+$get_folderdocinfofiles = $wpdb->get_row("SELECT a.id, a.box_id, a.object_key, a.close_date, c.Schedule_Item_Number as record_schedule, d.freeze_approval, a.access_restriction, a.use_restriction, a.lan_id, b.program_office_id, a.lan_id
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id 
+INNER JOIN " . $wpdb->prefix . "epa_record_schedule c ON c.id = b.record_schedule_id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket d ON d.id = b.ticket_id
+WHERE a.folderdocinfofile_id = '".$key."'");
+
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfofile_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
