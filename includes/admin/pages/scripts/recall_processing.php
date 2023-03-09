@@ -66,17 +66,21 @@ $searchQuery = " ";
 if( $recall_ID_array_stripped ) {
 	$recall_id_str = implode('\',\'',$recall_ID_array_stripped);
 	$recall_id_str = "'".$recall_id_str."'";
-	$searchQuery .= " AND recall_id IN (".$recall_id_str.") ";
+	$searchQuery .= " AND (recall_id IN (".$recall_id_str.")) ";
 }
 
 ## Filter - Digitization Center
+/*if ( $searchByDigitizationCenter != '' ) {
+	$searchQuery .= " AND (digitization_center = '".$searchByDigitizationCenter."') ";
+}*/
+
 if ( $searchByDigitizationCenter != '' ) {
-	$searchQuery .= " AND digitization_center = '".$searchByDigitizationCenter."' ";
+	$searchHaving = " HAVING (digitization_center = '".$searchByDigitizationCenter."') ";
 }
 
 ## Filter - Program Office
 if ( $searchByProgramOffice != '' ) {
-	$searchQuery .= " AND office_acronym = '".$searchByProgramOffice."' ";
+	$searchQuery .= " AND (office_acronym = '".$searchByProgramOffice."') ";
 }
 
 // If a user is a requester, only show the boxes from requests (tickets) they have submitted. 
@@ -139,7 +143,6 @@ $totalRecords = $records['allcount'];
 ## Base Query for Records  // UPDATED: folderdocinfo_files JOINED to recallrequest rather than via FDI
 $baseQuery = "
 SELECT
-	count(*) OVER() AS total_count,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.id,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id,
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_approved,
@@ -207,12 +210,26 @@ WHERE
     " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id > 0";
 
 
+## Total number of records with filtering
+$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
+//$outterFilterQuery_end = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id ) AS innerTable WHERE 1 ";
+$otterFiltergroupAndHaving = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id".$searchHaving;
+$outterFilterQuery_end = " ) AS innerTable WHERE 1 ";
+
+$query_3 = $outterFilterQuery_start.$baseQuery.$searchQuery.$otterFiltergroupAndHaving.$outterFilterQuery_end;
+
+
+$sel = mysqli_query($con, $query_3);
+$records = mysqli_fetch_assoc($sel);
+$totalRecordwithFilter = $records['allcount'];
 
 ## Recall Query
 $outterQuery_start = "SELECT * FROM (";    
 $outterQuery_end = ") AS innerTable WHERE 1 ";
-$groupAndOrderBy = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
-$recallQuery = $outterQuery_start.$baseQuery.$groupAndOrderBy.$outterQuery_end.$searchQuery;
+$groupAndOrderBy = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id order by ".$columnName." limit ".$row.",".$rowperpage;
+$groupAndHaving = " GROUP BY " . $wpdb->prefix . "wpsc_epa_recallrequest.recall_id".$searchHaving." order by ".$columnName." limit ".$row.",".$rowperpage;
+//$recallQuery = $outterQuery_start.$baseQuery.$groupAndOrderBy.$outterQuery_end.$searchQuery;
+$recallQuery = $outterQuery_start.$baseQuery.$searchQuery.$groupAndHaving.$outterQuery_end;
 
 $recallRecords = mysqli_query($con, $recallQuery);
 
@@ -223,7 +240,7 @@ $data = array();
 
 while ($row = mysqli_fetch_assoc($recallRecords)) {
   	
-  	$totalRecordwithFilter = $row['total_count'];
+  	//$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['recall_status_id'];
@@ -273,7 +290,7 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 //		"expiration_date"=>"90 Days", //date('m/d/Y', strtotime( $date_expiration)), 
 //		"tracking_number"=>$row['tracking_number'],
  		"tracking_number"=>$track,
- 		"recall_approved"=>$row['recall_approved'],
+ 		"recall_approved"=>$row['recall_approved']
    );
    
    // Clear icons
@@ -313,7 +330,7 @@ $response = array(
   "Random Data - DC" => $searchByDigitizationCenter,
   "Random Data 2 - PO" => $searchByProgramOffice,
   "Filtered item query" => $query_3,
-  "debug" => $recallRecords
+  "debug" => $columnName
 );
 
 
