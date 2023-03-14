@@ -31,6 +31,11 @@ $pallet_update = 0;
 $boxsa_update = 0;
 $boxscn_update = 0;
 $boxcrt_update = 0;
+$boxval_update = 0;
+$boxqaqc_update = 0;
+$boxsla_update = 0;
+$boxos_update = 0;
+$boxrd_update = 0;
 $box_pallet_check_array = array();
 //$pallet_check_array = array();
 
@@ -62,7 +67,7 @@ $request_array = array($received_tag->term_id, $in_progress_tag->term_id, $ecms_
  if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) ||
  preg_match('/\b(RD-\d\d-E|RD-\d\d-W)\b/i', $location) || preg_match('/\b(OS-\d\d-E|OS-\d\d-W)\b/i', $location) || preg_match('/\b(EXA-\d\d-E|EXA-\d\d-W)\b/i', $location) || preg_match('/\b(EXP-\d\d-E|EXP-\d\d-W)\b/i', $location) || 
  preg_match('/\b(PREP-\d\d-E|PREP-\d\d-W)\b/i', $location) || preg_match('/\b(QAQC-\d\d-E|QAQC-\d\d-W)\b/i', $location) || preg_match('/\b(VAL-\d\d-E|VAL-\d\d-W)\b/i', $location) || preg_match('/\b(DES-\d\d-E|DES-\d\d-W)\b/i', $location) ||
- preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location)){
+ preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location) || preg_match('/\b(SPA-\d\d-E|SPA-\d\d-W)\b/i', $location) || preg_match('/\b(SLA-\d\d-E|SLA-\d\d-W)\b/i', $location) || preg_match('/\b(SHP-\d\d-E|SHP-\d\d-W)\b/i', $location)){
    
 ////////
 //Determine if box/pallet entered is valid
@@ -290,7 +295,9 @@ $wpdb->update($table_box, $pallet_boxinfodbid_update, $pallet_boxinfodbid_where)
 
 } else {
 
-$pallet_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => $location, 'shelf_location' => NULL,'date_modified' => $date);
+$pallet_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => $location, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $pallet_scanlist_where = array('id' => $pallet_id_dbid);
 $wpdb->update($table_scan_list , $pallet_scanlist_update, $pallet_scanlist_where);
 }
@@ -371,7 +378,9 @@ $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
 Patt_Custom_Func::pallet_cleanup();
 
 } else {
-$boxsa_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => $location, 'shelf_location' => NULL,'date_modified' => $date);
+$boxsa_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => $location, 'validation_location_area_id' => NULL,
+                                'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+                                'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL,'date_modified' => $date);
 $boxsa_scanlist_where = array('id' => $boxsa_dbid);
 $wpdb->update($table_scan_list , $boxsa_scanlist_update, $boxsa_scanlist_where);
 }
@@ -552,7 +561,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_val,
-                            'cart_id' => $location
+                            'validation_location_area_id' => $location
                         )
         );  
         // Get back DB ID
@@ -619,7 +628,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_qaqc,
-                            'cart_id' => $location
+                            'qaqc_location_area_id' => $location
                         )
         );  
         // Get back DB ID
@@ -656,7 +665,7 @@ if($boxcrt_update == 1) {
     ////////
     //Check if location is on a cart
     //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
-    if(preg_match('/\b(PREP-\d\d-E|PREP-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+    if(preg_match('/\b(SPA-\d\d-E|SPA-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
 
         //Update wpqa_wpsc_epa_boxinfo table with box location
         foreach($boxpallet_arr as $box_prep){
@@ -685,7 +694,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_prep,
-                            'cart_id' => $location
+                            'scanning_prep_location_area_id' => $location
                         )
         );  
         // Get back DB ID
@@ -753,7 +762,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_sla,
-                            'cart_id' => $location
+                            'scanning_location_area_id' => $location
                         )
         );  
         // Get back DB ID
@@ -820,7 +829,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_rd,
-                            'cart_id' => $location
+                            'receiving_dock' => $location
                         )
         );  
         // Get back DB ID
@@ -886,7 +895,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_os,
-                            'cart_id' => $location
+                            'oversized_tube_shelves' => $location
                         )
         );  
         // Get back DB ID
@@ -953,7 +962,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_des,
-                            'cart_id' => $location
+                            'destruction' => $location
                         )
         );  
         // Get back DB ID
@@ -991,7 +1000,7 @@ if($boxcrt_update == 1) {
     ////////
     //Check if location is on a cart
     //if(preg_match_all('/(\bCID-\d\d-E\b|\bCID-\d\d-W\b)|(\bCID-\d\d-EAST\sCUI\b|\bCID-\d\d-WEST\sCUI\b)|(\bCID-\d\d-EAST\b|\bCID-\d\d-WEST\b)|(\bCID-\d\d-EASTCUI\b|\bCID-\d\d-WESTCUI\b)/im', $location)) {
-    if(preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+    if(preg_match('/\b(SHP-\d\d-E|SHP-\d\d-W)\b/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
 
         //Update wpqa_wpsc_epa_boxinfo table with box location
         foreach($boxpallet_arr as $box_sda){
@@ -1020,7 +1029,7 @@ if($boxcrt_update == 1) {
                         $table_scan_list,
                         array(
                             'box_id' => $box_sda,
-                            'cart_id' => $location
+                            'shipping_dock_area' => $location
                         )
         );  
         // Get back DB ID

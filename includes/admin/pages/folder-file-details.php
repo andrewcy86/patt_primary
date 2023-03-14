@@ -525,14 +525,14 @@ $recall_icon = '<span style="color: #000;margin-left:4px;"><i class="far fa-regi
 echo $decline_icon.$recall_icon;
 		  ?>
 		  <!-- NDP wants to disable editing metadata -->
-		  <?php 
+		  <!-- <?php 
 		  if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
                 {
 			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderdocinfofileid . ')" aria-label="Edit button"><i class="fas fa-edit fa-xs"></i></a>';
 			    ?>
 			    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-folder-id-edit-icon'); ?>"><i class="far fa-question-circle"></i></a>
                 <?php }
-		  ?>
+		  ?> -->
 		  
       </h3>
 
@@ -576,7 +576,7 @@ echo $decline_icon.$recall_icon;
     			}
 			}
 
-			if (!empty($folderfile_date) && $folderfile_date != '0000-00-00') {
+			if (!empty($folderfile_date)) {
 			    echo "<strong>Creation Date:</strong> <p class='normal_p'>" . Patt_Custom_Func::get_converted_date($folderfile_date) . "</p><br />";
 			}
 			
@@ -609,7 +609,7 @@ echo $decline_icon.$recall_icon;
 				echo "<strong>Site ID #:</strong> <p class='normal_p'>" . $folderfile_site_id . "</p><br />";
               // echo '<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_epa_contact_editor(\''.$folderfile_folderdocinfofile_id.'\');" aria-label="Edit button" class="btn btn-sm wpsc_action_btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3!important"><i class="fas fa-edit" aria-hidden="true" title="Edit EPA Contact"></i><span class="sr-only">Edit EPA Contact</span></button>';
 			}
-			if (!empty($folderfile_close_date) && $folderfile_close_date != '0000-00-00') {
+			if (!empty($folderfile_close_date)) {
 			    echo "<strong>Close Date:</strong> <p class='normal_p'>" . Patt_Custom_Func::get_converted_date($folderfile_close_date) . "</p><br />";
 			}
 			

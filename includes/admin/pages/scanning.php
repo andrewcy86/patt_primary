@@ -40,7 +40,7 @@
     // JM - 2/25/2021 - Modify regex to accept the new staging area and pallet_id's that represent grids in the digitization center for Region 3 support
     //const reg_stagingarea = /^\b(sa-e|sa-w)\b$/i;
     const reg_palletid = /^(P-(E|W)-[0-9]{1,5})(?:,\s*(?1))*$/i;
-    const reg_stagingarea = /^\b(sa-e-\d+|sa-w-\d+)\b$/i;
+    const reg_stagingarea = /^\b(SA-e-\d+|SA-w-\d+)\b$/i;
 
     const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i;
   	const reg_validation = /^\b(VAL-\d\d-e|VAL-\d\d-w)\b$/i; 
@@ -48,7 +48,10 @@
     const reg_receiving_dock = /^\b(RD-\d\d-e|RD-\d\d-w)\b$/i; 
     const reg_oversized_tube = /^\b(OS-\d\d-e|OS-\d\d-w)\b$/i; 
     const reg_destruction = /^\b(DES-\d\d-e|DES-\d\d-w)\b$/i;
-    const reg_shipping_dock_area = /^\b(SDA-\d\d-e|SDA-\d\d-w)\b$/i; 
+    const reg_shipping_dock_area = /^\b(SDA-\d\d-e|SDA-\d\d-w)\b$/i;
+  	const reg_scanning_prep_area = /^\b(SPA-\d\d-e|SPA-\d\d-w)\b$/i;
+  	const reg_scanning_location_area = /^\b(SLA-\d\d-e|SLA-\d\d-w)\b$/i;
+  	const reg_shipping_dock_area = /^\b(SHP-\d\d-e|SHP-\d\d-w)\b$/i;
     
     var POST_count = 0;
     
@@ -188,6 +191,18 @@
                                 scanid_values.push(text_vals);
 
                             }else if(reg_physicalLocation.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_scanning_prep_area.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_scanning_location_area.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_shipping_dock_area.test(text_vals)){
                                 
                                 scanid_values.push(text_vals);
 

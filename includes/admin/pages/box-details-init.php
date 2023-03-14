@@ -88,7 +88,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
 		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
 		<?php } ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit EPA Contact"></i><span class="sr-only">Bulk Edit EPA Contact</span> Bulk Edit EPA Contact </button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>
         <?php
         }
         
@@ -549,23 +549,56 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 jQuery('#wpsc_individual_user_edit_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
-		  wpsc_modal_open('Bulk Edit Users');
-		  var data = {
-		    action: 'wpsc_user_edit_ffd',
-		    postvarsfolderdocid :  rows_selected.join(","),
-            postvarpage : jQuery('#page').val(),
-            boxid : '<?php echo $the_real_box_id; ?>',
-            pid : jQuery('#p_id').val()
-		  };
-		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		    var response = JSON.parse(response_str);
-		    jQuery('#wpsc_popup_body').html(response.body);
-		    jQuery('#wpsc_popup_footer').html(response.footer);
-		    jQuery('#wpsc_cat_name').focus();
-		  }); 
-		  dataTable.ajax.reload( null, false );
-		  dataTable.column(0).checkboxes.deselectAll();
+  	 var row_data = rows_selected.data();
+  	 var doc_id_array = [];
+  		console.log('rows selected ' +rows_selected.join(","));
+  		//console.log('doc ids '+ JSON.stringify(row_data[0].dbid));
+  		console.log('doc ids '+ rows_selected.length);
+  
+  		for(i=0; i < rows_selected.length; i++){
+          doc_id_array.push(row_data[i].dbid);
+        }
+  
+  		console.log('doc id arr ' + doc_id_array);
+  
+  		wpsc_get_folderfile_editor(doc_id_array);
+  
+		
 });
+  
+
+function wpsc_get_folderfile_editor(doc_id){
+  console.log('doc id ' + doc_id);
+  <?php
+          if ($folderfile_index_level == '1') { 
+  ?>
+  wpsc_modal_open('Edit Folder Metadata');
+  <?php
+          } else {
+  ?>
+  wpsc_modal_open('Edit File Metadata');
+  <?php
+          }
+  ?>
+  
+  var rows_selected = dataTable.column(0).checkboxes.selected();
+
+  var data = {
+    action: 'wpsc_get_folderfile_editor',
+    doc_id: doc_id,
+    boxid: jQuery("#box_id").val(),
+    postvarpage: jQuery("#page").val(),
+    pid: jQuery("#p_id").val(),
+    postvarsfolderdocid: rows_selected.join(",")
+  };
+  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+    var response = JSON.parse(response_str);
+    jQuery('#wpsc_popup_body').html(response.body);
+    jQuery('#wpsc_popup_footer').html(response.footer);
+    jQuery('#wpsc_cat_name').focus();
+  });  
+}
+
 
 /*//unauthorized destruction button
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){

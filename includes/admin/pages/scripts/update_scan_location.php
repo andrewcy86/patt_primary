@@ -188,7 +188,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                         $GLOBALS[$evaluated] = true;     
                     }
                     
-                    if(preg_match_all('/(\bcid-\d\d-e\b|\bcid-\d\d-w\b)|(\bcid-\d\d-east\scui\b|\bcid-\d\d-west\scui\b)|(\bcid-\d\d-east\b|\bcid-\d\d-west\b)|(\bcid-\d\d-eastcui\b|\bcid-\d\d-westcui\b)/im', $value)) {
+                    if(preg_match_all('/(\bCID-\d\d-e\b|\bCID-\d\d-w\b)|(\bCID-\d\d-east\scui\b|\bCID-\d\d-west\scui\b)|(\bCID-\d\d-east\b|\bCID-\d\d-west\b)|(\bCID-\d\d-eastcui\b|\bCID-\d\d-westcui\b)/im', $value)) {
                         
                         $column_name = 'cart_id';
                         
@@ -270,6 +270,42 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 			                                                "SELECT id as id,locations as locations
                                                                             FROM " . $wpdb->prefix . "wpsc_epa_location_status                
                                                                             WHERE locations = 'In QA/QC Area'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+                  
+                  	if(preg_match('/\b(SPA-\d\d-e|SPA-\d\d-w)\b/i', $value)) {
+                        $column_name = 'scanning_prep_location_area_id';
+                        
+                                            /* Change the box status has been changed to "In Validation Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'In Scanning Prep Area'
                                             			                ");
                                             			                
                                             $location_statuses_id = $location_statuses->id;
