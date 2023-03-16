@@ -692,7 +692,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                       	// Prevents an empty new request form from being upload
 						if(parsedData[2][0] == undefined || parsedData[2][0] == null ){
                           	let alert_msg = '';
-                          	alert_msg += "Blank value for column 'Box' on line ";
+                          	alert_msg += "Blank value for column 'Box' on row ";
                           	alert_msg += "3. This field is required.";
 
                           	alert( alert_msg );
@@ -701,8 +701,8 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                       
                       	if(parsedData[2][0] != undefined && parsedData[2][0] != null && parsedData[2][0] != 1 ){
 							let alert_msg = '';
-                          	alert_msg += "Blank value for column 'Box' on line ";
-                          	alert_msg += "3. This field is required";
+                          	alert_msg += "Please start the column 'Box' on row ";
+                          	alert_msg += "3 with the number 1. This field is required";
 
                           	alert( alert_msg );
                           	flag = true;
@@ -789,7 +789,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                    //jQuery('#boxinfodatatable_wrapper').hide();
 		                    
 	                        let isBlank = false;
-	                        let count = 1;
+	                        let count = 2;
                           	var validate = false;
                           	let temp_record_schedule = false;
                           	let Final_Disposition = '';
@@ -798,7 +798,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							    if ( count < arrayLength ) {
 							        jQuery('#processing_notification').text( 'Processing Row #' + count );
                                   
-                                
+                                	// Validate spreadsheet version
+                                      console.log('parsed data: ' + parsedData[0][27]);
+                                      //console.log('parsed data: ' + parsedData[0][28]);
+                                  	if(parsedData[0][27] == '' || parsedData[0][27] == null || parsedData[0][27] == undefined){
+                                      alert('This is not a valid spreadsheet.');
+                                      flag = true;
+				
+										
+									  reset_page();
+                                    }
 									
 									// Find the last line of filled out data
                                    	if (parsedData[count] == undefined) {
@@ -1222,63 +1231,90 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                flag = true;
 			                            
 			                            }
+                                     
                                       
-                                      		
 
-											// Validate Box column has sequential box ordering
-											if( 
-												flag != true && 
-												count > 1 && 
-													(
-													parsedData[count][index_box] > 0 &&
-													parsedData[count-1][index_box] >= 1 &&
-													prev_box_id != parsedData[count][index_box] &&
-													(parsedData[count][index_box]) - prev_box_id != 1
-													)
-											) {
-												let alert_message = '';
-												alert_message += 'Box ID number should be in sequential order.';
-												// alert_message += 'number has changed to ' + (parsedData[count][index_box] - prev_box_id) + ' from ' +  prev_box_id;
-												alert( alert_message );
-												flag = true;
-												return;
-											} else {
-												// Validate Folder Identifier column has sequential box ordering
-												if( 
-													flag != true && 
-													count > 1 && 
-														(
-														parsedData[count][index_box] != 1 &&
-														parsedData[count-1][index_box] != parsedData[count][index_box] &&
-														parsedData[count][index_folder_id] != 1 ||
-														parsedData[count][index_folder_id] == 0
-														)
-												) {
-													let alert_message = '';
-														alert_message += 'Please start a new box list folder identifier column with the number 1.';
-                                                  		
-                                                  		// DEBUG Messages
-														// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
-														// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
-														alert( alert_message );
-														flag = true;
-														return;
-												}
+											
+                                      // Validate Box column has sequential box ordering
+                                      if( 
+                                        flag != true && 
+                                        count > 1 && 
+                                        (
+                                          parsedData[count][index_box] > 0 &&
+                                          //parsedData[count-1][index_box] >= 1 &&
+                                          prev_box_id != parsedData[count][index_box] &&
+                                          (parsedData[count][index_box]) - prev_box_id > 1
+                                        )
+                                      ) {
+                                        let alert_message = '';
+                                        alert_message += 'Box ID number should be in sequential order.';
+                                        // alert_message += 'number has changed to ' + (parsedData[count][index_box] - prev_box_id) + ' from ' +  prev_box_id;
+                                        alert( alert_message );
+                                        flag = true;
+                                        return;
+                                      } else {
+                                        // Validate Folder Identifier column has sequential box ordering
+                                        if( 
+                                          flag != true && 
+                                          count > 1 && 
+                                          (
+                                            parsedData[count][index_box] != 1 &&
+                                            parsedData[count-1][index_box] != parsedData[count][index_box] &&
+                                            parsedData[count][index_folder_id] != 1 ||
+                                            parsedData[count][index_folder_id] == 0
+                                          )
+                                        ) {
+                                          let alert_message = '';
+                                          alert_message += 'Please start a new box list folder identifier column with the number 1.';
 
-												if(flag != true && 
-													count > 1 && 
-													parsedData[count][index_folder_id] > 1 &&
-													(parsedData[count][index_folder_id]) - prev_folder_id != 1
-												){
-													let alert_message = '';
-													alert_message += 'Folder identifier number should be in sequential order.';
-													// alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
-													// alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
-													alert( alert_message );
-													flag = true;
-													return;
-												}	
-											}
+                                          // DEBUG Messages
+                                          // alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+                                          // alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+                                          alert( alert_message );
+                                          flag = true;
+                                          return;
+                                        }
+
+                                        if(flag != true && 
+                                           count > 1 && 
+                                           //Debugging
+                                           //parsedData[count][index_folder_id] == 3
+                                           
+                                          parsedData[count][index_box] >= 1 &&
+                                          prev_box_id == parsedData[count][index_box] &&
+                                          prev_folder_id != 'Folder Identifier' &&
+                                          (parsedData[count][index_folder_id]) - prev_folder_id != 1
+                                           //prev_folder_id != 'Folder Identifier'
+                                          ){
+                                          let alert_message = '';
+                                          alert_message += 'Folder identifier number should be in sequential order.';
+                                          // alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+                                          // alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+                                          alert( alert_message );
+                                          flag = true;
+                                          //return;
+                                        }
+                                        
+                                        else if(flag != true && 
+                                           count > 1 && 
+                                           //Debugging
+                                           //parsedData[count][index_folder_id] == 3
+                                           
+                                          parsedData[count][index_box] >= 1 &&
+                                          prev_box_id != parsedData[count][index_box] &&
+                                          prev_folder_id != 'Folder Identifier' &&
+                                          parsedData[count][index_folder_id] == prev_folder_id 
+                                          ){
+                                          let alert_message = '';
+                                          alert_message += 'Each box should have a unique folder identifier. box id: ';
+                                          // alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+                                          // alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+                                          alert( alert_message );
+                                          flag = true;
+                                          //return;
+                                        }
+                                        
+                                      }
                                       
                                       console.log(parsedData[count-1][index_box]);
                                       
