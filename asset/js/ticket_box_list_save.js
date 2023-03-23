@@ -1301,17 +1301,22 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                            //parsedData[count][index_folder_id] == 3
                                            
                                           parsedData[count][index_box] >= 1 &&
-                                          prev_box_id != parsedData[count][index_box] &&
-                                          prev_folder_id != 'Folder Identifier' &&
-                                          parsedData[count][index_folder_id] == prev_folder_id 
+                                          prev_box_id != parsedData[count][index_box] 
                                           ){
-                                          let alert_message = '';
-                                          alert_message += 'Each box should have a unique folder identifier. box id: ';
-                                          // alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
-                                          // alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
-                                          alert( alert_message );
-                                          flag = true;
-                                          //return;
+                                          
+                                          if(prev_folder_id != 'Folder Identifier' &&
+                                          	parsedData[count][index_folder_id] == prev_folder_id &&
+                                            parsedData[count][index_folder_id] != 1)
+                                          {
+                                            let alert_message = '';
+                                            alert_message += 'Each box should have a unique folder identifier.';
+                                            // alert_message += 'test number has changed to ' + (parsedData[count][index_folder_id] - prev_folder_id) + ' from ' +  prev_folder_id;
+                                            // alert_message += 'number has changed to ' + (parsedData[count][index_folder_id]) + ' from ' + prev_folder_id;
+                                            alert( alert_message );
+                                            flag = true;
+                                            //return;
+                                          }
+                                          
                                         }
                                         
                                       }

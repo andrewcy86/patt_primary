@@ -729,7 +729,7 @@ if( $folderfile_details->source_file_location == null || $folderfile_details->so
 
 
 // Display Upload File Section
-if($is_active == 1 && !in_array($box_ticket_status, $rescan_validate_status_id_arr) ) {
+/*if($is_active == 1 && !in_array($box_ticket_status, $rescan_validate_status_id_arr) ) {
 
 echo '<div id="upload-file-section" class="focus-section">';
 echo '<hr>';
@@ -772,20 +772,6 @@ if ($folderfile_details->object_key != '') {
 		
 		echo '<span class="details-name" id="file-preview" ><i class="fab fa-aws" aria-hidden="true" title="Download file from temporary s3 bucket"></i><span class="sr-only">Download file from temporary s3 bucket</span> <a href="' . $presignedUrl .'" target="_blank" >Download file from temporary S3 bucket</a></span><br>';
 		
-		// TEST metadata
-		
-		// get metadata
-/*
-		$headObj = $s3Client->headObject( [
-		    'Bucket' => AWS_S3_BUCKET,
-		    'Key' => $folderfile_details->object_key
-		]);
-		
-		echo '<span class="" >MetaData: </span>';
-		echo '<pre>';
-		print_r( $headObj );
-		echo '</pre>';	
-*/	
 		
 	}
 
@@ -859,7 +845,7 @@ echo '</pre>';
 */
 
 // DEBUG - END
-}
+// } 
 
 ?>
 <style>

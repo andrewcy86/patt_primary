@@ -121,6 +121,11 @@ Hides specific_access_restriction and specific_use_restriction when option == 'N
 #hidden_div_2 {
     display: none;
 }
+  
+.bootstrap-iso .lbl-creation-date {
+  font-weight: 400; 
+  margin: 0;
+}
 </style>
 
 <form>
@@ -139,10 +144,24 @@ else {
 
 
 if(!empty($folderfile_date)) {
-    echo "<strong>Creation Date</strong><br /><input type='date' id='date' aria-label='Creation Date' placeholder= '' ></br></br>";
+    echo "<strong>Creation Date</strong> 
+    	<!--<a href='#' data-toggle='tooltip' data-placement='right' data-html='true' title='Leaving the creation date field blank will show the date as 00/00/0000' aria-label='Request Help'><i class='far fa-question-circle' aria-hidden='true' title='Help'></i><span class='sr-only'>Help</span></a>-->
+    	<br />
+        <input type='checkbox' id='default-date' name='default-date' aria-label='Default Date' placeholder= '' style='margin-bottom: 4px;' >
+        <label for='default-date' class='lbl-creation-date'>Checking this box will show the date as 00/00/0000</label>
+    	<br />
+        <input type='date' id='date' aria-label='Creation Date' placeholder= '' >
+        </br></br>";
 }
 else {
-    echo "<strong>Creation Date</strong><br /><input type='date' id='date' aria-label='Creation Date' placeholder= 'mm/dd/yyyy' ></br></br>";
+    echo "<strong>Creation Date</strong> 
+    	<!--<a href='#' data-toggle='tooltip' data-placement='right' data-html='true' title='Leaving the creation date field blank will show the date as 00/00/0000' aria-label='Request Help'><i class='far fa-question-circle' aria-hidden='true' title='Help'></i><span class='sr-only'>Help</span></a>-->
+    	<br />
+        <input type='checkbox' id='default-date' name='default-date' aria-label='Default Date' placeholder= '' style='margin-bottom: 4px;' >
+        <label for='default-date' class='lbl-creation-date'>Checking this box will show the date as 00/00/0000</label>
+        <br />
+        <input type='date' id='date' aria-label='Creation Date' placeholder= 'mm/dd/yyyy' >
+        </br></br>";
 }
 ?>
 
@@ -152,7 +171,7 @@ else {
 
 
 <?php
-if(!empty($folderfile_site_name)) {
+/*if(!empty($folderfile_site_name)) {
     echo "<strong>Site Name</strong><br /><input type='text' id='site_name' aria-label='Site Name' placeholder= ''></br></br>";
 }
 else {
@@ -164,7 +183,7 @@ if(!empty($folderfile_site_id)) {
 }
 else {
     echo "<strong>Site ID</strong><br /><input type='text' id='site_id' aria-label='Site ID' placeholder= 'Enter site ID...'></br></br>";
-}
+}*/
   
 ?>
 
@@ -190,6 +209,8 @@ ob_start();
 
 <script>
 
+jQuery('[data-toggle="tooltip"]').tooltip(); 
+  
 //Setting placeholder text for multiselect dropdown
 jQuery('.selectpicker').selectpicker({
         noneSelectedText : 'Please select...', // by this default 'Nothing selected' -->will change to Please Select...
@@ -227,16 +248,45 @@ jQuery('#tags').tagsInput({
    'maxChars' : 0, // if not provided there is no limit
    'placeholderColor' : '#666666'
 });
+ 
+  
+jQuery("#default-date").click(function(){
+  if(jQuery("#default-date").is(":checked") == true){
+    jQuery("#date").hide();
+  } else {
+    jQuery("#date").show();
+  }
+});
+  
+jQuery("#date").change(function(){
+  	if(jQuery("#date").val() != ''){
+      jQuery("#default-date").hide();
+      jQuery(".lbl-creation-date").hide();
+    } else {
+      jQuery("#default-date").show();
+      jQuery(".lbl-creation-date").show();
+    }  
+});
 
+jQuery("#date").keypress(function(){
+    if(jQuery("#date").val() != ''){
+      jQuery("#default-date").hide();
+      jQuery(".lbl-creation-date").hide();
+    } else {
+      jQuery("#default-date").show();
+      jQuery(".lbl-creation-date").show();
+    }
+});
+  
 function wpsc_edit_folder_file_details(){
   var creationDate = "";
-  if(jQuery("#date").val() == ""){
+  if(jQuery("#default-date").is(":checked") == true){
     creationDate = "0001-01-01";
   } else {
     creationDate = jQuery("#date").val();
   }
   
-  console.log('creation date ' + creationDate);
+  console.log('creation date ' + jQuery("#default-date").checked);
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 //START REVIEW
@@ -276,7 +326,8 @@ postvarslanid: jQuery("#lanid").val()
       //if(!alert(response)){window.location.reload();}
      console.log('the response ' + JSON.stringify(response));
      //return;
-	window.location.reload();
+	//window.location.reload();
+     window.location.href = window.location.href;
    });
 }
 
