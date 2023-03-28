@@ -303,9 +303,9 @@ if(!empty($doc_id_array)){
           CURLOPT_POSTFIELDS =>'{
             "entity-type": "document",
             "properties": {
-                "dc:title" => $title,
-                "dc:creator" => $lanid, 
-                "dc:created" => date("Y-m-d\TH:i:s.000\Z", strtotime("$date"));
+                "dc:title": ' . $title .',
+                "dc:creator": ' . $lanid .', 
+                "dc:created": ' . date("Y-m-d\TH:i:s.000\Z", strtotime("$date")) .'
             }
         }',
           CURLOPT_HTTPHEADER => array(

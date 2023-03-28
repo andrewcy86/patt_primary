@@ -282,11 +282,15 @@ function wpsc_edit_folder_file_details(){
   var creationDate = "";
   if(jQuery("#default-date").is(":checked") == true){
     creationDate = "0001-01-01";
-  } else {
+  }
+  //else if(jQuery("#default-date").is(":checked") == undefined || jQuery("#default-date").is(":checked") == ''){
+  //}
+  if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
     creationDate = jQuery("#date").val();
   }
   
-  console.log('creation date ' + jQuery("#default-date").checked);
+  console.log('creation date checkbox ' + jQuery("#default-date").checked);
+  console.log('creation date ' + jQuery("#date").val());
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 //START REVIEW
@@ -326,8 +330,8 @@ postvarslanid: jQuery("#lanid").val()
       //if(!alert(response)){window.location.reload();}
      console.log('the response ' + JSON.stringify(response));
      //return;
-	//window.location.reload();
-     window.location.href = window.location.href;
+	window.location.reload(true);
+     //window.location.href = window.location.href;
    });
 }
 
