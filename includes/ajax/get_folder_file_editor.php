@@ -47,7 +47,8 @@ ob_start();
             a.specific_use_restriction,
             a.rights_holder,
             a.source_dimensions,
-            a.program_area
+            a.program_area,
+            a.lan_id as lan_id
 			
             FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
             WHERE a.id = '" . $each_doc_id . "'");
@@ -77,6 +78,7 @@ ob_start();
             $folderfile_rights_holder = $folderfile_details->rights_holder;
             $folderfile_source_dimensions = $folderfile_details->source_dimensions;
             $folderfile_program_area = $folderfile_details->program_area;
+          	$folderfile_lan_id = $folderfile_details->lan_id;
             //END REVIEW
         }
 ?>
@@ -190,6 +192,8 @@ else {
 <!-- START REVIEW -->
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_id; ?>">
 <input type="hidden" id="folderdocinfofile_id" name="folderdocinfofile_id" value="<?php echo $folderfile_folderdocinfofile_id; ?>">
+<input type="hidden" id="folderdocinfofile_title" name="folderdocinfofile_title" value="<?php echo $folderfile_title; ?>">
+<input type="hidden" id="folderfile_date" name="folderfile_date" value="<?php echo $folderfile_date; ?>">
 <input type="hidden" id="doc_id_array" name="doc_id_array" value="<?php echo $selected_doc_ids; ?>">
 <!-- END REVIEW -->
   
@@ -197,7 +201,8 @@ else {
 <input type="hidden" id="folderdocid" name="folderdocid" value="<?php echo $folderdocid_string; ?>">
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
 <input type="hidden" id="pageid" name="pageid" value="<?php echo $page_id; ?>"> 
-<input type="hidden" id="pid" name="pid" value="<?php echo $pid; ?>"> 
+<input type="hidden" id="pid" name="pid" value="<?php echo $pid; ?>">
+<input type="hidden" id="folderfile_lan_id" name="folderfile_lan_id" value="<?php echo $folderfile_lan_id; ?>"> 
 </form>
 <?php 
 $body = ob_get_clean();
@@ -280,17 +285,37 @@ jQuery("#date").keypress(function(){
   
 function wpsc_edit_folder_file_details(){
   var creationDate = "";
-  if(jQuery("#default-date").is(":checked") == true){
-    creationDate = "0001-01-01";
-  }
-  //else if(jQuery("#default-date").is(":checked") == undefined || jQuery("#default-date").is(":checked") == ''){
-  //}
-  if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
-    creationDate = jQuery("#date").val();
+  var title = "";
+  var lanID = "";
+  
+  if(jQuery("#title").val() != '' || jQuery("#title").val() != undefined){
+    title = jQuery("#title").val();
+  } else {
+    title = jQuery("#folderdocinfofile_title").val();
   }
   
-  console.log('creation date checkbox ' + jQuery("#default-date").checked);
-  console.log('creation date ' + jQuery("#date").val());
+  if(jQuery("#lanid").val() != '' || jQuery("#lanid").val() != undefined){
+    lanID = jQuery("#lanid").val();
+  } else {
+    lanID = jQuery("#folderfile_lan_id").val();
+  }
+  
+  
+  if(jQuery("#default-date").is(":checked") == true){
+    creationDate = "0001-01-01";
+  } else if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
+    creationDate = jQuery("#date").val();
+  } else if(<?php echo $folderfile_date; ?> == '' || <?php echo $folderfile_date; ?> == null){
+    creationDate = "0001-01-01";
+  } else {
+    creationDate = jQuery("#folderfile_date").val();
+  }
+  
+  //console.log('creation date checkbox ' + jQuery("#default-date").checked);
+  console.log('title ' +  title );
+  console.log('lan id ' + lanID);
+  console.log('creation date ' + creationDate);
+  
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 //START REVIEW
@@ -298,7 +323,7 @@ docidarray: jQuery("#doc_id_array").val(),
 postvarspdid: jQuery("#pattdocid").val(),
 postvarsfdiid: jQuery("#folderdocinfofile_id").val(),
 postvarsil: jQuery("#il").val(),
-postvarstitle: jQuery("#title").val(),
+postvarstitle: title,
 postvarsdate: creationDate,
 postvarsauthor: jQuery("#author").val(),
 postvarsrt: jQuery("#record_type").val(),
@@ -323,7 +348,7 @@ postvarsprogramarea: jQuery("#program_area").val(),
 // LanID Post Variables
 postvarsfolderdocid: jQuery("#folderdocinfofile_id").val(),       
 postvarsboxid: jQuery("#boxid").val(),
-postvarslanid: jQuery("#lanid").val()
+postvarslanid: lanID
 }, 
 
    function (response) {
