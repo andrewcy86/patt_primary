@@ -283,40 +283,47 @@ jQuery("#date").keypress(function(){
     }
 });
   
+  console.log(jQuery("#folderdocinfofile_title").val());
+  
+  
+  
 function wpsc_edit_folder_file_details(){
   var creationDate = "";
   var title = "";
   var lanID = "";
   
-  if(jQuery("#title").val() != '' || jQuery("#title").val() != undefined){
-    title = jQuery("#title").val();
-  } else {
-    title = jQuery("#folderdocinfofile_title").val();
-  }
   
-  if(jQuery("#lanid").val() != '' || jQuery("#lanid").val() != undefined){
-    lanID = jQuery("#lanid").val();
-  } else {
+  if(jQuery("#title").val() == '' || jQuery("#title").val() == undefined) {
+    title = jQuery("#folderdocinfofile_title").val();
+  } else if(jQuery("#title").val() != '' || jQuery("#title").val() != undefined){
+    title = jQuery("#title").val();
+  } 
+  
+  if(jQuery("#lanid").val() == '' || jQuery("#lanid").val() == undefined) {
     lanID = jQuery("#folderfile_lan_id").val();
   }
+  else if(jQuery("#lanid").val() != '' || jQuery("#lanid").val() != undefined){
+    lanID = jQuery("#lanid").val();
+  } 
   
   
-  if(jQuery("#default-date").is(":checked") == true){
-    creationDate = "0001-01-01";
-  } else if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
-    creationDate = jQuery("#date").val();
-  } else if(<?php echo $folderfile_date; ?> == '' || <?php echo $folderfile_date; ?> == null){
-    creationDate = "0001-01-01";
-  } else {
+  if((jQuery("#date").val() == '' || jQuery("#date").val() == undefined) && jQuery("#default-date").is(":checked") != true){
     creationDate = jQuery("#folderfile_date").val();
-  }
+  } 
+  else if(jQuery("#default-date").is(":checked") == true){
+    creationDate = "0001-01-01";
+  } 
+  else if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
+    creationDate = jQuery("#date").val();
+  } 
+
   
   //console.log('creation date checkbox ' + jQuery("#default-date").checked);
   console.log('title ' +  title );
   console.log('lan id ' + lanID);
   console.log('creation date ' + creationDate);
   
-		   jQuery.post(
+		   /*jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 //START REVIEW
 docidarray: jQuery("#doc_id_array").val(),
@@ -357,7 +364,7 @@ postvarslanid: lanID
      //return;
 	window.location.reload(true);
      //window.location.href = window.location.href;
-   });
+   });*/
 }
 
 </script>
