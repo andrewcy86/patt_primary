@@ -323,7 +323,7 @@ function wpsc_edit_folder_file_details(){
   console.log('lan id ' + lanID);
   console.log('creation date ' + creationDate);
   
-		   /*jQuery.post(
+		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 //START REVIEW
 docidarray: jQuery("#doc_id_array").val(),
@@ -364,7 +364,7 @@ postvarslanid: lanID
      //return;
 	window.location.reload(true);
      //window.location.href = window.location.href;
-   });*/
+   });
 }
 
 </script>
