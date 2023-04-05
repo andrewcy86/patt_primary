@@ -285,7 +285,7 @@ function wpsc_edit_epa_contact(){
         // LanID Post Variables
         postvarsfolderdocid: jQuery("#folderdocid").val(),       
         postvarsboxid: jQuery("#boxid").val(),
-        postvarslanid: jQuery("#lanid").val()
+        postvarslanid: 'kgarne01'
     }, 
     function (response) {
       if(!alert(response)){
