@@ -255,10 +255,10 @@ function wpsc_edit_epa_contact(){
   } 
   
   
-  if((jQuery("#date").val() == '' || jQuery("#date").val() == undefined) && jQuery("#default-date").is(":checked") != true){
+  /*if((jQuery("#date").val() == '' || jQuery("#date").val() == undefined) && jQuery("#default-date").is(":checked") != true){
     creationDate = jQuery("#folderfile_date").val();
-  } 
-  else if(jQuery("#default-date").is(":checked") == true){
+  } */
+  if(jQuery("#default-date").is(":checked") == true){
     creationDate = "0001-01-01";
   } 
   else if(jQuery("#date").val() != '' || jQuery("#date").val() != undefined){
@@ -267,8 +267,8 @@ function wpsc_edit_epa_contact(){
 
   
   //console.log('creation date checkbox ' + jQuery("#default-date").checked);
-  console.log('title ' +  title );
-  console.log('lan id ' + lanID);
+  console.log('title ' +  jQuery("#title").val());
+  console.log('lan id ' + jQuery("#lanid").val());
   console.log('creation date ' + creationDate);
 
 	jQuery.post(
@@ -277,7 +277,7 @@ function wpsc_edit_epa_contact(){
         docidarray: jQuery("#doc_id_array").val(),
         postvarspdid: jQuery("#pattdocid").val(),
         postvarsfdiid: jQuery("#folderdocinfofile_id").val(),
-        postvarstitle: title,
+        postvarstitle: jQuery("#title").val(),
         postvarsdate: creationDate,
         postvarsauthor: jQuery("#author").val(),
         //END REVIEW
@@ -285,7 +285,7 @@ function wpsc_edit_epa_contact(){
         // LanID Post Variables
         postvarsfolderdocid: jQuery("#folderdocid").val(),       
         postvarsboxid: jQuery("#boxid").val(),
-        postvarslanid: lanID
+        postvarslanid: jQuery("#lanid").val()
     }, 
     function (response) {
       if(!alert(response)){
