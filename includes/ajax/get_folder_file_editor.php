@@ -285,15 +285,17 @@ function wpsc_edit_epa_contact(){
         // LanID Post Variables
         postvarsfolderdocid: jQuery("#folderdocid").val(),       
         postvarsboxid: jQuery("#boxid").val(),
-        postvarslanid: 'kgarne01'
+        postvarslanid: jQuery("#lanid").val()
     }, 
     function (response) {
-      if(!alert(response)){
+      if(response == ''){
+        window.location.reload();
+      } else {
+        alert(response);
         window.location.reload();
       }
 
-      window.location.reload();
-        //window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=<?php echo $page_id; ?>&pid=<?php echo $pid;?>&id=<?php echo $box_id;?>")
+     
    });
    
 }
