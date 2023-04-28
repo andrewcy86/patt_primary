@@ -103,7 +103,7 @@ Hides specific_access_restriction and specific_use_restriction when option == 'N
 //placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
 echo "<strong>LAN ID:</strong><br /><input type='text' id='lanid' placeholder= 'Enter a LAN ID...'></br></br>";
 
-if(!empty($folderfile_title)) {
+/*if(!empty($folderfile_title)) {
     echo "<strong>Title</strong><br /><input type='text' id='title' aria-label='Title' placeholder= ''></br></br>";
 }
 else {
@@ -128,12 +128,12 @@ else {
         <br />
         <input type='date' id='date' aria-label='Creation Date' placeholder= 'mm/dd/yyyy' >
         </br></br>";
-}
+}*/
 ?>
 
-<strong>Creator</strong><br />
+<!--<strong>Creator</strong><br />
 <input type='text' name='author' value='' aria-label='Creator' id='author' class='tags'>
-<br />
+<br />-->
 
 
 <!-- START REVIEW -->
@@ -288,14 +288,17 @@ function wpsc_edit_epa_contact(){
         postvarslanid: jQuery("#lanid").val()
     }, 
     function (response) {
-      if(response == ''){
+      /*if(response == ''){
         window.location.reload();
       } else {
         alert(response);
         window.location.reload();
-      }
-
+      }*/
+      
+      // Shows success alert box
+      if(!alert(response)){window.location.reload();}
      
+      window.location.reload();
    });
    
 }

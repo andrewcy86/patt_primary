@@ -88,7 +88,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
 		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
 		<?php } ?>
-		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>-->
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>
         <?php
         }
         

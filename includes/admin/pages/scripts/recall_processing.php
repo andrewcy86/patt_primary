@@ -91,10 +91,10 @@ if( $is_requester == 'true' ) {
     $user_list = implode(",", $get_aa_ship_groups);
     if(!empty($user_list)) {
 
-	$searchQuery .= " and (innerTable.customer_name ='".$user_name."' OR innerTable.user_id IN ($user_list)) ";
+	$searchQuery .= " and (customer_name ='".$user_name."' OR user_id IN ($user_list)) ";
 	
     } else {
-	$searchQuery .= " and (innerTable.customer_name ='".$user_name."') ";        
+	$searchQuery .= " and (customer_name ='".$user_name."') ";        
     }
 }
 
