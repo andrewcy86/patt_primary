@@ -495,27 +495,7 @@ $folderfile_details = $wpdb->get_row(
 		"SELECT 
 	b.id as id,
 	c.ticket_id as ticket_id,
-	b.title as title,
-	b.date as date,
-	b.author as author,
-	b.record_type as record_type,
-	b.site_name as site_name,
-	b.siteid as site_id,
-	b.close_date as close_date,
-	b.source_format as source_format,
-	b.essential_record as essential_record,
-	b.folder_identifier as folder_identifier,
-	b.addressee as addressee,
 	b.folderdocinfofile_id as folderdocinfofile_id,
-    b.description,
-    b.tags,
-    b.access_restriction,
-    b.specific_access_restriction,
-    b.use_restriction,
-    b.specific_use_restriction,
-    b.rights_holder,
-    b.source_dimensions,
-    b.program_area,
     b.object_key
 	
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files b
@@ -523,27 +503,7 @@ $folderfile_details = $wpdb->get_row(
     WHERE b.folderdocinfofile_id = '" . $barcode . "'"
 	);
 
-	$folderfile_title = $folderfile_details->title;
-	$folderfile_date = $folderfile_details->date;
-	$folderfile_author = $folderfile_details->author;
-	$folderfile_record_type = $folderfile_details->record_type;
-	$folderfile_site_name = $folderfile_details->site_name;
-	$folderfile_site_id = $folderfile_details->site_id;
-	$folderfile_close_date = $folderfile_details->close_date;
-	$folderfile_source_format = $folderfile_details->source_format;
 	$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;
-	$folderfile_essential_record = $folderfile_details->essential_record;
-    $folderfile_identifier = $folderfile_details->folder_identifier;
-    $folderfile_addressee = $folderfile_details->addressee;
-    $folderfile_description = $folderfile_details->description;
-    $folderfile_tags = $folderfile_details->tags;
-    $folderfile_access_restriction = $folderfile_details->access_restriction;
-    $folderfile_specific_access_restriction = $folderfile_details->specific_access_restriction;
-    $folderfile_use_restriction = $folderfile_details->use_restriction;
-    $folderfile_specific_use_restriction = $folderfile_details->specific_use_restriction;
-    $folderfile_rights_holder = $folderfile_details->rights_holder;
-    $folderfile_source_dimensions = $folderfile_details->source_dimensions;
-    $folderfile_program_area = $folderfile_details->program_area;
     
     $type = 'folderfile';
 
@@ -603,128 +563,149 @@ if ($pagetype == 0) {
 } else {
     echo "Please pass a page type.";
 }     
-			if(!empty($box_po)) {
-			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
+            // Calling Nuxeo metadata
+            $get_object_id = $wpdb->get_row("SELECT object_key FROM " . $wpdb->prefix ."wpsc_epa_folderdocinfo_files WHERE folderdocinfofile_id = '" .$folderfile_folderdocinfofile_id ."'");
+            $object_id = $get_object_id->object_key;
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => ARMS_API . '/api/v1/id/' . $object_id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'X-NXproperties: *',
+                'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+            ),
+            ));
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $decoded_json = json_decode($response, true);
+            //Creator TODO Change for v1.3
+
+            //Program Office
+            $get_program_office = $wpdb->get_row("SELECT office_acronym FROM " . $wpdb->prefix ."wpsc_epa_program_office WHERE office_code = '" . $decoded_json['properties']['arms:program_office'][0] ."'");
+            $program_office = $get_program_office->office_acronym;
+
+            //Essential records
+            if ($decoded_json['properties']['arms:essential_records'] == 0) {
+                $essential_records = 'No';
+            } else {
+                $essential_records = 'Yes';
+            }
+
+            $access_restrictions = implode(', ', $decoded_json['properties']['arms:specific_access_restrictions']); 
+            $use_restrictions = implode(', ', $decoded_json['properties']['arms:specific_use_restrictions']); 
+            $addressee = implode(', ', $decoded_json['properties']['arms:addressee']);
+            $rights_holder = implode(', ', $decoded_json['properties']['arms:rights_holder']);
+            $program_area = $decoded_json['properties']['arms:partner_application'];
+            $identifiers = $decoded_json['properties']['arms:identifiers'];
+
+            $tags = $decoded_json['properties']['nxtag:tags'];
+            $tags_arr = [];
+            foreach($tags as $tag) {
+                array_push($tags_arr, $tag['label']);
+            }
+            $tags_list = implode(', ', $tags_arr) . '</br>';
+            
+            if(!empty($decoded_json['properties']['dc:creator'])) {
+                echo "<strong>Custodian:</strong> " . $decoded_json['properties']['dc:creator'] . "</br>";
+            }
+
+			if(!empty($program_office)) {
+			    echo "<strong>Program Office:</strong> " . $program_office . "<br />";
 			}
             
-            if(!empty($box_rs)) {
-                echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
+            if(!empty($decoded_json['properties']['arms:record_schedule'])) {
+                echo "<strong>Record Schedule:</strong> " . $decoded_json['properties']['arms:record_schedule'] ."<br />";
             }
-            
-			if(!empty($folderfile_identifier)) {
-			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
-			}
-  
-  			if (!empty($folderfile_title)) {
-				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
+        
+  			if (!empty($decoded_json['title'])) {
+				echo "<strong>Title:</strong> " . $decoded_json['title'] . "<br />";
 			}
 			
-			if(!empty($folderfile_description)) {
-			    echo "<strong>Description:</strong> " . $folderfile_description . "<br />";
+			if(!empty($decoded_json['properties']['dc:description'])) {
+			    echo "<strong>Description:</strong> " . $decoded_json['properties']['dc:description'] . "<br />";
 			}
 
-			if (!empty($folderfile_date)) {
-				echo "<strong>Creation Date:</strong> " . Patt_Custom_Func::get_converted_date($folderfile_date) . "<br />";
+			if (!empty($decoded_json['properties']['dc:created'])) {
+				echo "<strong>Creation Date:</strong> " . $decoded_json['properties']['dc:created'] . "<br />";
 			}
 			
-			$folderfile_author_array = array();
-			$folderfile_author_explode = explode(';', $folderfile_author);
-            foreach ($folderfile_author_explode as $creator) {
-                array_push($folderfile_author_array, $creator);
+			if(!empty($addressee)) {
+			    echo "<strong>Addressee:</strong> " . $addressee . "<br />";
+			}
+			if (!empty($decoded_json['properties']['arms:record_type'])) {
+				echo "<strong>Record Type:</strong> " . $decoded_json['properties']['arms:record_type'] . "<br />";
+			}
+			
+			if (!empty($decoded_json['properties']['arms:close_date'])) {
+				echo "<strong>Close Date:</strong> " . $decoded_json['properties']['arms:close_date'] . "<br />";
+                echo "<strong>Disposition Date:</strong> " . $decoded_json['properties']['arms:disposition_date'] . "<br />";
+			}
+			
+			if(!empty($access_restrictions)) {
+                echo "<strong>Access Restrictions:</strong> Yes</br>";
+			    echo "<strong>Specific Access Restrictions:</strong> " . $access_restrictions . "<br />";
+			}
+            else {
+                echo "<strong>Access Restrictions:</strong> No</br>";
             }
 			
-			if(!empty($folderfile_author)) {
-			    echo "<strong>Creator:</strong> " . implode("; ", $folderfile_author_array) . "<br />";
+			if(!empty($use_restrictions)) {
+                echo "<strong>Use Restrictions:</strong> Yes<br />";
+			    echo "<strong>Specific Use Restrictions:</strong> " . $use_restrictions . "<br />";
 			}
-			
-			$folderfile_addressee_array = array();
-			$folderfile_addressee_explode = explode(';', $folderfile_addressee);
-			foreach ($folderfile_addressee_explode as $addressee) {
-                array_push($folderfile_addressee_array, $addressee);
-            }
-			
-			if(!empty($folderfile_addressee)) {
-			    echo "<strong>Addressee:</strong> " . implode("; ", $folderfile_addressee_array) . "<br />";
-			}
-			if (!empty($folderfile_record_type)) {
-				echo "<strong>Record Type:</strong> " . $folderfile_record_type . "<br />";
-			}
-			if (!empty($folderfile_site_name)) {
-				echo "<strong>Site Name:</strong> " . $folderfile_site_name . "<br />";
-			}
-			if (!empty($folderfile_site_id)) {
-				echo "<strong>Site ID #:</strong> " . $folderfile_site_id . "<br />";
-			}
-			if (!empty($folderfile_close_date)) {
-				echo "<strong>Close Date:</strong> " . Patt_Custom_Func::get_converted_date($folderfile_close_date) . "<br />";
-			}
-			
-			if(!empty($folderfile_access_restriction)) {
-			    echo "<strong>Access Restriction:</strong> " . $folderfile_access_restriction . "<br />";
-			}
-			
-			$folderfile_specific_access_restrictions_array = array();
-			$folderfile_specific_access_restrictions_explode = explode(';', $folderfile_specific_access_restriction);
-			foreach ($folderfile_specific_access_restrictions_explode as $specific_access_restriction) {
-                array_push($folderfile_specific_access_restrictions_array, $specific_access_restriction);
+            else {
+                echo "<strong>Use Restrictions:</strong> No<br />";
             }
 
-			if(!empty($folderfile_specific_access_restriction)) {
-			    echo "<strong>Specfic Access Restriction:</strong> " . implode("; ", $folderfile_specific_access_restrictions_array) . "<br />";
+			if(!empty($rights_holder)) {
+			    echo "<strong>Rights Holder:</strong> " . $rights_holder . "<br />";
 			}
 			
-			
-			if(!empty($folderfile_use_restriction)) {
-			    echo "<strong>Use Restriction:</strong> " . $folderfile_use_restriction . "<br />";
+			if (!empty($decoded_json['properties']['arms:document_type'])) {
+				echo "<strong>Document Type:</strong> " . $decoded_json['properties']['arms:document_type'] . "<br />";
 			}
-			
-			$folderfile_specific_use_restrictions_array = array();
-			$folderfile_specific_use_restrictions_explode = explode(';', $folderfile_specific_use_restriction);
-			foreach ($folderfile_specific_use_restrictions_explode as $specific_use_restriction) {
-                array_push($folderfile_specific_use_restrictions_array, $specific_use_restriction);
+
+			if(!empty($program_area)) {
+                echo "<strong><u>Partner Applications</u></strong> </br>";
+                foreach($program_area as $key) {
+                    $program_area_str .= '<strong>&nbsp&nbsp&nbsp&nbsp' . $key['name'] . ': </strong>';
+                    foreach($key as $value) {
+                        $program_area_str .= implode(", ", $value);
+                    }
+                    $program_area_str .= '</br>';
+                }
+
+                echo $program_area_str;
             }
 			
-			if(!empty($folderfile_specific_use_restriction)) {
-			    echo "<strong>Specific Use Restriction:</strong> " . implode("; ", $folderfile_specific_use_restrictions_array) . "<br />";
-			}
+			echo "<strong>Essential Record:</strong> " . $essential_records . "<br />";
 			
-			$folderfile_rights_holder_array = array();
-			$folderfile_rights_holder_explode = explode(';', $folderfile_rights_holder);
-			foreach ($folderfile_rights_holder_explode as $rights_holder) {
-                array_push($folderfile_rights_holder_array, $rights_holder);
+            if(!empty($identifiers)) {
+                echo "<strong><u>Identifiers</u></strong> </br>";
+                foreach($identifiers as $key) {
+                    $identifiers_str .= '<strong>&nbsp&nbsp&nbsp&nbsp' . $key['key'] . ': </strong>';
+                    foreach($key as $value) {
+                        $identifiers_str .= implode(", ", $value);
+                    }
+                    $identifiers_str .= '</br>';
+                }
+
+                echo $identifiers_str;
             }
 
-			if(!empty($folderfile_rights_holder)) {
-			    echo "<strong>Rights Holder:</strong> " . implode("; ", $folderfile_rights_holder_array) . "<br />";
-			}
-			
-			if (!empty($folderfile_source_format)) {
-				echo "<strong>Source Type:</strong> " . stripslashes($folderfile_source_format) . "<br />";
-			}
-			
-			if(!empty($folderfile_source_dimensions)) {
-			    echo "<strong>Source Dimensions:</strong> " . stripslashes($folderfile_source_dimensions) . "<br />";
-			}
-			
-			if(!empty($folderfile_program_area)) {
-			    echo "<strong>Program Area:</strong> " . $folderfile_program_area . "<br />";
-			}
-			
-			if($folderfile_essential_record == 1) {
-			    echo "<strong>Essential Record:</strong> Yes" . "<br />";
-			}
-			else {
-			    echo "<strong>Essential Record:</strong> No" . "<br />";
-			}
-			
-			$folderfile_tags_array = array();
-			$folderfile_tags_explode = explode(',', $folderfile_tags);
-			foreach ($folderfile_tags_explode as $tag) {
-                array_push($folderfile_tags_array, $tag);
-            }
-			
-			if(!empty($folderfile_tags)) {
-			    echo "<strong>Tags:</strong> " . implode(", ", $folderfile_tags_array) . "<br />";
+			if(!empty($tags_list)) {
+			    echo "<strong>Tags:</strong> " . $tags_list . "<br />";
 			}
 
 } else {
