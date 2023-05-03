@@ -116,14 +116,20 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
                 // loop through our returned data and add an option to the select for each bay returned
                         jQuery('#bay_selector').append(jQuery('<option>', {value:0, text:'---Select Bay---'}).attr("disabled", false));
                 jQuery.each(data, function(i, item) {
+                  // Isolates the bay "#number" text out of the entire string
+                  var sliced_item = item.slice(4,6);
+                  
+                  // Bay Number Converted into a Letter
+                  // *NOTE: Does Not Work Beyond 26 Bays
+                 var convertedBayNumberToLetter = item.replace(sliced_item, String.fromCharCode(64 + parseInt(i)));
 
 var matches = /\[.*?(\d+).*?\]/g.exec(item);
 //alert(matches[1]); 
 
         if (matches[1] = 0) {
-        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:item}).attr("disabled", true));
+        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:convertedBayNumberToLetter}).attr("disabled", true));
         } else {
-        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:item}).attr("disabled", false));
+        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:convertedBayNumberToLetter}).attr("disabled", false));
         }
                 });
 

@@ -1047,8 +1047,11 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 			       //for testing physical location can only be 'Pending', so 'On Shelf' won't be a requirement
 			       if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
 			       //if((!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+                     $alphabet = range('A', 'O');
+		  			 $bay_letter = $alphabet[$location_bay-1];
+                     
     			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
-    			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $location_bay . '</div>';
+    			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $bay_letter . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>' . $location_shelf . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
 			        } 

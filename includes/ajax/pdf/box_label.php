@@ -601,8 +601,9 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             
             $determine_no_location = substr_count($box_location_position[$i], '0'); 
             
+  			$new_loc = Patt_Custom_Func::convert_bay_letter($box_location_position[$i]);
             if($determine_no_location != 4) {
-            $obj_pdf->Cell(105, 13, $box_location_position[$i], 1, 0, 'C', 1);
+            $obj_pdf->Cell(105, 13, $new_loc, 1, 0, 'C', 1);
             }
 
 }

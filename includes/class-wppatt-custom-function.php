@@ -23,6 +23,497 @@ if (!class_exists('Patt_Custom_Func')) {
             $this->table_prefix = $wpdb->prefix;
         }
 
+public static function rescan_workflow($folderfile_id) {
+    global $wpdb;
+
+    $folderfiles_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+    $logs_table = $wpdb->prefix . 'epa_patt_arms_logs';
+    $error_flag = 0;
+
+    $get_folderdocinfofiles = $wpdb->get_row("SELECT object_key, binary_filepath, text_filepath
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+    WHERE folderdocinfofile_id = '".$folderfile_id."'");
+
+    if(!empty($get_folderdocinfofiles->object_key)) {
+        
+        // 1. Call the deleteProcessedFile lambda function and delete files in the SAN
+        $curl_delete = curl_init();
+        curl_setopt_array($curl_delete, [
+            CURLOPT_URL => "https://jhj9wzuv69.execute-api.us-east-1.amazonaws.com/test",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => '{"binary_directory": "' . $get_folderdocinfofiles->binary_filepath . '","text_directory": "' . $get_folderdocinfofiles->text_filepath . '","workflow": "rescan","nuxeo_id": "' . $get_folderdocinfofiles->object_key . '"}',
+            CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+        ]);
+
+        $delete_response = curl_exec($curl_delete);
+        $http_code_delete = curl_getinfo($curl_delete, CURLINFO_HTTP_CODE);
+        curl_close($curl_delete);
+
+        if ($http_code_delete != 200) {
+            Patt_Custom_Func::insert_api_error("rescan-lambda-function",$http_code_delete,$delete_response);
+            $error_flag = 1;
+        }
+
+        // Only execute if the delete lambda function ran successfully
+        if($error_flag == 0) {
+            // 2. Set object_key in folderdocinfofiles table to empty
+            $date_time = date('Y-m-d H:i:s');
+            $data_update_folderfile = array('object_key' => '', 'date_updated' => $date_time);
+            $data_where_folderfile = array('folderdocinfofile_id' => $folderfile_id);
+            $wpdb->update($folderfiles_table, $data_update_folderfile, $data_where_folderfile);
+
+            // 3. Delete log for the folder/file ID
+            $wpdb->delete($logs_table, array('folderdocinfofile_id' => $folderfile_id));
+        }
+    }
+    else {
+        Patt_Custom_Func::insert_api_error('rescan-missing-object-key',500,'Missing Nuxeo Document ID.');
+    }
+} 
+
+public static function validation_workflow($folderfile_id) {
+    global $wpdb;
+
+    /* RESTRICTIONS
+    1. Child document cannot be validated until the associated parent has been validated.
+    2. Child documents cannot have children.
+    */
+
+    $logs_table = $wpdb->prefix . 'epa_patt_arms_logs';
+    $disposition_date = '';
+    $error_array = array();
+
+    $get_folderdocinfofiles = $wpdb->get_row("SELECT a.id, a.parent_id, a.object_key, a.close_date, c.Schedule_Item_Number as record_schedule, d.freeze_approval, a.access_restriction, a.use_restriction, a.lan_id, b.program_office_id
+    FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+    INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id 
+    INNER JOIN " . $wpdb->prefix . "epa_record_schedule c ON c.id = b.record_schedule_id
+    INNER JOIN " . $wpdb->prefix . "wpsc_ticket d ON d.id = b.ticket_id
+    WHERE a.folderdocinfofile_id = '".$folderfile_id."'");
+
+    // Before beginning process make sure object_key is not empty
+    if(!empty($get_folderdocinfofiles->object_key)) {
+    
+    // 1. Update parent/child relationship in ARMS before moving from the Unpublished folder
+
+    // If document is a child then update parent/child metadata
+    if(Patt_Custom_Func::parent_child_indicator($folderfile_id, 'folderfile') == 1) {
+
+        $get_parent = $wpdb->get_row("SELECT object_key
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE id = '".$get_folderdocinfofiles->parent_id."'");  
+
+        // 1a. Add link to the parent document
+        $attach_child_curl = curl_init();
+        curl_setopt_array($attach_child_curl, array(
+        CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/id/' . $get_folderdocinfofiles->object_key,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'PUT',
+        CURLOPT_POSTFIELDS =>'{
+            "entity-type": "document",
+            "properties": {
+                "arms:relation_is_part_of":["' . $get_parent->object_key . '"]
+            }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+        ),
+        ));
+
+        $attach_child_response = curl_exec($attach_child_curl);
+        $http_code_attach_child = curl_getinfo($attach_child_curl, CURLINFO_HTTP_CODE);
+        curl_close($attach_child_curl);
+
+        if(intval($http_code_attach_child) != 200) {
+        $attach_child_error = Patt_Custom_Func::convert_http_error_code($http_code_attach_child);
+        Patt_Custom_Func::insert_api_error('validation-update-parent-of-child',$http_code_attach_child,$attach_child_error);
+        array_push($error_array, 1);
+        }
+
+        // 1b. Get all current children linked to a parent and add new child to list
+        $curl_get_record = curl_init();
+        curl_setopt_array($curl_get_record, array(
+        CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/id/' . $get_parent->object_key,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'X-NXproperties: *',
+            'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+        ),
+        ));
+
+        $response_get_record = curl_exec($curl_get_record);
+        $http_code_get_record = curl_getinfo($curl_get_record, CURLINFO_HTTP_CODE);
+        curl_close($curl_get_record);
+
+        $get_record_obj = json_decode($response_get_record, true);
+        $child_arr = $get_record_obj['properties']['arms:relation_has_part'];
+
+        if(count($child_arr) == 0) {
+        $child_arr = array($get_folderdocinfofiles->object_key);
+        }
+        else {
+        array_push($child_arr, $get_folderdocinfofiles->object_key);
+        }
+        
+        $update_parent_curl = curl_init();
+        curl_setopt_array($update_parent_curl, array(
+        CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/id/' . $get_parent->object_key,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'PUT',
+        CURLOPT_POSTFIELDS =>'{
+            "entity-type": "document",
+            "properties": {
+                "arms:relation_has_part":' . json_encode($child_arr) . '
+            }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+        ),
+        ));
+
+        $update_parent_response = curl_exec($update_parent_curl);
+        $http_code_update_parent = curl_getinfo($update_parent_curl, CURLINFO_HTTP_CODE);
+        curl_close($update_parent_curl);
+
+        if(intval($http_code_update_parent) != 200) {
+        $update_parent_error = Patt_Custom_Func::convert_http_error_code($http_code_update_parent);
+        Patt_Custom_Func::insert_api_error('validation-update-children-of-parent',$http_code_attach_child,$update_parent_error);
+        array_push($error_array, 0);
+        }
+    }
+        
+    // 2. Call disposition endpoint to get disposition date
+    if(!empty($get_folderdocinfofiles->close_date) && $get_folderdocinfofiles->close_date != '0000-00-00') {
+        $curl_disposition_date = curl_init();
+        curl_setopt_array($curl_disposition_date,
+        array(
+            CURLOPT_URL => 'https://arms-uploader-api-pl.cis-dev.aws.epa.gov/disposition_calc?record_schedule='.$get_folderdocinfofiles->record_schedule.'&close_date='.$get_folderdocinfofiles->close_date,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET'));
+
+        $response_disposition_date = curl_exec($curl_disposition_date);
+        $http_code_disposition_date = curl_getinfo($curl_disposition_date, CURLINFO_HTTP_CODE);
+        curl_close($curl_disposition_date);
+
+        $obj = json_decode($response_disposition_date);
+
+        if(intval($http_code_disposition_date) != 200) {
+            $disposition_date_error = Patt_Custom_Func::convert_http_error_code($http_code_disposition_date);
+            Patt_Custom_Func::insert_api_error('validation-disposition-date-endpoint',$http_code_disposition_date,$disposition_date_error);
+            array_push($error_array, 0);
+        }
+        else {
+            $disposition_date = new DateTime($obj->{'disposition_date'}, new DateTimeZone('EST'));
+            $disposition_date->setTimezone(new DateTimeZone('UTC'));
+            $disposition_date = $disposition_date->format('Y-m-d\TH:i:s.v\Z');
+            array_push($error_array, 1);
+        }
+    }
+
+    // 3. Get all metadata values for the POST request
+    if($get_folderdocinfofiles->access_restriction == 'Yes' || $get_folderdocinfofiles->use_restriction == 'Yes') {
+        $sensitivity = "true";
+    }
+    else {
+        $sensitivity = "false";
+    }
+
+    if($get_folderdocinfofiles->freeze_approval == 1) {
+        $lithold = "true";
+    }
+    else {
+        $lithold = "false";
+    }
+
+    $get_org_val = $wpdb->get_row("SELECT organization_acronym FROM wpqa_wpsc_epa_program_office WHERE office_code = '".$get_folderdocinfofiles->program_office_id."'");
+    $get_aaship = $wpdb->get_row("SELECT office_code FROM wpqa_wpsc_epa_program_office WHERE parent_office_code LIKE '0%' AND organization_acronym = '".$get_org_val->organization_acronym."'");
+
+    // 4. Only apply disposition if a disposition date exists
+    if(!empty($disposition_date)) {
+        $nuxeo_request = '{"input": "' . $get_folderdocinfofiles->object_key . '","params": {"disposition": "' . $disposition_date . '","retention": "true","legalhold": "' . $lithold . '","sensitive": "' . $sensitivity . '","aaship": "' . $get_aaship->office_code . '","move": "true","custodian": "' . strtoupper($get_folderdocinfofiles->lan_id) . '"}}';
+    }
+    else {
+        $nuxeo_request = '{"input": "' . $get_folderdocinfofiles->object_key . '","params": {"retention": "true","legalhold": "' . $lithold . '","sensitive": "' . $sensitivity . '","aaship": "' . $get_aaship->office_code . '","move": "true","custodian": "' . strtoupper($get_folderdocinfofiles->lan_id) . '"}}';
+    }
+    
+    // 5. If a parent has no children then declare as a record
+    if(Patt_Custom_Func::parent_child_indicator($folderfile_id, 'folderfile') == 0 && Patt_Custom_Func::get_count_of_children_for_parent($folderfile_id, 'folderfile') == 0) {
+
+        $curl_declare_record = curl_init();
+        curl_setopt_array($curl_declare_record, array(
+        CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/site/automation/ARMSDeclareRecord',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>$nuxeo_request,
+        CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json+nxrequest',
+        'Accept: application/json',
+        'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+        ),
+        ));
+
+        $response_declare_record = curl_exec($curl_declare_record);
+        $http_code_declare_record = curl_getinfo($curl_declare_record, CURLINFO_HTTP_CODE);
+        curl_close($curl_declare_record);
+
+        if(intval($http_code_declare_record) != 200) {
+            $declare_record_error = Patt_Custom_Func::convert_http_error_code($http_code_declare_record);
+            Patt_Custom_Func::insert_api_error('validation-declare-record-endpoint',$http_code_declare_record,$declare_record_error);
+            array_push($error_array, 0);
+        }
+        else {
+            $date_time = date('Y-m-d H:i:s');
+            $data_update_logs = array('published_stage' => 1, 'published_stage_timestamp' => $date_time);
+            $data_where_logs = array('folderdocinfofile_id' => $folderfile_id);
+            $wpdb->update($logs_table, $data_update_logs, $data_where_logs);
+            array_push($error_array, 1);
+            // TODO Add lambda function call here
+        }
+    }
+
+    // 6. If a parent has children then move the document from Unpublished to the Organization folder
+    if(Patt_Custom_Func::parent_child_indicator($folderfile_id, 'folderfile') == 0 && Patt_Custom_Func::get_count_of_children_for_parent($folderfile_id, 'folderfile') > 0) {
+        $curl_move_parent = curl_init();
+        curl_setopt_array($curl_move_parent, array(
+        CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/automation/Document.Move',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{
+            "input": "doc:' . $get_folderdocinfofiles->object_key . '",
+            "params": {
+                "target": "/EPA Organization/' . $get_org_val->organization_acronym . '"
+            }
+        }',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y'
+        ),
+        ));
+
+        $response_move_parent = curl_exec($curl_move_parent);
+        $http_code_move_parent = curl_getinfo($curl_move_parent, CURLINFO_HTTP_CODE);
+        curl_close($curl_move_parent);
+
+        if(intval($http_code_move_parent) != 200) {
+        $move_record_error = Patt_Custom_Func::convert_http_error_code($http_code_move_parent);
+        Patt_Custom_Func::insert_api_error('validation-move-record',$http_code_move_parent,$move_record_error);
+        array_push($error_array,0);
+        }
+    }
+    
+    // 7. If all children of a parent have been validated then declare as a record
+    if(Patt_Custom_Func::parent_child_indicator($folderfile_id, 'folderfile') == 1) {
+        $get_total_count = $wpdb->get_row("SELECT count(id) as total_count
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE parent_id = '" . $get_folderdocinfofiles->parent_id . "' AND folderdocinfofile_id <> '" . $folderfile_id . "' ");
+
+        $get_validation_count = $wpdb->get_row("SELECT count(id) as validation_count
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE parent_id = '" . $get_folderdocinfofiles->parent_id . "' AND folderdocinfofile_id <> '" . $folderfile_id . "' AND validation = 1");
+        // 7a. All children have been validated, declare as a record
+        if($get_total_count->total_count == $get_validation_count->validation_count) {
+
+        $get_child_ids = $wpdb->get_results("SELECT folderdocinfofile_id
+        FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files 
+        WHERE parent_id = '". $get_folderdocinfofiles->parent_id ."'");
+
+        foreach($get_child_ids as $item) {
+            $disposition_date = '';
+            
+            $get_all_documents = $wpdb->get_row("SELECT a.object_key, a.close_date, c.Schedule_Item_Number as record_schedule, d.freeze_approval, a.access_restriction, a.use_restriction, a.lan_id, b.program_office_id
+            FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+            INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id 
+            INNER JOIN " . $wpdb->prefix . "epa_record_schedule c ON c.id = b.record_schedule_id
+            INNER JOIN " . $wpdb->prefix . "wpsc_ticket d ON d.id = b.ticket_id
+            WHERE a.folderdocinfofile_id = '" . $item->folderdocinfofile_id . "'");
+
+            // 2. Call disposition endpoint to get disposition date
+            if(!empty($get_all_documents->close_date) && $get_all_documents->close_date != '0000-00-00') {
+            $curl_disposition_date = curl_init();
+            curl_setopt_array($curl_disposition_date,
+            array(
+                CURLOPT_URL => 'https://arms-uploader-api-pl.cis-dev.aws.epa.gov/disposition_calc?record_schedule='.$get_all_documents->record_schedule.'&close_date='.$get_all_documents->close_date,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET'));
+
+                $response_disposition_date = curl_exec($curl_disposition_date);
+                $http_code_disposition_date = curl_getinfo($curl_disposition_date, CURLINFO_HTTP_CODE);
+                curl_close($curl_disposition_date);
+
+                $obj = json_decode($response_disposition_date);
+
+                if(intval($http_code_disposition_date) != 200) {
+                    $disposition_date_error = Patt_Custom_Func::convert_http_error_code($http_code_disposition_date);
+                    Patt_Custom_Func::insert_api_error('validation-disposition-date-endpoint',$http_code_disposition_date,$disposition_date_error);
+                    array_push($error_array,0);
+                }
+                else {
+                    $disposition_date = new DateTime($obj->{'disposition_date'}, new DateTimeZone('EST'));
+                    $disposition_date->setTimezone(new DateTimeZone('UTC'));
+                    $disposition_date = $disposition_date->format('Y-m-d\TH:i:s.v\Z');
+                    array_push($error_array,1);
+                }
+            }
+
+            if($get_all_documents->access_restriction == 'Yes' || $get_all_documents->use_restriction == 'Yes') {
+                $sensitivity = "true";
+            }
+            else {
+                $sensitivity = "false";
+            }
+
+            if($get_all_documents->freeze_approval == 1) {
+                $lithold = "true";
+            }
+            else {
+                $lithold = "false";
+            }
+
+            $get_org_val = $wpdb->get_row("SELECT organization_acronym FROM wpqa_wpsc_epa_program_office WHERE office_code = '".$get_all_documents->program_office_id."'");
+            $get_aaship = $wpdb->get_row("SELECT office_code FROM wpqa_wpsc_epa_program_office WHERE parent_office_code LIKE '0%' AND organization_acronym = '".$get_org_val->organization_acronym."'");
+
+            // 3. Only apply disposition if a disposition date exists
+            if(!empty($disposition_date)) {
+            $nuxeo_request = '{"input": "' . $get_all_documents->object_key . '","params": {"disposition": "' . $disposition_date . '","retention": "true","legalhold": "' . $lithold . '","sensitive": "' . $sensitivity . '","aaship": "' . $get_aaship->office_code . '","move": "true","custodian": "' . strtoupper($get_all_documents->lan_id) . '"}}';
+            }
+            else {
+            $nuxeo_request = '{"input": "' . $get_all_documents->object_key . '","params": {"retention": "true","legalhold": "' . $lithold . '","sensitive": "' . $sensitivity . '","aaship": "' . $get_aaship->office_code . '","move": "true","custodian": "' . strtoupper($get_all_documents->lan_id) . '"}}';
+            }
+
+            $curl_declare_record = curl_init();
+            curl_setopt_array($curl_declare_record, array(
+            CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/site/automation/ARMSDeclareRecord',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>$nuxeo_request,
+            CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json+nxrequest',
+            'Accept: application/json',
+            'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+            ),
+            ));
+
+            $response_declare_record = curl_exec($curl_declare_record);
+            $http_code_declare_record = curl_getinfo($curl_declare_record, CURLINFO_HTTP_CODE);
+            curl_close($curl_declare_record);
+
+            if(intval($http_code_declare_record) != 200) {
+                $declare_record_error = Patt_Custom_Func::convert_http_error_code($http_code_declare_record);
+                Patt_Custom_Func::insert_api_error('validation-declare-record-endpoint',$http_code_declare_record,$declare_record_error);
+                array_push($error_array,0);
+
+            }
+            else {
+                $date_time = date('Y-m-d H:i:s');
+                $data_update_logs = array('published_stage' => 1, 'published_stage_timestamp' => $date_time);
+                $data_where_logs = array('folderdocinfofile_id' => $item->folderdocinfofile_id);
+                $wpdb->update($logs_table, $data_update_logs, $data_where_logs);
+                array_push($error_array,1);
+                // TODO Add lambda function call here
+            }
+        }
+        }
+        //7b. Not all children have been validated, move from Unpublished to an organization folder
+        else {
+        $curl_move_child = curl_init();
+
+        curl_setopt_array($curl_move_child, array(
+            CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/automation/Document.Move',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+            "input": "doc:' . $get_folderdocinfofiles->object_key . '",
+            "params": {
+                "target": "/EPA Organization/' . $get_org_val->organization_acronym . '"
+            }
+        }',
+            CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Basic QWRtaW5pc3RyYXRvcjpBZG1pbmlzdHJhdG9y'
+            ),
+        ));
+
+        $response_move_child = curl_exec($curl_move_child);
+        $http_code_move_child = curl_getinfo($curl_move_child, CURLINFO_HTTP_CODE);
+        curl_close($curl_move_child);
+
+        if(intval($http_code_move_child) != 200) {
+            $move_record_error = Patt_Custom_Func::convert_http_error_code($http_code_move_child);
+            Patt_Custom_Func::insert_api_error('validation-move-record',$http_code_move_child,$move_record_error);
+            array_push($error_array,0);
+        }
+
+        }
+    }
+
+    } else {
+        Patt_Custom_Func::insert_api_error('validation-missing-object-key',500,'Missing Nuxeo Document ID.');
+        array_push($error_array,0);
+    }
+
+    // 8. If any values in $error_array = 0 then folder/file will not be validated
+    if(in_array(0,$error_array)){
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
 public static function company_name_conversion($company_name)
 {
     global $wpdb;
@@ -965,7 +1456,8 @@ echo "Nothing to assign.";
 			$email = $json['Resources']['0']['emails']['0']['value'];
 			$phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
 			$org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
-			
+			$workforce_id = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['employeeNumber'];
+              
 			if ($active == 1) {
 			// Declare array  
 			$lan_id_details_array = array(
@@ -974,6 +1466,7 @@ echo "Nothing to assign.";
 			    "phone"=>$phone,
 			    "org"=>$org,
 			    "lan_id"=>$lanid,
+              	"workforce_id"=>$workforce_id,
 			); 
 			   
 			// Use json_encode() function 
@@ -6225,8 +6718,6 @@ $folderdocinfofile_essential_record = $folderdocinfofile->essential_record;
 $folderdocinfofile_folder_identifier= $folderdocinfofile->folder_identifier;
 $folderdocinfofile_date_created = $folderdocinfofile->date_created;
 $folderdocinfofile_date_updated = $folderdocinfofile->date_updated;
-
-//$folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
 $folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
 $folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
 $folderdocinfofile_attachment = $folderdocinfofile->attachment;
@@ -6236,6 +6727,10 @@ $folderdocinfofile_object_location = $folderdocinfofile->object_location;
 $folderdocinfofile_source_file_location= $folderdocinfofile->source_file_location;
 $folderdocinfofile_file_object_id = $folderdocinfofile->file_object_id;
 $folderdocinfofile_file_size = $folderdocinfofile->file_size;
+  
+$folderdocinfofile_binary_filepath = $folderdocinfofile->binary_filepath;
+$folderdocinfofile_text_filepath = $folderdocinfofile->text_filepath;
+  
 $folderdocinfofile_title = $folderdocinfofile->title;
 $folderdocinfofile_date = $folderdocinfofile->date;
 $folderdocinfofile_description = $folderdocinfofile->description;
@@ -6280,6 +6775,8 @@ $folderdocinfofile_lan_id_details = $folderdocinfofile->lan_id_details;
 'source_file_location' => $folderdocinfofile_source_file_location,
 'file_object_id' => $folderdocinfofile_file_object_id,
 'file_size' => $folderdocinfofile_file_size,
+'binary_filepath' => $folderdocinfofile_binary_filepath,
+'text_filepath' => $folderdocinfofile_text_filepath,                      
 'title' => $folderdocinfofile_title,
 'date' => $folderdocinfofile_date,
 'description' => $folderdocinfofile_description,
@@ -6323,14 +6820,6 @@ $folderdocinfofile_lan_id_details = $folderdocinfofile->lan_id_details;
 }
 
 }
-
-/*
-foreach ($folderdocinfo_array as $key => $value) {
-
-//Remove from wpsc_epa_folderdocinfo
-$wpdb->delete( $wpdb->prefix . 'wpsc_epa_folderdocinfo_archive', array( 'id' => $value) );
-}
-*/
 
 foreach ($folderdocinfo_file_array as $key => $value) {
 
@@ -6378,8 +6867,6 @@ $folderdocinfofile_essential_record = $folderdocinfofile->essential_record;
 $folderdocinfofile_folder_identifier= $folderdocinfofile->folder_identifier;
 $folderdocinfofile_date_created = $folderdocinfofile->date_created;
 $folderdocinfofile_date_updated = $folderdocinfofile->date_updated;
-
-//$folderdocinfofile_folderdocinfo_id = $folderdocinfofile->folderdocinfo_id;
 $folderdocinfofile_folderdocinfofile_id = $folderdocinfofile->folderdocinfofile_id;
 $folderdocinfofile_DOC_REGID = $folderdocinfofile->DOC_REGID;
 $folderdocinfofile_attachment = $folderdocinfofile->attachment;
@@ -6389,6 +6876,8 @@ $folderdocinfofile_object_location = $folderdocinfofile->object_location;
 $folderdocinfofile_source_file_location= $folderdocinfofile->source_file_location;
 $folderdocinfofile_file_object_id = $folderdocinfofile->file_object_id;
 $folderdocinfofile_file_size = $folderdocinfofile->file_size;
+$folderdocinfofile_binary_filepath = $folderdocinfofile->binary_filepath;
+$folderdocinfofile_text_filepath = $folderdocinfofile->text_filepath;
 $folderdocinfofile_title = $folderdocinfofile->title;
 $folderdocinfofile_date = $folderdocinfofile->date;
 $folderdocinfofile_description = $folderdocinfofile->description;
@@ -6433,6 +6922,8 @@ $folderdocinfofile_lan_id_details = $folderdocinfofile->lan_id_details;
 'source_file_location' => $folderdocinfofile_source_file_location,
 'file_object_id' => $folderdocinfofile_file_object_id,
 'file_size' => $folderdocinfofile_file_size,
+'binary_filepath' => $folderdocinfofile_binary_filepath,                      
+'text_filepath' => $folderdocinfofile_text_filepath,                      
 'title' => $folderdocinfofile_title,
 'date' => $folderdocinfofile_date,
 'description' => $folderdocinfofile_description,
@@ -8117,6 +8608,45 @@ if($type == 'comment') {
 			}
 						
  			return $output;
+		}
+      
+      	/**
+         * Convert Bay location to Letter from Number.
+         * @return Bay Location with letter.
+         */
+		public static function convert_bay_letter( $shelf_id ) {
+			
+          [$aisle, $bay, $shelf, $position, $dc] = explode("_", $shelf_id);
+          
+          $loc_num = trim($bay, 'B');
+          
+          $alphabet = range('A', 'O');
+		  $letter = $alphabet[$loc_num-1];
+          
+          $output = $aisle.'_'.$letter.'B_'.$shelf.'_'.$position.'_'.$dc;
+						
+ 		  return $output;
+          
+		}
+      
+         /**
+         * Convert Bay location to Number from Letter.
+         * @return Bay Location with number.
+         */
+		public static function convert_bay_number( $shelf_id ) {
+			
+          [$aisle, $bay, $shelf, $position, $dc] = explode("_", $shelf_id);
+          
+          $loc_letter = trim($bay, 'B');
+          
+		  // Enter your code here, enjoy!
+          $alphabet = range('A', 'O');
+          
+          $number = array_search($loc_letter, $alphabet)+1;
+		
+          $output = $aisle.'_'.$number.'B_'.$shelf.'_'.$position.'_'.$dc;
+						
+ 		  return $output;
 		}
 		
 		/**

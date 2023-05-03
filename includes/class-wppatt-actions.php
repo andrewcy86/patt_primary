@@ -256,10 +256,13 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     // Change Shelf Location
     function shelf_location ( $ticket_id, $box_id, $shelf_id ){
       global $wpscfunction, $current_user;
+      $shelf_id_arr = explode('>', $shelf_id, 2); 
+      $shelf_id_1 = Patt_Custom_Func::convert_bay_letter($shelf_id_arr[0]);
+      $shelf_id_2 = Patt_Custom_Func::convert_bay_letter($shelf_id_arr[1]);
       if($current_user->ID){
-        $log_str = sprintf( __('%1$s changed shelf location of Box ID: %2$s to %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>','<strong>'. $shelf_id .'</strong>');
+        $log_str = sprintf( __('%1$s changed shelf location of Box ID: %2$s to %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>','<strong>'. $shelf_id_1 . ' > ' . $shelf_id_2 .'</strong>');
       } else {
-        $log_str = sprintf( __('Box ID: %1$s has changed shelf location to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $shelf_id .'</strong>' );
+        $log_str = sprintf( __('Box ID: %1$s has changed shelf location to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $shelf_id_1 . ' > ' . $shelf_id_2 .'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

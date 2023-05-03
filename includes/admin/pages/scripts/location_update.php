@@ -90,7 +90,7 @@ $shelf_meta = $shelf_meta_existing.' > '.$aisle. 'A_' .$bay . 'B_' . $shelf .'S_
 
 do_action('wpppatt_after_shelf_location', $ticket_id, $boxid, $shelf_meta);
 
-   echo "Box ID #: " . $boxid . " has been updated. New Location: " .$shelf_info;
+   echo "Box ID #: " . $boxid . " has been updated. New Location: " . Patt_Custom_Func::convert_bay_letter($shelf_info);
 } else {
    echo "Update not successful.";
 }

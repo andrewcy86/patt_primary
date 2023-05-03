@@ -10,7 +10,8 @@ include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
     //Set SuperGlobal ID variable to be used in all functions below
 	$url_id = $_GET['id'] ?? '';
     $url_dc = $_GET['dc'] ?? '';
-
+  
+  $alphabet = range('A', 'O');
 	$invalid_shelf_id = 0;
 
 	if(!empty($url_dc) || !empty($url_id)) {
@@ -104,6 +105,7 @@ foreach($b as $info){
   $pieces = explode("_", $info->shelf_id);
   $aisle = $pieces[0];
   $bay = $pieces[1];
+  $new_bay = $alphabet[$bay-1];
   $shelf = $pieces[2];  
   $position = $pieces[3];
   
@@ -112,15 +114,16 @@ foreach($b as $info){
   $shelf_bc = $pieces[2].'S';  
   $position_bc = $pieces[3].'P';
   $shelf_id_bc = $aisle_bc.'_'.$bay_bc.'_'.$shelf_bc.'_'.$position_bc.'_'.$_GET['dc'];
+  $new_shelf_id_bc = Patt_Custom_Func::convert_bay_letter($shelf_id_bc);
   
     $shelf_id = $info->shelf_id;
-    $shelf_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($shelf_id_bc, 'C128', '', '', 57, 17, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>false, 'font'=>'helvetica', 'fontsize'=>8), 'N'));
+    $shelf_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($new_shelf_id_bc, 'C128', '', '', 57, 17, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>false, 'font'=>'helvetica', 'fontsize'=>8), 'N'));
   
     if ($i == $maxcols) {
         $i = 0;
         $tbl .= '</tr><tr>';
     }
-    $tbl .= '<td style="width: 190px; padding-left: 8px;"><tcpdf method="write1DBarcode" params="'.$shelf_barcode.'" /><span style="text-align: center;">Aisle: '. $aisle .' Bay: '. $bay .' Shelf: '. $shelf .' Position: '. $position .'</span></td>';
+    $tbl .= '<td style="width: 190px; padding-left: 8px;"><tcpdf method="write1DBarcode" params="'.$shelf_barcode.'" /><span style="text-align: center;">Aisle: '. $aisle .' Bay: '. $new_bay .' Shelf: '. $shelf .' Position: '. $position .'</span></td>';
 
     $i++;
 
@@ -161,7 +164,10 @@ foreach($shelfid_array as $item) {
   
         $pre_pieces = explode("_", $item);
         $pre_aisle = preg_replace("/[^0-9]/", "", $pre_pieces[0] );
-        $pre_bay = preg_replace("/[^0-9]/", "", $pre_pieces[1] );
+        
+  		$pre_bay_letter = substr($pre_pieces[1], 0, -1);
+  		$pre_bay = array_search($pre_bay_letter, $alphabet)+1;
+
         $pre_shelf = preg_replace("/[^0-9]/", "", $pre_pieces[2] );
         $pre_position = preg_replace("/[^0-9]/", "", $pre_pieces[3] );
   		$pre_dc= $pre_pieces[4];
@@ -198,7 +204,7 @@ $invalid_shelf_id = 1;
 
 }
   
-if (preg_match("/^(\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?1))*$/", $GLOBALS['id']) && $invalid_shelf_id != 1) {
+if (preg_match("/^(\d{1,3}A_[A-O]B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?1))*$/", $GLOBALS['id']) && $invalid_shelf_id != 1) {
 
     $tbl   =  '<style>
     .tableWithOuterBorder{
@@ -225,11 +231,11 @@ if (preg_match("/^(\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?
     
     foreach($b as $info){
         $pieces = explode("_", $info);
-        $aisle = preg_replace("/[^0-9]/", "", $pre_pieces[0] );
-        $bay = preg_replace("/[^0-9]/", "", $pre_pieces[1] );
-        $shelf = preg_replace("/[^0-9]/", "", $pre_pieces[2] ); 
-        $position = preg_replace("/[^0-9]/", "", $pre_pieces[3] );
-        
+        $aisle = preg_replace("/[^0-9]/", "", $pieces[0] );
+        $bay = substr($pieces[1], 0, -1);
+        $shelf = preg_replace("/[^0-9]/", "", $pieces[2] ); 
+        $position = preg_replace("/[^0-9]/", "", $pieces[3] );
+
         $shelf_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($info, 'C128', '', '', 57, 17, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>false, 'font'=>'helvetica', 'fontsize'=>8), 'N'));
       
         if ($i == $maxcols) {

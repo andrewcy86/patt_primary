@@ -138,7 +138,7 @@ margin-top: -196px !important;
 				</div>
 				<div class="booking-details">
 					<h2>Box # <?php echo $_GET['box_id']; ?></h2>
-					Current Location: [<?php echo $boxlist_location; ?>]
+					Current Location: [<?php echo Patt_Custom_Func::convert_bay_letter($boxlist_location); ?>]
 					<h3>Selected Box Position:</h3>
 					<ul id="selected-seats"></ul>
 					 <input type="hidden" id="selection" name="selection" value="">

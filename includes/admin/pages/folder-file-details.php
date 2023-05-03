@@ -334,7 +334,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         <?php
         }
         else { ?>
-        <button type="button" aria-label="Help Invalidate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Un-Validate"></i><span class="sr-only">Un-Validate</span> Un-Validate</button>
+        <!--<button type="button" aria-label="Help Invalidate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Un-Validate"></i><span class="sr-only">Un-Validate</span> Un-Validate</button>-->
         <?php
         }
         ?>
@@ -351,7 +351,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         <button type="button" aria-label="Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span> Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
        	<?php }
        	else { ?>
-       	<button type="button" aria-label="Undo Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Undo Re-Scan"></i><span class="sr-only">Undo Re-Scan</span> Undo Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+       	<!--<button type="button" aria-label="Undo Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Undo Re-Scan"></i><span class="sr-only">Undo Re-Scan</span> Undo Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>-->
         <?php } ?>
         <?php 
         }
@@ -1652,11 +1652,14 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 	                                //if aisle/bay/shelf/position <= 0 and not 'On Shelf', does not display location on front end
     	                            if($box_physical_location == 'On Shelf' && !($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
     								{
+                                      $alphabet = range('A', 'O');
+		  			 				  $bay_letter = $alphabet[$box_bay-1];
+                                      
         								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
         	                            echo $box_aisle . "<br />";
         	                            echo '</div>';
         								echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>';
-        	                            echo $box_bay . "<br />";
+        	                            echo $bay_letter . "<br />";
         	                            echo '</div>';
         								echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>';
         	                            echo $box_shelf . "<br />";
