@@ -8610,6 +8610,52 @@ if($type == 'comment') {
  			return $output;
 		}
       
+     public static function generate_bay_letters($length = 1) {
+        $capital = range('A', 'Z');
+        if ($length <= 0) {
+            return [];
+        } elseif ($length == 1) {
+            return $capital;
+        } else {
+            $result = [];
+            foreach ($capital as $letter) {
+                foreach (Patt_Custom_Func::generate_bay_letters($length - 1) as $subLetter) {
+                    $result[] = $letter . $subLetter;
+                }
+            }
+            return $result;
+        }
+	}
+
+    public static function get_bay_from_number($bay) {
+        if($bay > 26) {
+            $bay_arr = Patt_Custom_Func::generate_bay_letters(2);
+            $bay_value = $bay_arr[$bay-27];
+            return strval($bay_value);
+        }
+        else {
+            $bay_arr = Patt_Custom_Func::generate_bay_letters(1);
+            $bay_value = $bay_arr[$bay-1];
+            return strval($bay_value);
+        }
+    }
+
+    public static function get_bay_from_letter($bay) {
+        // Get number based on letters
+        if(strlen($bay) > 1) {
+            $bay_arr = Patt_Custom_Func::generate_bay_letters(2);
+            $key = array_search($bay, $bay_arr);
+            $bay_val = $key + 27;
+        }
+        else {
+            $bay_arr = Patt_Custom_Func::generate_bay_letters(1);
+            $key = array_search($bay, $bay_arr);
+            $bay_val = $key + 1;
+        }
+
+        return strval($bay_val);
+    }
+      
       	/**
          * Convert Bay location to Letter from Number.
          * @return Bay Location with letter.
@@ -8619,10 +8665,7 @@ if($type == 'comment') {
           [$aisle, $bay, $shelf, $position, $dc] = explode("_", $shelf_id);
           
           $loc_num = trim($bay, 'B');
-          
-          $alphabet = range('A', 'O');
-		  $letter = $alphabet[$loc_num-1];
-          
+		  $letter = Patt_Custom_Func::get_bay_from_number($loc_num);
           $output = $aisle.'_'.$letter.'B_'.$shelf.'_'.$position.'_'.$dc;
 						
  		  return $output;
@@ -8636,14 +8679,9 @@ if($type == 'comment') {
 		public static function convert_bay_number( $shelf_id ) {
 			
           [$aisle, $bay, $shelf, $position, $dc] = explode("_", $shelf_id);
-          
-          $loc_letter = trim($bay, 'B');
-          
-		  // Enter your code here, enjoy!
-          $alphabet = range('A', 'O');
-          
-          $number = array_search($loc_letter, $alphabet)+1;
-		
+          //$loc_letter = trim($bay, 'B');
+          $loc_letter = substr($bay, 0, -1);
+          $number = Patt_Custom_Func::get_bay_from_letter($loc_letter);
           $output = $aisle.'_'.$number.'B_'.$shelf.'_'.$position.'_'.$dc;
 						
  		  return $output;
