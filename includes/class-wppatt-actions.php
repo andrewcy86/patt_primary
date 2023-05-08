@@ -27,6 +27,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_unauthorized_destruction', array($this,'unauthorized_destruction'), 10, 2 );
       add_action( 'wpppatt_after_unauthorized_destruction_unflag', array($this,'unauthorized_destruction_unflag'), 10, 2 );
       add_action( 'wpppatt_after_shelf_location', array($this,'shelf_location'), 10, 3 );   
+      add_action( 'wpppatt_after_shelf_location_single', array($this,'shelf_location_single'), 10, 3 ); 
       add_action( 'wpppatt_after_digitization_center', array($this,'digitization_center'), 10, 3 );   
       add_action( 'wpppatt_after_validate_document', array($this,'validate_document'), 10, 2 );
       add_action( 'wpppatt_after_invalidate_document', array($this,'invalidate_document'), 10, 2 );
@@ -262,7 +263,24 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       if($current_user->ID){
         $log_str = sprintf( __('%1$s changed shelf location of Box ID: %2$s to %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>','<strong>'. $shelf_id_1 . ' > ' . $shelf_id_2 .'</strong>');
       } else {
-        $log_str = sprintf( __('Box ID: %1$s has changed shelf location to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $shelf_id_1 . ' > ' . $shelf_id_2 .'</strong>' );
+        $log_str = sprintf( __('Box ID: %1$s has changed shelf location to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $shelf_id .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+     // Change Shelf Location Single
+    function shelf_location_single ( $ticket_id, $box_id, $shelf_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed shelf location of Box ID: %2$s to %3$s','supportcandy'), '<strong>'.Patt_Custom_Func::get_full_name_by_customer_name($current_user->display_name).'</strong>','<strong>'. $box_id .'</strong>','<strong>'. $shelf_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID: %1$s has changed shelf location to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $shelf_id .'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

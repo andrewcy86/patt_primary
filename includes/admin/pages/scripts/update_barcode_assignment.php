@@ -64,7 +64,7 @@ $request_array = array($received_tag->term_id, $in_progress_tag->term_id, $ecms_
 //Determine if location entered is valid
 ////////
 // if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location)){
- if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_[A-O]B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) ||
+ if(preg_match('/\b(SA-\d\d-E|SA-\d\d-W)\b/i', $location) || preg_match('/\b(SCN-\d\d-E|SCN-\d\d-W)\b/i', $location) || preg_match('/\b(CID-\d\d-E|CID-\d\d-W)\b/i', $location) || preg_match('/^\d{1,3}A_[A-Z]{1,2}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', $location) ||
  preg_match('/\b(RD-\d\d-E|RD-\d\d-W)\b/i', $location) || preg_match('/\b(OS-\d\d-E|OS-\d\d-W)\b/i', $location) || preg_match('/\b(EXA-\d\d-E|EXA-\d\d-W)\b/i', $location) || preg_match('/\b(EXP-\d\d-E|EXP-\d\d-W)\b/i', $location) || 
  preg_match('/\b(PREP-\d\d-E|PREP-\d\d-W)\b/i', $location) || preg_match('/\b(QAQC-\d\d-E|QAQC-\d\d-W)\b/i', $location) || preg_match('/\b(VAL-\d\d-E|VAL-\d\d-W)\b/i', $location) || preg_match('/\b(DES-\d\d-E|DES-\d\d-W)\b/i', $location) ||
  preg_match('/\b(SDA-\d\d-E|SDA-\d\d-W)\b/i', $location) || preg_match('/\b(SPA-\d\d-E|SPA-\d\d-W)\b/i', $location) || preg_match('/\b(SLA-\d\d-E|SLA-\d\d-W)\b/i', $location) || preg_match('/\b(SHP-\d\d-E|SHP-\d\d-W)\b/i', $location)){
@@ -268,7 +268,6 @@ $pallet_ticket_id = $get_pallet_ticket_id->ticket_id;
 
 //Insert into Scan List Table
 //Does location exist in Scan List Table?
-
 $check_pallet_id = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE pallet_id = '" . $pallet . "'");
@@ -352,7 +351,6 @@ $boxsa_ticket_id = $get_boxsa_ticket_id->ticket_id;
 
 //Insert into Scan List Table
 //Does location exist in Scan List Table?
-
 $check_boxsa_id = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_sa . "'");
@@ -417,7 +415,6 @@ $boxscn_ticket_id = $get_boxscn_ticket_id->ticket_id;
 
 //Insert into Scan List Table
 //Does location exist in Scan List Table?
-
 $check_boxscn_id = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_scn . "'");
@@ -483,7 +480,6 @@ $boxcrt_ticket_id = $get_boxcrt_ticket_id->ticket_id;
 
 //Insert into Scan List Table
 //Does location exist in Scan List Table?
-
 $check_boxcrt_id = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_crt . "'");
@@ -1067,27 +1063,29 @@ if($boxcrt_update == 1) {
 //Insert Box Location > Shelf ID Information
 ////////
 //Check if location is for shelf
-if(preg_match('/^\d{1,3}A_[A-O]B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
+if(preg_match('/^\d{1,3}A_[A-Z]{1,2}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', $location) && ($box_count >= 1) && ($total_array_count == $box_count)) {
 
 foreach($boxpallet_arr as $box_shelf){
     
 //echo $box_shelf;
                         /* Restrict physical location scanning assignments to one box */
                         if($total_array_count == 1){
-                            $alphabet = range('A', 'O');
+                            //$alphabet = range('A', 'O');
                             $position_array = explode('_', $location);
             
                             $aisle = substr($position_array[0], 0, -1);
-                            $pre_bay_letter = substr($position_array[1], 0, -1);
-                            $bay = array_search($pre_bay_letter, $alphabet)+1;
+                            $bay = substr($position_array[1], 0, -1);
+                          	$bay_converted = Patt_Custom_Func::get_bay_from_letter($bay);
+                            //$bay = array_search($pre_bay_letter, $alphabet)+1;
                             $shelf = substr($position_array[2], 0, -1);
                             $position = substr($position_array[3], 0, -1);
                             $dc = $position_array[4];
                             $center_term_id = term_exists($dc);
                             $new_term_object = get_term( $center_term_id );
-                            $new_position_id_storage_location = $aisle.'A_'.$bay.'B_'.$shelf.'S_'.$position.'P_'.strtoupper($dc); 
-                          	$converted_position_id_storage_location = Patt_Custom_Func::convert_bay_letter($new_position_id_storage_location);
-                            $new_A_B_S_only_storage_location = $aisle.'_'.$bay.'_'.$shelf;
+                            $new_position_id_storage_location_display = $aisle.'A_'.$bay.'B_'.$shelf.'S_'.$position.'P_'.strtoupper($dc);
+                            $new_position_id_storage_location = $aisle.'A_'.$bay_converted.'B_'.$shelf.'S_'.$position.'P_'.strtoupper($dc);
+                          	
+                            $new_A_B_S_only_storage_location = $aisle.'_'.$bay_converted.'_'.$shelf;
             
                             /* Add logic to determine if a location is in the facility. */
             
@@ -1114,11 +1112,13 @@ foreach($boxpallet_arr as $box_shelf){
                                       			              
                 		        $existing_boxinfo_aisle = $existing_boxinfo_details->aisle;
                 			    $existing_boxinfo_bay = $existing_boxinfo_details->bay;
+                                $existing_boxinfo_bay_converted = Patt_Custom_Func::get_bay_from_number($existing_boxinfo_bay); 
                 			    $existing_boxinfo_shelf = $existing_boxinfo_details->shelf;
                 			    $existing_boxinfo_position = $existing_boxinfo_details->position;
                 			    $term_object = get_term( $existing_boxinfo_details->dc);
                 			    $existing_boxinfo_dc =  $term_object->slug;
                 		        $existing_boxinfo_position_id_storage_location = $existing_boxinfo_aisle.'A_'.$existing_boxinfo_bay.'B_'.$existing_boxinfo_shelf.'S_'.$existing_boxinfo_position.'P_'.strtoupper($existing_boxinfo_dc);
+                    		    $existing_boxinfo_position_id_storage_location_display = $existing_boxinfo_aisle.'A_'.$existing_boxinfo_bay_converted.'B_'.$existing_boxinfo_shelf.'S_'.$existing_boxinfo_position.'P_'.strtoupper($existing_boxinfo_dc);
     
                 		   		if($existing_boxinfo_position_id_storage_location != "0A_0B_0S_0P_NOT-ASSIGNED" ){
                 		   		    
@@ -1138,7 +1138,6 @@ WHERE box_id = '" . $box_shelf . "' LIMIT 1");
 $boxshelf_ticket_id = $get_boxshelf_ticket_id->ticket_id;
 
 //Does location exist in Scan List Table?
-
 $check_boxshelf_id = $wpdb->get_row(
 "SELECT id FROM " . $wpdb->prefix . "wpsc_epa_scan_list
 WHERE box_id = '" . $box_shelf . "'");
@@ -1163,31 +1162,33 @@ $box_boxinfodbid_where = array('box_id' => $box_shelf);
 $wpdb->update($table_box, $box_boxinfodbid_update, $box_boxinfodbid_where);
 Patt_Custom_Func::pallet_cleanup();
 } else {
-$boxshelf_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'shelf_location' => $location,'date_modified' => $date);
+$location_convert = Patt_Custom_Func::convert_bay_number($location);
+$boxshelf_scanlist_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'shelf_location' => $location_convert,'date_modified' => $date);
 $boxshelf_scanlist_where = array('id' => $boxshelf_dbid);
 $wpdb->update($table_scan_list , $boxshelf_scanlist_update, $boxshelf_scanlist_where);
 }
 
 
                                             /* Notify the user that the box status has been changed from "on cart" to "on shelf" */
-                                            $message = "Updated: Box ID " . $box_shelf . " has been placed on shelf: " . $converted_position_id_storage_location ."<br />";
-                                            do_action('wpppatt_after_shelf_location', $boxshelf_ticket_id, $box_shelf, $message);
+                                            $message = "Updated: Box ID " . $box_shelf . " has been placed on shelf: " . $new_position_id_storage_location_display ."<br />";
+                                            do_action('wpppatt_after_shelf_location_single', $boxshelf_ticket_id, $box_shelf, $message);
                                             echo $message;
+                                      		
                                     } else {
                             		    //Works
-                            			$message = "Not Updated: The scanned location ". $converted_position_id_storage_location . " does not match the assigned shelf location for the box. Please select another location and try again.<br />";
+                            			$message = "Not Updated: The scanned location ". $new_position_id_storage_location_display . " does not match the assigned shelf location for the box. Please select another location and try again.<br />";
                                         echo $message;
                                         exit;
                                     }
                 		   		}else{
                 		   		    
-                   		   		    $message = "Not Updated: The location ". $existing_boxinfo_position_id_storage_location ." is already assigned. Please select another location and try again.<br />";
+                   		   		    $message = "Not Updated: The location ". $existing_boxinfo_position_id_storage_location_display ." is already assigned. Please select another location and try again.<br />";
                                     echo $message;
                                     exit;
                 		   		}
             				}else{
             				    //Works
-            				    $message = "Not Updated: The location ". $converted_position_id_storage_location . " does not exist in the facility. Please select another location and try again.<br />";
+            				    $message = "Not Updated: The location ". $new_position_id_storage_location_display . " does not exist in the facility. Please select another location and try again.<br />";
                                 echo $message;
                                 exit;
                 			}	

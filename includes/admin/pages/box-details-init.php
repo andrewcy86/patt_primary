@@ -1037,7 +1037,14 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
                 echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong><br />' . $location_digitization_center . '</div>';
                 
                 if(!empty($location_general) && Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type) != '') {
-			        echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />' . $location_general . ' (' . Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type) . ') </div>';
+                  
+                  $location = Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type);
+                  
+                  if (preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', $location)) {
+                    $location =  Patt_Custom_Func::convert_bay_letter(Patt_Custom_Func::id_in_physical_location($GLOBALS['id'], $type));
+                  }
+                  
+			        echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />' . $location_general . ' (' . $location . ') </div>';
 			    }
 			    else {
 			        echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />' . $location_general . '</div>';
@@ -1047,8 +1054,8 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 			       //for testing physical location can only be 'Pending', so 'On Shelf' won't be a requirement
 			       if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
 			       //if((!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
-                     $alphabet = range('A', 'O');
-		  			 $bay_letter = $alphabet[$location_bay-1];
+                     
+                     $bay_letter = Patt_Custom_Func::get_bay_from_number($location_bay);
                      
     			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
     			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $bay_letter . '</div>';

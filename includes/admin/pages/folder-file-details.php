@@ -1643,7 +1643,12 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 	                            echo $box_location . "<br />";
 	                            if(!empty($box_physical_location) && Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) != '') {
 	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />';
-    							    echo $box_physical_location . ' (' . Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type) . ')'.  "<br />";
+                                $location = Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type);
+                                  
+                                if (preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', $location)) {
+              					$location = Patt_Custom_Func::convert_bay_letter(Patt_Custom_Func::id_in_physical_location($folderfile_folderdocinfofile_id, $type));
+            					}
+    							    echo $box_physical_location . ' (' . $location . ')'.  "<br />";
 	                            }
 	                            else {
 	                                echo '<div class="wpsp_sidebar_labels"><strong>Physical Location: </strong><br />';
@@ -1652,9 +1657,7 @@ echo '<div class="wpsp_sidebar_labels" style="color: #a80000;"><strong>Pending u
 	                                //if aisle/bay/shelf/position <= 0 and not 'On Shelf', does not display location on front end
     	                            if($box_physical_location == 'On Shelf' && !($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
     								{
-                                      $alphabet = range('A', 'O');
-		  			 				  $bay_letter = $alphabet[$box_bay-1];
-                                      
+                                      $bay_letter = Patt_Custom_Func::get_bay_from_number($box_bay);
         								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
         	                            echo $box_aisle . "<br />";
         	                            echo '</div>';

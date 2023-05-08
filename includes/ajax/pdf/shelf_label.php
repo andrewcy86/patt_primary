@@ -10,8 +10,6 @@ include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
     //Set SuperGlobal ID variable to be used in all functions below
 	$url_id = $_GET['id'] ?? '';
     $url_dc = $_GET['dc'] ?? '';
-  
-  $alphabet = range('A', 'O');
 	$invalid_shelf_id = 0;
 
 	if(!empty($url_dc) || !empty($url_id)) {
@@ -58,7 +56,8 @@ if (preg_match("/^(E|W)/", $GLOBALS['dc'])) {
       $shelf_info = $wpdb->get_results("
     SELECT shelf_id
     FROM " . $wpdb->prefix . "wpsc_epa_storage_status
-    WHERE digitization_center = ". $dc ."
+    WHERE digitization_center = ". $dc ." 
+    AND (OCCUPIED = 0 && REMAINING = 3) || (OCCUPIED = 1 && REMAINING > 0);
     ");
   
 //print_r($shelf_info);
@@ -105,7 +104,7 @@ foreach($b as $info){
   $pieces = explode("_", $info->shelf_id);
   $aisle = $pieces[0];
   $bay = $pieces[1];
-  $new_bay = $alphabet[$bay-1];
+  $new_bay = Patt_Custom_Func::get_bay_from_number($bay);
   $shelf = $pieces[2];  
   $position = $pieces[3];
   
@@ -204,7 +203,7 @@ $invalid_shelf_id = 1;
 
 }
   
-if (preg_match("/^(\d{1,3}A_[A-O]B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?1))*$/", $GLOBALS['id']) && $invalid_shelf_id != 1) {
+if (preg_match("/^(\d{1,3}A_[A-Z]{1,2}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI))(?:,\s*(?1))*$/", $GLOBALS['id']) && $invalid_shelf_id != 1) {
 
     $tbl   =  '<style>
     .tableWithOuterBorder{

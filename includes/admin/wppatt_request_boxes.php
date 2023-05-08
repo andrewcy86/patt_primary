@@ -498,9 +498,14 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             
             
             $physical_location_id = Patt_Custom_Func::id_in_physical_location($boxlist_id, $type);
-            
+            //$physical_location_id = Patt_Custom_Func::convert_bay_letter($physical_location_id);
             //show physical location ID if it exists in the scan_list table
             if($physical_location_id != '') {
+              
+              if (preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', $physical_location_id)) {
+                $physical_location_id =  Patt_Custom_Func::convert_bay_letter($physical_location_id);
+              }
+              
                 $tbl .= '<td> <a href="#" style="color: #000000 !important;" data-toggle="tooltip" data-placement="left" data-html="true" aria-label="Name" title="" data-original-title="'.$physical_location_id.'">'.$boxlist_physical_location.'</a>
                 <span style="display: none;" aria-label="'.$boxlist_physical_location.'"></span></td>';
             }
@@ -512,7 +517,7 @@ $tbl .= '<span style="font-size: 1.0em; color: #1d1f1d;margin-left:4px;" onclick
             //Can edit location if box isn't destroyed and is in the correct request status
             if (!(in_array($status_id, $status_id_tabled_arr)) && ($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager'))
             {
-            if ($boxlist_dc_location != 'Not Unassigned') {
+            if ($boxlist_dc_location != 'Not Unassigned' && preg_match('/^\d{1,3}A_[A-Z]{1,2}B_\d{1,3}S_[1-3]{1}P_(E|W|ECUI|WCUI)$/i', Patt_Custom_Func::convert_bay_letter($boxlist_location))) {
             $tbl .= '<td>' . Patt_Custom_Func::convert_bay_letter($boxlist_location);
             if ($boxlist_dc_location != 'Not Assigned') {
             $tbl .= ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit" aria-hidden="true" title="Edit Assigned Shelf Location"></i><span class="sr-only">Edit Assigned Shelf Location</span></a>';

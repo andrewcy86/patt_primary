@@ -584,7 +584,7 @@ if ($pagetype == 0) {
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'X-NXproperties: *',
-                'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+                'Authorization: '. ARMS_API_AUTH
             ),
             ));
 
