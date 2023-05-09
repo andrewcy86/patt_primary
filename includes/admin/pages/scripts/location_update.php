@@ -66,6 +66,16 @@ $new_shelf_id_update = $aisle.'_'.$bay.'_'.$shelf;
 Patt_Custom_Func::update_remaining_occupied($center,array($new_shelf_id_update));
 
 Patt_Custom_Func::update_remaining_occupied($center,array($existing_shelf_id));
+  
+  
+// Update the physical location to pending after a box is assigned a new location
+$table_scan_list = $wpdb->prefix . "wpsc_epa_scan_list";
+$data_update = array('cart_id' => NULL, 'scanning_id' => NULL, 'stagingarea_id' => NULL, 'validation_location_area_id' => NULL, 
+'qaqc_location_area_id' => NULL, 'scanning_prep_location_area_id' => NULL, 'scanning_location_area_id' => NULL, 'receiving_dock' => NULL,
+'oversized_tube_shelves' => NULL, 'destruction' => NULL, 'shipping_dock_area' => NULL, 'shelf_location' => NULL, 'date_modified' => $date);
+$data_where = array('box_id' => $boxid);
+$wpdb->update($table_name , $data_update, $data_where);
+
 
 
 				$get_ticket_id = $wpdb->get_row("

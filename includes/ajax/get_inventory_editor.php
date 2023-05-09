@@ -56,22 +56,39 @@ $patt_ticket_id = $box_details->request_id;
 <option value="0">--Select Aisle--</option>
 <?php
 // Updated 3 boxes to a shelf
-$digitization_center_aisle_total = 11;
+
+//IF EAST
+if($digitization_center == 62) {
+  $digitization_center_aisle_total = 39;
+}
+//EDIT FOR WEST
+if($digitization_center == 2) {
+  $digitization_center_aisle_total = 39;
+}
 
 $aisle_array = range(1, $digitization_center_aisle_total);
 
 foreach ($aisle_array as $value) {
+
+if ($value < 10) {
+$trim_val = 2;
+} else {
+$trim_val = 3;
+}
+
     $get_available_aisle = $wpdb->get_row(
-				"SELECT count(id) as count
-FROM " . $wpdb->prefix . "wpsc_epa_storage_location
-WHERE aisle = '" . $value . "' AND digitization_center = '" . $digitization_center . "'"
+				"SELECT SUM(remaining) as count
+FROM " . $wpdb->prefix . "wpsc_epa_storage_status
+WHERE LEFT(shelf_id, ".$trim_val.") = '" . $value . "_' AND digitization_center = '" . $digitization_center . "'"
 			);
+ 
+  
 // Updated 3 boxes to a shelf
-$remaining_boxes = 150 - $get_available_aisle->count;
+$remaining_boxes = $get_available_aisle->count;
 $disabled = $remaining_boxes != 0 ? "" : "disabled";
 
 // Updated 3 boxes to a shelf
-  echo '<option value="'.$value.'" '.$disabled .'>Aisle #' . $value . ' [' . (150 - $get_available_aisle->count) . ' boxes remain]'.'</option>';
+  echo '<option value="'.$value.'" '.$disabled .'>Aisle #' . $value . ' [' . ($get_available_aisle->count) . ' boxes remain]'.'</option>';
 
 }
 
@@ -92,6 +109,19 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
 		<script>
 
 			jQuery(document).ready(function() {
+              
+              function convertNumberToLetterScheme(number) {
+                var baseChar = ("A").charCodeAt(0),
+                    letters  = "";
+
+                do {
+                  number -= 1;
+                  letters = String.fromCharCode(baseChar + (number % 26)) + letters;
+                  number = (number / 26) >> 0; // quick `floor`
+                } while(number > 0);
+
+                return letters;
+             }
 			    
 			jQuery("#bay_div").hide();
 		  // event called when the aisle select is changed
@@ -118,18 +148,15 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
                 jQuery.each(data, function(i, item) {
                   // Isolates the bay "#number" text out of the entire string
                   var sliced_item = item.slice(4,6);
-                  
-                  // Bay Number Converted into a Letter
-                  // *NOTE: Does Not Work Beyond 26 Bays
-                 var convertedBayNumberToLetter = item.replace(sliced_item, String.fromCharCode(64 + parseInt(i)));
-
-var matches = /\[.*?(\d+).*?\]/g.exec(item);
+                  var sliced_bay_number = item.slice(5,6);
+                  //console.log(item);
+				  var matches = /\[.*?(\d+).*?\]/g.exec(item);
 //alert(matches[1]); 
 
         if (matches[1] = 0) {
-        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:convertedBayNumberToLetter}).attr("disabled", true));
+        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:item}).attr("disabled", true));
         } else {
-        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:convertedBayNumberToLetter}).attr("disabled", false));
+        jQuery('#bay_selector').append(jQuery('<option>', {value:i, text:item}).attr("disabled", false));
         }
                 });
 
