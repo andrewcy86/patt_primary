@@ -68,7 +68,12 @@ $s3 = new Aws\S3\S3Client([
     $child2exists = count($decoded->entries[0]->uid);
 
     $object_key_check = 0;
-    echo $obj_id;
-    echo decoded;
 
-   
+    $folderfile_details = $wpdb->get_row(
+		"SELECT object_key FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+        WHERE folderdocinfofile_id = '" . $obj_id . "'"
+	);
+
+    echo $folderfile_details->object_key;
+
+    
