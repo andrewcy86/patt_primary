@@ -38,8 +38,9 @@ $s3 = new Aws\S3\S3Client([
 
     $curl = curl_init();
     
+    // ARMS_API_AUTH can be switched to use the svc_patt_application service account
     curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://arms-dev-nuxeo.aws.epa.gov/nuxeo/api/v1/search/pp/nxql_search/execute?queryParams=select%20*%20from%20epa_record%20where%20arms:identifiers/*1/key=\'PATT%20ID\'%20AND%20arms:identifiers/*1/value/*1%20=\''.$obj_id.'\'',
+      CURLOPT_URL => ARMS_API . '/api/v1/search/pp/nxql_search/execute?queryParams=select%20*%20from%20epa_record%20where%20arms:identifiers/*1/key=\'PATT%20ID\'%20AND%20arms:identifiers/*1/value/*1%20=\''.$obj_id.'\'',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -50,7 +51,7 @@ $s3 = new Aws\S3\S3Client([
       CURLOPT_HTTPHEADER => array(
         'Content-Type: application/json',
         'X-NXproperties: *',
-        'Authorization: Basic c3ZjX2FybXNfcm06cGFzc3dvcmQ='
+        'Authorization: '. ARMS_API_AUTH
       ),
     ));
     
@@ -89,13 +90,13 @@ $s3 = new Aws\S3\S3Client([
 
         $obj_data = $s3->headObject([
             'Bucket' => bucket(),
-            'Key'    => 'nuxeodev/'.$file_key
+            'Key'    => 'nuxeo-atlas/'.$file_key
          ]);
 
          if($obj_data['ContentLength'] <= 500000000) {
             $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => bucket(),
-                'Key' => 'nuxeodev/'.$file_key,
+                'Key' => 'nuxeo-atlas/'.$file_key,
                 //'Key' => $file_key,
                 'ResponseContentDisposition' => 'inline; filename="'.$file_name.'"',
                 'ResponseContentType' => 'application/pdf'
@@ -104,7 +105,7 @@ $s3 = new Aws\S3\S3Client([
             } else {
               $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => bucket(),
-                'Key' => 'nuxeodev/'.$file_key,
+                'Key' => 'nuxeo-atlas/'.$file_key,
                 //'Key' => $file_key,
                 'ResponseContentDisposition' => 'attachment; filename="'.$file_name.'"',
                 'ResponseContentType' => 'application/pdf'
