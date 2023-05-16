@@ -68,7 +68,7 @@ switchFile(\'' . $folderdocinfofile_id_initial . '\');switchInfo(\'' . $folderdo
 $postvarspid = $_POST['postvarspid'];
 }
 
-    $get_folderdocid_subsequent= $wpdb->get_row("SELECT count(a.id) as count, a.folderdocinfofile_id as folderdocinfofile_id, a.validation as validation, a.rescan as rescan, b.box_status as box_status, c.ticket_status as ticket_status
+    $get_folderdocid_subsequent= $wpdb->get_row("SELECT count(a.id) as count, a.folderdocinfofile_id as folderdocinfofile_id, a.validation as validation, a.rescan as rescan, b.box_status as box_status, c.ticket_status as ticket_status, a.object_key as object_key
     FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
     INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id
     INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id
