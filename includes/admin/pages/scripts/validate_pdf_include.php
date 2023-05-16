@@ -1,18 +1,12 @@
 <?php
-/**
- * Template Name: S3 Delete File
- *
- * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
- *
- * @package WordPress
- * @subpackage Twenty_Nineteen
- * @since 1.0.0 
- * Related Files barcode_validate.php, barcode_lookup.php, arms_validate.php, validate_paging.php, arms_validation_processing.php, validate_pdf_include.php, update_validate.php
- */
+/*
+* Related Files barcode_validate.php, barcode_lookup.php, arms_validate.php, validate_paging.php, arms_validation_processing.php, validate_pdf_include.php, update_validate.php
+*/
 
 global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
 $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
@@ -74,6 +68,64 @@ $s3 = new Aws\S3\S3Client([
         WHERE folderdocinfofile_id = '" . $obj_id . "'"
 	);
 
-    echo $folderfile_details->object_key;
+    if(!empty($folderfile_details->object_key) && $folderfile_details->object_key == $decoded->entries[0]->uid) {
+        $object_key_check = 1;
+    }
 
-    
+    if ($child2exists == 1 && $object_key_check == 1) {
+
+        $uid = $decoded->entries[0]->uid;
+        $file_key = $decoded->entries[0]->properties->file_content->digest;
+        $file_name = $decoded->entries[0]->properties->file_content->name;
+
+        $disposition_date = $decoded->entries[0]->properties->disposition_date;
+        $custodian = $decoded->entries[0]->properties->epa_contact;
+
+        $obj_data = $s3->headObject([
+            'Bucket' => bucket(),
+            'Key'    => 'nuxeo-atlas/'.$file_key
+         ]);
+
+         if($obj_data['ContentLength'] <= 500000000) {
+            $cmd = $s3->getCommand('GetObject', [
+                'Bucket' => bucket(),
+                'Key' => 'nuxeo-atlas/'.$file_key,
+                //'Key' => $file_key,
+                'ResponseContentDisposition' => 'inline; filename="'.$file_name.'"',
+                'ResponseContentType' => 'application/pdf'
+                
+            ]);
+            } else {
+              $cmd = $s3->getCommand('GetObject', [
+                'Bucket' => bucket(),
+                'Key' => 'nuxeo-atlas/'.$file_key,
+                //'Key' => $file_key,
+                'ResponseContentDisposition' => 'attachment; filename="'.$file_name.'"',
+                'ResponseContentType' => 'application/pdf'
+                
+            ]); 
+            }
+        
+        $request = $s3->createPresignedRequest($cmd, '+20 minutes');
+        
+        $presignedUrl = (string)$request->getUri();
+?>
+
+<?php
+if($obj_data['ContentLength'] <= 500000000) {
+?>
+<iframe src="<?php echo $presignedUrl; ?>" frameborder="0" scrolling="no" seamless="seamless" style="display:block; width:100%; height:100vh;"></iframe>
+<?php
+} else {
+?>
+<a href="<?php echo $presignedUrl; ?>">Click here to Download</a>
+<?php
+}
+?>
+
+<?php 
+
+    } else {
+        echo "PDF Not Found or does not exist in ARMS. Check ARMS";
+    }
+?>
