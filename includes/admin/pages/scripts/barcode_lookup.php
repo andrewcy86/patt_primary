@@ -621,19 +621,19 @@ if ($pagetype == 0) {
             
             if(!empty($decoded_json['properties']['arms:custodian'])) {
 
-                $workforce_id_details = Patt_Custom_Func::workforce_id_to_json($decoded_json['properties']['arms:custodian']);
-                $decoded_json = json_decode($workforce_id_details, false);
+                $workforce_id_details = Patt_Custom_Func::id_in_box_destroyed($decoded_json['properties']['arms:custodian']);
+                $decoded_user_json = json_decode($workforce_id_details, false);
 
-                echo "<strong>Custodian:</strong> " . $decoded_json['properties']['arms:custodian'] . ", ()<br />";
+                echo "<strong>Custodian:</strong> " . $decoded_user_json->name . ", (". $decoded_user_json->email .")<br />";
             }
 
 			if(!empty($program_office)) {
 			    echo "<strong>Program Office:</strong> " . $program_office . "<br />";
 			}
             
-        //if(!empty($decoded_json['properties']['arms:record_schedule'])) {
-          //      echo "<strong>Record Schedule:</strong> " . $decoded_json['properties']['arms:record_schedule'] ."<br />";
-           // }
+            if(!empty($decoded_json['properties']['arms:record_schedule'])) {
+                echo "<strong>Record Schedule:</strong> " . $decoded_json['properties']['arms:record_schedule'] ."<br />";
+            }
         
   			if (!empty($decoded_json['title'])) {
 				echo "<strong>Title:</strong> " . $decoded_json['title'] . "<br />";
