@@ -15,11 +15,11 @@ $obj_id = htmlspecialchars($_GET["obj_id"]);
 require_once($dir."/vendor/autoload.php");
 
 function bucket() {
-    return 'arms-nuxeo';
+    return AWS_S3_BUCKET;
 }
 
 function region() {
-    return 'us-east-1';
+    return AWS_S3_REGION;
 }
 
 $s3 = new Aws\S3\S3Client([
@@ -83,13 +83,13 @@ $s3 = new Aws\S3\S3Client([
 
         $obj_data = $s3->headObject([
             'Bucket' => bucket(),
-            'Key'    => 'nuxeo-atlas/'.$file_key
+            'Key'    => AWS_S3_RECORDS_BUCKET.$file_key
          ]);
 
          if($obj_data['ContentLength'] <= 500000000) {
             $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => bucket(),
-                'Key' => 'nuxeo-atlas/'.$file_key,
+                'Key' => AWS_S3_RECORDS_BUCKET.$file_key,
                 //'Key' => $file_key,
                 'ResponseContentDisposition' => 'inline; filename="'.$file_name.'"',
                 'ResponseContentType' => 'application/pdf'
@@ -98,7 +98,7 @@ $s3 = new Aws\S3\S3Client([
             } else {
               $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => bucket(),
-                'Key' => 'nuxeo-atlas/'.$file_key,
+                'Key' => AWS_S3_RECORDS_BUCKET.$file_key,
                 //'Key' => $file_key,
                 'ResponseContentDisposition' => 'attachment; filename="'.$file_name.'"',
                 'ResponseContentType' => 'application/pdf'
