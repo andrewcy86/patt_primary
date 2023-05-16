@@ -621,8 +621,8 @@ if ($pagetype == 0) {
             
             if(!empty($decoded_json['properties']['arms:custodian'])) {
 
-                $workforce_id_details = Patt_Custom_Func::id_in_box_destroyed($decoded_json['properties']['arms:custodian']);
-                $decoded_user_json = json_decode($workforce_id_details, false);
+                $workforce_id_details = Patt_Custom_Func::workforce_id_to_json($decoded_json['properties']['arms:custodian']);
+                $decoded_user_json = json_decode($workforce_id_details, true);
 
                 echo "<strong>Custodian:</strong> " . $decoded_user_json->name . ", (". $decoded_user_json->email .")<br />";
             }
