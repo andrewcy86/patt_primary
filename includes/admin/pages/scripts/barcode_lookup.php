@@ -619,8 +619,12 @@ if ($pagetype == 0) {
             }
             $tags_list = implode(', ', $tags_arr) . '</br>';
             
-            if(!empty($decoded_json['properties']['dc:creator'])) {
-                echo "<strong>Custodian:</strong> " . $decoded_json['properties']['dc:creator'] . "</br>";
+            if(!empty($decoded_json['properties']['arms:custodian'])) {
+
+                $workforce_id_details = Patt_Custom_Func::workforce_id_to_json($decoded_json['properties']['arms:custodian']);
+                $decoded_json = json_decode($workforce_id_details, false);
+
+                echo "<strong>Custodian:</strong> " . $decoded_json->name . ", (". $decoded_json->email .")<br />";
             }
 
 			if(!empty($program_office)) {
