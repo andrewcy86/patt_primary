@@ -32,11 +32,6 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/ecms_sems_status_cron.php';
     }
     
-    // CRON for s3 Cleanup
-    public function wppatt_s3_cleanup_cron_schedule(){    
-    include WPPATT_ABSPATH . 'includes/admin/s3_cleanup_cron.php';
-    }
-    
     // CRON for shipping
     public function wppatt_shipping_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/shipping_cron.php';
@@ -120,11 +115,6 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     // CRON Folder File/Recall/Decline Timestamp
     public function wppatt_timestamp_reporting_folderfile_recall_decline_schedule() {
     include WPPATT_ABSPATH . 'includes/admin/timestamp_reporting_folderfile_recall_decline_cron.php';
-    }
-
-    // CRON PATT/ARMS Tranfer Monitoring
-    public function wppatt_patt_arms_monitor_cron_schedule() {
-    include WPPATT_ABSPATH . 'includes/admin/patt_arms_monitor_cron.php';
     }
     
     public function addStyles(){    
