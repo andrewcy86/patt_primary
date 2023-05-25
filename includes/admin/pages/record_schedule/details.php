@@ -19,7 +19,7 @@
  WHERE Reserved_Flag = 0 AND id != '-99999' AND Schedule_Number = ". $_GET["rs"] . " LIMIT 1";  
  $title_main = mysqli_query($conn, $query_title);
  
-$query_di ="SELECT Disposition_Summary FROM " . $wpdb->prefix . "epa_record_schedule WHERE Schedule_Number = ". $_GET["rs"];  
+$query_di ="SELECT Disposition_Summary, Schedule_Item_Number FROM " . $wpdb->prefix . "epa_record_schedule WHERE Schedule_Number = ". $_GET["rs"];  
 $result_di = mysqli_query($conn, $query_di);  
 
 $query_di_list = array();
@@ -261,7 +261,7 @@ while($row_main = mysqli_fetch_array($result_main))
    if(count($query_di_list) > 0) {
        echo '<p><strong>Disposition Instructions:</strong></p>';
        while($disposition_summary = mysqli_fetch_array($result_di)) {
-            echo $disposition_summary["Disposition_Summary"];
+            echo '<span id="'.$disposition_summary["Schedule_Item_Number"].'"></span>'.$disposition_summary["Disposition_Summary"];
         }
    }
    
