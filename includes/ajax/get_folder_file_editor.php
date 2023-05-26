@@ -103,7 +103,7 @@ Hides specific_access_restriction and specific_use_restriction when option == 'N
 //placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
 echo "<strong>LAN ID:</strong><br /><input type='text' id='lanid' placeholder= 'Enter a LAN ID...'></br></br>";
 
-/*if(!empty($folderfile_title)) {
+if(!empty($folderfile_title)) {
     echo "<strong>Title</strong><br /><input type='text' id='title' aria-label='Title' placeholder= ''></br></br>";
 }
 else {
@@ -111,7 +111,7 @@ else {
 }
 
 
-if(!empty($folderfile_date)) {
+/*if(!empty($folderfile_date)) {
     echo "<strong>Creation Date</strong> 
     	<br />
         <input type='checkbox' id='default-date' name='default-date' aria-label='Default Date' placeholder= '' style='margin-bottom: 4px;' >

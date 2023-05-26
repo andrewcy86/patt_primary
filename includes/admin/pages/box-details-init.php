@@ -550,14 +550,18 @@ jQuery('#wpsc_individual_user_edit_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
   	 var row_data = rows_selected.data();
-  	 var doc_id_array = [];
+  	 var rows_selected_string = rows_selected.join(",")
+  	 var doc_id_array = rows_selected_string.split(",");
+  	 //var doc_id_array = [];
   		console.log('rows selected ' +rows_selected.join(","));
   		//console.log('doc ids '+ JSON.stringify(row_data[0].dbid));
   		console.log('doc ids '+ rows_selected.length);
   
-  		for(i=0; i < rows_selected.length; i++){
+  		/*for(i=0; i < rows_selected.length; i++){
+          console.log('row data: ' + row_data[i]);
+          //doc_id_array.push(row_data[i].dbid);
           doc_id_array.push(row_data[i].dbid);
-        }
+        }*/
   
   		console.log('doc id arr ' + doc_id_array);
   

@@ -10,6 +10,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 $table_name = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 $date_time = date('Y-m-d H:i:s');
 
+$coverted_lan_id = '';
+
 if(!empty($_POST['postvarslanid'])){
     
    $pattboxid = $_POST['postvarsboxid'];
@@ -22,6 +24,8 @@ if(!empty($_POST['postvarslanid'])){
    $lanid = $_POST['postvarslanid'];
    $pattdocid = $_POST['postvarspattdocid'];
    $dbid = $_POST['postvarsdbid'];
+  
+   $converted_lan_id_json = Patt_Custom_Func::lan_id_to_json($lanid);
 
 $get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM " . $wpdb->prefix . "wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
 $ticket_id = $get_ticket_id->ticket_id;
@@ -122,6 +126,8 @@ $data_update = array('lan_id' => $lanid, 'lan_id_details' => $get_json);
 $data_where = array('id' => $dbid);
 array_push($metadata_array,'EPA Contact: '.$old_lanid.' > '.$lanid);
 $wpdb->update($table_name, $data_update, $data_where);
+  
+$converted_lan_id = Patt_Custom_Func::lan_id_to_json($lanid);
 
 $metadata = implode (", ", $metadata_array);
 
@@ -153,7 +159,73 @@ echo "Folder/File ID #: " . $pattdocid . " has been updated.";
 } else { echo "Please enter a valid LAN ID"; }
 
 }
-} else {
+} 
+
+if(!empty($_POST['postvarstitle'])) {
+  	$doc_id_array = explode(",", $_POST['docidarray']);
+  	$title = $_POST['postvarstitle'];
+  	
+	foreach($doc_id_array as $doc_id){
+      $get_folderdocinfo_files = $wpdb->get_row("
+      SELECT *
+      FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+      WHERE
+      folderdocinfofile_id ='".$doc_id."'
+      ");
+      
+      $object_key = $get_folderdocinfo_files->object_key;
+      
+      if(!empty($object_key)){
+      	echo 'object key: ' . $object_key;
+        
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => ARMS_API . '/api/v1/id/' . $object_key,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'PUT',
+          CURLOPT_POSTFIELDS =>'{
+            "entity-type": "document",
+            "properties": {
+                "dc:title": "'. $title .'"
+
+            }
+        }',
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Basic c3ZjX3BhdHRfYXBwbGljYXRpb246cGFzc3dvcmQ=',
+            'Cookie: ingress-cookie=1684976381.541.1111.174741|2607971941438bbf7db74ca31f39e776'
+          ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $http_code_response = curl_getinfo($response, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        
+        if(intval($http_code_response) != 200){
+          $error = Patt_Custom_Func::convert_http_error_code($http_code_response);
+          Patt_Custom_Func::insert_api_error('bulk-edit-metadata-request-error', $$http_code_response, $error);
+          
+          echo 'http response: '. $http_code_response . 'and http error: ' . $error;
+          $flag = 1;
+        }
+
+      }
+    }
+  
+  	echo "metadata has been updated.";
+  	
+  	// Debugging
+    //echo "Title was edited to title var: " . $_POST['postvarstitle'];
+  	//echo "lan id var: " . $_POST['postvarstitle'];
+  	//var_dump("doc id array: " . $doc_id_array);
+} else  {
    //echo $pattboxid;
    echo "Please make an edit.";
 }
