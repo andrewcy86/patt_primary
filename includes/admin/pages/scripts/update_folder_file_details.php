@@ -161,9 +161,12 @@ echo "Folder/File ID #: " . $pattdocid . " has been updated.";
 }
 } 
 
-if(!empty($_POST['postvarstitle'])) {
+if(!empty($_POST['postvarstitle']) ||
+   !empty($_POST['postvarslanid']) ||
+   !empty($_POST['postvarsdate']) ) {
+  
   	$doc_id_array = explode(",", $_POST['docidarray']);
-  	$title = $_POST['postvarstitle'];
+  	$metadata_array = array();
   	
 	foreach($doc_id_array as $doc_id){
       $get_folderdocinfo_files = $wpdb->get_row("
@@ -173,10 +176,30 @@ if(!empty($_POST['postvarstitle'])) {
       folderdocinfofile_id ='".$doc_id."'
       ");
       
+      // Prefill any empty fields with data from the database
+  	  $title = $_POST['postvarstitle'] == '' ? $get_folderdocinfo_files->title : $_POST['postvarstitle'];
+      $workforce_lan_id = $_POST['postvarslanid'] == '' ? $get_folderdocinfo_files->lan_id : Patt_Custom_Func::lan_id_to_json($_POST['postvarslanid']);
+      $creation_date = $_POST['postvarsdate'] == '0001-01-01' ? '0000-00-00' : $_POST['postvarsdate'];
+      $date_modified = date('Y-m-d H:i:s');
+      
+      // Covert Dates from UTC to TZ format
+      $creation_date = new DateTime($creation_date, new DateTimeZone('EST'));
+      $creation_date->setTimezone(new DateTimeZone('UTC'));
+      $creation_date = $creation_date->format('Y-m-d\TH:i:s.v\Z');
+      
+      $date_modified = new DateTime($date_modified, new DateTimeZone('EST'));
+      $date_modified->setTimezone(new DateTimeZone('UTC'));
+      $date_modified = $date_modified->format('Y-m-d\TH:i:s.v\Z');
+      
       $object_key = $get_folderdocinfo_files->object_key;
       
       if(!empty($object_key)){
-      	echo 'object key: ' . $object_key;
+      	echo 'object key: ' . $object_key. '<br>';
+        echo 'lan id: ' . $workforce_lan_id . '<br>';
+        echo 'title: ' . $title . '<br>';
+        echo 'creation date: ' . $creation_date . '<br>';
+        echo 'date modified: ' . $date_modified . '<br>';
+        
         
         $curl = curl_init();
 
@@ -192,8 +215,10 @@ if(!empty($_POST['postvarstitle'])) {
           CURLOPT_POSTFIELDS =>'{
             "entity-type": "document",
             "properties": {
-                "dc:title": "'. $title .'"
-
+                "dc:title": "'. $title .'",
+                "arms:creation_date": "'. $creation_date .'",
+        		"arms:modified_date": "'. $date_modified .'"
+                
             }
         }',
           CURLOPT_HTTPHEADER => array(
@@ -215,9 +240,56 @@ if(!empty($_POST['postvarstitle'])) {
           echo 'http response: '. $http_code_response . 'and http error: ' . $error;
           $flag = 1;
         }
+        
+        if($flag == 0){
+      
+         $folderdocinfofiles_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+
+        // Updates fields in folder-file-details modal window
+        // Update the title column with the new title if it has been updated
+        if($get_folderdocinfo_files->title == ''){
+          $old_title = 'None';
+        } else {
+          $old_title = $get_folderdocinfo_files->title;
+        }
+
+
+        if(!empty($title) && ($title != $old_title)) {
+          $data_update = array('title' => $title);
+          // REVIEW
+          $data_where = array('folderdocinfofile_id' => $doc_id);
+          array_push($metadata_array,'Title: '.$old_title.'>'.$title);
+          $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+        }
+
+        // Update the date column with the new creation date if it has been updated
+        if($get_folderdocinfo_files->date == ''){
+          $old_date = 'None';
+        } else {
+          $old_date = $get_folderdocinfo_files->date;
+        }
+
+
+        if(!empty($creation_date) && ($creation_date != $old_date)) {
+          $data_update = array('date' => $creation_date);
+          // REVIEW
+          $data_where = array('folderdocinfofile_id' => $doc_id);
+
+          array_push($metadata_array,'Creation Date:'. Patt_Custom_Func::get_converted_date($old_date) .'>'. Patt_Custom_Func::get_converted_date($creation_date));
+          $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+        }
+
+          // Update the date modified column with the current date and time
+          $data_update = array('date_updated' => $date_modified);
+          // REVIEW
+          $data_where = array('folderdocinfofile_id' => $doc_id);
+
+          $wpdb->update($folderdocinfofiles_table, $data_update, $data_where);
+        }
 
       }
     }
+  
   
   	echo "metadata has been updated.";
   	

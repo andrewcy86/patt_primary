@@ -111,7 +111,7 @@ else {
 }
 
 
-/*if(!empty($folderfile_date)) {
+if(!empty($folderfile_date)) {
     echo "<strong>Creation Date</strong> 
     	<br />
         <input type='checkbox' id='default-date' name='default-date' aria-label='Default Date' placeholder= '' style='margin-bottom: 4px;' >
@@ -128,7 +128,7 @@ else {
         <br />
         <input type='date' id='date' aria-label='Creation Date' placeholder= 'mm/dd/yyyy' >
         </br></br>";
-}*/
+}
 ?>
 
 <!--<strong>Creator</strong><br />

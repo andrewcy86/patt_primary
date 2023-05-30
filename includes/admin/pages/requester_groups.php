@@ -33,7 +33,7 @@ $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 		$get_aa_ships = $wpdb->get_results("SELECT DISTINCT organization_acronym
 		FROM " . $wpdb->prefix . "wpsc_epa_program_office
-		WHERE id <> '-99999' ");
+		WHERE id <> '-99999' ORDER BY organization_acronym ASC");
 
 		$org_id_array = array();
 
