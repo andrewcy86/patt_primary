@@ -178,8 +178,10 @@ if(!empty($_POST['postvarstitle']) ||
       
       // Prefill any empty fields with data from the database
   	  $title = $_POST['postvarstitle'] == '' ? $get_folderdocinfo_files->title : $_POST['postvarstitle'];
-      $workforce_lan_id = $_POST['postvarslanid'] == '' ? $get_folderdocinfo_files->lan_id : Patt_Custom_Func::lan_id_to_json($_POST['postvarslanid']);
+      $json_lan_id = $_POST['postvarslanid'] == '' ? $get_folderdocinfo_files->lan_id : Patt_Custom_Func::lan_id_to_json($_POST['postvarslanid']);
+      $workforce_id = $json_lan_id->workforce_id != '' ? $json_lan_id->workforce_id : NULL;
       $creation_date = $_POST['postvarsdate'] == '0001-01-01' ? '0000-00-00' : $_POST['postvarsdate'];
+      $date_created = $creation_date == '0000-00-00' ? NULL : $creation_date;
       $date_modified = date('Y-m-d H:i:s');
       
       // Covert Dates from UTC to TZ format
@@ -192,13 +194,16 @@ if(!empty($_POST['postvarstitle']) ||
       $date_modified = $date_modified->format('Y-m-d\TH:i:s.v\Z');
       
       $object_key = $get_folderdocinfo_files->object_key;
+
+      $flag = 0;
       
       if(!empty($object_key)){
       	echo 'object key: ' . $object_key. '<br>';
-        echo 'lan id: ' . $workforce_lan_id . '<br>';
+        echo 'lan id: ' . $json_lan_id . '<br>';
         echo 'title: ' . $title . '<br>';
-        echo 'creation date: ' . $creation_date . '<br>';
+        echo 'date created: ' . $date_created . '<br>';
         echo 'date modified: ' . $date_modified . '<br>';
+        echo 'workforce id: ' . $workforce_id . '<br>';
         
         
         $curl = curl_init();
@@ -215,9 +220,10 @@ if(!empty($_POST['postvarstitle']) ||
           CURLOPT_POSTFIELDS =>'{
             "entity-type": "document",
             "properties": {
-                "dc:title": "'. $title .'",
-                "arms:creation_date": "'. $creation_date .'",
-        		"arms:modified_date": "'. $date_modified .'"
+                "arms:custodian": "'. $workforce_id .'",
+                "arms:title": "'. $title .'",
+                "arms:creation_date": "'. $date_created .'",
+                "arms:modified_date": "'. $date_modified .'"
                 
             }
         }',
