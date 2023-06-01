@@ -229,9 +229,8 @@ if(!empty($_POST['postvarstitle']) ||
             "entity-type": "document",
             "properties": {
                 "arms:custodian": "'. $workforce_id .'",
-                "arms:title": "'. $title .'",
-                "arms:creation_date": "'. $creation_date .'",
-                "arms:modified_date": "'. $date_modified .'"
+                "arms:title": "'. $title .'"
+                
                 
             }
         }',
