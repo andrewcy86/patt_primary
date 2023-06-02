@@ -178,16 +178,23 @@ if(!empty($_POST['postvarstitle']) ||
       
       // Prefill any empty fields with data from the database
   	  $title = $_POST['postvarstitle'] == '' ? $get_folderdocinfo_files->title : $_POST['postvarstitle'];
-      $json_lan_id = $_POST['postvarslanid'] == '' ? $get_folderdocinfo_files->lan_id : Patt_Custom_Func::lan_id_to_json($_POST['postvarslanid']);
-      $workforce_id = $json_lan_id->workforce_id != '' ? $json_lan_id->workforce_id : NULL;
+      $lan_id_post = $_POST['postvarslanid'] == '' ? $get_folderdocinfo_files->lan_id : $_POST['postvarslanid'];
+      $json_lan_id = Patt_Custom_Func::lan_id_to_json($lan_id_post);
+      $workforce_obj = json_decode($json_lan_id);
+      $workforce_id = $workforce_obj->workforce_id;
       $creation_date = $_POST['postvarsdate'] == '0001-01-01' ? '0000-00-00' : $_POST['postvarsdate'];
-      $date_created = $creation_date == '0000-00-00' ? NULL : $creation_date;
       $date_modified = date('Y-m-d H:i:s');
       
-      // Covert Dates from UTC to TZ format
-      $creation_date = new DateTime($creation_date, new DateTimeZone('EST'));
-      $creation_date->setTimezone(new DateTimeZone('UTC'));
-      $creation_date = $creation_date->format('Y-m-d\TH:i:s.v\Z');
+      
+      // Convert Dates from UTC to TZ format
+      if($creation_date != '0000-00-00'){
+        $creation_date = new DateTime($creation_date, new DateTimeZone('EST'));
+      	$creation_date->setTimezone(new DateTimeZone('UTC'));
+      	$creation_date = $creation_date->format('Y-m-d\TH:i:s.v\Z');
+      } else {
+        $creation_date = NULL;
+      }
+    
       
       $date_modified = new DateTime($date_modified, new DateTimeZone('EST'));
       $date_modified->setTimezone(new DateTimeZone('UTC'));
@@ -197,11 +204,12 @@ if(!empty($_POST['postvarstitle']) ||
 
       $flag = 0;
       
+      
       if(!empty($object_key)){
       	echo 'object key: ' . $object_key. '<br>';
         echo 'lan id: ' . $json_lan_id . '<br>';
         echo 'title: ' . $title . '<br>';
-        echo 'date created: ' . $date_created . '<br>';
+        echo 'date created: ' . $creation_date . '<br>';
         echo 'date modified: ' . $date_modified . '<br>';
         echo 'workforce id: ' . $workforce_id . '<br>';
         
@@ -221,9 +229,8 @@ if(!empty($_POST['postvarstitle']) ||
             "entity-type": "document",
             "properties": {
                 "arms:custodian": "'. $workforce_id .'",
-                "arms:title": "'. $title .'",
-                "arms:creation_date": "'. $date_created .'",
-                "arms:modified_date": "'. $date_modified .'"
+                "arms:title": "'. $title .'"
+                
                 
             }
         }',
@@ -241,7 +248,7 @@ if(!empty($_POST['postvarstitle']) ||
         
         if(intval($http_code_response) != 200){
           $error = Patt_Custom_Func::convert_http_error_code($http_code_response);
-          Patt_Custom_Func::insert_api_error('bulk-edit-metadata-request-error', $$http_code_response, $error);
+          Patt_Custom_Func::insert_api_error('bulk-edit-metadata-request-error', $http_code_response, $error);
           
           echo 'http response: '. $http_code_response . 'and http error: ' . $error;
           $flag = 1;
