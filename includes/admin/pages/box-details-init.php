@@ -88,7 +88,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
 		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
 		<?php } ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>
+		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>-->
         <?php
         }
         
@@ -505,10 +505,38 @@ postvarpage : jQuery('#page').val()
 	jQuery('#wpsc_individual_freeze_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_label_btn').attr('disabled', 'disabled');
 	jQuery('#wpsc_individual_user_edit_btn').attr('disabled', 'disabled');
+  
+  <?php 
+      $get_validated_folderdocinfofiles = $wpdb->get_results("
+      SELECT folderdocinfofile_id
+      FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files
+      WHERE validation = 1;
+      ");
+  ?>
 	
 	function toggle_button_display() {
 	//	var form = this;
-		var rows_selected = dataTable.column(0).checkboxes.selected();
+	/*	var rows_selected = dataTable.column(0).checkboxes.selected();
+      	var row_data = rows_selected.data();
+        var rows_selected_string = rows_selected.join(",");
+        var doc_id_array = rows_selected_string.split(",");
+      	var validated_folderfiles_results = <?php echo json_encode($get_validated_folderdocinfofiles); ?>;
+        var validated_folderfiles_array = [];
+      
+      //console.log('validated_folderfiles_array: ' + JSON.stringify(validated_folderfiles_results));
+      //console.log('validated_folderfiles_array: ' + validated_folderfiles_results[0].folderdocinfofile_id);
+      
+      for(var i = 0; i < validated_folderfiles_results.length; i++){
+        validated_folderfiles_array.push(validated_folderfiles_results[i].folderdocinfofile_id);
+        //console.log('doc id array: ' + validated_folderfiles_array);
+        
+        if(validated_folderfiles_array.includes("0000001-10-01-4")) {
+          console.log('this folderfile id was found: ' + doc_id_array[i]);
+        }
+      }
+      
+      console.log('doc id array: ' + doc_id_array.includes(validated_folderfiles_array[i]));*/
+      
 		if(rows_selected.count() > 0) {
 			jQuery('#wpsc_individual_destruction_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_damaged_btn').removeAttr('disabled');
@@ -550,7 +578,7 @@ jQuery('#wpsc_individual_user_edit_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
   	 var row_data = rows_selected.data();
-  	 var rows_selected_string = rows_selected.join(",")
+  	 var rows_selected_string = rows_selected.join(",");
   	 var doc_id_array = rows_selected_string.split(",");
   	 //var doc_id_array = [];
   		console.log('rows selected ' +rows_selected.join(","));
