@@ -708,6 +708,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                           	flag = true;
 						}
                       
+                      // Validate spreadsheet version
+                      //console.log('parsed data: ' + parsedData[0][27]);
+                      //console.log('parsed data: ' + parsedData[0][28]);
+                      if(parsedData[0][27] == '' || parsedData[0][27] == null || parsedData[0][27] == undefined){
+                        alert('This is not a valid spreadsheet.');
+                        flag = true;
+                        reset_page();
+                        return;
+                      }
+                      
                       	
 		                
 	                    //if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {
@@ -798,16 +808,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 							    if ( count < arrayLength ) {
 							        jQuery('#processing_notification').text( 'Processing Row #' + count );
                                   
-                                	// Validate spreadsheet version
-                                      console.log('parsed data: ' + parsedData[0][27]);
-                                      //console.log('parsed data: ' + parsedData[0][28]);
-                                  	if(parsedData[0][27] == '' || parsedData[0][27] == null || parsedData[0][27] == undefined){
-                                      alert('This is not a valid spreadsheet.');
-                                      flag = true;
-				
-										
-									  reset_page();
-                                    }
+                                	
 									
 									// Find the last line of filled out data
                                    	if (parsedData[count] == undefined) {
@@ -1324,7 +1325,21 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                                       console.log(parsedData[count-1][index_box]);
                                       
                                       
-                                    
+                                     // Title Validation
+                                      if(
+                                          flag != true && 
+                                          count > 1 && 
+                                            (
+                                              parsedData[count][index_title] != '' &&
+                                              parsedData[count][index_title] != null &&
+                                              parsedData[count][index_title].length > 255
+                                            )             
+                                        ) {
+                                        	let alert_message = '';
+											alert_message += "Please limit the amount of characters for Titles to 255 \n\n";										
+			                                alert( alert_message );
+			                                flag = true;
+                                        }
 			                            
 			                           
                                       
@@ -1428,8 +1443,44 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 				                             
 			                            }
                                       
+                                      // Create an array to store each Creator/Author name that is delimited by a semicolon
+                                     /* var creatorsArray = parsedData[count][index_creator].trim().split("; ");                                    
+                                      var invalidCreatorStrLength = false;
                                       
-                                       
+                                      // Iterate over the creators array and update the invalidStrLength variable
+                                      // if any creator name exceeds 2000 characters
+                                      for(var i=0; i < creatorsArray.length; i++){
+                                        if(creatorsArray[i].length > 2000){
+                                          invalidCreatorStrLength = true;
+                                        } else {
+                                          invalidCreatorStrLength = false
+                                        }
+                                      }*/
+                                      
+                                       // Creator/Author Character Length Validation
+                                      /*if(
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		(
+                                                  parsedData[count][index_creator] != '' &&
+                                              	  parsedData[count][index_creator] != null &&
+			                            		  parsedData[count][index_creator].length > 2000
+			                            		) 
+			                            	
+										) {
+											let alert_message = '';
+											alert_message += "Please limit the amount of characters for Creators to 2000 \n\n";
+											//alert_message += "Expecting a format similar to: '[1051b] : Records of Senior Officials' \n\n";
+											//alert_message += "No colon detected. \n\n";
+											///alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_rec_sched] + "'.";										
+			                                alert( alert_message );
+			                                flag = true;
+										}*/
+                                      
+                                      
+                                      
+                                      
+                                      
 			                            
 			                           
 			
@@ -1984,6 +2035,44 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 
 										}
                                       
+                                      
+                                      
+                                      // Create an array to store each Rights Holder name that is delimited by a semicolon
+                                     /* var rightsHolderArray = parsedData[count][index_rights_holder].trim().split("; ");                                    
+                                      var invalidRightsHolderStrLength = false;
+                                      
+                                      // Iterate over the Rights Holder array and update the invalidStrLength variable
+                                      // if any addressee name exceeds 2000 characters
+                                      for(var i=0; i < rightsHolderArray.length; i++){
+                                        if(rightsHolderArray[i].length > 2000){
+                                          invalidRightsHolderStrLength = true;
+                                        } else {
+                                          invalidRightsHolderStrLength = false
+                                        }
+                                      }*/
+                                      
+                                       // Rights Holder Character Length Validation
+                                      /*if(
+			                            	flag != true && 
+			                            	count > 1 && 
+			                            		(
+                                                  parsedData[count][index_rights_holder] != '' &&
+                                              	  parsedData[count][index_rights_holder] != null &&
+			                            		  parsedData[count][index_rights_holder].length > 2000
+			                            		) 
+			                            	
+										) {
+											let alert_message = '';
+											alert_message += "Please limit the amount of characters for each rights holder to 2000 \n\n";
+											//alert_message += "Expecting a format similar to: '[1051b] : Records of Senior Officials' \n\n";
+											//alert_message += "No colon detected. \n\n";
+											///alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_rec_sched] + "'.";										
+			                                alert( alert_message );
+			                                flag = true;
+										}*/
+                                      
+                                      
+                                      
                                       // Validate Rights Holder When Access or Use Restriction is 'Yes' - Perm Records                          
 			                          /*  if( 
 			                            	flag != true && 
@@ -2065,6 +2154,24 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                                alert( alert_message );
 			                                flag = true;
 			                            }
+                                      
+                                      
+                                     	 // Folder/File Validation
+                                      	/*if(
+                                          	flag != true && 
+                                          	count > 1 && 
+                                            (
+                                              parsedData[count][index_folder_file_name] != '' &&
+                                              parsedData[count][index_folder_file_name] != null &&
+                                              parsedData[count][index_folder_file_name].length > 2000
+                                            )             
+                                        ) {
+                                        	let alert_message = '';
+											alert_message += "Please limit the amount of characters for a folder/file name to 2000 \n\n";										
+			                                alert( alert_message );
+			                                flag = true;
+                                        }*/
+			                            
 			                            
 			                            // Validate JSON - Tags Column
 			                            if( 
@@ -2093,6 +2200,42 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 												flag = true;
 										    }
 										}
+                                      
+                                      
+                                        // Create an array to store each Creator/Author name that is delimited by a semicolon
+                                        /*var tagsArray = parsedData[count][index_tags].trim().split(", ");                                    
+                                        var invalidTagsStrLength = false;
+
+                                        // Iterate over the creators array and update the invalidStrLength variable
+                                        // if any creator name exceeds 2000 characters
+                                        for(var i=0; i < tagsArray.length; i++){
+                                          if(tagsArray[i].length > 2000){
+                                            invalidTagsStrLength = true;
+                                          } else {
+                                            invalidTagsStrLength = false
+                                          }
+                                        }*/
+                                      
+                                       	// Tags Character Length Validation
+                                       /* if(
+                                              flag != true && 
+                                              count > 1 && 
+                                                  (
+                                                    parsedData[count][index_tags] != '' &&
+                                              		parsedData[count][index_tags] != null &&
+                                                    parsedData[count][index_tags].length > 2000
+                                                  ) 
+
+                                          ) {
+                                              let alert_message = '';
+                                              alert_message += "Please limit the amount of characters of each Tag to 2000 \n\n";
+                                              //alert_message += "Expecting a format similar to: '[1051b] : Records of Senior Officials' \n\n";
+                                              //alert_message += "No colon detected. \n\n";
+                                              ///alert_message += "Line " + (count+1) + " has value '" + parsedData[count][index_rec_sched] + "'.";										
+                                              alert( alert_message );
+                                              flag = true;
+                                          } */
+                                      
 			                            
 			                            // Validate Parent/Child
 			                            let pcd;

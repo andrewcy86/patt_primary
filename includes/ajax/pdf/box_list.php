@@ -128,7 +128,7 @@ if($ecms_sems_indicator == 'true') {
     $ecms_sems = 'SEMS';
 }
 else {
-    $ecms_sems = 'ECMS';
+    $ecms_sems = 'ARMS';
 }
 
 $tbl = '
@@ -138,7 +138,7 @@ $tbl = '
     <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br />
     <strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br />
     <strong>Program Office:</strong> '.$boxlist_po.' <br /><br />
-    <strong>ECMS or SEMS:</strong> '.$ecms_sems.'</td>
+    <strong>ARMS or SEMS:</strong> '.$ecms_sems.'</td>
     <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" /><strong>&nbsp; &nbsp; &nbsp; &nbsp; '.$request_id.'</strong><br /></td>
   </tr>
 </table>
