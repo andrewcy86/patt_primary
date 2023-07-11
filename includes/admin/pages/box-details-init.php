@@ -88,7 +88,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
 		?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake" aria-hidden="true" title="Freeze"></i><span class="sr-only">Freeze</span> Freeze <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-freeze-button'); ?>" aria-label="Freeze Help"><i class="far fa-question-circle"></i><span class="sr-only">Help</span></a></button>
 		<?php } ?>
-		<!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>-->
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_user_edit_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-user-edit" aria-hidden="true" title="Bulk Edit"></i><span class="sr-only">Bulk Edit</span> Bulk Edit</button>
         <?php
         }
         
@@ -513,36 +513,46 @@ postvarpage : jQuery('#page').val()
       WHERE validation = 1;
       ");
   ?>
+  
+  	var selected_validated_folderfiles_array = [];
 	
 	function toggle_button_display() {
 	//	var form = this;
-	/*	var rows_selected = dataTable.column(0).checkboxes.selected();
+		var rows_selected = dataTable.column(0).checkboxes.selected();
       	var row_data = rows_selected.data();
         var rows_selected_string = rows_selected.join(",");
         var doc_id_array = rows_selected_string.split(",");
-      	var validated_folderfiles_results = <?php echo json_encode($get_validated_folderdocinfofiles); ?>;
-        var validated_folderfiles_array = [];
-      
-      //console.log('validated_folderfiles_array: ' + JSON.stringify(validated_folderfiles_results));
-      //console.log('validated_folderfiles_array: ' + validated_folderfiles_results[0].folderdocinfofile_id);
-      
-      for(var i = 0; i < validated_folderfiles_results.length; i++){
-        validated_folderfiles_array.push(validated_folderfiles_results[i].folderdocinfofile_id);
-        //console.log('doc id array: ' + validated_folderfiles_array);
-        
-        if(validated_folderfiles_array.includes("0000001-10-01-4")) {
-          console.log('this folderfile id was found: ' + doc_id_array[i]);
-        }
-      }
-      
-      console.log('doc id array: ' + doc_id_array.includes(validated_folderfiles_array[i]));*/
+      	//var db_validated_folderfiles_results = <?php echo json_encode($get_validated_folderdocinfofiles); ?>;
+        //var db_validated_folderfiles_array = [];
+      	
       
 		if(rows_selected.count() > 0) {
 			jQuery('#wpsc_individual_destruction_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_damaged_btn').removeAttr('disabled');
 			jQuery('#wpsc_individual_freeze_btn').removeAttr('disabled');
         	jQuery('#wpsc_individual_label_btn').removeAttr('disabled');
-            jQuery('#wpsc_individual_user_edit_btn').removeAttr('disabled');
+          	jQuery('#wpsc_individual_user_edit_btn').removeAttr('disabled');
+          
+          	// Logic to Disable the Bulk Edit Button
+            /*for(var i = 0; i < db_validated_folderfiles_results.length; i++){
+              db_validated_folderfiles_array.push(db_validated_folderfiles_results[i].folderdocinfofile_id);
+              //console.log('each validated doc id item: ' + validated_folderfiles_array);
+            }
+
+            for(var i = 0; i < doc_id_array.length; i++){
+              //console.log('each doc id item: ' + doc_id_array[i]);
+
+              if(db_validated_folderfiles_array.includes(doc_id_array[i])) {
+                selected_validated_folderfiles_array.push(doc_id_array[i]);
+                //console.log('this folderfile id was found: ' + doc_id_array[i]);
+                //jQuery('#wpsc_individual_user_edit_btn').attr('disabled', 'disabled');
+                //alert('The following file(s) can no longer be edited: ' + selected_validated_folderfiles_array);
+              } else {
+                //console.log('no validated folderfiles have been found');
+                //jQuery('#wpsc_individual_user_edit_btn').removeAttr('disabled');
+              }
+            }*/
+
 	  	} else {
 	    	jQuery('#wpsc_individual_destruction_btn').attr('disabled', 'disabled');
 	    	jQuery('#wpsc_individual_damaged_btn').attr('disabled', 'disabled');
@@ -580,21 +590,37 @@ jQuery('#wpsc_individual_user_edit_btn').on('click', function(e){
   	 var row_data = rows_selected.data();
   	 var rows_selected_string = rows_selected.join(",");
   	 var doc_id_array = rows_selected_string.split(",");
-  	 //var doc_id_array = [];
-  		console.log('rows selected ' +rows_selected.join(","));
-  		//console.log('doc ids '+ JSON.stringify(row_data[0].dbid));
-  		console.log('doc ids '+ rows_selected.length);
+  	 var db_validated_folderfiles_results = <?php echo json_encode($get_validated_folderdocinfofiles); ?>;
+     var db_validated_folderfiles_array = [];
   
-  		/*for(i=0; i < rows_selected.length; i++){
-          console.log('row data: ' + row_data[i]);
-          //doc_id_array.push(row_data[i].dbid);
-          doc_id_array.push(row_data[i].dbid);
-        }*/
+     var unique_selected_validated_folderfiles_array = [...new Set(selected_validated_folderfiles_array)];
+     var files_validated = false;
   
-  		console.log('doc id arr ' + doc_id_array);
+  		for(var i = 0; i < db_validated_folderfiles_results.length; i++){
+          db_validated_folderfiles_array.push(db_validated_folderfiles_results[i].folderdocinfofile_id);
+        }
+
+        for(var i = 0; i < doc_id_array.length; i++){
+          if(db_validated_folderfiles_array.includes(doc_id_array[i])) {
+            unique_selected_validated_folderfiles_array.push(doc_id_array[i]);
+
+          } else if(!doc_id_array.includes(unique_selected_validated_folderfiles_array[i])) {
+            var folder_file_arr_index = unique_selected_validated_folderfiles_array.indexOf(unique_selected_validated_folderfiles_array[i]);
+            if (folder_file_arr_index > -1) { // only splice array when item is found
+              unique_selected_validated_folderfiles_array.splice(folder_file_arr_index, 1); // 2nd parameter means remove one item only
+            }
+          }
+        }
+ 
   
-  		wpsc_get_folderfile_editor(doc_id_array);
-  
+  		//console.log(unique_selected_validated_folderfiles_array);
+ 		//console.log(unique_selected_validated_folderfiles_array.length);
+
+  		if(files_validated || unique_selected_validated_folderfiles_array.length !== 0 ) {
+          alert('The following files have already been validated and can not be edited: ' + unique_selected_validated_folderfiles_array);
+        } else {
+          wpsc_get_folderfile_editor(doc_id_array);
+        }  
 		
 });
   

@@ -81,6 +81,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
 	$folderfile_details = $wpdb->get_row(
 		"SELECT 
 	a.id as id,
+    a.parent_id as parent_id,
 	a.index_level as index_level,
 	a.box_id as box_id,
 	a.title as title,
@@ -127,6 +128,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
 	$folderfile_details = $wpdb->get_row(
 		"SELECT 
 	a.id as id,
+    a.parent_id as parent_id,
 	a.index_level as index_level,
 	a.box_id as box_id,
 	a.title as title,
@@ -171,6 +173,7 @@ $box_rescan_arr = array($box_pending_tag->term_id, $box_scanning_preparation_tag
     }
     //folderdocinfofiles table id
     $folderdocinfofileid = $folderfile_details->id;
+  	$folderdocinfofile_parent_id = $folderfile_details->parent_id;
     //folderdocinfofiles folderdocinfofile_id
 	$folderfile_folderdocinfofile_id = $folderfile_details->folderdocinfofile_id;    
     $folderfile_index_level = $folderfile_details->index_level;
@@ -330,7 +333,33 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         <!-- language of buttons change based on 0 or 1 -->
         <?php
         if($folderfile_validation == 0) { ?>
-        <button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+      		<!-- Check if folder file is a child file and if the parent folder file has been validated -->
+      		<?php 
+                // If statement below is true then the current folder file is a child folder file
+                if($folderdocinfofile_parent_id != $folderdocinfofileid ){ 
+                  $parent_folderfile_details = $wpdb->get_row(
+                    "SELECT 
+                      a.id as id,
+                      a.parent_id as parent_id,
+                      a.validation as validation
+
+                      FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a
+                      WHERE a.id = '" . $folderdocinfofile_parent_id . "'"
+                      );
+                  
+                  $parent_folderfile_validation = $parent_folderfile_details->validation;
+                  
+                  if($parent_folderfile_validation != 0 ){ ?>
+      				        <button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>            
+            <?php } ?>
+      			<!--<button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>-->
+      		<?php 
+          }  else { ?>
+                <button type="button" aria-label="Help Validate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" onclick="wpsc_help_filters();"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+       <?php
+           }
+        ?>
+        
         <?php
         }
         else { ?>

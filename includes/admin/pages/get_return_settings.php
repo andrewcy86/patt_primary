@@ -67,6 +67,29 @@ if (!is_wp_error($term) && isset($term['term_id'])) {
 */
 
 
+// Adding a new status to the Return Process
+// Comment out after changes have been pushed to prod
+$term = wp_insert_term( 'Received at NDC', 'wppatt_return_statuses', array(
+	'slug' => 'decline-received-at-ndc',
+));
+if (!is_wp_error($term) && isset($term['term_id'])) {
+  //$load_order = $wpdb->get_var("select max(meta_value) as load_order from {$wpdb->prefix}termmeta WHERE meta_key='wppatt_recall_status_load_order'");
+  add_term_meta ($term['term_id'], 'wppatt_return_status_load_order', 4);
+  add_term_meta ($term['term_id'], 'wppatt_return_status_color', '#ffffff');
+  add_term_meta ($term['term_id'], 'wppatt_return_status_background_color', '#30d1c9');
+}
+
+$decline_complete_status = get_term_by('slug', 'decline-complete', 'wppatt_return_statuses');
+$decline_complete_status_id = $decline_complete_status->term_id;
+$decline_cancelled_status = get_term_by('slug', 'decline-cancelled', 'wppatt_return_statuses');
+$decline_cancelled_status_id = $decline_cancelled_status->term_id;
+$decline_expired_status = get_term_by('slug', 'decline-expired', 'wppatt_return_statuses');
+$decline_expired_status_id = $decline_expired_status->term_id;
+
+update_term_meta($decline_complete_status_id, 'wppatt_return_status_load_order', 5 );
+update_term_meta($decline_cancelled_status_id, 'wppatt_return_status_load_order', 6 );
+update_term_meta($decline_expired_status_id, 'wppatt_return_status_load_order', 7 );
+
 // Register Return Reason Taxonomy
 if( !taxonomy_exists('wppatt_return_reason') ) {
 

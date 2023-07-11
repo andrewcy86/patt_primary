@@ -37,7 +37,8 @@ if( !taxonomy_exists('wppatt_return_statuses') ) {
 $status_decline_initiated_term_id = get_term_by( 'slug', 'decline-initiated', 'wppatt_return_statuses' );	 
 $status_decline_shipped_term_id = get_term_by( 'slug', 'decline-shipped', 'wppatt_return_statuses' ); 
 $status_decline_pending_cancel_term_id = get_term_by( 'slug', 'decline-pending-cancel', 'wppatt_return_statuses' );
-$status_decline_shipped_back_term_id = get_term_by( 'slug', 'decline-shipped-back', 'wppatt_return_statuses' ); 
+$status_decline_shipped_back_term_id = get_term_by( 'slug', 'decline-shipped-back', 'wppatt_return_statuses' );
+$status_decline_received_at_ndc_term_id = get_term_by( 'slug', 'decline-received-at-ndc', 'wppatt_return_statuses' ); 
 $status_decline_complete_term_id = get_term_by( 'slug', 'decline-complete', 'wppatt_return_statuses' ); 
 $status_decline_cancelled_term_id = get_term_by( 'slug', 'decline-cancelled', 'wppatt_return_statuses' ); 
 $status_decline_expired_term_id = get_term_by( 'slug', 'decline-expired', 'wppatt_return_statuses' ); 
@@ -46,6 +47,7 @@ $status_decline_initiated_term_id = $status_decline_initiated_term_id->term_id;
 $status_decline_shipped_term_id = $status_decline_shipped_term_id->term_id;
 $status_decline_pending_cancel_term_id = $status_decline_pending_cancel_term_id->term_id;
 $status_decline_shipped_back_term_id = $status_decline_shipped_back_term_id->term_id;
+$status_decline_received_at_ndc_term_id = $status_decline_received_at_ndc_term_id->term_id;
 $status_decline_complete_term_id = $status_decline_complete_term_id->term_id;
 $status_decline_cancelled_term_id = $status_decline_cancelled_term_id->term_id;
 $status_decline_expired_term_id = $status_decline_expired_term_id->term_id;
@@ -650,9 +652,9 @@ foreach ($shipped_return_status_query as $item) {
 
 
 //
-// For Decline Status to change from Decline Shipped Back to Decline Complete
+// For Decline Status to change from Decline Shipped Back to Received at NDC
 //
-$return_complete_return_status_query = $wpdb->get_results(
+$shipped_received_at_ndc_status_query = $wpdb->get_results(
 	"SELECT 
       shipping.id,
       shipping.tracking_number,
@@ -674,28 +676,168 @@ $return_complete_return_status_query = $wpdb->get_results(
       AND 
         shipping.company_name <> ''
       AND
-        shipping.delivered = 1
+        shipping.shipped = 1
       AND 
-        ret.return_status_id = " . $status_decline_shipped_back_term_id . 
+        ret.return_status_id = " . $status_decline_shipped_back_term_id .
       " ORDER BY shipping.id ASC"
 	);
 
 	
-// For Return Status to change from Decline Shipped Back to Decline Complete
+// For Return Status to change from Decline Shipped Back to Received at NDC
+foreach ($shipped_received_at_ndc_status_query as $item) {
+	if($item->delivered == 1) {
+      // update Decline status to Decline Shipped Back
+      $return_id = $item->return_id;	
+      $where = [ 'id' => $return_id ];
+      $data_status = [ 'return_status_id' => $status_decline_received_at_ndc_term_id ]; 
+      $obj = Patt_Custom_Func::update_return_data( $data_status, $where );
+
+      // Update Decline db table (Return) when it is shipped.
+      $where = [ 'id' => $return_id ];
+      $current_datetime = date("Y-m-d H:i:s");
+      $data = [ 'return_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
+      Patt_Custom_Func::update_return_data( $data, $where );
+    }
+	
+	// Prep Timestmp Table data. 
+	// Get Decline obj
+	
+	$where = [
+		'return_id' => $return_id
+	];
+	$return_array = Patt_Custom_Func::get_return_data( $where );
+	
+	//Added for servers running < PHP 7.3
+	if (!function_exists( 'array_key_first' )) {
+	    function array_key_first( array $arr ) {
+	        foreach( $arr as $key => $unused ) {
+	            return $key;
+	        }
+	        return NULL;
+	    }
+	}
+	
+	$return_array_key = array_key_first( $return_array );
+	$return_obj = $return_array[ $return_array_key ];
+
+	
+	//
+	// Timestamp Table
+	//
+
+	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $return_obj->box_id_fk[0] );
+	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
+	
+	// WP user info.
+	$user_num = $return_obj->user_id[0];
+	$user_obj = get_user_by( 'id', $user_num );
+	$user_login = $user_obj->data->display_name;
+	
+	$data = [
+		'decline_id' => $return_obj->id,   
+		'type' => 'Received at NDC',
+		'user' => $user_login,
+		'digitization_center' => $dc_str
+	];
+	
+	Patt_Custom_Func::insert_decline_timestamp( $data );
+	
+	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
+  
+  		//
+	// PM Notification :: Requester & Digitization Staff - Decline Complete
+	//
+
+	// Get ticket_id based on return_id
+	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
+	
+	// Get owner of ticket. 
+	$where = [ 'ticket_id' => $ticket_id ];
+	$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
+	
+	// Get all users on Decline (currently only the person who submitted it, and no way to add others)
+	$where = [ 'return_id' => $return_id ]; // format: '0000002'
+	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
+	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
+	
+	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
+	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
+	
+	// Get digitization staff
+	$agent_admin_group_name = 'Administrator';
+	$pattagentid_admin_array = Patt_Custom_Func::agent_from_group( $agent_admin_group_name );
+	 
+	$agent_manager_group_name = 'Manager';
+	$pattagentid_manager_array = Patt_Custom_Func::agent_from_group( $agent_manager_group_name );
+	
+	// Combine Requester on Request with Requesters on Decline
+	$pattagentid_array = array_merge( $agent_id_array, $agent_id_requesters_array, $pattagentid_admin_array, $pattagentid_manager_array );
+	$pattagentid_array = array_unique( $pattagentid_array );
+	
+// 	$requestid = 'D-' . $decline->return_id; 
+	$requestid = 'D-' . $return_id; 
+	
+	$data = [
+        //'item_id' => $requestid
+    ];
+	$email = 1;
+	
+	$notification_post = 'email-decline-received-at-ndc';
+  
+   	// PM Notification to the Requestor / owner
+	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+}
+
+
+//
+// For Decline Status to change from Received at NDC to Decline Complete
+//
+$return_complete_return_status_query = $wpdb->get_results(
+	"SELECT 
+      shipping.id,
+      shipping.tracking_number,
+      shipping.shipped,
+      shipping.delivered,
+      shipping.return_id,
+      ret.id,
+      ret.return_id as return_id,
+      ret.return_status_id as return_status,
+      ret.return_complete as return_complete
+    FROM 
+	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
+    INNER JOIN 
+		" . $wpdb->prefix . "wpsc_epa_return AS ret 
+	ON (
+        shipping.return_id = ret.id
+	   )
+	WHERE 
+        shipping.return_id <> -99999
+      AND 
+        shipping.company_name <> ''
+      AND
+        shipping.delivered = 1
+      AND 
+        ret.return_status_id = " . $status_decline_received_at_ndc_term_id . 
+      " ORDER BY shipping.id ASC"
+	);
+
+	
+// For Return Status to change from Decline Received at NDC to Decline Complete
 foreach ($return_complete_return_status_query as $item) {
-	
-	// update Decline status to Decline Complete
-	$return_id = $item->return_id;	
-	$where = [ 'id' => $return_id ];
-	$data_status = [ 'return_status_id' => $status_decline_complete_term_id ]; 
-	$obj = Patt_Custom_Func::update_return_data( $data_status, $where );
-	
-	// Update Decline DB Received date
-	$where = [ 'id' => $return_id ];
-	$current_datetime = date("Y-m-d H:i:s");
-	$data = [ 'received_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-	Patt_Custom_Func::update_return_data( $data, $where );
-	
+	if($item->return_complete == 1) {
+      // update Decline status to Decline Complete
+      $return_id = $item->return_id;	
+      $where = [ 'id' => $return_id ];
+      $data_status = [ 'return_status_id' => $status_decline_complete_term_id ]; 
+      $obj = Patt_Custom_Func::update_return_data( $data_status, $where );
+
+      // Update Decline DB Received date
+      $where = [ 'id' => $return_id ];
+      $current_datetime = date("Y-m-d H:i:s");
+      $data = [ 'received_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
+      Patt_Custom_Func::update_return_data( $data, $where );
+    }
 	
 	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
 	$ticket_id = ltrim( $ticket_id, '0' );

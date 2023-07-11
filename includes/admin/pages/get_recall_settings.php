@@ -109,6 +109,27 @@ if( !taxonomy_exists('wppatt_recall_statuses') ) {
 	}
 */
 
+
+// Adding a new status to the Recall Process
+// Comment out after changes have been pushed to prod
+$term = wp_insert_term( 'Received at NDC', 'wppatt_recall_statuses', array(
+	'slug' => 'recall-received-at-ndc',
+));
+if (!is_wp_error($term) && isset($term['term_id'])) {
+  //$load_order = $wpdb->get_var("select max(meta_value) as load_order from {$wpdb->prefix}termmeta WHERE meta_key='wppatt_recall_status_load_order'");
+  add_term_meta ($term['term_id'], 'wppatt_recall_status_load_order', 6);
+  add_term_meta ($term['term_id'], 'wppatt_recall_status_color', '#ffffff');
+  add_term_meta ($term['term_id'], 'wppatt_recall_status_background_color', '#30d1c9');
+}
+
+$recall_complete_status = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses');
+$received_complete_status_id = $recall_complete_status->term_id;
+$recall_cancelled_status = get_term_by('slug', 'recall-cancelled', 'wppatt_recall_statuses');
+$received_cancelled_status_id = $recall_complete_status->term_id;
+
+update_term_meta($received_complete_status_id, 'wppatt_recall_status_load_order', 7 );
+update_term_meta($received_cancelled_status_id, 'wppatt_recall_status_load_order', 8 );
+
 //
 // END register taxonomy 
 //

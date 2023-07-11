@@ -176,7 +176,8 @@ $recall_cancelled_tag = get_term_by('slug', 'recall-cancelled', 'wppatt_recall_s
 $recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
 $recall_denied_tag = get_term_by('slug', 'recall-denied', 'wppatt_recall_statuses'); 
 $recall_shipped_tag = get_term_by('slug', 'shipped', 'wppatt_recall_statuses');
-$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses'); 
+$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses');
+$recall_received_at_ndc_tag = get_term_by('slug', 'recall-received-at-ndc', 'wppatt_recall_statuses'); 
 
 $recall_recalled_term = $recall_recalled_tag->term_id;
 $recall_complete_term = $recall_complete_tag->term_id;
@@ -185,6 +186,7 @@ $recall_approved_term = $recall_approved_tag->term_id;
 $recall_denied_term = $recall_denied_tag->term_id;
 $recall_shipped_term = $recall_shipped_tag->term_id;
 $recall_shipped_back_term = $recall_shipped_back_tag->term_id;
+$recall_received_at_ndc_term = $recall_received_at_ndc_tag->term_id;
 
 // Grab all info needed for the recall
 $whr = [ 'recall_id' => $recall_ids[0] ]; // recall_ids todo will always contain 1 value.
@@ -205,7 +207,7 @@ $todo_recall_complete_check = $todo_recall_complete == 1 ? 'checked' : '';
 // $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
 $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_approved_term ? '' : 'disabled';
 // $todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_complete_term ? '' : 'disabled';
-$todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_shipped_back_term ? '' : 'disabled';
+$todo_recall_complete_disabled = $recall_todo_obj->recall_status_id == $recall_received_at_ndc_term ? '' : 'disabled';
 
 if( $type == 'recall_todo' ) {
   
@@ -251,7 +253,7 @@ $recall_statuses = get_terms([
 ]);
 
 // List of box status that do not need agents assigned.
-$ignore_recall_status = [ 'Recalled', 'Shipped', 'On Loan', 'Shipped Back', 'Recall Cancelled', 'Recall Denied']; 
+$ignore_recall_status = [ 'Recalled', 'Shipped', 'On Loan', 'Shipped Back', 'Received at NDC', 'Recall Cancelled', 'Recall Denied']; 
 
 $term_id_array = array();
 foreach( $recall_statuses as $key=>$obj ) {
@@ -276,7 +278,8 @@ $decline_shipped_tag = get_term_by('slug', 'decline-shipped', 'wppatt_return_sta
 $decline_received_tag = get_term_by('slug', 'decline-pending-cancel', 'wppatt_return_statuses');  //received
 $decline_cancelled_tag = get_term_by('slug', 'decline-cancelled', 'wppatt_return_statuses'); 
 $decline_complete_tag = get_term_by('slug', 'decline-complete', 'wppatt_return_statuses'); 
-$decline_shipped_back_tag = get_term_by('slug', 'decline-shipped-back', 'wppatt_return_statuses'); 
+$decline_shipped_back_tag = get_term_by('slug', 'decline-shipped-back', 'wppatt_return_statuses');
+$decline_received_at_ndc_tag = get_term_by('slug', 'decline-received-at-ndc', 'wppatt_return_statuses'); 
 $decline_expired_tag = get_term_by('slug', 'decline-expired', 'wppatt_return_statuses'); 
 
 
@@ -285,6 +288,7 @@ $decline_shipped_term = $decline_shipped_tag->term_id;
 $decline_received_term = $decline_received_tag->term_id;
 $decline_cancelled_term = $decline_cancelled_tag->term_id;
 $decline_complete_term = $decline_complete_tag->term_id;
+$decline_received_at_ndc_term = $decline_received_at_ndc_tag->term_id;
 $decline_shipped_back_term = $decline_shipped_back_tag->term_id;
 $decline_expired_term = $decline_expired_tag->term_id;
 
@@ -307,7 +311,7 @@ $todo_decline_complete_check = $todo_decline_complete == 1 ? 'checked' : '';
 // Using $recall_recalled_term as that is the status we're in before moving to recall approved. 
 // $todo_recall_approved_disabled = $recall_todo_obj->recall_status_id == $recall_recalled_term ? '' : 'disabled';
 $todo_decline_ready_to_ship_disabled = $decline_todo_obj->return_status_id == $decline_initiated_term ? '' : 'disabled';
-$todo_decline_complete_disabled = $decline_todo_obj->return_status_id == $decline_complete_term ? '' : 'disabled';
+$todo_decline_complete_disabled = $decline_todo_obj->return_status_id == $decline_received_at_ndc_term ? '' : 'disabled';
 
 
 if( $type == 'decline_todo' ) {
@@ -359,7 +363,7 @@ $decline_statuses = get_terms([
 ]);
 
 // List of box status that do not need agents assigned.
-$ignore_decline_status = [ 'Decline Shipped', 'Received', 'Decline Shipped Back', 'Decline Complete', 'Decline Cancelled', 'Decline Expired']; 
+$ignore_decline_status = [ 'Decline Shipped', 'Received', 'Decline Shipped Back', 'Received at NDC', 'Decline Complete', 'Decline Cancelled', 'Decline Expired']; 
 
 $term_id_array = array();
 foreach( $decline_statuses as $key=>$obj ) {
@@ -757,7 +761,7 @@ echo "</pre>";
 			<div class="col-sm-4">
               	<!-- removes the digitized - not validated box status text -->
 			<?php
-				if( $status->name != 'Digitized - Not Validated') {
+				//if( $status->name != 'Digitized - Not Validated') {
 			?>
 			    <?php
 			    if($status->name == 'QA/QC') {
@@ -771,7 +775,7 @@ echo "</pre>";
 				<label class="wpsc_ct_field_label"><?php echo $status->name; ?> </label>
 				<?php } ?>
               <!-- closing bracket for if statement that removes the digitized - not validated box status text -->
-			  <?php } ?>
+			  <?php //} ?>
 			</div>
 			
 			
@@ -781,7 +785,7 @@ echo "</pre>";
 				<form id="frm_get_ticket_assign_agent" action = "<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/assign_staff_processing.php" method = "POST">
 					<div id="assigned_agent">
                       <!-- removes the digitized - not validated input field -->
-						<?php if( $status->term_id != '6') { ?>
+						<?php //if( $status->term_id != '6') { ?>
 						<div class="form-group wpsc_display_assign_agent ">
 						    <input class="form-control  wpsc_assign_agents ui-autocomplete-input term-<?php echo $status->term_id; ?>" name="assigned_agent"  type="text" autocomplete="off" aria-label="Search agent ..." placeholder="<?php _e('Search agent ...','supportcandy')?>" />
 							<ui class="wpsp_filter_display_container"></ui>
@@ -813,7 +817,7 @@ echo "</pre>";
 							}
 						?>
                       <!-- closing bracket for if statement that removes the digitized - not validated input field -->
-					<?php } ?>
+					<?php //} ?>
 				  </div>
 						<input type="hidden" name="action" value="wpsc_tickets" />
 						<input type="hidden" name="setting_action" value="set_change_assign_agent" />
@@ -986,7 +990,8 @@ echo "</pre>";
 ?> 	
   <form id="todo-form">
 <?php  	
-		foreach( $recall_statuses as $status) { 	
+      foreach( $recall_statuses as $status) {
+        //if( $status->name == 'Recall Approved' || $status->name == 'Received at NDC' ) {
 ?>
 
 		<div class="row zebra">
@@ -1003,7 +1008,7 @@ echo "</pre>";
 				<?php
         } elseif( $status->name == 'Recall Complete' ) {
         ?> 
-          <input data-box-status-id="<?php echo $recall_shipped_back_term; ?>" type="checkbox"  <?php echo $todo_recall_complete_check . ' ' . $todo_recall_complete_disabled; ?> class="center-check">
+          <input data-box-status-id="<?php echo $recall_received_at_ndc_term; ?>" type="checkbox"  <?php echo $todo_recall_complete_check . ' ' . $todo_recall_complete_disabled; ?> class="center-check">
         <?php
         } 
         ?> 
@@ -1032,7 +1037,8 @@ echo "</pre>";
 				  </div>
 			</div>
 		</div>
-		<?php 
+		<?php
+      //}
     } 
     ?>
 
@@ -1073,7 +1079,7 @@ echo "</pre>";
         
         if( $status->name == 'Decline Complete' ) {
 		?>
-				  <input data-box-status-id="<?php echo $decline_complete_term; ?>" type="checkbox"  <?php echo $todo_decline_complete_check . ' ' . $todo_decline_complete_disabled; ?> class="center-check" />
+				  <input data-box-status-id="<?php echo $decline_received_at_ndc_term; ?>" type="checkbox"  <?php echo $todo_decline_complete_check . ' ' . $todo_decline_complete_disabled; ?> class="center-check" />
 				<?php
 		} 
 
@@ -2289,8 +2295,9 @@ function wppatt_set_todo_recall() {
 //  let ticket_id = <?php echo $ticket_id; ?>;
   let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
   let current_recall_status = <?php echo $current_box_status; ?>; // current recall status.
+  let recall_db_id = <?php echo ltrim($recall_ids[0], "0"); ?> // recall id trimmed without leading zeros
   
-  console.log({ recall_ids:recall_ids, ticket_id:ticket_id, current_recall_status:current_recall_status });  
+  console.log({ recall_ids:recall_ids, ticket_id:ticket_id, current_recall_status:current_recall_status, recall_db_id: recall_db_id });  
   
   //let is_checked = jQuery('*[data-box-status-id="'+current_box_status+'"]').is(':checked');
   //console.log({is_checked:is_checked});
@@ -2300,7 +2307,8 @@ function wppatt_set_todo_recall() {
       type: 'todo_recall_update',
       item_id: recall_ids,
       current_recall_status: current_recall_status,
-      ticket_id: ticket_id
+      ticket_id: ticket_id,
+      recall_db_id: recall_db_id
 	  }, 
     function (response) {
 			//alert('updated: '+response);
@@ -2328,6 +2336,7 @@ function wppatt_set_todo_decline() {
   //let ticket_id = <?php echo $ticket_id; ?>;
   //let ticket_id = <?php echo json_encode( $ticket_id ); ?>;
   let current_decline_status = <?php echo $current_box_status; ?>; // current decline status.
+  let decline_db_id = <?php echo ltrim($decline_ids[0], "0"); ?> // recall id trimmed without leading zeros
   
   //console.log({ item_id:item_id, ticket_id:ticket_id });  
   
@@ -2340,7 +2349,8 @@ function wppatt_set_todo_decline() {
     '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_todo_list_box_status.php',{
       type: 'todo_decline_update',
       item_id: item_id,
-      current_decline_status: current_decline_status
+      current_decline_status: current_decline_status,
+      decline_db_id: decline_db_id
       //current_box_status: current_box_status,
       //ticket_id: ticket_id
 	  }, 

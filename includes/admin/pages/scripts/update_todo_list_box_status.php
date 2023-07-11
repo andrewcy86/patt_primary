@@ -9,9 +9,11 @@ include_once( WPPATT_ABSPATH . 'includes/term-ids.php' );
 $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
 $ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '';
 $item_id = isset($_POST['item_id']) ? sanitize_text_field($_POST['item_id']) : ''; // full number i.e. 0000003-1
+$recall_db_id = isset($_POST['recall_db_id']) ? sanitize_text_field($_POST['recall_db_id']) : ''; // no leading zeros i.e. 3
 $current_box_status = isset($_POST['current_box_status']) ? sanitize_text_field($_POST['current_box_status']) : ''; // term_id
 $current_recall_status = isset($_POST['current_recall_status']) ? sanitize_text_field($_POST['current_recall_status']) : ''; // term_id
 $current_decline_status = isset($_POST['current_decline_status']) ? sanitize_text_field($_POST['current_decline_status']) : ''; // term_id
+$decline_db_id = isset($_POST['decline_db_id']) ? sanitize_text_field($_POST['decline_db_id']) : ''; // no leading zeros i.e. 3
 
 // get the id aka foreign key of the box
 $box_fk = Patt_Custom_Func::get_id_by_box_id( $item_id );
@@ -32,12 +34,14 @@ if( !taxonomy_exists('wppatt_recall_statuses') ) {
 $recall_recalled_tag = get_term_by('slug', 'recalled', 'wppatt_recall_statuses'); 
 $recall_approved_tag = get_term_by('slug', 'recall-approved', 'wppatt_recall_statuses'); 
 $recall_complete_tag = get_term_by('slug', 'recall-complete', 'wppatt_recall_statuses');
-$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses'); 
+$recall_shipped_back_tag = get_term_by('slug', 'shipped-back', 'wppatt_recall_statuses');
+$recall_received_at_ndc_tag = get_term_by('slug', 'recall-received-at-ndc', 'wppatt_recall_statuses'); 
 
 $recall_recalled_term = $recall_recalled_tag->term_id;
 $recall_approved_term = $recall_approved_tag->term_id;
 $recall_complete_term = $recall_complete_tag->term_id;
 $recall_shipped_back_term = $recall_shipped_back_tag->term_id;
+$recall_received_at_ndc_term = $recall_received_at_ndc_tag->term_id;
 
 
 // Register Decline Status Taxonomy
@@ -52,9 +56,11 @@ if( !taxonomy_exists('wppatt_return_statuses') ) {
 // Decline status slugs
 $decline_initiated_tag = get_term_by('slug', 'decline-initiated', 'wppatt_return_statuses');
 $decline_complete_tag = get_term_by('slug', 'decline-complete', 'wppatt_return_statuses');
+$decline_received_at_ndc_tag = get_term_by('slug', 'decline-received-at-ndc', 'wppatt_return_statuses'); 
 
 $decline_initiated_term = $decline_initiated_tag->term_id;
 $decline_complete_term = $decline_complete_tag->term_id;
+$decline_received_at_ndc_term = $decline_received_at_ndc_tag->term_id;
 
 // Box status flow
 // $next_status_arr is an array where the index is the term_id for the current box status, 
@@ -171,14 +177,21 @@ if( $type == 'todo_box_status_update' ) {
 	$table_name = $wpdb->prefix . 'wpsc_epa_recallrequest';
 	$data_where = array( 'recall_id' => $item_id );
 	$data_update;
+  
+  // Update Flags in wpsc_epa_shipping_tracking
+	$table_name2 = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
+	$data_where2 = array( 'recallrequest_id' => $recall_db_id );
+	$data_update2;
 	
 	if( $current_recall_status == $recall_approved_term ) {
-  	$data_update = [ 'recall_approved'=>1 ];
-	} elseif( $current_recall_status == $recall_shipped_back_term ) {
-  	$data_update = [ 'recall_complete'=>1 ];
+      $data_update = [ 'recall_approved'=>1 ];
+	} elseif( $current_recall_status == $recall_received_at_ndc_term ) {
+      $data_update = [ 'recall_complete'=>1 ];
+      $data_update2 = [ 'delivered'=>1 ];
 	}
   
   $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
+  $flag_update_result2 = $wpdb->update( $table_name2, $data_update2, $data_where2 );
   
 } elseif( $type == 'todo_decline_update' )  {
   
@@ -186,15 +199,22 @@ if( $type == 'todo_box_status_update' ) {
 	$table_name = $wpdb->prefix . 'wpsc_epa_return';
 	$data_where = array( 'return_id' => $item_id );
 	$data_update;
+  
+  // Update Flags in wpsc_epa_shipping_tracking
+	$table_name2 = $wpdb->prefix . 'wpsc_epa_shipping_tracking';
+	$data_where2 = array( 'return_id' => $decline_db_id );
+	$data_update2;
 	
 	if( $current_decline_status == $decline_initiated_tag->term_id ) {
   		// $data_update = [ 'return_complete'=>1 ];
 		  $data_update = [ 'return_initiated'=>1 ];
-	} elseif( $current_decline_status == $decline_complete_tag->term_id ) {
+	} elseif( $current_decline_status == $decline_received_at_ndc_tag->term_id ) {
 		$data_update = [ 'return_complete'=>1 ];
+      	$data_update2 = [ 'delivered'=>1 ];
 	}
   
   $flag_update_result = $wpdb->update( $table_name, $data_update, $data_where );
+  $flag_update_result2 = $wpdb->update( $table_name2, $data_update2, $data_where2 );
   
 }
 
@@ -215,6 +235,8 @@ $response = array(
 	"recall_complete_tag" => $recall_complete_tag,
 	"recall_shipped_back_term" => $recall_shipped_back_term,
 	"recall_shipped_back_tag" => $recall_shipped_back_tag,
+	"recall_received_at_ndc_term" => $recall_received_at_ndc_term,
+  	"recall_received_at_ndc_tag" => $recall_received_at_ndc_tag,
 	"decline_initiated_term" => $decline_initiated_term,
 	"decline_initiated_tag" => $decline_initiated_tag,
 	"decline_complete_term" => $decline_complete_term,
