@@ -187,62 +187,17 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 ## Fetch records
 $boxQuery = "
 SELECT
-count(*) OVER() AS total_count,
+count(a.id) AS total_count,
 a.id as request_id,
 a.request_id as patt_request_id,
 a.date_updated as date_updated,
-GROUP_CONCAT(DISTINCT e.name ORDER BY e.name ASC SEPARATOR ', ') as location,
+e.name as location,
 CONCAT(
 '<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
-CASE 
-WHEN a.ticket_priority = 621
-THEN
-1
-WHEN a.ticket_priority = 9
-THEN
-2
-WHEN a.ticket_priority = 8
-THEN
-3
-WHEN a.ticket_priority = 7
-THEN
-4
-ELSE
-999
-END
- as ticket_priority_order,
-
-CASE 
-WHEN a.ticket_status = 3
-THEN
-1
-WHEN a.ticket_status = 4
-THEN
-2
-WHEN a.ticket_status = 670
-THEN
-3
-WHEN a.ticket_status = 5
-THEN
-4
-WHEN a.ticket_status = 63
-THEN
-5
-WHEN a.ticket_status = 69
-THEN
-6
-ELSE
-999
-END
- as ticket_status_order,
+a.ticket_priority as ticket_priority_order,
+a.ticket_status as ticket_status_order,
  
- CONCAT (
-   CASE
-   WHEN (z.meta_key = 'due_date') 
-   THEN CONCAT (z.meta_value)
-   ELSE 'No Due Date'
-   END
-   ) as due_date
+z.meta_key as due_date
 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
