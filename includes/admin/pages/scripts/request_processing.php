@@ -61,7 +61,7 @@ $searchByRecallDecline = $_POST['searchByRecallDecline'];
 $searchByECMSSEMS = $_POST['searchByECMSSEMS'];
 $currentUser = $_POST['currentUser'];
 
-$totalRecordwithFilter = '';
+$totalRecordwithFilter = 0;
 ## User Search
 //throwing Undefined Index error
 if(isset($_POST['searchByUser'])) {
@@ -184,20 +184,22 @@ if(in_array(strtolower($searchGeneric), $locationarray)){
 }
 }
 
+//AND z.meta_key = 'due_date'
 ## Fetch records
 $boxQuery = "
 SELECT
-count(a.id) AS total_count,
 a.id as request_id,
 a.request_id as patt_request_id,
 a.date_updated as date_updated,
+a.ticket_priority as ticket_priority_order,
 e.name as location,
 CONCAT(
 '<a href=\"admin.php?page=wpsc-tickets&id=',a.request_id,'\">',a.request_id,'</a> ') as request_id_flag,
-a.ticket_priority as ticket_priority_order,
+
+
 a.ticket_status as ticket_status_order,
  
-z.meta_key as due_date
+ z.meta_value as due_date
 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_ticketmeta as z ON z.ticket_id = a.id
@@ -209,10 +211,67 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as k ON k.box_id = 
 LEFT JOIN " . $wpdb->prefix . "users g ON g.user_email = a.customer_email
 LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = g.ID
 
+LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = k.id AND h.folderdoc_id <> '-99999')
+   
+LEFT JOIN (   SELECT a.box_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY box_id ) AS i ON i.box_id = b.id
+LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
+
 
 
 WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
 group by a.request_id ".$searchHaving." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+
+## BoxQuery Count with filtering
+$boxQueryCount = "
+SELECT
+COUNT(DISTINCT a.request_id) as total_count
+
+FROM wpqa_wpsc_ticket as a
+INNER JOIN wpqa_wpsc_ticketmeta as z ON z.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.id = b.ticket_id
+INNER JOIN wpqa_wpsc_epa_storage_location as d ON b.storage_location_id = d.id
+INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
+INNER JOIN wpqa_wpsc_epa_folderdocinfo_files as k ON k.box_id = b.id
+
+
+LEFT JOIN wpqa_users g ON g.user_email = a.customer_email
+LEFT JOIN wpqa_usermeta um ON um.user_id = g.ID
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
+   FROM   wpqa_wpsc_epa_recallrequest
+   GROUP BY box_id) AS x ON (x.box_id = b.id AND x.folderdoc_id = '-99999')
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
+   FROM   wpqa_wpsc_epa_recallrequest
+   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = k.id AND h.folderdoc_id <> '-99999')
+   
+LEFT JOIN (   SELECT a.box_id, a.return_id
+   FROM   wpqa_wpsc_epa_return_items a
+   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   WHERE box_id <> '-99999' AND b.return_status_id NOT IN (791,1023)
+   GROUP  BY box_id ) AS i ON i.box_id = b.id
+LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
+   FROM   wpqa_wpsc_epa_return_items a
+   LEFT JOIN  wpqa_wpsc_epa_return b ON a.return_id = b.id
+   WHERE folderdoc_id <> '-99999' AND b.return_status_id NOT IN (791,1023)
+   GROUP  BY folderdoc_id )  AS j ON j.folderdoc_id = k.id
+   
+WHERE 1 ".$searchQuery." AND a.active <> 0 AND a.id <> -99999 " . $ecms_sems . "
+".$searchHaving;
 
 ## Total number of records without filtering Filter out inactive (initially deleted tickets)
 $TotalCount = "
@@ -259,15 +318,22 @@ while ($row = mysqli_fetch_assoc($sel)) {
 $totalRecords++;
 }
 
+$boxRecordsCount = mysqli_query($con,$boxQueryCount);
+
+
+while ($row = mysqli_fetch_assoc($boxRecordsCount)) {
+$totalRecordwithFilter = $row['total_count'];
+}
+
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
 
 while ($row = mysqli_fetch_assoc($boxRecords)) {
 
 $request_id = $row['request_id'];
-$totalRecordwithFilter = $row['total_count'];
+//$totalRecordwithFilter = $row['total_count'];
 // GET LOCATION
-$location_query = $wpdb->get_row("SELECT GROUP_CONCAT(DISTINCT d.name ORDER BY d.name ASC SEPARATOR ', ') as location 
+$location_query = $wpdb->get_row("SELECT DISTINCT d.name as location 
 FROM " . $wpdb->prefix . "wpsc_ticket as a
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as b ON a.id = b.ticket_id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as c ON b.storage_location_id = c.id
@@ -370,9 +436,19 @@ if(Patt_Custom_Func::id_in_freeze($row['patt_request_id'],$type) == 1) {
 if(Patt_Custom_Func::id_in_box_destroyed($row['patt_request_id'],$type) == 1) {
     $box_destroyed_icon = ' <span style="font-size: 1em; color: #B4081A;"><i class="fas fa-ban" aria-hidden="true" title="Box Destroyed"></i><span class="sr-only">Box Destroyed</span></span>';
 }
+  
+  // Ticket Priority Logic
+  // Ticket Status Order Logic
+  // Due Date Logic
+  $due_date = '';
+  if($row['due_date'] == 'false'){
+    $due_date = 'No Due Date';
+  } else {
+    $due_date = $row['due_date'];
+  }
 
    $data[] = array(
-     "due_date"=>$row['due_date'],
+     "due_date"=>$due_date,
      "request_id"=>$row['request_id'],
      "request_id_flag"=>$row['request_id_flag'].$box_destroyed_icon.$unauthorized_destruction_icon.$damaged_icon.$freeze_icon.$decline_icon.$recall_icon,
      "ticket_priority"=>$priority,
