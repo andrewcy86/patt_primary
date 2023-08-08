@@ -697,6 +697,51 @@ foreach ($shipped_received_at_ndc_status_query as $item) {
       $current_datetime = date("Y-m-d H:i:s");
       $data = [ 'return_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
       Patt_Custom_Func::update_return_data( $data, $where );
+      
+      
+      
+      // PM Notification :: Requester & Digitization Staff - Decline Complete
+	//
+
+	// Get ticket_id based on return_id
+	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
+	
+	// Get owner of ticket. 
+	$where = [ 'ticket_id' => $ticket_id ];
+	$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
+	
+	// Get all users on Decline (currently only the person who submitted it, and no way to add others)
+	$where = [ 'return_id' => $return_id ]; // format: '0000002'
+	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
+	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
+	
+	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
+	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
+	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
+	
+	// Get digitization staff
+	$agent_admin_group_name = 'Administrator';
+	$pattagentid_admin_array = Patt_Custom_Func::agent_from_group( $agent_admin_group_name );
+	 
+	$agent_manager_group_name = 'Manager';
+	$pattagentid_manager_array = Patt_Custom_Func::agent_from_group( $agent_manager_group_name );
+	
+	// Combine Requester on Request with Requesters on Decline
+	$pattagentid_array = array_merge( $agent_id_array, $agent_id_requesters_array, $pattagentid_admin_array, $pattagentid_manager_array );
+	$pattagentid_array = array_unique( $pattagentid_array );
+	
+// 	$requestid = 'D-' . $decline->return_id; 
+	$requestid = 'D-' . $return_id; 
+	
+	$data = [
+        //'item_id' => $requestid
+    ];
+	$email = 1;
+	
+	$notification_post = 'email-decline-received-at-ndc';
+  
+   	// PM Notification to the Requestor / owner
+	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
     }
 	
 	// Prep Timestmp Table data. 
@@ -745,48 +790,7 @@ foreach ($shipped_received_at_ndc_status_query as $item) {
 	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
   
   		//
-	// PM Notification :: Requester & Digitization Staff - Decline Complete
-	//
-
-	// Get ticket_id based on return_id
-	$ticket_id = Patt_Custom_Func::get_ticket_id_from_decline_id( $return_id );
 	
-	// Get owner of ticket. 
-	$where = [ 'ticket_id' => $ticket_id ];
-	$agent_id_array = Patt_Custom_Func::get_ticket_owner_agent_id( $where );
-	
-	// Get all users on Decline (currently only the person who submitted it, and no way to add others)
-	$where = [ 'return_id' => $return_id ]; // format: '0000002'
-	$decline_obj_array = Patt_Custom_Func::get_return_data( $where );
-	$decline_agent_id_array = Patt_Custom_Func::translate_user_id( $decline_obj_array[0]->user_id, 'agent_term_id' ); 
-	
-	// Redundant as only one requester allowed on Decline currently. (Mirrors Recall)
-	$role_array_requester = [ 'Requester', 'Requester Pallet' ];
-	$agent_id_requesters_array = Patt_Custom_Func::return_agent_ids_in_role( $decline_agent_id_array, $role_array_requester);
-	
-	// Get digitization staff
-	$agent_admin_group_name = 'Administrator';
-	$pattagentid_admin_array = Patt_Custom_Func::agent_from_group( $agent_admin_group_name );
-	 
-	$agent_manager_group_name = 'Manager';
-	$pattagentid_manager_array = Patt_Custom_Func::agent_from_group( $agent_manager_group_name );
-	
-	// Combine Requester on Request with Requesters on Decline
-	$pattagentid_array = array_merge( $agent_id_array, $agent_id_requesters_array, $pattagentid_admin_array, $pattagentid_manager_array );
-	$pattagentid_array = array_unique( $pattagentid_array );
-	
-// 	$requestid = 'D-' . $decline->return_id; 
-	$requestid = 'D-' . $return_id; 
-	
-	$data = [
-        //'item_id' => $requestid
-    ];
-	$email = 1;
-	
-	$notification_post = 'email-decline-received-at-ndc';
-  
-   	// PM Notification to the Requestor / owner
-	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
 }
 
 

@@ -1409,80 +1409,6 @@ echo "Nothing to assign.";
     
 }
 
-//Function to convert LAND ID to User Information JSON
-public static function workforce_id_to_json( $workforceid )
-{
-    global $wpdb;
-
-    $curl = curl_init();
-    
-    $url = EIDW_ENDPOINT.'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:employeeNumber%20eq%20"'.$workforceid.'"';
-
-    $workforce_id_details = '';
-    
-    $eidw_authorization = 'Authorization: Basic '.EIDW;
-    
-    $headers = [
-        'Cache-Control: no-cache',
-        $eidw_authorization
-    ];
-    
-            curl_setopt($curl,CURLOPT_URL, $url);
-            curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl,CURLOPT_MAXREDIRS, 10);
-            curl_setopt($curl,CURLOPT_TIMEOUT, 30);
-            curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
-            curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
-            curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-            //curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-            //curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-    
-    $response = curl_exec($curl);
-    $status = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-    
-    curl_close($curl);
-    
-    $err = Patt_Custom_Func::convert_http_error_code($status);
-    
-    if ($status != 200) {
-    Patt_Custom_Func::insert_api_error('eidw-customfunc-workforceidtojson',$status,$err);
-    } else {
-    
-    $json = json_decode($response, true);
-    
-    $results = $json['totalResults'];
-    $active = $json['Resources']['0']['active'];
-    $full_name = $json['Resources']['0']['name']['givenName'].' '.$json['Resources']['0']['name']['familyName'];
-    $email = $json['Resources']['0']['emails']['0']['value'];
-    $phone = $json['Resources']['0']['phoneNumbers']['0']['value'];
-    $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['department'];
-    $lanid = $json['Resources']['0']['userName'];
-    
-    if ($active == 1) {
-    // Declare array  
-    $workforce_id_details_array = array(
-        "name"=>$full_name,
-        "email"=>$email,
-        "phone"=>$phone,
-        "org"=>$org,
-        "lan_id"=>$lanid,
-        "workforce_id"=>$workforceid,
-    ); 
-       
-    // Use json_encode() function 
-    $workforce_id_details = json_encode($workforce_id_details_array); 
-       
-    // Display the output 
-    //echo($json); 	
-    } else {
-        $workforce_id_details = 'Error';
-    }
-    
-    }
-
-    return $workforce_id_details;
-}
-
         //Function to convert LAND ID to User Information JSON
         public static function lan_id_to_json( $lanid )
         {
@@ -1490,7 +1416,7 @@ public static function workforce_id_to_json( $workforceid )
 
 			$curl = curl_init();
 			
-			$url = EIDW_ENDPOINT.'userName%20eq%20'.$lanid;
+			$url = EIDW_ENDPOINT.$lanid;
 			
 			$lan_id_details = '';
 			
@@ -7338,7 +7264,7 @@ return $patt_type;
          * @return pm id
          */
          
-        public static function insert_new_notification($post_name, $array_of_users, $patt_id, $data = [], $email = 0) {
+        public static function insert_new_notification($post_name, $array_of_users, $patt_id, $data = [], $email = 0, $decline_reason_msg = '') {
 
 			global $wpdb;
 			
@@ -7484,7 +7410,7 @@ return $patt_type;
 						$email_body = nl2br( $email_body );
 		
 						$recipient_email = $wpdb->get_var( "SELECT user_email from $wpdb->users WHERE ID = $wp_user_id" );
-						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body</body></html>";
+						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body <br><br> $decline_reason_msg</body></html>";
 		
 						// set headers to send html email
 						$headers = "To: $recipient_email\r\n";

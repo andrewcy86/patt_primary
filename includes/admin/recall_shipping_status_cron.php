@@ -553,12 +553,10 @@ foreach ($recall_received_at_ndc_status_query as $item) {
       $current_datetime = date("Y-m-d H:i:s");
       $data = [ 'request_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
       Patt_Custom_Func::update_recall_data( $data, $where );
-    }
-	
-	
-	
-	
-	// Set PM Notifications 
+      
+     
+      
+    // Set PM Notifications 
 	$notification_post = 'email-recall-id-has-been-received-at-ndc';
 	
 	// Get digitization staff
@@ -583,9 +581,15 @@ foreach ($recall_received_at_ndc_status_query as $item) {
 	$data = [
         'action_initiated_by' => $current_user->display_name
     ];
-	$email = 0;
+	$email = 1;
 	
 	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+    }
+	
+	
+	
+	
+	
 	
 	
 	// Prep Timestmp Table data. 
