@@ -93,7 +93,7 @@ if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['la
 <?php
 } else {
 ?>
-	<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>
+	<!--<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>-->
 <?php
 }
 ?>
@@ -230,10 +230,24 @@ if ((count($pallet_array) > 0) && (($agent_permissions['label'] == 'Administrato
 $tabled_tag = get_term_by('slug', 'tabled', 'wpsc_statuses');
 $tabled_term_id = $tabled_tag->term_id;
 
+// Assigned Location bay, aisle, shelf, and position query
+$assigned_location_query = $wpdb->get_row("SELECT c.aisle as aisle, c.bay as bay, c.shelf as shelf, c.position as position
+FROM " . $wpdb->prefix . "wpsc_epa_boxinfo a
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON b.id = a.ticket_id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location c on a.storage_location_id = c.id 
+WHERE ((c.digitization_center <> 666) AND a.box_destroyed = 0)
+AND b.id = " . $ticket_id);
+  
+$assigned_location_aisle = $assigned_location_query->aisle;
+$assigned_location_bay = $assigned_location_query->bay;
+$assigned_location_shelf = $assigned_location_query->shelf;
+$assigned_location_position = $assigned_location_query->position;
+ 
 
-if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $tabled_term_id == $status_id) {
+if ((($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager') || ($agent_permissions['label'] == 'Requester Pallet')) && $tabled_term_id == $status_id && 
+   $assigned_location_aisle == 0 && $assigned_location_bay == 0 && $assigned_location_shelf == 0 && $assigned_location_position == 0) {
     ?>
-<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>
+<!--<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/preliminary_box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Preliminary Box Label</a></strong>-->
 <?php
 } elseif(($agent_permissions['label'] == 'Requester') && $tabled_term_id == $status_id)  {
 ?>
