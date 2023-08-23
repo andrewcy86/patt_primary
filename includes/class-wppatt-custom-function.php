@@ -8333,7 +8333,7 @@ if($type == 'comment') {
 						}
 						$email_body = nl2br( $email_body );
 		
-						$recipient_email = 'ecms@epa.gov';
+						$recipient_email = array('ecms@epa.gov', 'ndp@epa.gov', 'garner.kiwane@epa.gov');
 						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body <hr /> $service_type : $status_code - $error</body></html>";
 		
 						// set headers to send html email
