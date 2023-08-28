@@ -678,7 +678,8 @@ margin: 0px 0px 25px 15px;
 				FROM wpqa_wpsc_epa_boxinfo as b
 				INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
 				INNER JOIN wpqa_users as d ON c.customer_name = d.display_name
-				WHERE d.ID = 1 OR d.ID = 4");
+                WHERE d.ID = " . $user_id_1 . " OR d.ID = " . $user_id_2);
+				//WHERE d.ID = 1 OR d.ID = 4");
 				//WHERE d.ID = " . $user_id_1 . " OR d.ID = " . $user_id_2);
 				
 

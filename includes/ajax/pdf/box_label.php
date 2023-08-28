@@ -380,88 +380,88 @@ $not_assigned_flag = 1;
             }
 
             $c++;
+          
+          /*
+$c== 2 is top right
+$c==3, bottom left
+$c==4, bottom right
+$c==1, bottom right
+          */
             //Define cordinates which need to be different for odd or even components of the Box ID array
             if ($c == 2)
             {
-              
-                // Top Left
                 //1D barcode coordinates
                 $x_loc_1d = 145;
                 $y_loc_1d = 105;
                 //QR barcode coordinates
                 $x_loc_2d = 120;
-                $y_loc_2d = 15;
+                $y_loc_2d = 20;
                 //Box x of y text coordinates
                 $x_loc_b = 195;
-                $y_loc_b = 120;
+                $y_loc_b = 125;
                 //Box ID Printout coordinates
                 $x_loc_c = 175;
-                $y_loc_c = 90;
+                $y_loc_c = 95;
                 //Line seperator coordinates
                 $x_loc_l1 = 49;
-                $y_loc_l1 = 250;
+                $y_loc_l1 = 255;
                 $x_loc_l2 = 205;
-                $y_loc_l2 = 250;
+                $y_loc_l2 = 255;
                 //Box_a RFID coordinates
                 $x_loc_ba1 = 21;
-                $y_loc_ba1 = 195;
+                $y_loc_ba1 = 200;
                 $x_loc_la2 = 33;
-                $y_loc_la2 = 80;
+                $y_loc_la2 = 85;
                 //Location Coordinates
-                $x_loc_l = 41;
-                $y_loc_l = 160;                
+                $x_loc_l = 40;
+                $y_loc_l = 165;                
                 //Creation Date Coordinates
                 $x_loc_cd = 128;
-                $y_loc_cd = 70;
+                $y_loc_cd = 75;
                 //Request ID Coordinates
                 $x_loc_rid = 145;
-                $y_loc_rid = 37;
+                $y_loc_rid = 42;
                 //EPC Vertical Text Coordinates
                 $x_loc_rfid = 120;
-                $y_loc_rfid = 110;
+                $y_loc_rfid = 115;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 20;
-                $y_loc_digi_box_regular = 20;
+                $y_loc_digi_box_regular = 25;
                 //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 158.5;
-                $y_loc_digi_box_dashed = 227;
+                $y_loc_digi_box_dashed = 232;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 122;
-                $y_loc_black_rectangle = 110;
+                $y_loc_black_rectangle = 115;
                 //White rectangle containing program office
                 $x_loc_white_rectangle = 126;
-                $y_loc_white_rectangle = 105;
+                $y_loc_white_rectangle = 110;
                 //Program office
                 $x_loc_program_office = 48;
-                $y_loc_program_office = 163;
+                $y_loc_program_office = 168;
                 //Bay
                 $x_loc_bay = 144;
-                $y_loc_bay = 255;
+                $y_loc_bay = 260;
                 //Shelf
                 $x_loc_shelf = 171;
-                $y_loc_shelf = 255;
+                $y_loc_shelf = 260;
                 //Dashed border around aisle/bay/shelf/position
                 $x_loc_dashed_border = 96;
-                $y_loc_dashed_border = 253;
+                $y_loc_dashed_border = 258;
                 //aisle/bay/shelf/position
                 $x_loc_box_position = 190;
-                $y_loc_box_position = 85;
+                $y_loc_box_position = 90;
                 //ECMS/SEMS
                 $x_loc_ecms_sems = 170;
-                $y_loc_ecms_sems = 110;
+                $y_loc_ecms_sems = 115;
               
-              
-                            
-                
             }
             if ($c == 3)
             {
               
-              
-                // Top Right
                 //1D barcode coordinates
                 $x_loc_1d = 35;
-                $y_loc_1d = 250;
+                $y_loc_1d = 245;
                 //QR barcode coordinates
                 $x_loc_2d = 10;
                 $y_loc_2d = 160;
@@ -482,7 +482,7 @@ $not_assigned_flag = 1;
                 $x_loc_la2 = 28;
                 $y_loc_la2 = 80;
                 //Location Coordinates
-                $x_loc_l = 185;
+                $x_loc_l = 180;
                 $y_loc_l = 50;                
                 //Creation Date Coordinates
                 $x_loc_cd = 17;
@@ -523,16 +523,14 @@ $not_assigned_flag = 1;
                 //ECMS/SEMS
                 $x_loc_ecms_sems = 59;
                 $y_loc_ecms_sems = 255;
-             
                
             }
             if ($c == 4)
             {
-              
-  // Bottom Left
+
                 //1D barcode coordinates
                 $x_loc_1d = 145;
-                $y_loc_1d = 250;
+                $y_loc_1d = 245;
                 //QR barcode coordinates
                 $x_loc_2d = 120;
                 $y_loc_2d = 160;
@@ -553,7 +551,7 @@ $not_assigned_flag = 1;
                 $x_loc_la2 = 33;
                 $y_loc_la2 = 80;
                 //Location Coordinates
-                $x_loc_l = 185;
+                $x_loc_l = 180;
                 $y_loc_l = 160;                
                 //Creation Date Coordinates
                 $x_loc_cd = 128;
@@ -597,356 +595,73 @@ $not_assigned_flag = 1;
               
               
             }
-          /*$prev_even_num = 0;
-          $prev_odd_num = 0;
-           // Even
-           if ($i % 2 == 0)
+            if ($c == 1)
             {
-              
-              
-              if($i % 4 != 0){
-                // Top Right
-                //1D barcode coordinates
-                $x_loc_1d = 35;
-                $y_loc_1d = 250;
-                //QR barcode coordinates
-                $x_loc_2d = 10;
-                $y_loc_2d = 160;
-                //Box x of y text coordinates
-                $x_loc_b = 85;
-                $y_loc_b = 265;
-                //Box ID Printout coordinates
-                $x_loc_c = 65;
-                $y_loc_c = 235;
-                //Line seperator coordinates
-                $x_loc_l1 = 44;
-                $y_loc_l1 = 250;
-                $x_loc_l2 = 200;
-                $y_loc_l2 = 250;
-                //Box_a RFID coordinates
-                $x_loc_ba1 = 16;
-                $y_loc_ba1 = 195;
-                $x_loc_la2 = 28;
-                $y_loc_la2 = 80;
-                //Location Coordinates
-                $x_loc_l = 185;
-                $y_loc_l = 50;                
-                //Creation Date Coordinates
-                $x_loc_cd = 17;
-                $y_loc_cd = 218;
-                //Request ID Coordinates
-                $x_loc_rid = 35;
-                $y_loc_rid = 182;
-                //EPC Vertical Text Coordinates
-                $x_loc_rfid = 10;
-                $y_loc_rfid = 255;
-                //Digitization center box regular border
-                $x_loc_digi_box_regular = 169;
-                $y_loc_digi_box_regular = 229;
-                //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 153.5;
-                $y_loc_digi_box_dashed = 227;
-                //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 12;
-                $y_loc_black_rectangle = 255;
-                //White rectangle containing program office
-                $x_loc_white_rectangle = 16;
-                $y_loc_white_rectangle = 250;
-                //Program office
-                $x_loc_program_office = 43;
-                $y_loc_program_office = 163;
-                //Bay
-                $x_loc_bay = 139;
-                $y_loc_bay = 255;
-                //Shelf
-                $x_loc_shelf = 166;
-                $y_loc_shelf = 255;
-                //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 91;
-                $y_loc_dashed_border = 255;
-                //aisle/bay/shelf/position
-                $x_loc_box_position = 80;
-                $y_loc_box_position = 230;
-                //ECMS/SEMS
-                $x_loc_ecms_sems = 59;
-                $y_loc_ecms_sems = 255;
-              } else {
-                //Bottom Right
+
 				//1D barcode coordinates
                 $x_loc_1d = 35;
                 $y_loc_1d = 105;
                 //QR barcode coordinates
                 $x_loc_2d = 10;
-                $y_loc_2d = 15;
+                $y_loc_2d = 20;
                 //Box x of y text coordinates
                 $x_loc_b = 85;
-                $y_loc_b = 120;
+                $y_loc_b = 125;
                 //Box ID Printout coordinates
                 $x_loc_c = 65;
-                $y_loc_c = 90;
+                $y_loc_c = 95;
                 //Line seperator coordinates
                 $x_loc_l1 = 44;
-                $y_loc_l1 = 120;
+                $y_loc_l1 = 125;
                 $x_loc_l2 = 200;
-                $y_loc_l2 = 120;
+                $y_loc_l2 = 125;
                 //Box_a RFID coordinates
                 $x_loc_ba1 = 16;
-                $y_loc_ba1 = 65;
+                $y_loc_ba1 = 70;
                 $x_loc_la2 = 28;
-                $y_loc_la2 = 78.5;
+                $y_loc_la2 = 83.5;
                 //Location Coordinates
                 $x_loc_l = 40;
-                $y_loc_l = 50;
+                $y_loc_l = 55;
                 //Creation Date Coordinates
                 $x_loc_cd = 17;
-                $y_loc_cd = 70;
+                $y_loc_cd = 75;
                 //Request ID Coordinates
                 $x_loc_rid = 35;
-                $y_loc_rid = 37;
+                $y_loc_rid = 42;
                 //EPC Vertical Text Coordinates
                 $x_loc_rfid = 10;
-                $y_loc_rfid = 110;
+                $y_loc_rfid = 115;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 15;
-                $y_loc_digi_box_regular = 15;
-                //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 153.5;
-                $y_loc_digi_box_dashed = 97;
-                //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 12;
-                $y_loc_black_rectangle = 110;
-                //White rectangle containing program office
-                $x_loc_white_rectangle = 16;
-                $y_loc_white_rectangle = 105;
-                //Program office
-                $x_loc_program_office = 43;
-                $y_loc_program_office = 33;
-                //Bay
-                $x_loc_bay = 139;
-                $y_loc_bay = 125;
-                //Shelf
-                $x_loc_shelf = 166;
-                $y_loc_shelf = 125;
-                //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 91;
-                $y_loc_dashed_border = 123;
-                //aisle/bay/shelf/position
-                $x_loc_box_position = 80;
-                $y_loc_box_position = 85;
-                //ECMS/SEMS
-                $x_loc_ecms_sems = 60;
-                $y_loc_ecms_sems = 110;  
-              }
-                
-             
-               
-            }
-          	// Odd 
-            else {
-              $prev_odd_num = $i;
-              
-              if($i % 3 == 0 || $i % 5 == 0){
-                // Top Left
-                //1D barcode coordinates
-                $x_loc_1d = 145;
-                $y_loc_1d = 105;
-                //QR barcode coordinates
-                $x_loc_2d = 120;
-                $y_loc_2d = 15;
-                //Box x of y text coordinates
-                $x_loc_b = 195;
-                $y_loc_b = 120;
-                //Box ID Printout coordinates
-                $x_loc_c = 175;
-                $y_loc_c = 90;
-                //Line seperator coordinates
-                $x_loc_l1 = 49;
-                $y_loc_l1 = 250;
-                $x_loc_l2 = 205;
-                $y_loc_l2 = 250;
-                //Box_a RFID coordinates
-                $x_loc_ba1 = 21;
-                $y_loc_ba1 = 195;
-                $x_loc_la2 = 33;
-                $y_loc_la2 = 80;
-                //Location Coordinates
-                $x_loc_l = 41;
-                $y_loc_l = 160;                
-                //Creation Date Coordinates
-                $x_loc_cd = 128;
-                $y_loc_cd = 70;
-                //Request ID Coordinates
-                $x_loc_rid = 145;
-                $y_loc_rid = 37;
-                //EPC Vertical Text Coordinates
-                $x_loc_rfid = 120;
-                $y_loc_rfid = 110;
-                //Digitization center box regular border
-                $x_loc_digi_box_regular = 20;
                 $y_loc_digi_box_regular = 20;
                 //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 158.5;
-                $y_loc_digi_box_dashed = 227;
-                //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 122;
-                $y_loc_black_rectangle = 110;
-                //White rectangle containing program office
-                $x_loc_white_rectangle = 126;
-                $y_loc_white_rectangle = 105;
-                //Program office
-                $x_loc_program_office = 48;
-                $y_loc_program_office = 163;
-                //Bay
-                $x_loc_bay = 144;
-                $y_loc_bay = 255;
-                //Shelf
-                $x_loc_shelf = 171;
-                $y_loc_shelf = 255;
-                //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 96;
-                $y_loc_dashed_border = 253;
-                //aisle/bay/shelf/position
-                $x_loc_box_position = 190;
-                $y_loc_box_position = 85;
-                //ECMS/SEMS
-                $x_loc_ecms_sems = 170;
-                $y_loc_ecms_sems = 110;
-              } else {
-                // Bottom Left
-                //1D barcode coordinates
-                $x_loc_1d = 145;
-                $y_loc_1d = 250;
-                //QR barcode coordinates
-                $x_loc_2d = 120;
-                $y_loc_2d = 160;
-                //Box x of y text coordinates
-                $x_loc_b = 195;
-                $y_loc_b = 265;
-                //Box ID Printout coordinates
-                $x_loc_c = 175;
-                $y_loc_c = 235;
-                //Line seperator coordinates
-                $x_loc_l1 = 49;
-                $y_loc_l1 = 250;
-                $x_loc_l2 = 205;
-                $y_loc_l2 = 250;
-                //Box_a RFID coordinates
-                $x_loc_ba1 = 21;
-                $y_loc_ba1 = 195;
-                $x_loc_la2 = 33;
-                $y_loc_la2 = 80;
-                //Location Coordinates
-                $x_loc_l = 185;
-                $y_loc_l = 160;                
-                //Creation Date Coordinates
-                $x_loc_cd = 128;
-                $y_loc_cd = 218;
-                //Request ID Coordinates
-                $x_loc_rid = 145;
-                $y_loc_rid = 182;
-                //EPC Vertical Text Coordinates
-                $x_loc_rfid = 120;
-                $y_loc_rfid = 255;
-                //Digitization center box regular border
-                $x_loc_digi_box_regular = 174;
-                $y_loc_digi_box_regular = 229;
-                //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 158.5;
-                $y_loc_digi_box_dashed = 227;
-                //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 122;
-                $y_loc_black_rectangle = 255;
-                //White rectangle containing program office
-                $x_loc_white_rectangle = 126;
-                $y_loc_white_rectangle = 250;
-                //Program office
-                $x_loc_program_office = 48;
-                $y_loc_program_office = 163;
-                //Bay
-                $x_loc_bay = 144;
-                $y_loc_bay = 255;
-                //Shelf
-                $x_loc_shelf = 171;
-                $y_loc_shelf = 255;
-                //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 96;
-                $y_loc_dashed_border = 253;
-                //aisle/bay/shelf/position
-                $x_loc_box_position = 190;
-                $y_loc_box_position = 230;
-                //ECMS/SEMS
-                $x_loc_ecms_sems = 170;
-                $y_loc_ecms_sems = 255;
-              }
-              	
-            }*/
-            if ($c == 1)
-            {
-//Bottom Right
-//1D barcode coordinates
-                $x_loc_1d = 35;
-                $y_loc_1d = 105;
-                //QR barcode coordinates
-                $x_loc_2d = 10;
-                $y_loc_2d = 15;
-                //Box x of y text coordinates
-                $x_loc_b = 85;
-                $y_loc_b = 120;
-                //Box ID Printout coordinates
-                $x_loc_c = 65;
-                $y_loc_c = 90;
-                //Line seperator coordinates
-                $x_loc_l1 = 44;
-                $y_loc_l1 = 120;
-                $x_loc_l2 = 200;
-                $y_loc_l2 = 120;
-                //Box_a RFID coordinates
-                $x_loc_ba1 = 16;
-                $y_loc_ba1 = 65;
-                $x_loc_la2 = 28;
-                $y_loc_la2 = 78.5;
-                //Location Coordinates
-                $x_loc_l = 40;
-                $y_loc_l = 50;
-                //Creation Date Coordinates
-                $x_loc_cd = 17;
-                $y_loc_cd = 70;
-                //Request ID Coordinates
-                $x_loc_rid = 35;
-                $y_loc_rid = 37;
-                //EPC Vertical Text Coordinates
-                $x_loc_rfid = 10;
-                $y_loc_rfid = 110;
-                //Digitization center box regular border
-                $x_loc_digi_box_regular = 15;
-                $y_loc_digi_box_regular = 15;
-                //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 153.5;
-                $y_loc_digi_box_dashed = 97;
+                $y_loc_digi_box_dashed = 102;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 12;
-                $y_loc_black_rectangle = 110;
+                $y_loc_black_rectangle = 115;
                 //White rectangle containing program office
                 $x_loc_white_rectangle = 16;
-                $y_loc_white_rectangle = 105;
+                $y_loc_white_rectangle = 110;
                 //Program office
                 $x_loc_program_office = 43;
-                $y_loc_program_office = 33;
+                $y_loc_program_office = 38;
                 //Bay
                 $x_loc_bay = 139;
-                $y_loc_bay = 125;
+                $y_loc_bay = 130;
                 //Shelf
                 $x_loc_shelf = 166;
-                $y_loc_shelf = 125;
+                $y_loc_shelf = 130;
                 //Dashed border around aisle/bay/shelf/position
                 $x_loc_dashed_border = 91;
-                $y_loc_dashed_border = 123;
+                $y_loc_dashed_border = 128;
                 //aisle/bay/shelf/position
                 $x_loc_box_position = 80;
-                $y_loc_box_position = 85;
+                $y_loc_box_position = 90;
                 //ECMS/SEMS
                 $x_loc_ecms_sems = 60;
-                $y_loc_ecms_sems = 110;            
+                $y_loc_ecms_sems = 115;            
               
             }
             //Determine box count out of total
@@ -1110,7 +825,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->StartTransform();
             $obj_pdf->SetFont('helvetica', '', 11);
           	$obj_pdf->Rotate(90, $x_loc_1d, $y_loc_1d);
-            $obj_pdf->write1DBarcode($box_array[$i], 'C128', $x_loc_1d, $y_loc_1d, '', 30, 0.5, $style_barcode, 'N');
+            $obj_pdf->write1DBarcode($box_array[$i], 'C128', $x_loc_1d, $y_loc_1d, '', 30, .4, $style_barcode, 'N');
             //$obj_pdf->Cell($x_loc_c, $y_loc_c, $box_array[$i], 0, 1);
             //1D Box ID Printout
             $obj_pdf->StopTransform();
