@@ -1416,7 +1416,7 @@ echo "Nothing to assign.";
 
 			$curl = curl_init();
 			
-			$url = EIDW_ENDPOINT.$lanid;
+			$url = EIDW_ENDPOINT.'userName%20eq%20'.$lanid;
 			
 			$lan_id_details = '';
 			
