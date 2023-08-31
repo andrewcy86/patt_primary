@@ -125,6 +125,11 @@ foreach ($siteid_query as $siteinfo) {
                     $convert_patt_id = Patt_Custom_Func::translate_user_id($user_id_array,'agent_term_id');
                     $patt_agent_id = implode($convert_patt_id);
                     $pattagentid_array = [$patt_agent_id];
+                      
+                    $pattagentid_admin_array = Patt_Custom_Func::agent_from_group($agent_admin_group_name);
+                    $pattagentid_manager_array = Patt_Custom_Func::agent_from_group($agent_manager_group_name);
+                     
+                    $pattagentid_array = array_merge($pattagentid_admin_array,$pattagentid_manager_array,$pattagentid_array);
                     
                     
 					}	

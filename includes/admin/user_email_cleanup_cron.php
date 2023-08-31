@@ -21,7 +21,7 @@ foreach ($get_all_users as $item)
 
     $curl = curl_init();
 
-    $url = EIDW_ENDPOINT .'userName%20eq%20'. $user_login;
+    $url = EIDW_ENDPOINT.'userName%20eq%20'.$user_login;
     
     $eidw_authorization = 'Authorization: Basic '.EIDW;
     

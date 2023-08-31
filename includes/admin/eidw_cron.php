@@ -56,7 +56,7 @@ curl_close($curl);
 $err = Patt_Custom_Func::convert_http_error_code($status);
 
 if ($status != 200) {
-//Patt_Custom_Func::insert_api_error('eidw-eidw-cron',$status,$err);
+Patt_Custom_Func::insert_api_error('eidw-eidw-cron',$status,$err);
 } else {
 
 $json = json_decode($response, true);
