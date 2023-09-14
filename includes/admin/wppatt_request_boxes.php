@@ -424,6 +424,7 @@ if (in_array($boxlist_status_id, $show_previous_box_status_array) && $box_previo
 				$boxlist_location = 'Currently Unassigned';
 				} else {
                 $boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
+                $boxlist_location = Patt_Custom_Func::convert_bay_letter($boxlist_location);
 				}
 				
 				if ($info->digitization_center == '') {
