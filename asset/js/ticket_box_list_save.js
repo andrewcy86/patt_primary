@@ -248,7 +248,7 @@ jQuery(document).on('click', '#wpsc_create_ticket_submit', function() {
   	console.log('file upload fail var value: ' + fileUploadFail);
     
     if( superfundx == '' ) {
-		alert('Please make a selection for the "Are these records part of SEMS?" dropdown.');
+		alert('Please make a selection for the "Are these records Superfund Records?" dropdown.');
 	    return false;
 		
 	} else if( superfundx == 'no' ) {
@@ -718,6 +718,16 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                         return;
                       }
                       
+                      
+                      if(parsedData[2][4].toUpperCase() != "P"){
+							let alert_msg = '';
+                          	alert_msg += "Please start the column 'Parent/Child' on row ";
+                          	alert_msg += "3 with the letter 'P'. A parent folder/file is required";
+
+                          	alert( alert_msg );
+                          	flag = true;
+						}
+                      
                       	
 		                
 	                    //if( parsedData[1][0] !== undefined && parsedData[1][18] !== undefined ) {
@@ -803,6 +813,7 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
                           	var validate = false;
                           	let temp_record_schedule = false;
                           	let Final_Disposition = '';
+                          	let parentExists = false;
                           
 					        var processLoopID = setInterval(function() {
 							    if ( count < arrayLength ) {
@@ -2242,6 +2253,10 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 			                            if( parsedData[count][index_pcd] ) {
 				                            pcd = parsedData[count][index_pcd].toUpperCase();
 			                            }
+                                      
+                                      	if(pcd == 'P'){
+                                          parentExists = true;
+                                        }
 			                            
 			                            if( 
 			                            	flag != true && 
@@ -2372,6 +2387,17 @@ function wpsc_spreadsheet_new_upload(id, name, fileSS) {
 		                        	} //if
 		                        
 		                        } else {
+                                  			  // Checks if a parent folder/file exists in the document at all
+                                              //console.log('parent exists: ' + parentExists);
+                                              /*if(parentExists == false){
+                                                alert('You can not upload a box listing without any Parents.');
+                                                flag = true;
+									
+												reset_page();
+                                                //window.location.reload();
+                                              }*/
+                                           // }
+                                  
 								        	clearInterval( processLoopID );
 								        	//jQuery( '#boxinfodatatable_wrapper' ).show();
 								        	//jQuery( '#boxinfodatatable' ).show();

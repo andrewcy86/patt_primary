@@ -111,7 +111,7 @@ array_values($box_statuses);
 			  <option value='Processing'>Processing</option>
 			  <option value='Error'>Error</option>
 			  <option value='Transferred'>Completed/Transferred</option>
-			  <option value='Published'>Published</option>
+			  <!--<option value='Published'>Published</option>-->
 		  </select>
 		<br /><br />
 
@@ -122,7 +122,7 @@ array_values($box_statuses);
 			  <option value='keyword_id'>Keyword/Identifier Extraction</option>
 			  <option value='metadata'>Metadata Preparation</option>
 			  <option value='arms'>ARMS Connection</option>
-			  <option value='published'>Publishing of Record</option>
+			  <!--<option value='published'>Publishing of Record</option>-->
 		</select>
 		<br /><br />
 

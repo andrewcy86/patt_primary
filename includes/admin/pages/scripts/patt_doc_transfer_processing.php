@@ -143,9 +143,9 @@ if($searchByOverallStatus != ''){
 	if($searchByOverallStatus == 'Transferred') {
         $overall_status = ' AND status = "Transferred" ';
     }
-	if($searchByOverallStatus == 'Published') {
+	/*if($searchByOverallStatus == 'Published') {
         $overall_status = ' AND status = "Published" ';
-    }
+    }*/
 
 }
 
@@ -167,9 +167,9 @@ if($searchByStage != ''){
 	if($searchByStage == 'arms') {
 		$stage_status = ' AND arms_stage = 1 ';
 	}
-	if($searchByStage == 'published') {
+	/*if($searchByStage == 'published') {
 		$stage_status = ' AND published_stage = 1 ';
-	}
+	}*/
 }
 
 
@@ -501,13 +501,14 @@ $arms_success_icon = '';
 $arms_failure_icon = '';
 $arms_warning_icon = '';
 
-$published_pending_icon = '';
+/*$published_pending_icon = '';
 $published_success_icon = '';
 $published_failure_icon = '';
-$published_warning_icon = '';
+$published_warning_icon = '';*/
 
 $clock_icon = '<a><span style="font-size: 1.2em; margin-left: 4px; color: #111;"><i class="fas fa-clock" aria-hidden="true" title="Duration"></i><span class="sr-only"></span></span></a>';
-$published_icon = '';
+//$published_icon = '';
+  $arms_icon = '';
 
 // Received Stage Statuses
 if($row['received_stage'] == 0) {
@@ -600,27 +601,36 @@ else {
 // ARMS Transfer Stage Statuses
 if($row['arms_stage'] == 0) {
 	// Pending Status
-	$arms_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	$arms_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
 }
 elseif($row['arms_stage'] == 1) {
+  //$arms_url = ARMS_API.$row['object_key'];
+  $arms_url = getenv('ARMS_API').$row['object_key'];
 	// Success Status
-	$arms_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Success"><span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	$arms_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Success"><span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>';
+  if($row['object_key'] != '' || $row['object_key'] != null) {
+  	$arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="Published"></i><span class="sr-only"></span></span></a>';
+  } 
+  // Testing ARMS Icon
+  /*else {
+    $arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="Published"></i><span class="sr-only"></span></span></a>';
+  }*/
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
 }
 elseif($row['arms_stage'] == 2) {
 	// Fail Status
-	$arms_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	$arms_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
 }
 else {
 	// Warning Status
-	$arms_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	$arms_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
 }
 
 // Published Stage Statuses
-if($row['published_stage'] == 0) {
+/*if($row['published_stage'] == 0) {
 	// Pending Status
 	$published_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Published Stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>';
 }
@@ -636,7 +646,7 @@ elseif($row['published_stage'] == 2) {
 else {
 	// Warning Status
 	$published_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Published Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warining"></i><span class="sr-only">Warining</span></span></a>';
-}
+}*/
 
 
 
@@ -648,9 +658,10 @@ else {
 
 	$data[] = array(
 		"db_id"=>$row['ID'],
-		"doc_id"=>$row['folderdocinfo_id_flag'].$published_icon,
+		"doc_id"=>$row['folderdocinfo_id_flag'].$arms_icon,
 		"status"=>$row['status'],
-		"received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon . '' . $published_pending_icon.$published_success_icon.$published_failure_icon.$published_warning_icon,
+      	//"received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon . '' . $published_pending_icon.$published_success_icon.$published_failure_icon.$published_warning_icon,
+		"received_stage"=>$received_pending_icon.$received_success_icon.$received_failure_icon.$received_warning_icon . '' . $extraction_pending_icon.$extraction_success_icon.$extraction_failure_icon.$extraction_warning_icon . '' . $keyword_pending_icon.$keyword_success_icon.$keyword_failure_icon.$keyword_warning_icon . '' . $metadata_pending_icon.$metadata_success_icon.$metadata_failure_icon.$metadata_warning_icon . '' . $arms_pending_icon.$arms_success_icon.$arms_failure_icon.$arms_warning_icon,
 		"location"=>$row['name'],
 		"duration"=> $duration->format('%H:%I:%S').$clock_icon,
 	);

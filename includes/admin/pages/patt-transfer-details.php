@@ -535,7 +535,7 @@ $extraction_timestamp = Date_Create($patt_arms_tranfer_log->extraction_stage_tim
 $keyword_id_timestamp = Date_Create($patt_arms_tranfer_log->keyword_id_stage_timestamp);
 $metadata_timestamp = Date_Create($patt_arms_tranfer_log->metadata_stage_timestamp);
 $arms_timestamp = Date_Create($patt_arms_tranfer_log->arms_stage_timestamp);
-$published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_timestamp);
+//$published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_timestamp);
 
 ?> -->
 
@@ -625,7 +625,7 @@ $published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_times
 			ARMS 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
 	</button>
-	<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Published_stage" aria-expanded="false" aria-controls="collapseExample">
+	<!--<button class="btn wpsc_action_btn btn-patt-transfer" type="button" data-toggle="collapse" data-target="#Published_stage" aria-expanded="false" aria-controls="collapseExample">
 		<?php if($patt_arms_tranfer_log->published_stage == 0) { ?>
 			<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span></a>
 		<?php } 
@@ -640,7 +640,7 @@ $published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_times
 		<?php } ?>
 			Published 
 		<!-- <span class="badge" style="font-size: 1.1em; color: #1C5D8A; margin-left: 4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i></span> -->
-	</button>
+	<!--</button>-->
 
 	<!-- All of the stages logs content will be printed out within the collapsible divs -->
 	<?php if($patt_arms_tranfer_log->received_stage == 2 || $patt_arms_tranfer_log->received_stage == 3) { ?>
@@ -679,11 +679,11 @@ $published_timestamp = Date_Create($patt_arms_tranfer_log->published_stage_times
 		</div>
 	<?php } ?>
 	<?php if($patt_arms_tranfer_log->published_stage == 2 || $patt_arms_tranfer_log->published_stage == 3) { ?>
-	<div class="collapse mt-1" id="Published_stage">
+	<!--<div class="collapse mt-1" id="Published_stage">
 		<div class="well">
 			<?php echo $patt_arms_tranfer_log->published_stage_log; ?>
 		</div>
-	</div>
+	</div>-->
 	<?php } ?>
 
 
