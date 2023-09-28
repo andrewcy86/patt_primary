@@ -64,7 +64,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Manager'))
         {
         ?>
-            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" class="notab" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+            <!--<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-check-circle" aria-hidden="true" title="Validate"></i><span class="sr-only">Validate</span> Validate <a href="#" class="notab" aria-label="Validate button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-validate-button'); ?>" aria-label="Validate Help"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>-->
             <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="background-color:#FF7A33 !important;color:black !important;"><i class="fas fa-times-circle" aria-hidden="true" title="Re-scan"></i><span class="sr-only">Re-scan</span> Re-scan <a href="#" class="notab" aria-label="Re-scan button" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" style="color: black !important;" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <?php
         }
@@ -296,6 +296,9 @@ if( agent_permission_label == 'Requester' || agent_permission_label == 'Requeste
     'drawCallback': function( settings ) {
 
  jQuery('[data-toggle="tooltip"]').tooltip();
+      
+      /*var response = settings.json;
+	        console.log(response);*/
 
      },
     'stateSaveParams': function(settings, data) {

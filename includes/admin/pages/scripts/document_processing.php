@@ -179,7 +179,9 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a 
+$sel = mysqli_query($con,"select count(DISTINCT a.folderdocinfofile_id) as allcount 
+
+from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a 
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
@@ -215,13 +217,63 @@ WHERE a.id <> -99999 AND b.active <> 0 " . $ecms_sems . "
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
+
+## Fetch filtered records count
+//SQL query using functions to generate icons
+$docFilteredQueryCount = mysqli_query($con, "SELECT
+count(DISTINCT a.id) AS total_count
+
+FROM " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files as a
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN " . $wpdb->prefix . "wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
+
+LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY box_id) AS g ON (g.box_id = d.id AND g.folderdoc_id = '-99999')
+
+LEFT JOIN (   SELECT DISTINCT recall_status_id, folderdoc_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
+   GROUP BY folderdoc_id) AS h ON (h.folderdoc_id = a.id AND h.folderdoc_id <> '-99999')
+   
+LEFT JOIN (   SELECT a.box_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE a.box_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY a.box_id ) AS i ON i.box_id = d.id
+LEFT JOIN (   SELECT a.folderdoc_id, a.return_id
+   FROM   " . $wpdb->prefix . "wpsc_epa_return_items a
+   LEFT JOIN  " . $wpdb->prefix . "wpsc_epa_return b ON a.return_id = b.id
+   WHERE a.folderdoc_id <> '-99999' AND b.return_status_id NOT IN (".$status_decline_cancelled_term_id.",".$status_decline_completed_term_id.")
+   GROUP  BY a.folderdoc_id )  AS j ON j.folderdoc_id = a.id
+
+LEFT JOIN " . $wpdb->prefix . "users as u ON a.validation_user_id = u.ID
+
+WHERE (b.active <> 0) AND (a.id <> -99999) " . $ecms_sems . " AND 1 ".$searchQuery."");
+
+$filteredrecords = mysqli_fetch_assoc($docFilteredQueryCount);
+$totalRecordwithFilter = $filteredrecords['total_count'];
+
+
 ## Fetch records
 //SQL query using functions to generate icons
 $docQuery = "SELECT DISTINCT
-count(*) OVER() AS total_count,
 a.id as dbid,
 a.folderdocinfofile_id as folderdocinfo_id,
 f.name as location,
+
+CONCAT(
+CASE 
+WHEN d.box_destroyed > 0 AND a.freeze <> 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\" style=\"color: #B4081A !important; text-decoration: underline line-through;\">',a.folderdocinfofile_id,'</a> <span style=\"font-size: 1em; color: #B4081A;\"></span>')
+WHEN d.box_destroyed > 0 AND a.freeze = 1 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
+ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfofile_id,'\">',a.folderdocinfofile_id,'</a>')
+END) as folderdocinfo_id_flag,
+
 CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id,
 CASE 
 WHEN b.ticket_priority = 621
@@ -249,6 +301,7 @@ INNER JOIN " . $wpdb->prefix . "wpsc_epa_program_office as c ON d.program_office
 INNER JOIN " . $wpdb->prefix . "terms f ON f.term_id = e.digitization_center
 
 LEFT JOIN " . $wpdb->prefix . "users us ON us.user_email = b.customer_email
+LEFT JOIN " . $wpdb->prefix . "usermeta um ON um.user_id = us.ID
 
 LEFT JOIN (   SELECT DISTINCT recall_status_id, box_id, folderdoc_id
    FROM   " . $wpdb->prefix . "wpsc_epa_recallrequest
@@ -288,7 +341,7 @@ $damaged_icon = '';
 $type = 'folderfile';
 
 $folder_db_id = $row['dbid'];
-$totalRecordwithFilter = $row['total_count'];
+//$totalRecordwithFilter = $row['total_count'];
 
 // GET VALIDATION
 if(Patt_Custom_Func::id_in_validation($row['folderdocinfo_id'],$type) == 1) {
@@ -437,6 +490,7 @@ $response = array(
   "iTotalDisplayRecords" => $totalRecordwithFilter,
   "aaData" => $data,
   "sqlQuery" => $docQuery,
+  "docFilteredQueryCount" => $docFilteredQueryCount,
   "is_requester" => $is_requester
 );
 
