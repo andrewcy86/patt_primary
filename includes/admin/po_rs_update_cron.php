@@ -14,7 +14,8 @@ $count = 0;
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 $rs_table = $wpdb->prefix . 'epa_record_schedule';
 
-$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
+//$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
+$endpoint = PO_RS_API;
 $qry_po = '{"query":"query programOffice {ecms__program_office {__all_columns__}}"}';
 $qry_rs = '{"query":"query recSched {ecms__record_schedule {__all_columns__}}"}';
 
@@ -22,6 +23,7 @@ $headers = array();
 $headers[] = 'Content-Type: application/json';
 
 $ch_po = curl_init();
+
 
 curl_setopt($ch_po, CURLOPT_URL, $endpoint);
 curl_setopt($ch_po, CURLOPT_RETURNTRANSFER, true);
@@ -38,13 +40,17 @@ $po_result = curl_exec($ch_po);
 
 $po_data = array ('query' => $po_query);
 $po_data = http_build_query($po_data);
+$test = '';
 
 if (curl_errno($ch_po)) { 
 
+  	$test = 'true';
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
     // var_dump($err); 
 } else {
+  
+  	$test = 'false';
 
     //TRUNCATE STATEMENT
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
@@ -60,8 +66,9 @@ $po_json = json_decode($po_result, true);
 // var_dump($po_json['data']['ecms__program_office__aggregate'][0]);
 
 // $organizationDescription = $po_json['data']['programOffices']['nodes'][0]['organizationDescription'];
-$organizationDescription = $po_json['data']['ecms__program_office'][0]['organization_description'];
+//$organizationDescription = $po_json['data']['ecms__program_office'][0]['organization_description'];
 
+  
 // var_dump($po_json['data']['ecms__program_office']);
 
 //echo $organizationDescription;
@@ -79,6 +86,7 @@ $wpdb->insert($po_table, array(
 ));
 
 $po_count = 0;
+
   
 foreach ($po_json['data']['ecms__program_office'] as $po_item)
 {
@@ -110,9 +118,9 @@ $wpdb->insert($po_table, array(
     'parent_office_code' => $parentOfficeCode
 ));
 
-echo $organization.', '.$organizationDescription.', '.$organizationAcronym.', '.$officeCode.', '.$officeAcronym.', '.$officeName.', '.$parentOfficeCode.'<br />';
+/*echo $organization.', '.$organizationDescription.', '.$organizationAcronym.', '.$officeCode.', '.$officeAcronym.', '.$officeName.', '.$parentOfficeCode.'<br />';
 
-echo '<hr />';
+echo '<hr />';*/
 }
 
 //COUNT STATEMENT

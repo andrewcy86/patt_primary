@@ -605,17 +605,17 @@ if($row['arms_stage'] == 0) {
 	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 elseif($row['arms_stage'] == 1) {
-  //$arms_url = ARMS_API.$row['object_key'];
-  $arms_url = getenv('ARMS_API').$row['object_key'];
+  $arms_url = ARMS_PERMALINK.$row['object_key'];
+  //$arms_url = getenv('ARMS_PERMALINK').$row['object_key'];
 	// Success Status
 	$arms_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Success"><span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>';
   if($row['object_key'] != '' || $row['object_key'] != null) {
   	$arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="ARMS"></i><span class="sr-only"></span></span></a>';
   } 
   // Testing ARMS Icon
-  /*else {
+  else {
     $arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="ARMS"></i><span class="sr-only"></span></span></a>';
-  }*/
+  }
 	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 elseif($row['arms_stage'] == 2) {
