@@ -1,26 +1,50 @@
 <?php
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (!defined("ABSPATH")) {
+    exit(); // Exit if accessed directly
+    
 }
-
-// UPDATE to update database based on list of items that are listed as shipped '1'.
-
+//$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
+//require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 global $current_user, $wpscfunction, $wpdb;
 
-//Get term_ids for recall status slugs
-$status_recalled_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
-$status_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' );
-$status_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );	
-$status_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-approved' );	
-$status_shipped_term_id = Patt_Custom_Func::get_term_by_slug( 'shipped' );	
-$status_on_loan_term_id = Patt_Custom_Func::get_term_by_slug( 'on-loan' );	
-$status_shipped_back_term_id = Patt_Custom_Func::get_term_by_slug( 'shipped-back' );
-$status_received_at_ndc_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-received-at-ndc' );
-$status_complete_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-complete' );
+//Change Status to Cancelled if Review Complete Timelapse exceeds 14 days
+$timelapse_query = $wpdb->get_results("SELECT ticket_id, meta_value
+FROM " . $wpdb->prefix . "wpsc_ticketmeta
+WHERE meta_key = 'review_complete_timestamp'");
 
+$complete_tag = get_term_by("slug", "awaiting-customer-reply", "wpsc_statuses"); //4
+$complete_term_id = $complete_tag->term_id;
+$cancelled_tag = get_term_by("slug", "destroyed", "wpsc_statuses"); //69
+$cancelled_term_id = $cancelled_tag->term_id;
 
-// Checking the status of shipping tracking number that is being used
+foreach ($timelapse_query as $item) {
+    //Remove timestamp metadata if ticket is not in the Initial Review Complete status
+    $get_ticket_status = $wpdb->get_row("SELECT ticket_status FROM " . $wpdb->prefix . "wpsc_ticket WHERE id = '" . $item->ticket_id . "'");
+    $get_ticket_status_val = $get_ticket_status->ticket_status;
+    if ($get_ticket_status_val != $complete_term_id) {
+        $wpscfunction->delete_ticket_meta($item->ticket_id, "review_complete_timestamp");
+    }
+  
+    $t = time();
+    $timestamp = $item->meta_value;
+    $date1 = date("Y-m-d", $timestamp);
+    $date2 = date("Y-m-d", $t);
+    $diff = abs(strtotime($date2) - strtotime($date1));
+    $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+    //$days_remaining = abs($days-14);
+    if ($days >= 14) {
+        // Change Request Status
+        // Perform additional check to ensure cancelled status does not continue to be applied every 5 minutes
+        if ($get_ticket_status_val != $cancelled_term_id) {
+            $wpscfunction->change_status($item->ticket_id, $cancelled_term_id);
+        }
+        // Change Box Status
+        $data_update = ["box_status" => 1057];
+        $data_where = ["ticket_id" => $item->ticket_id];
+        $wpdb->update($wpdb->prefix . "wpsc_epa_boxinfo", $data_update, $data_where);
+    }
+}
+
 $shippingArray = ["external", "usps", "fedex", "ups", "dhl"];
 
 // Begin going through the different shipping carriers
@@ -506,823 +530,64 @@ WHERE company_name = 'dhl' AND (shipped = 0 OR delivered = 0)");
         break;
     }
 }
-
-// For Recall Status to change from Recall Approved [877] to Shipped [730]
-/*
-$shipped_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
-    FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = 877
-      ORDER BY shipping.id ASC"
-	);
-*/
-$shipped_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id as id_recall_id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status,
-      rr.box_id as recall_box_id
-    FROM 
-	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = " . $status_approved_term_id .
-      " ORDER BY shipping.id ASC"
-	);
-
-/* // OLD before Recall Approve / Recall Deny statuses.
-// For Recall Status to change from Recalled [729] to Shipped [730]
-$shipped_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
-    FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = 729
-      ORDER BY shipping.id ASC"
-	);
-*/
-	
-// For Recall Status to change from Recall Approved [729] to Shipped [730]
-foreach ($shipped_recall_status_query as $item) {
-	
-	// update recall status to Shipped [730]
-	$recall_id = $item->recall_id;	
-	$where = [ 'id' => $recall_id ];
-// 	$data_status = [ 'recall_status_id' => 730 ]; //change status from Recall Approved to Shipped 
-	$data_status = [ 'recall_status_id' => $status_shipped_term_id ]; //change status from Recall Approved to Shipped 
-	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-	
-	// Update recall db request_receipt_date when shipped. 
-	$where = [ 'id' => $recall_id ];
-	$current_datetime = date("Y-m-d H:i:s");
- 	$data = [ 'request_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-	Patt_Custom_Func::update_recall_data( $data, $where );
-	
-	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
-/*
-	$data = [
-		'company_name' => '',
-		'tracking_number' => '',
- 		'shipped' => 0,
-		'status' => ''
-	];
-	$where = [
-		'recall_id' => $recall_id
-	];
-
-	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );	
-*/
-	
-	// Prep Timestmp Table data. 
-	// Get Recall obj
-	
-	$where = [
-		'id' => $recall_id
-	];
-	$recall_array = Patt_Custom_Func::get_recall_data( $where );
-	
-	//Added for servers running < PHP 7.3
-	if (!function_exists( 'array_key_first' )) {
-	    function array_key_first( array $arr ) {
-	        foreach( $arr as $key => $unused ) {
-	            return $key;
-	        }
-	        return NULL;
-	    }
-	}
-	
-	$recall_array_key = array_key_first( $recall_array );
-	$recall_obj = $recall_array[ $recall_array_key ];
-	$recall_user_array = $recall_obj->user_id;
-	$recall_names_array = [];
-	
-	
-	foreach( $recall_user_array as $wp_user_num ) {
-		
-		$user_obj = get_user_by( 'id', $wp_user_num );
-		$user_login = $user_obj->data->display_name;
-		$recall_names_array[] = $user_login;
-		
-	}
-	
-	$recal_names_str = implode( ', ', $recall_names_array );
-	
-	
-	//
-	// Timestamp Table
-	//
-	
-	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
-	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
-	
-	$data = [
-		'recall_id' => $item->id_recall_id,   
-		'type' => 'Shipped',
-		'user' => $recal_names_str,
-		'digitization_center' => $dc_str
-	];
-	
-	Patt_Custom_Func::insert_recall_timestamp( $data );
-	
-}
-
-
-
-
-// For Recall Status to change from Shipped [730] to On Loan [731]
-/*
-$on_loan_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
-    FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.delivered = 1
-      AND 
-        rr.recall_status_id = 730
-      ORDER BY shipping.id ASC"
-	);
-*/
-
-$on_loan_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id as id_recall_id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status,
-      rr.box_id as recall_box_id
-    FROM 
-	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.delivered = 1
-      AND 
-        rr.recall_status_id = " . $status_shipped_term_id .
-      " ORDER BY shipping.id ASC"
-	);
-	
-// For Recall Status to change from Shipped [730] to On Loan [731]
-foreach ($on_loan_recall_status_query as $item) {
-	
-	// update recall status to On Loan [731]
-	$recall_id = $item->recall_id;	
-	$where = [ 'id' => $recall_id ];
-// 	$data_status = [ 'recall_status_id' => 731 ]; //change status from Shipped to On Loan 
-	$data_status = [ 'recall_status_id' => $status_on_loan_term_id ]; //change status from Shipped to On Loan 
-	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-	
-	// Reset the shipping details as the same id is used for shipping to requestor and back to digitization center.
-	$data = [
-		'company_name' => '',
-		'tracking_number' => '',
-		'shipped' => 0,
-		'delivered' => 0,		
-		'status' => ''
-	];
-	$where = [
-		'recall_id' => $recall_id
-	];
-
-	$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );	
-	
-	// Update Recall DB Received date 
-	$where = [ 'id' => $recall_id ];
-	$current_datetime = date("Y-m-d H:i:s");
-	$data = [ 'return_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-	Patt_Custom_Func::update_recall_data( $data, $where );
-	
-	// Need to update Recall shipping dates in recallrequest table.
-	
-	// Prep Timestmp Table data. 
-	// Get Recall obj
-	
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_array = Patt_Custom_Func::get_recall_data( $where );
-	
-	//Added for servers running < PHP 7.3
-	if (!function_exists( 'array_key_first' )) {
-	    function array_key_first( array $arr ) {
-	        foreach( $arr as $key => $unused ) {
-	            return $key;
-	        }
-	        return NULL;
-	    }
-	}
-	
-	$recall_array_key = array_key_first( $recall_array );
-	$recall_obj = $recall_array[ $recall_array_key ];
-	$recall_user_array = $recall_obj->user_id;
-	$recall_names_array = [];
-	
-	
-	foreach( $recall_user_array as $wp_user_num ) {
-		
-		$user_obj = get_user_by( 'id', $wp_user_num );
-		$user_login = $user_obj->data->display_name;
-		$recall_names_array[] = $user_login;
-		
-	}
-	
-	$recal_names_str = implode( ', ', $recall_names_array );
-	
-	//
-	// Timestamp Table
-	//
-	
-	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
-	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
-	
-	$data = [
-		'recall_id' => $item->id_recall_id,   
-		'type' => 'On Loan',
-		'user' => $recal_names_str,
-		'digitization_center' => $dc_str
-	];
-	
-	Patt_Custom_Func::insert_recall_timestamp( $data );
-	
-}
-
-
-
-
-
-// For Recall Status to change from On Loan [731] to Shipped Back [732]
-/*
-$shipped_back_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
-    FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = 731
-      ORDER BY shipping.id ASC"
-	);
-*/
-
-$shipped_back_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id as id_recall_id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status,
-      rr.box_id as recall_box_id
-    FROM 
-	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = " . $status_on_loan_term_id .
-      " ORDER BY shipping.id ASC"
-	);
-	
-// For Recall Status to change from On Loan [731] to Shipped Back [732]
-foreach ($shipped_back_recall_status_query as $item) {
-	
-	// update recall status to Shipped Back [732]
-	$recall_id = $item->recall_id;	
-	$where = [ 'id' => $recall_id ];
-// 	$data_status = [ 'recall_status_id' => 732 ]; //change status from On Loan to Shipped Back
-	$data_status = [ 'recall_status_id' => $status_shipped_back_term_id ]; //change status from On Loan to Shipped Back
-	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-	
-	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
-	
-	// Update recall db request_receipt_date when shipped. 
-	$where = [ 'id' => $recall_id ];
-	$current_datetime = date("Y-m-d H:i:s");
- 	$data = [ 'request_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-	Patt_Custom_Func::update_recall_data( $data, $where );
-	
-	
-	
-	
-	// Set PM Notifications 
-	$notification_post = 'email-recall-id-has-been-shipped-back';
-	
-	// Get digitization staff
-	$agent_admin_group_name = 'Administrator';
-	$pattagentid_admin_array = Patt_Custom_Func::agent_from_group( $agent_admin_group_name );
-	 
-	$agent_manager_group_name = 'Manager';
-	$pattagentid_manager_array = Patt_Custom_Func::agent_from_group( $agent_manager_group_name );
-	
-	// Get people on Recall 
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_data = Patt_Custom_Func::get_recall_data( $where );
-
-	$agent_id_array = Patt_Custom_Func::translate_user_id( $recall_data[0]->user_id, 'agent_term_id' );;
-	
-	// Merge the 3 arrays, and remove any duplicates
-	$pattagentid_array = array_unique(array_merge( $agent_id_array, $pattagentid_admin_array, $pattagentid_manager_array ));
-	
-	$requestid = 'R-'.$recall_id; 			
-	$data = [
-        'action_initiated_by' => $current_user->display_name
-    ];
-	$email = 0;
-	
-	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
-	
-	
-	// Prep Timestmp Table data. 
-	// Get Recall obj
-	
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_array = Patt_Custom_Func::get_recall_data( $where );
-	
-	//Added for servers running < PHP 7.3
-	if (!function_exists( 'array_key_first' )) {
-	    function array_key_first( array $arr ) {
-	        foreach( $arr as $key => $unused ) {
-	            return $key;
-	        }
-	        return NULL;
-	    }
-	}
-	
-	$recall_array_key = array_key_first( $recall_array );
-	$recall_obj = $recall_array[ $recall_array_key ];
-	$recall_user_array = $recall_obj->user_id;
-	$recall_names_array = [];
-	
-	
-	foreach( $recall_user_array as $wp_user_num ) {
-		
-		$user_obj = get_user_by( 'id', $wp_user_num );
-		$user_login = $user_obj->data->display_name;
-		$recall_names_array[] = $user_login;
-		
-	}
-	
-	$recal_names_str = implode( ', ', $recall_names_array );
-	
-	//
-	// Timestamp Table
-	//
-	
-	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
-	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
-	
-	$data = [
-		'recall_id' => $item->id_recall_id,   
-		'type' => 'Shipped Back',
-		'user' => $recal_names_str,
-		'digitization_center' => $dc_str
-	];
-	
-	Patt_Custom_Func::insert_recall_timestamp( $data );
-}
-
-
-// For Recall Status to change from Shipped Back [732] to Received at NDC [4801]
-$recall_received_at_ndc_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id as id_recall_id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status,
-      rr.box_id as recall_box_id
-    FROM 
-	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.shipped = 1
-      AND 
-        rr.recall_status_id = " . $status_shipped_back_term_id .
-      " ORDER BY shipping.id ASC"
-	);
-
-
-// For Recall Status to change from Shipped Back [732] to Received at NDC [4801]
-foreach ($recall_received_at_ndc_status_query as $item) {
-	if($item->delivered == 1) {
-      // update recall status to Received at NDC [4801]
-      $recall_id = $item->recall_id;	
-      $where = [ 'id' => $recall_id ];
-  // 	$data_status = [ 'recall_status_id' => 2945 ]; //change status from On Loan to Shipped Back
-      $data_status = [ 'recall_status_id' => $status_received_at_ndc_term_id ]; //change status from On Loan to Shipped Back
-      $obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-
-      // No need to clear shipped status as all shipping data will need to be preserved for Delivered column
-
-      // Update recall db request_receipt_date when shipped. 
-      $where = [ 'id' => $recall_id ];
-      $current_datetime = date("Y-m-d H:i:s");
-      $data = [ 'request_receipt_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-      Patt_Custom_Func::update_recall_data( $data, $where );
-      
-     
-      
-    // Set PM Notifications 
-	$notification_post = 'email-recall-id-has-been-received-at-ndc';
-	
-	// Get digitization staff
-	$agent_admin_group_name = 'Administrator';
-	$pattagentid_admin_array = Patt_Custom_Func::agent_from_group( $agent_admin_group_name );
-	 
-	$agent_manager_group_name = 'Manager';
-	$pattagentid_manager_array = Patt_Custom_Func::agent_from_group( $agent_manager_group_name );
-	
-	// Get people on Recall 
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_data = Patt_Custom_Func::get_recall_data( $where );
-
-	$agent_id_array = Patt_Custom_Func::translate_user_id( $recall_data[0]->user_id, 'agent_term_id' );;
-	
-	// Merge the 3 arrays, and remove any duplicates
-	$pattagentid_array = array_unique(array_merge( $agent_id_array, $pattagentid_admin_array, $pattagentid_manager_array ));
-	
-	$requestid = 'R-'.$recall_id; 			
-	$data = [
-        'action_initiated_by' => $current_user->display_name
-    ];
-	$email = 1;
-	
-	$new_notification = Patt_Custom_Func::insert_new_notification( $notification_post, $pattagentid_array, $requestid, $data, $email );
+$get_unique_tickets = $wpdb->get_results("SELECT DISTINCT ticket_id
+FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking WHERE tracking_number <> UPPER('" . WPPATT_EXT_SHIPPING_TERM . "') AND tracking_number <> UPPER('" . WPPATT_EXT_SHIPPING_TERM_R3 . "') AND ticket_id != '-99999'");
+foreach ($get_unique_tickets as $item) {
+    // Change the status of request from Initial Review Complete to Shipped
+    $shipped_array = [];
+    $delivered_array = [];
+    $ticket_id = $item->ticket_id;
+    $ticket_data = $wpscfunction->get_ticket($ticket_id);
+    $status_id = $ticket_data["ticket_status"];
+    $get_shipped_status = $wpdb->get_results("SELECT shipped
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
+ WHERE ticket_id = " . $item->ticket_id);
+    $review_complete_tag = get_term_by("slug", "awaiting-customer-reply", "wpsc_statuses");
+    $shipped_tag = get_term_by("slug", "awaiting-agent-reply", "wpsc_statuses");
+    $received_tag = get_term_by("slug", "received", "wpsc_statuses");
+    foreach ($get_shipped_status as $shipped) {
+        array_push($shipped_array, $shipped->shipped);
     }
-	
-	
-	
-	
-	
-	
-	
-	// Prep Timestmp Table data. 
-	// Get Recall obj
-	
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_array = Patt_Custom_Func::get_recall_data( $where );
-	
-	//Added for servers running < PHP 7.3
-	if (!function_exists( 'array_key_first' )) {
-	    function array_key_first( array $arr ) {
-	        foreach( $arr as $key => $unused ) {
-	            return $key;
-	        }
-	        return NULL;
-	    }
-	}
-	
-	$recall_array_key = array_key_first( $recall_array );
-	$recall_obj = $recall_array[ $recall_array_key ];
-	$recall_user_array = $recall_obj->user_id;
-	$recall_names_array = [];
-	
-	
-	foreach( $recall_user_array as $wp_user_num ) {
-		
-		$user_obj = get_user_by( 'id', $wp_user_num );
-		$user_login = $user_obj->data->display_name;
-		$recall_names_array[] = $user_login;
-		
-	}
-	
-	$recal_names_str = implode( ', ', $recall_names_array );
-	
-	//
-	// Timestamp Table
-	//
-	
-	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->recall_box_id );
-	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
-	
-	$data = [
-		'recall_id' => $item->id_recall_id,   
-		'type' => 'Received at NDC',
-		'user' => $recal_names_str,
-		'digitization_center' => $dc_str
-	];
-	
-	Patt_Custom_Func::insert_recall_timestamp( $data );
+    /*if (($status_id == $review_complete_tag->term_id) && (!in_array(0, $shipped_array))) {
+    $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
+    }*/
+    $get_delivered_status = $wpdb->get_results("SELECT delivered
+ FROM " . $wpdb->prefix . "wpsc_epa_shipping_tracking
+ WHERE ticket_id = " . $item->ticket_id);
+    foreach ($get_delivered_status as $delivered) {
+        array_push($delivered_array, $delivered->delivered);
+    }
+    // Taking out ($status_id == 5) from the if statement for testing.
+    // If a delivered tracking number is used the status does not update correctly. Typically, this won't be the case.
+    /*if (!in_array(0, $delivered_array) && ($status_id != $received_tag->term_id) && ($status_id == $shipped_tag->term_id)) {
+    $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
+    }*/
+    // IF SHIPPED ONLY AND NOT DELIVERED
+    if ($status_id != $shipped_tag->term_id && !in_array(0, $shipped_array) && in_array(0, $delivered_array)) {
+        $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
+        // Remove review timestamp
+        sleep(1);
+        $wpscfunction->delete_ticket_meta($item->ticket_id, "review_complete_timestamp", true);
+    }
+    // IF SHIPPED AND DELIVERED
+    if (!in_array(0, $delivered_array) && !in_array(0, $shipped_array)) {
+        if ($status_id == $review_complete_tag->term_id) {
+            $wpscfunction->change_status($item->ticket_id, $shipped_tag->term_id);
+            sleep(1);
+            $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
+            // Remove review timestamp
+            sleep(1);
+            $wpscfunction->delete_ticket_meta($item->ticket_id, "review_complete_timestamp", true);
+        } elseif ($status_id == $shipped_tag->term_id) {
+            $wpscfunction->change_status($item->ticket_id, $received_tag->term_id);
+            // Remove review timestamp
+            sleep(1);
+            $wpscfunction->delete_ticket_meta($item->ticket_id, "review_complete_timestamp", true);
+        }
+    }
+  
+    /*echo $ticket_id;
+    print_r($shipped_array);
+    print_r($delivered_array);*/
 }
-
-
-
-// For Recall Status to change from Received at NDC [4801] to Recall Complete [733]
-/*
-$recall_complete_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status
-    FROM 
-	    wpqa_wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		wpqa_wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.delivered = 1
-      AND 
-        rr.recall_status_id = 732
-      ORDER BY shipping.id ASC"
-	);
-*/
-
-$recall_complete_recall_status_query = $wpdb->get_results(
-	"SELECT 
-      shipping.id,
-      shipping.tracking_number,
-      shipping.shipped,
-      shipping.delivered,
-      shipping.recallrequest_id,
-      rr.id as the_id,
-      rr.recall_id as recall_id,
-      rr.recall_status_id as recall_status,
-      rr.box_id as box_id,
-      rr.recall_complete as recall_complete,
-      rr.saved_box_status as saved_box_status
-    FROM 
-	    " . $wpdb->prefix . "wpsc_epa_shipping_tracking AS shipping
-    INNER JOIN 
-		" . $wpdb->prefix . "wpsc_epa_recallrequest AS rr 
-	ON (
-        shipping.recallrequest_id = rr.id
-	   )
-	WHERE 
-        shipping.recallrequest_id <> -99999
-      AND 
-        shipping.company_name <> ''
-      AND
-        shipping.delivered = 1
-      AND 
-        rr.recall_status_id = " . $status_received_at_ndc_term_id .
-      " ORDER BY shipping.id ASC"
-	);
-
-
-
-// For Recall Status to change from Received at NDC [4801] to Recall Complete [733]
-foreach ($recall_complete_recall_status_query as $item) {
-	
-	// Data for Audit logs
-	$dub = array( 'id' => $item->the_id );
-	$recall = Patt_Custom_Func::get_recall_data( $dub );
-	$recall_data = $recall[0];
-	
-	$ticket_id = $recall_data->ticket_id;
-	$box_id = $recall_data->box_id; 
-	$folderdoc_id = $recall_data->folderdoc_id; 
-	$status_id = $recall_data->saved_box_status; 
-	$recall_id = $recall_data->recall_id;
-	
-	
-	
-	//
-	// Restore the saved Box Status
-	//	
-	$saved_box_status = Patt_Custom_Func::existing_recall_box_status( $item->box_id );
-	// if only 1 recalled file, restore status
-	if( $saved_box_status['num'] == 1)  {
-		$box_status = $item->saved_box_status;
-		
-		$table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
-		$data_where = array( 'id' => $item->box_id );
-		$data_update = array( 'box_status' => $box_status );
-		$wpdb->update( $table_name, $data_update, $data_where );
-		
-		
-		// Audit log for changed box status
-		$sql = 'SELECT * FROM ' . $wpdb->prefix . 'terms WHERE term_id = '.$status_id;
-		$status_info = $wpdb->get_row( $sql );
-		$status_name = $status_info->name;
-		
-		$sql = 'SELECT box_id FROM ' . $wpdb->prefix . 'wpsc_epa_boxinfo WHERE box_id = "'.$box_id . '"';
-		$box_info = $wpdb->get_row( $sql );
-		$item_id = $box_info->box_id;
-		
-		$status_full = 'Waiting on RLO to ' . $status_name;
-		
-		do_action('wpppatt_after_box_status_update', $ticket_id, $status_full, $item_id );
-
-	} 
-	
-	
-	if($item->recall_complete == 1) {
-  	//if($item->delivered == 1) {
-    	// update recall status to Recall Complete [733]
-    	$recall_id = $item->recall_id;	
-    	$where = [ 'id' => $recall_id ];
-    // 	$data_status = [ 'recall_status_id' => 733 ]; //change status from On Loan to Shipped Back
-    	$data_status = [ 'recall_status_id' => $status_complete_term_id ]; //change status from On Loan to Shipped Back
-    	$obj = Patt_Custom_Func::update_recall_data( $data_status, $where );
-    	
-    	// Update Recall DB Received date 
-    	$where = [ 'id' => $recall_id ];
-    	$current_datetime = date("Y-m-d H:i:s");
-    	$data = [ 'return_date' => $current_datetime, 'updated_date' => $current_datetime ]; 
-    	Patt_Custom_Func::update_recall_data( $data, $where );
-	}
-	
-	// No need to clear shipped status as all shipping data will need to be preserved for Delivered column
-	
-	// Audit log for Recall Complete
-	if( $folderdoc_id == null || $folderdoc_id == '' ) {
-		$item_id = $box_id;
-	} else {
-		$item_id = $folderdoc_id;
-	}
-	
-	do_action('wpppatt_after_recall_completed', $ticket_id, 'R-'.$recall_id, $item_id );
-	
-	// Prep Timestmp Table data. 
-	// Get Recall obj
-	
-	$where = [
-		'recall_id' => $recall_id
-	];
-	$recall_array = Patt_Custom_Func::get_recall_data( $where );
-	
-	//Added for servers running < PHP 7.3
-	if (!function_exists( 'array_key_first' )) {
-	    function array_key_first( array $arr ) {
-	        foreach( $arr as $key => $unused ) {
-	            return $key;
-	        }
-	        return NULL;
-	    }
-	}
-	
-	$recall_array_key = array_key_first( $recall_array );
-	$recall_obj = $recall_array[ $recall_array_key ];
-	$recall_user_array = $recall_obj->user_id;
-	$recall_names_array = [];
-	
-	
-	foreach( $recall_user_array as $wp_user_num ) {
-		
-		$user_obj = get_user_by( 'id', $wp_user_num );
-		$user_login = $user_obj->data->display_name;
-		$recall_names_array[] = $user_login;
-		
-	}
-	
-	$recal_names_str = implode( ', ', $recall_names_array );
-	
-	//
-	// Timestamp Table
-	//
-	
-	$dc = Patt_Custom_Func::get_dc_array_from_box_id( $item->box_id );
-	$dc_str = Patt_Custom_Func::dc_array_to_readable_string( $dc );
-	
-	$data = [
-		'recall_id' => $item->the_id,   
-		'type' => 'Recall Complete',
-		'user' => $recal_names_str,
-		'digitization_center' => $dc_str
-	];
-	
-	Patt_Custom_Func::insert_recall_timestamp( $data );
-}
-
-
-
 ?>

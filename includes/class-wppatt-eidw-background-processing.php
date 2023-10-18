@@ -54,7 +54,7 @@ foreach ($lanid_query as $lan_id) {
 	
 	$curl = curl_init();
 	
-	$url = EIDW_ENDPOINT.'userName%20eq%20'.$lan_id_check_val;
+	$url = EIDW_ENDPOINT.$lan_id_check_val;
 	
 	$eidw_authorization = 'Authorization: Basic '.EIDW;
 	
