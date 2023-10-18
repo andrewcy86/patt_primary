@@ -514,51 +514,51 @@ $clock_icon = '<a><span style="font-size: 1.2em; margin-left: 4px; color: #111;"
 if($row['received_stage'] == 0) {
 	// Pending Status
 	$received_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 25px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 26px;width: 3.5%;">';
 }
 elseif($row['received_stage'] == 1) {
 	// Success Status
 	$received_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Success"><span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a> 
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 25px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 26px;width: 3.5%;">';
 }
 elseif($row['received_stage'] == 2) {
 	// Fail Status
 	$received_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage Error: ' . $row['received_stage_log'] . '"><span style="font-size: 1.3em; color: #B4081A;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 25px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 26px;width: 3.5%;">';
 }
 else {
 	// Warning Status
 	$received_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Received Stage: Warning"><span style="font-size: 1.3em; color: #dba617;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 25px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 26px;width: 3.5%;">';
 }
 
 // Extraction Stage Statuses
 if($row['extraction_stage'] == 0) {
 	// Pending Status
 	$extraction_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Extraction Stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 3.5%;">';
 }
 elseif($row['extraction_stage'] == 1) {
 	// Success Status
 	$extraction_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Extraction Stage: Success"><span style="font-size: 1.3em; color: #2f631d; margin-left: 4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 3.5%;">';
 }
 elseif($row['extraction_stage'] == 2) {
 	// Fail Status
 	$extraction_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Extraction Stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 3.5%;">';
 }
 else {
 	// Warning Status
 	$extraction_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Extraction Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 50px;width: 3.5%;">';
 }
 
 // Keyword ID Stage Statuses
 if($row['keyword_id_stage'] == 0) {
 	// Pending Status
 	$keyword_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Keyword Stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 3.5%;">';
 }
 elseif($row['keyword_id_stage'] == 1) {
 	// Success Status
@@ -568,65 +568,65 @@ elseif($row['keyword_id_stage'] == 1) {
 elseif($row['keyword_id_stage'] == 2) {
 	// Fail Status
 	$keyword_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Keyword Stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 3.5%;">';
 }
 else {
 	// Warning Status
 	$keyword_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Keyword Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 75px;width: 3.5%;">';
 }
 
 // Metadata Stage Statuses
 if($row['metadata_stage'] == 0) {
 	// Pending Status
 	$metadata_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Metadata Stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 3.5%;">';
 }
 elseif($row['metadata_stage'] == 1) {
 	// Success Status
 	$metadata_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Metadata Stage: Success"><span style="font-size: 1.3em; color: #2f631d; margin-left:4px;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 3.5%;">';
 }
 elseif($row['metadata_stage'] == 2) {
 	// Fail Status
 	$metadata_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Metadata Stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 3.5%;">';
 }
 else {
 	// Warning Status
 	$metadata_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="Metadata Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>
-	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 2.3%;">';
+	<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 100px;width: 3.5%;">';
 }
 
 // ARMS Transfer Stage Statuses
 if($row['arms_stage'] == 0) {
 	// Pending Status
 	$arms_pending_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Pending"><span style="font-size: 1.3em; color: #1C5D8A;margin-left:4px;"><i class="fas fa-sync" aria-hidden="true" title="Pending"></i><span class="sr-only">Pending</span></span></a>';
-	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 elseif($row['arms_stage'] == 1) {
-  //$arms_url = ARMS_API.$row['object_key'];
-  $arms_url = getenv('ARMS_API').$row['object_key'];
+  $arms_url = ARMS_PERMALINK.$row['object_key'];
+  //$arms_url = getenv('ARMS_PERMALINK').$row['object_key'];
 	// Success Status
 	$arms_success_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Success"><span style="font-size: 1.3em; color: #2f631d;"><i class="fas fa-check-circle" aria-hidden="true" title="Success"></i><span class="sr-only">Success</span></span></a>';
   if($row['object_key'] != '' || $row['object_key'] != null) {
-  	$arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="Published"></i><span class="sr-only"></span></span></a>';
+  	$arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="ARMS"></i><span class="sr-only"></span></span></a>';
   } 
   // Testing ARMS Icon
-  /*else {
-    $arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="Published"></i><span class="sr-only"></span></span></a>';
-  }*/
-	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+  else {
+    $arms_icon = '<a href="'.$arms_url.'" target="_blank"><span style="font-size: 1.2em; margin-left: 4px; color: #1C5D8A;"><i class="fa-regular fa-paper-plane" aria-hidden="true" title="ARMS"></i><span class="sr-only"></span></span></a>';
+  }
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 elseif($row['arms_stage'] == 2) {
 	// Fail Status
 	$arms_failure_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS stage: Failed"><span style="font-size: 1.3em; color: #B4081A;margin-left:4px;"><i class="fas fa-times-circle" aria-hidden="true" title="Failed"></i><span class="sr-only">Failed</span></span></a>';
-	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 else {
 	// Warning Status
 	$arms_warning_icon = '<a class="truncate-text" data-toggle="tooltip" data-placement="top" data-html="true" data-original-title="ARMS Stage: Warning"><span style="font-size: 1.3em; color: #dba617;margin-left:4px;"><i class="fas fa-exclamation-circle" aria-hidden="true" title="Warning"></i><span class="sr-only">Warning</span></span></a>';
-	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 2.3%;">';
+	//<hr style="position: absolute;border: 0.1px solid gray;top: -2.5px;left: 125px;width: 3.5%;">';
 }
 
 // Published Stage Statuses
