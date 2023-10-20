@@ -90,7 +90,7 @@ WHERE company_name = 'usps' AND (shipped = 0 OR delivered = 0)");
                     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     curl_close($curl);
                     $err = Patt_Custom_Func::convert_http_error_code($status);
-                    if ($status != 200) {
+                    if ($status != 200 && $status != NULL) {
                         Patt_Custom_Func::insert_api_error("usps-shipping-cron", $status, $err);
                     }
                     $response = new SimpleXMLElement($result);
@@ -142,7 +142,7 @@ WHERE company_name = 'usps' AND (shipped = 0 OR delivered = 0)");
                   
                     $err = Patt_Custom_Func::convert_http_error_code($status);
                   
-                    if ($status != 200) {
+                    if ($status != 200 && $status != NULL) {
                         Patt_Custom_Func::insert_api_error("usps-shipping-cron", $status, $err);
                     }
                   
@@ -223,7 +223,7 @@ WHERE company_name = 'fedex' AND (shipped = 0 OR delivered = 0)");
                     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     curl_close($curl);
                     $err = Patt_Custom_Func::convert_http_error_code($status);
-                    if ($status != 200) {
+                    if ($status != 200 && $status != NULL) {
                         Patt_Custom_Func::insert_api_error("fedex-shipping-cron", $status, $err);
                     }
                   
@@ -290,7 +290,7 @@ WHERE company_name = 'fedex' AND (shipped = 0 OR delivered = 0)");
                     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     curl_close($curl);
                     $err = Patt_Custom_Func::convert_http_error_code($status);
-                    if ($status != 200) {
+                    if ($status != 200 && $status != NULL) {
                         Patt_Custom_Func::insert_api_error("fedex-shipping-cron", $status, $err);
                     }
                     $xml = new SimpleXMLElement($response);
@@ -379,8 +379,8 @@ WHERE company_name = 'ups' AND (shipped = 0 OR delivered = 0)");
                     curl_close($curl);
 
                     $err = Patt_Custom_Func::convert_http_error_code($status);
-                    if ($status != 200) {
-                        Patt_Custom_Func::insert_api_error("recall-ups-shipping-cron", $status, $err);
+                    if ($status != 200 && $status != NULL) {
+                        Patt_Custom_Func::insert_api_error("ups-shipping-cron", $status, $err);
                     }
                     
                     //print_r($array);
@@ -456,8 +456,8 @@ WHERE company_name = 'ups' AND (shipped = 0 OR delivered = 0)");
                     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     curl_close($curl);
                     $err = Patt_Custom_Func::convert_http_error_code($status);
-                    if ($status != 200) {
-                        Patt_Custom_Func::insert_api_error("recall-ups-shipping-cron", $status, $err);
+                    if ($status != 200 && $status != NULL) {
+                        Patt_Custom_Func::insert_api_error("ups-shipping-cron", $status, $err);
                     }
                     //print_r($array);
                     $deliveryCode = $array["TRACKRESPONSE"]["SHIPMENT"]["PACKAGE"]["ACTIVITY"]["STATUS"]["STATUSTYPE"]["CODE"];
@@ -485,7 +485,7 @@ WHERE company_name = 'dhl' AND (shipped = 0 OR delivered = 0)");
                 $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
                 curl_close($curl);
                 $err = Patt_Custom_Func::convert_http_error_code($status);
-                if ($status != 200 || $status != 404) {
+                if ($status != 200 || $status != 404 && ($status != NULL)) {
                     Patt_Custom_Func::insert_api_error("dhl-shipping-cron", $status, $err);
                 }
                 $json = json_decode($response, true);

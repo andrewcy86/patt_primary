@@ -105,6 +105,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_action( 'wppatt_recall_reminder_cron', array($frontend, 'wppatt_recall_reminder_email_cron_schedule'));
         // Add Program Office/ Record Schedule CRON
         add_action( 'wppatt_po_rs_cron', array($frontend, 'wppatt_po_rs_cron_schedule'));
+      	// Add Program Office/ Record Schedule Keyword CRON
+        add_action( 'wppatt_po_rs_keyword_cron', array($frontend, 'wppatt_po_rs_keyword_cron_schedule'));
         // Add User Cleanup CRON
         add_action( 'wppatt_user_cleanup_cron', array($frontend, 'wppatt_user_cleanup_schedule'));
         // Add Email Cleanup CRON
@@ -112,6 +114,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add ECMS/SEMS Status CRON
         add_action( 'wppatt_ecms_sems_status_cron', array($frontend, 'wppatt_ecms_sems_status_cron_schedule'));
         
+        // Add S3 Cleanup CRON
+        add_action( 'wppatt_s3_cleanup_cron', array($frontend, 'wppatt_s3_cleanup_cron_schedule'));
+
         // Add Request/Box Timestamp CRON
         add_action( 'wppatt_timestamp_reporting_request_box_cron', array($frontend, 'wppatt_timestamp_reporting_request_box_cron_schedule'));
         
@@ -121,6 +126,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add Decline Reminder Email & PM Notification CRON // No longer used. All actions done in wppatt_return_shipping_status_schedule
         //add_action( 'wppatt_decline_reminder_cron', array($frontend, 'wppatt_decline_reminder_email_cron_schedule'));
 
+        // Add PATT/ARMS Tranfer Monitoring CRON
+        add_action( 'wppatt_patt_arms_monitor_cron', array($frontend, 'wppatt_patt_arms_monitor_cron_schedule'));
+      
         // add menu item for specialty upload section - BATCH UPLOADER
         add_action( 'admin_menu', 'wpdocs_register_my_custom_menu_page' );
 		function wpdocs_register_my_custom_menu_page() {
