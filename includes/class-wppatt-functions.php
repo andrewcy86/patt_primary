@@ -81,6 +81,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     public function wppatt_eidw_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/eidw_cron.php';
     }
+	
+    // CRON for RS Keywords
+    public function wppatt_po_rs_keyword_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/po_rs_keyword_cron.php';
+    }
     
     // CRON for message cleanup
     public function wppatt_private_message_cleanup_cron_schedule(){    
