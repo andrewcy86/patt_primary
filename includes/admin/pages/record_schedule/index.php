@@ -187,8 +187,9 @@ table.dataTable thead tr td {
  include 'db_connection.php';
  $conn = OpenCon();
 
- $query ="SELECT DISTINCT(Schedule_Number) AS Schedule_Number, Schedule_Title, Function_Code, Program, Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date
- FROM " . $wpdb->prefix . "epa_record_schedule
+ $query ="SELECT DISTINCT(a.Schedule_Number) AS Schedule_Number, a.Schedule_Title, a.Function_Code, a.Program, a.Applicability, DATE_FORMAT(`Revised_Date`,'%m/%d/%Y') as Revised_Date, b.keywords
+ FROM " . $wpdb->prefix . "epa_record_schedule a
+ LEFT JOIN " . $wpdb->prefix . "epa_record_schedule_keywords b ON b.records_schedule = a.Schedule_Number 
  WHERE Superseded_Flag = 0 and Deleted_Flag = 0 and Draft_Flag = 0 and Reserved_Flag = 0 and id != '-99999'
  ORDER BY Schedule_Number ASC";
  $result = mysqli_query($conn, $query);  
@@ -206,6 +207,7 @@ table.dataTable thead tr td {
                                 <th>Program</th>
                                 <th>Applicability</th>
                                 <th>Revised</th>
+                                <th>Keywords</th>
                                </tr>  
                           </thead>  
                           <?php  
@@ -219,6 +221,7 @@ table.dataTable thead tr td {
                                     <td>'.$row["Program"].'</td>  
                                     <td>'.$row["Applicability"].'</td>
                                     <td>'.$row["Revised_Date"].'</td>
+                                    <td>'.$row["keywords"].'</td>
                                </tr>  
                                ';  
                           }  
@@ -231,10 +234,18 @@ table.dataTable thead tr td {
 <script>  
  $(document).ready(function(){  
      $('#rschedule').dataTable( {
-            "paging": false
+            "paging": false,
+     columnDefs: [
+      {
+      targets: 6,
+      searchable: true,
+      visible: false
+    }
+    ]
         } ); 
  });  
  
+
 
  </script>
 
