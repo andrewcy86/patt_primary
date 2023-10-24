@@ -14,8 +14,8 @@ $count = 0;
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 $rs_table = $wpdb->prefix . 'epa_record_schedule';
 
-//$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
-$endpoint = PO_RS_API;
+$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
+//$endpoint = PO_RS_API;
 $qry_po = '{"query":"query programOffice {ecms__program_office {__all_columns__}}"}';
 $qry_rs = '{"query":"query recSched {ecms__record_schedule {__all_columns__}}"}';
 
@@ -40,17 +40,16 @@ $po_result = curl_exec($ch_po);
 
 $po_data = array ('query' => $po_query);
 $po_data = http_build_query($po_data);
-$test = '';
 
-if (curl_errno($ch_po)) { 
+$status = curl_getinfo($ch_po, CURLINFO_HTTP_CODE);
 
-  	$test = 'true';
+if (curl_errno($ch_po) && $status != NULL) { 
+
     $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
     Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
     // var_dump($err); 
 } else {
   
-  	$test = 'false';
 
     //TRUNCATE STATEMENT
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 0");
@@ -156,7 +155,9 @@ $rs_result = curl_exec($ch_rs);
 $rs_data = array ('query' => $rs_query);
 $rs_data = http_build_query($rs_data);
 
-if (curl_errno($ch_rs)) { 
+$status = curl_getinfo($ch_rs, CURLINFO_HTTP_CODE);
+
+if (curl_errno($ch_rs) && $status != NULL) { 
 $err = Patt_Custom_Func::convert_http_error_code($http_response_header[0]);
 Patt_Custom_Func::insert_api_error('datacommons-po-rs-cron',$http_response_header[0],$err);
 } else {
