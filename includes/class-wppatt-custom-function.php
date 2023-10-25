@@ -4957,7 +4957,7 @@ public static function id_in_recall( $identifier, $type ) {
             foreach ($get_program_office_id as $program_office_id_val) {
 	            $program_office_val = $program_office_id_val->acronym;
 	
-	            $east_region = array("R01", "R02", "R03", "AO", "OITA", "OCFO", "OCSPP", "ORD", "OAR", "OW", "OIG", "OGC", "OMS", "OLEM", "OECA");
+	            $east_region = array("R01", "R02", "R03", "AO", "OITA", "OCFO", "OCSPP", "ORD", "OAR", "OW", "OIG", "OGC", "OMS", "OLEM", "OECA", "OEJECR");
 	            $west_region = array("R04", "R05", "R06", "R07", "R08", "R09", "R10");
 	
 	            if (in_array($program_office_val, $east_region))
@@ -8332,8 +8332,14 @@ if($type == 'comment') {
 							$email_body = stripslashes( $email_body );
 						}
 						$email_body = nl2br( $email_body );
-		
-						$recipient_email = array('ecms@epa.gov', 'ndp@epa.gov', 'garner.kiwane@epa.gov');
+                      
+                      	$recipient_email = array('ecms@epa.gov', 'ndp@epa.gov', 'garner.kiwane@epa.gov');
+                      
+						/*if (in_array("Array@domain.invalid", $recipient_email)) {
+                          $recipient_email = unset($recipient_email[3]);
+                          $recipient_email = array_values($recipient_email); 
+                        }*/
+                      
 						$mailtext = "<html><head><title>$email_subject</title></head><body>$email_body <hr /> $service_type : $status_code - $error</body></html>";
 		
 						// set headers to send html email
