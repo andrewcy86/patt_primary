@@ -332,7 +332,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         ?>
         <!-- language of buttons change based on 0 or 1 -->
         <?php
-        if($folderfile_validation == 0) { ?>
+        /*if($folderfile_validation == 0) { ?>
       		<!-- Check if folder file is a child file and if the parent folder file has been validated -->
       		<?php 
                 // If statement below is true then the current folder file is a child folder file
@@ -365,7 +365,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         else { ?>
         <!--<button type="button" aria-label="Help Invalidate Button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_rescan == 1 || $folderfile_destruction == 1) || ($folderfile_rescan == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-check-circle" aria-hidden="true" title="Un-Validate"></i><span class="sr-only">Un-Validate</span> Un-Validate</button>-->
         <?php
-        }
+        }*/
         ?>
         <?php 
         }
@@ -379,9 +379,9 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         if($folderfile_rescan == 0) { ?>
         <button type="button" aria-label="Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Re-Scan"></i><span class="sr-only">Re-Scan</span> Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
        	<?php }
-       	else { ?>
+       	/*else { ?>
        	<!--<button type="button" aria-label="Undo Re-Scan" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo (($folderfile_validation == 1 || $folderfile_destruction == 1) || ($folderfile_validation == 1 && $box_destruction == 1) || $folderfile_destruction == 1 || $box_destruction == 1)? "disabled" : ""; ?>><i class="fas fa-times-circle" aria-hidden="true" title="Undo Re-Scan"></i><span class="sr-only">Undo Re-Scan</span> Undo Re-Scan <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-re-scan-button'); ?>"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>-->
-        <?php } ?>
+        <?php } */?>
         <?php 
         }
         ?>
