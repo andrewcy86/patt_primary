@@ -76,7 +76,7 @@ if( in_array($current_user->ID, $get_aa_ship_groups) || $current_user->display_n
         <?php
         if( !in_array($request_status_id, $unauthorized_destruction_arr) && (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent') || ($agent_permissions['label'] == 'Manager')) && $is_active == 1)
         { ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag" aria-hidden="true" title="Unauthorized Destruction"></i><span class="sr-only">Unauthorized Destruction</span> Unauthorized Destruction Test<a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="<?php echo Patt_Custom_Func::helptext_tooltip('help-unauthorized-destruction'); ?>" aria-label="Unauthorized Destruction Help"><i class="far fa-question-circle" aria-hidden="true" title="Help"></i><span class="sr-only">Help</span></a></button>
         <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_damaged_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-bolt" aria-hidden="true" title="Damaged"></i><span class="sr-only">Damaged</span> Damaged </button>
         <?php }
         //Disable editing capabilities on certain request statuses
@@ -985,8 +985,9 @@ $contact_details = '';
 foreach ($lan_id as $info) {
 $lan_id_details = $info->lan_id_details;
 
-if($lan_id_details == '') {
-$details_count++;
+//if($lan_id_details == '') {
+if($lan_id_details != '') {
+	$details_count++;
 }
 
 $obj = json_decode($lan_id_details);
@@ -994,7 +995,8 @@ $lan_id_username = $info->lan_id;
 $contact_details .= '<li>'.$obj->{'name'}. ' ('.$lan_id_username.')</li>';
 } 
 
-if($details_count == 0) {
+//if($details_count == 0) {
+if($details_count > 0) {
 echo '<ul style="list-style-type: disc !important; padding-left: 15px;">';
 echo $contact_details;
 echo '</ul>';
