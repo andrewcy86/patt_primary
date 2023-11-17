@@ -48,10 +48,11 @@
     const reg_receiving_dock = /^\b(RD-\d\d-e|RD-\d\d-w)\b$/i; 
     const reg_oversized_tube = /^\b(OS-\d\d-e|OS-\d\d-w)\b$/i; 
     const reg_destruction = /^\b(DES-\d\d-e|DES-\d\d-w)\b$/i;
-    const reg_shipping_dock_area = /^\b(SDA-\d\d-e|SDA-\d\d-w)\b$/i;
+    //const reg_shipping_dock_area = /^\b(SDA-\d\d-e|SDA-\d\d-w)\b$/i;
   	const reg_scanning_prep_area = /^\b(SPA-\d\d-e|SPA-\d\d-w)\b$/i;
   	const reg_scanning_location_area = /^\b(SLA-\d\d-e|SLA-\d\d-w)\b$/i;
   	const reg_shipping_dock_area = /^\b(SHP-\d\d-e|SHP-\d\d-w)\b$/i;
+  	const reg_discrepancy = /^\b(DIS-\d\d-e|DIS-\d\d-w)\b$/i;
     
     var POST_count = 0;
     
@@ -203,6 +204,10 @@
                                 scanid_values.push(text_vals);
 
                             }else if(reg_shipping_dock_area.test(text_vals)){
+                                
+                                scanid_values.push(text_vals);
+
+                            }else if(reg_discrepancy.test(text_vals)){
                                 
                                 scanid_values.push(text_vals);
 

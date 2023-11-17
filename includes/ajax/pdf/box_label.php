@@ -881,17 +881,20 @@ $obj_pdf->Rotate(90, $x_loc_l, $x_loc_l);
             $obj_pdf->SetFont('helvetica', 'B', 12);
             $obj_pdf->Cell(20, 10, $box_location[$i], 1, 0, 'C', 1);
 $obj_pdf->StopTransform();
-}
+} 
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,3})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             //Obtain array of box locations
             //$obj_pdf->Text($x_loc_l, $y_loc_l, $box_location_a);
             
             //prints digitization center for specific box labels
+  			$obj_pdf->StartTransform();
+            $obj_pdf->Rotate(90, $x_loc_l, $x_loc_l);
             $obj_pdf->SetXY($x_loc_l, $y_loc_l);
-            //$obj_pdf->SetLineStyle(array('width' => 0.8, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetLineStyle(array('width' => 0.8, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 12);
-            $obj_pdf->Cell(40, 10, $box_location_a, 1, 0, 'C', 1);
+            $obj_pdf->Cell(20, 10, $box_location_a, 1, 0, 'C', 1);
+  			$obj_pdf->StopTransform();
 }
 
             //set month/year text color = white

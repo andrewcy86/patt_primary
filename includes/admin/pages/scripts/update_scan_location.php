@@ -155,7 +155,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                                                                           'date_modified' => $date,
                                                                         ));
                                     
-                                                            $message = "Updated: Pallet ID " . $key . " is " . $$location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                                            $message = "Updated: Pallet ID " . $key . " is " . $location_statuses_locations . " " . strtoupper($value). ".\n\n";
                                                             do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
                                                             echo $message;
                                                 
@@ -478,7 +478,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                         $GLOBALS[$evaluated] = true;     
                     }
 
-                    if(preg_match('/\b(SDA-\d\d-e|SDA-\d\d-w)\b/i', $value)) {
+                    if(preg_match('/\b(SHP-\d\d-e|SHP-\d\d-w)\b/i', $value)) {
                         $column_name = 'shipping_dock_area';
                         
                                             /* Change the box status has been changed to "Shipping Dock Area"  */
@@ -513,17 +513,56 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                         $GLOBALS[$record_updated] = false; 
                         $GLOBALS[$evaluated] = true;     
                     }
-                    
-                    if(preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $value)) {
+
+                    if(preg_match('/\b(DIS-\d\d-e|DIS-\d\d-w)\b/i', $value)) {
+                        $column_name = 'discrepancy';
                         
+                                            /* Change the box status has been changed to "Shipping Dock Area"  */
+                                            $location_statuses = $wpdb->get_row(
+                			                                                "SELECT id as id,locations as locations
+                                                                            FROM " . $wpdb->prefix . "wpsc_epa_location_status                
+                                                                            WHERE locations = 'Discrepancy'
+                                            			                ");
+                                            			                
+                                            $location_statuses_id = $location_statuses->id;
+                			                $location_statuses_locations = $location_statuses->locations;
+                                            
+                                            /* Set status value for box id to the returned value from above statement*/
+                                            $loc_status_boxinfo_table_name = $wpdb->prefix . 'wpsc_epa_boxinfo';
+                                            $loc_status_boxinfo_data_update = array('location_status_id' => $location_statuses_id);
+                                            $loc_status_boxinfo_data_where = array('box_id' => $key);
+                                            $wpdb->update($loc_status_boxinfo_table_name , $loc_status_boxinfo_data_update, $loc_status_boxinfo_data_where);
+                        
+                        $scan_table_name = $wpdb->prefix . 'wpsc_epa_scan_list';
+                        $wpdb->insert($table_name, array(
+                                        'box_id' => esc_sql($key),
+                                        $column_name => esc_sql(strtoupper($value)),
+                                        'date_modified' => $date,
+                                    ));
+                                            $message = "Updated: Box ID " . $key . " has been ". $location_statuses_locations . " " . strtoupper($value). ".\n\n";
+                                            do_action('wpppatt_after_shelf_location', $ticket_id, $key, $message);  
+                                            echo $message;  
+                                        
+                                    $GLOBALS[$record_updated] = true;
+                                    $GLOBALS[$evaluated] = true;
+                    }else{
+                        $GLOBALS[$record_updated] = false; 
+                        $GLOBALS[$evaluated] = true;     
+                    }
+                    
+                    if(preg_match('/^\d{1,3}A_[A-O]B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $value)) {
+                        $alphabet = range('A', 'O');
                         /* Restrict physical location scanning assignments to one box */
                         if($count == 1){
                         
                             $column_name = 'shelf_location';
                             $position_array = explode('_', $value);
-            
+            				
                             $aisle = substr($position_array[0], 0, -1);
-                            $bay = substr($position_array[1], 0, -1);
+                            $pre_bay_letter = substr($position_array[1], 0, -1);
+                          	$bay = array_search($pre_bay_letter, $alphabet)+1;
+                          
+                          
                             $shelf = substr($position_array[2], 0, -1);
                             $position = substr($position_array[3], 0, -1);
                             $dc = $position_array[4];
