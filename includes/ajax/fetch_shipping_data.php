@@ -55,7 +55,7 @@ if($method == "POST")
   if( $_POST["type"] == 'check_dups' ) {
     
     $table = $wpdb->prefix . "wpsc_epa_shipping_tracking";
-    $sql = "SELECT id, tracking_number FROM " . $table . " WHERE ticket_id = " . $_GET['ticket_id'];
+    $sql = "SELECT id, tracking_number, company_name FROM " . $table . " WHERE ticket_id = " . $_GET['ticket_id'];
     
     $tracking_nums = $wpdb->get_results( $sql );
     
@@ -93,7 +93,8 @@ if($method == "POST")
   
     $data = array(
       ':ticket_id'  => $_GET['ticket_id'],
-      ':company_name'  => Patt_Custom_Func::get_shipping_carrier($_POST["tracking_number"]),
+      //':company_name'  => Patt_Custom_Func::get_shipping_carrier($_POST["tracking_number"]),
+      ':company_name'  => $_POST["company_name"],
       ':tracking_number'    => $_POST["tracking_number"]
     );
    
@@ -121,7 +122,8 @@ if($method == 'PUT')
 
  $data = array(
   ':id'   => $_PUT['id'],
-  ':company_name' => Patt_Custom_Func::get_shipping_carrier($_PUT['tracking_number']),
+  //':company_name'  => Patt_Custom_Func::get_shipping_carrier($_POST["tracking_number"]),
+  ':company_name'  => $_POST["company_name"],
   ':tracking_number' => $_PUT['tracking_number']
  );
  $query = "

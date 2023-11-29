@@ -520,8 +520,10 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	
 		    $tracking_num = $row->tracking_number;
 		    $dhl_tracking_num = substr($tracking_num, 4);
-		    $tracking_num_display = mb_strimwidth($tracking_num, 0, 25, "...");
-		    $dhl_tracking_num_display = mb_strimwidth($dhl_tracking_num, 0, 25, "...");  
+		    //$tracking_num_display = mb_strimwidth($tracking_num, 0, 25, "...");
+            $tracking_num_display = $tracking_num;
+		    //$dhl_tracking_num_display = mb_strimwidth($dhl_tracking_num, 0, 25, "...");
+            $dhl_tracking_num_display =  $dhl_tracking_num;
 		    $company_name = $row->company_name;
 		
 		    if ($row->shipped == 1) {

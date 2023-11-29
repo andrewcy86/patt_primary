@@ -1552,6 +1552,12 @@ echo "Nothing to assign.";
 			'url'=> USPS_URL,
 			'reg'=>'/\b(82 ?\d{3} ?\d{3} ?\d{2})\b/i'
 		],
+      
+      	//USPS - UNITED STATES POSTAL SERVICE - FORMAT 4
+		[
+			'url'=> USPS_URL,
+			'reg'=>'/((\d{4})(\s?\d{4}){4}\s?\d{2})|((\d{2})(\s?\d{3}){2}\s?\d{2})|((\D{2})(\s?\d{3}){3}\s?\D{2})((\d{4})(\s?\d{4}){4}\s?\d{2})/i'
+		],
 
         //FEDEX - FEDERAL EXPRESS
             [
@@ -1565,6 +1571,7 @@ echo "Nothing to assign.";
 		$match = array();
 		preg_match($item['reg'], $tracking_number, $match);
 		if (count($match)) {
+            //return count($match);
 			return $item['url'] . preg_replace('/\s/', '', strtoupper($match[0]));
 		} elseif (substr( strtoupper($tracking_number), 0, 4 ) === "DHL:") {
 		$dhl_tracking_number = substr($tracking_number, 4);

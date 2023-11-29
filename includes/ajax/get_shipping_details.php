@@ -397,17 +397,18 @@ ob_start();
        title: "Shipping Company",
     type: "select", 
     items: [
-     { Name: "", Id: '' },
+     //{ Name: "", Id: '' },
      { Name: "UPS", Id: 'ups' },
      { Name: "FedEx", Id: 'fedex' },
      { Name: "USPS", Id: 'usps' },
      { Name: "DHL", Id: 'dhl' },
+     { Name: "External", Id: 'external' },
     ], 
     valueField: "Id", 
     textField: "Name", 
-    editing: false,
-    inserting: false,
-    css: "hide"
+    editing: true,
+    inserting: true,
+    //css: "hide"
       },
       {
        name: "status",
