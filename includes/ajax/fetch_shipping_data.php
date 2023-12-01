@@ -1,5 +1,6 @@
 <?php
 
+
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -6)));
 require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp/wp-load.php');
 
