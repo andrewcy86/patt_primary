@@ -104,9 +104,6 @@ ob_start();
      pageSize: 20,
      pageButtonCount: 5,
      deleteConfirm: "Do you really want to delete this tracking number?",
-     /*invalidNotify: function(args) {
-        jQuery('#alert-error-not-submit').removeClass('hidden');
-     },*/
 
      controller: {
       loadData: function(filter){
@@ -214,7 +211,7 @@ ob_start();
     type: "text", 
     width: 150, 
 
-   /* validate: function(value, item) { 
+    validate: function(value, item) { 
       console.log({item:item, value:value});
       
       var isTrue = '';
@@ -305,14 +302,16 @@ ob_start();
                 
                 
               }
-
+/*
+              
+*/
               
             }
             
           }
         });
         
-      } */
+      }
       
       // think this might not be needed. 
 /*
@@ -321,7 +320,7 @@ ob_start();
       }
 */
       
-  /*    console.log({ship_track_arr:ship_track_arr});
+      console.log({ship_track_arr:ship_track_arr});
       
       // How to check if field being updated from external to r3 external or visa versa???
       
@@ -358,7 +357,7 @@ ob_start();
           // if using external shipping, move to new state .
           if( ext_shipping_bool || ext_shipping_r3_bool ) {
               let ticket_id = <?php echo $ticket_id; ?>; 
-       /*       ticket_status_change( ticket_id, shipping_term_id, ext_shipping_r3_bool );
+              ticket_status_change( ticket_id, shipping_term_id, ext_shipping_r3_bool );
                 
           }
         } else if((/\b([a-zA-Z0-9]{10,43})$/i.test(value)) && (value.toUpperCase().includes(string))) {
@@ -388,7 +387,7 @@ ob_start();
       
       
       //});
-    },*/
+    },
     formatter: function (cellvalue, options, rowObject) {
                     return "<a href='javascript:void(0);' class='anchor usergroup_name link'>" +
                            cellvalue + '</a>';
