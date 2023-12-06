@@ -540,16 +540,16 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 		    }
 			switch ($company_name) {
 			    case "ups":
-			        echo '<li><i class="fab fa-ups fa-lg" aria-hidden="true" title="UPS"></i><span class="sr-only">UPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-ups fa-lg" aria-hidden="true" title="UPS"></i><span class="sr-only">UPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display, $company_name).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "fedex":
-			        echo '<li><i class="fab fa-fedex fa-lg" aria-hidden="true" title="Fedex"></i><span class="sr-only">Fedex</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-fedex fa-lg" aria-hidden="true" title="Fedex"></i><span class="sr-only">Fedex</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display, $company_name).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "usps":
-			        echo '<li><i class="fab fa-usps fa-lg" aria-hidden="true" title="USPS"></i><span class="sr-only">USPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-usps fa-lg" aria-hidden="true" title="USPS"></i><span class="sr-only">USPS</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display, $company_name).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    case "dhl":
-			        echo '<li><i class="fab fa-dhl fa-lg" aria-hidden="true" title="DHL"></i><span class="sr-only">DHL</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $dhl_tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
+			        echo '<li><i class="fab fa-dhl fa-lg" aria-hidden="true" title="DHL"></i><span class="sr-only">DHL</span> <a href="'.Patt_Custom_Func::get_tracking_url($tracking_num_display, $company_name).'" target="_blank" style="color:#1d4289; text-decoration: underline;">'. $dhl_tracking_num_display .'</a>' . $shipped_status . $delivered_status . '</li>';
 			        break;
 			    default:
 			        //echo $tracking_num_display;

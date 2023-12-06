@@ -1524,11 +1524,31 @@ echo "Nothing to assign.";
          * @return URL
          */
          
-        public static function get_tracking_url($tracking_number)		
+        public static function get_tracking_url($tracking_number, $company_name)		
 {
 	if (empty($tracking_number)) return false;
 	if (!is_string($tracking_number)  &&  !is_int($tracking_number)) return false;
 
+    switch ($company_name) {
+        case $company_name == 'ups':
+            return UPS_URL.$tracking_number;
+            break;
+        case $company_name == 'usps':
+            return USPS_URL.$tracking_number;
+            break;
+        case $company_name == 'fedex':
+            return FEDEX_URL.$tracking_number;
+            break;
+        case $company_name == 'dhl':
+            return DHL_URL.$tracking_number;
+            break;
+        default:
+            return false;
+        
+
+    }
+
+    // OLD Shipping Tracking Generator By RegEx
 	static $tracking_urls = [
 		//UPS - UNITED PARCEL SERVICE
 		[

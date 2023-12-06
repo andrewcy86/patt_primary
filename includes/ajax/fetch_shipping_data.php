@@ -124,7 +124,7 @@ if($method == 'PUT')
  $data = array(
   ':id'   => $_PUT['id'],
   //':company_name'  => Patt_Custom_Func::get_shipping_carrier($_POST["tracking_number"]),
-  ':company_name'  => $_POST["company_name"],
+  ':company_name'  => $_PUT["company_name"],
   ':tracking_number' => $_PUT['tracking_number']
  );
  $query = "

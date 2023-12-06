@@ -187,7 +187,7 @@ $delivered_html_no = '<span style="font-size: 1.3em; color: #8b0000;"><i class="
 
 while ($row = mysqli_fetch_assoc($docRecords)) {
 
-	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'])."' target='_blank' />";
+	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'], $row['company_name'])."' target='_blank' />";
 	//$shipping_link_end = "</a> <span class='edit_shipping_icon' onclick=\"edit_shipping_info('".$row['id']."')\"><i class='fas fa-edit'></i></span>";
 	$shipping_link_end = "</a>";
 	
