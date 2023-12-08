@@ -249,7 +249,7 @@ while ($row = mysqli_fetch_assoc($recallRecords)) {
 	$status_style = "background-color:".$status_background.";color:".$status_color.";";
 	
 	// Tracking Number link
-	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'])."' target='_blank' />";
+	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'], $row['company_name'])."' target='_blank' />";
 	$shipping_link_end = "</a>";
 	$mask_length = 13;
 	$tracking_num = $row['tracking_number'];

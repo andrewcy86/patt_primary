@@ -311,8 +311,8 @@ if($method == 'PUT') {
 	
 		$item_id = $_PUT['id'];
 		$item_name = $_PUT['recall_id'];	
-//         $carrier_name = $_PUT['company_name']; // OLD
-        $carrier_name = Patt_Custom_Func::get_shipping_carrier($_PUT['tracking_number']); // NEW
+        $carrier_name = $_PUT['company_name']; // OLD
+        //$carrier_name = Patt_Custom_Func::get_shipping_carrier($_PUT['tracking_number']); // NEW
 		$tracking_number = $_PUT['tracking_number'];
 		
 		$data = [

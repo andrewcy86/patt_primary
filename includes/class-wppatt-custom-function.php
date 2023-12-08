@@ -1549,7 +1549,7 @@ echo "Nothing to assign.";
     }
 
     // OLD Shipping Tracking Generator By RegEx
-	static $tracking_urls = [
+	/*static $tracking_urls = [
 		//UPS - UNITED PARCEL SERVICE
 		[
 			'url'=> UPS_URL,
@@ -1598,7 +1598,7 @@ echo "Nothing to assign.";
 		$dhl_tracking_number = substr($tracking_number, 4);
         return DHL_URL.$dhl_tracking_number;
 		}
-	}
+	}*/
 
 
 	// TRIM LEADING ZEROES AND TRY AGAIN

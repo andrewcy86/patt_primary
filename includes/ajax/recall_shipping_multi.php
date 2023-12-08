@@ -270,9 +270,9 @@ jQuery(document).ready(function() {
 			name: "company_name",
 			title: "Shipping Company",
 			type: "select", 
-			width: 36, 
+			//width: 36, 
 			items: [
-				{ Name: "", Id: '' },
+				//{ Name: "", Id: '' },
 				{ Name: "UPS", Id: 'ups' },
 				{ Name: "FedEx", Id: 'fedex' },
 				{ Name: "USPS", Id: 'usps' },
@@ -281,9 +281,9 @@ jQuery(document).ready(function() {
 			valueField: "Id", 
 			textField: "Name", 
 			//validate: "required"
-            editing: false,    
-            inserting: false,    
-            css: "hide"
+            editing: true,    
+            inserting: true,    
+            //css: "hide"
 		},
 		{
 			name: "status",

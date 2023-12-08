@@ -84,16 +84,17 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			
 			// DEBUG	
 			//
-			//echo 'Current user: '.$current_user->ID.'<br>';
-			//echo 'Current user term id: '.$assigned_agents[0];
-			//echo "<br>Recall Object: <br><pre>";	
-			//print_r( $recall_obj );
-			//echo '</pre>';
-			//echo "count of array: ".count($recall_array);	
-			//echo "<br>first index of array: ".array_key_first($recall_array);	
-			//echo "<br>";	
-			//echo "<br>Recall Array: <br>";
-			//print_r($recall_array);
+			// echo 'Current user: '.$current_user->ID.'<br>';
+			// echo 'Current user term id: '.$assigned_agents[0];
+			// echo "<br>Recall Object: <br><pre>";	
+			// print_r( $recall_obj );
+			// echo '</pre>';
+			// echo "count of array: ".count($recall_array);	
+			// echo "<br>first index of array: ".array_key_first($recall_array);	
+			// echo "<br>";	
+			// echo "<br>Recall Array: <br>";
+			// print_r($recall_array);
+            
 
 			
 			//
@@ -168,7 +169,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			//echo "<br>status style: ".$status_style."<br>";
 			
 			// Tracking Info
-			$tracking_url = Patt_Custom_Func::get_tracking_url($recall_obj->tracking_number);
+			$tracking_url = Patt_Custom_Func::get_tracking_url($recall_obj->tracking_number, $recall_obj->shipping_carrier);
 			$tracking_num = '<a href="' . $tracking_url.'" target="_blank">'.$recall_obj->tracking_number.'</a>';
 			if ($tracking_num == $db_empty) {
 				$tracking_num = "[No Tracking Number]";
@@ -192,6 +193,7 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			$returned_date = $recall_obj->return_date;
 			$ticket_id = $recall_obj->ticket_id;
 			$recall_approved = $recall_obj->recall_approved;
+            $folderdoc_id = $recall_obj->folderdoc_id;
 			
 			// Update Date Format
 			//$request_date = date('m/d/yy h:m', strtotime($request_date));
@@ -258,6 +260,11 @@ $cancel_recall_btn_css = $action_default_btn_css;
 					$print_button_link = WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . $recall_item_id;
 				}
 			}
+
+            if($recall_obj->folderdoc_id == '') {
+                $folderdoc_id = '[No Folderfile ID]';
+
+            }
 			
 			// Icons
 
@@ -359,6 +366,10 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 			<label class="wpsc_ct_field_label"><?php echo $recall_type; ?> ID: </label>
 			<span id="recall_type" class="text_highlight"><?php echo $recall_item_id_link; ?></span> 
 <!-- 			<span id="recall_type" class=""><?php echo $recall_item_id; ?></span>  -->
+		</div>
+        <div class="">
+			<label class="wpsc_ct_field_label">Folderfile ID: </label>
+			<span id="recall_title" class=""><?php echo $folderdoc_id; ?></span>
 		</div>
 		<div class="">
 			<label class="wpsc_ct_field_label">Title: </label>
@@ -1059,6 +1070,10 @@ jQuery(document).ready(function() {
 		jQuery('#wppatt_recall_cancel').removeAttr('disabled');	 
 	 }
 
+     if(  jQuery('#status').html() == 'Recall Approved' && user_can_cancel) {
+		jQuery('#wppatt_recall_cancel').removeAttr('disabled');	 
+	 }
+
 
 	// SETS the WYSIWYG editor
 // 	let tinymce_toolbar = ["bold","italic","underline","blockquote"," | ","alignleft aligncenter alignright"," | ","bullist","numlist"," | ","rtl"," | ","link","image"];
@@ -1193,6 +1208,7 @@ echo '<span style="padding-left: 10px">Please pass a valid Recall ID</span>';
 		    jQuery('#wpsc_cat_name').focus();
 		}); 
 	}
+ 
 	
 	function wppatt_get_recall_requestor_editor() {
 // 		alert('edit requestor');
