@@ -52,6 +52,15 @@ $action_admin_btn_css = 'background-color:#5cbdea !important;color:#FFFFFF !impo
 $cancel_recall_btn_css = $action_default_btn_css;
 ?>
 
+<style>
+    .text-truncate {
+        display: inline-block;
+        max-width: 550px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
 
 <div class="bootstrap-iso">
 <?php
@@ -105,6 +114,10 @@ $cancel_recall_btn_css = $action_default_btn_css;
 			$blank_date = '0000-00-00 00:00:00';
 			//$db_null = '';			
 			//$db_null = null;
+
+            $folderfile_rows = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix .'wpsc_epa_folderdocinfo_files WHERE box_id = ' . $recall_obj->recall_box_id . ' ORDER BY id DESC' );
+        
+            
 			
 			// OLD: $recall_obj->folderdoc_id == $db_null
 			// if box, not a folder doc
@@ -261,10 +274,10 @@ $cancel_recall_btn_css = $action_default_btn_css;
 				}
 			}
 
-            if($recall_obj->folderdoc_id == '') {
+            /*if($recall_obj->folderdoc_id == '') {
                 $folderdoc_id = '[No Folderfile ID]';
 
-            }
+            }*/
 			
 			// Icons
 
@@ -369,7 +382,23 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 		</div>
         <div class="">
 			<label class="wpsc_ct_field_label">Folderfile ID: </label>
-			<span id="recall_title" class=""><?php echo $folderdoc_id; ?></span>
+            <?php 
+                if($recall_obj->folderdoc_id == ''){ 
+            ?>
+                    <span id="recall_folderfile_id_list" class="text-truncate">
+                       <?php 
+                       $all_folderfiles = array_slice($folderfile_rows,4);
+                       
+                        foreach( $folderfile_rows as $row) {
+                            echo $row->folderdocinfofile_id . ', ';
+                        } ?>
+                    </span>
+                    
+
+            <?php } else {
+            ?>
+			    <span id="recall_title" class=""><?php echo $folderdoc_id; ?></span>
+            <?php } ?>
 		</div>
 		<div class="">
 			<label class="wpsc_ct_field_label">Title: </label>
@@ -1045,6 +1074,11 @@ jQuery(document).ready(function() {
 	jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
 	jQuery('#menu-dashboard').removeClass('current');
 	jQuery('#menu-dashboard a:first').removeClass('current');
+
+    //
+    jQuery('#recall_folderfile_id_list').click(function(){
+        jQuery('#recall_folderfile_id_list').toggleClass("text-truncate");
+    });
 	 
 	 <?php
     if ($_GET['page'] == 'recallcreate') {
