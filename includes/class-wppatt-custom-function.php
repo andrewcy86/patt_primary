@@ -2729,6 +2729,7 @@ public static function id_in_recall( $identifier, $type ) {
 	$status_recall_denied_term_id = self::get_term_by_slug( 'recall-denied' );	 // 878
 	$status_recall_cancelled_term_id = self::get_term_by_slug( 'recall-cancelled' ); //734
 	$status_recall_complete_term_id = self::get_term_by_slug( 'recall-complete' ); //733
+    $status_recall_received_at_ndc = self::get_term_by_slug( 'recall-received-at-ndc' ); //4801
 	
 	$get_entire_box_recall_data = '';
 	$recall_id_array = array();
@@ -2752,12 +2753,12 @@ public static function id_in_recall( $identifier, $type ) {
 			SELECT DISTINCT LEFT(b.box_id, 7) as id
 			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
 			INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
-			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
+			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_received_at_ndc . "','" . $status_recall_denied_term_id . "')
 			UNION
 			SELECT DISTINCT LEFT(c.folderdocinfofile_id, 7) as request_id
 			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
 			INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c on a.folderdoc_id = c.id
-			WHERE a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
+			WHERE a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_received_at_ndc . "','" . $status_recall_denied_term_id . "')
 		 ");
 
         foreach ($get_recall_data as $recall_id_val) {
@@ -2776,7 +2777,7 @@ public static function id_in_recall( $identifier, $type ) {
 			SELECT DISTINCT b.box_id as id
 			FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
 			INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
-			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
+			WHERE a.box_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_received_at_ndc . "','" . $status_recall_denied_term_id . "')
 		 ");
 	    
 	    foreach ($get_recall_data as $recall_id_val) {
@@ -2794,7 +2795,7 @@ public static function id_in_recall( $identifier, $type ) {
 				SELECT DISTINCT b.box_id as id
 				FROM ".$wpdb->prefix."wpsc_epa_recallrequest a
 				INNER JOIN ".$wpdb->prefix."wpsc_epa_boxinfo b ON a.box_id = b.id
-				WHERE a.box_id <> '-99999' AND a.folderdoc_id = '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
+				WHERE a.box_id <> '-99999' AND a.folderdoc_id = '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_received_at_ndc . "','" . $status_recall_denied_term_id . "')
 	        ");
 	
 		// Determine if the entire box has been recalled
@@ -2865,7 +2866,7 @@ public static function id_in_recall( $identifier, $type ) {
 			INNER JOIN ".$wpdb->prefix."wpsc_epa_folderdocinfo_files c ON
 			    c.id = a.folderdoc_id
 			WHERE
-			    a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_denied_term_id . "')
+			    a.folderdoc_id <> '-99999' AND a.recall_status_id NOT IN ('" . $status_recall_complete_term_id . "','" . $status_recall_cancelled_term_id . "','" . $status_recall_received_at_ndc . "','" . $status_recall_denied_term_id . "')
 		 "); 
 		
 		foreach( $get_recall_data as $recall_id_val ) {
