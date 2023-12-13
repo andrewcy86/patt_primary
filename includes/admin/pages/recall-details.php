@@ -425,7 +425,16 @@ if(in_array($current_user->ID, $recall_users_arr) || !empty(array_intersect($rec
 //				($agent_permissions['label'] == 'Administrator')
 //				($agent_permissions['label'] == 'Agent')
 //				($agent_permissions['label'] == 'Requester')		
-				if( ($status == 'Recalled' && $agent_permissions['label'] == 'Agent') || ($status == 'On Loan' && $current_user_on_request) || $agent_permissions['label'] == 'Administrator' || ($status == 'Recalled' && $agent_permissions['label'] == 'Manager') ) 
+				if( ($status == 'Recalled' && $agent_permissions['label'] == 'Agent') || 
+                    ($status == 'On Loan' && $current_user_on_request) ||
+                    ($status == 'On Loan' && $agent_permissions['label'] == 'Administrator') || 
+                    ($status == 'On Loan' && $agent_permissions['label'] == 'Manager') ||  
+                    ($status == 'Recalled' && $agent_permissions['label'] == 'Administrator') || 
+                    ($status == 'Recalled' && $agent_permissions['label'] == 'Manager') ||
+                    ($status == 'Recall Approved' && $agent_permissions['label'] == 'Agent') || 
+                    ($status == 'Recall Approved' && $agent_permissions['label'] == 'Administrator') || 
+                    ($status == 'Recall Approved' && $agent_permissions['label'] == 'Manager')  
+                  ) 
 				{
 					if( $status_cancelled == 0 && $recall_approved == 1 ) 
 					{
