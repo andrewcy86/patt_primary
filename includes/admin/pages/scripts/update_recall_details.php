@@ -282,13 +282,14 @@ if( $type == 'request_date' ) {
 	
 	//Get term_ids for recall status slugs
 	$status_recalled_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
-	$status_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' );	
+	$status_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' );
+    $status_recall_approved_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-approved' );		
 	
 	
 	
 	
-	// Only cancel if recall is in status: Recalled
-	if ( $recall_obj->recall_status_id == $status_recalled_term_id ) {	
+	// Only cancel if recall is in status: Recalled or Recall Approved
+	if ( $recall_obj->recall_status_id == $status_recalled_term_id || $recall_obj->recall_status_id == $status_recall_approved_term_id) {	
 		
 		//
 		// Restore the saved Box Status

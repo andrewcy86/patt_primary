@@ -33,6 +33,8 @@ $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
 $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 $searchValue = $_POST['search']['value']; // Search value
 
+$totalRecordwithFilter = '';
+
 
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
 $searchByProgramOffice = $_POST['searchByProgramOffice'];
@@ -272,7 +274,7 @@ WHERE
 ## Base Query for Records  // UPDATED: for Title and Date moved from folderdocinfo to folderdocinfo_files
 $baseQuery = "
 SELECT
-	count(*) OVER() AS total_count,
+	count(*) AS total_count,
     " . $wpdb->prefix . "wpsc_epa_return.id,
     " . $wpdb->prefix . "wpsc_epa_return.return_id,
     " . $wpdb->prefix . "wpsc_epa_return.return_date,
@@ -360,14 +362,14 @@ WHERE
 
 
 ## Total number of records with filtering
-/*$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
+$outterFilterQuery_start = "SELECT count(*) as allcount FROM  (";    
 $outterFilterQuery_end = " GROUP BY " . $wpdb->prefix . "wpsc_epa_return.return_id ) AS innerTable WHERE 1 ";
 
 $query_3 = $outterFilterQuery_start.$baseQuery.$outterFilterQuery_end.$searchQuery;
 
 $sel = mysqli_query($con, $query_3);
 $records = mysqli_fetch_assoc($sel);
-$totalRecordwithFilter = $records['allcount'];*/
+$totalRecordwithFilter = $records['allcount'];
 
 
 ## Return (Decline) Query
@@ -386,7 +388,7 @@ $test = array();
 
 while ($row = mysqli_fetch_assoc($returnRecords)) {
   
-  	$totalRecordwithFilter = $row['total_count'];
+  	//$totalRecordwithFilter = $row['total_count'];
 
    	// Makes the Status column pretty
 	$status_term_id = $row['return_status_id'];
@@ -395,7 +397,7 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 	$status_style = "background-color:".$status_background.";color:".$status_color.";";
 	
 	// Tracking Number link
-	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'])."' target='_blank' />";
+	$shipping_link_start = "<a href='".Patt_Custom_Func::get_tracking_url($row['tracking_number'], $row['shipping_carrier'])."' target='_blank' />";
 	$shipping_link_end = "</a>";
 	
 	$mask_length = 10;
@@ -443,7 +445,7 @@ while ($row = mysqli_fetch_assoc($returnRecords)) {
 		"received_date"=> (strtotime( $row['received_date']) > 0) ? date('m/d/Y', strtotime( $row['received_date'])) : 'N/A',	
 //		"expiration_date"=>"90 Days", //date('m/d/Y', strtotime( $date_expiration)), 
  		"tracking_number"=>$track,
- 		"return_initiated"=>$row['return_initiated'],
+ 		"return_initiated"=>$row['return_initiated']
    );
    
    $icons = '';
