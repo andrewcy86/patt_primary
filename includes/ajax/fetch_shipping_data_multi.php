@@ -23,8 +23,9 @@ $recall_denied_notification_str = '<b>This item has been Denied. Any Changes wil
 $status_recalled_term_id = Patt_Custom_Func::get_term_by_slug( 'recalled' );
 $status_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-cancelled' );
 $status_denied_term_id = Patt_Custom_Func::get_term_by_slug( 'recall-denied' );
+$status_recall_received_at_ndc = Patt_Custom_Func::get_term_by_slug('recall-received-at-ndc');
 $status_decline_cancelled_term_id = Patt_Custom_Func::get_term_by_slug( 'decline-cancelled' );
-$status_received_at_ndc = Patt_Custom_Func::get_term_by_slug('recall-received-at-ndc');
+$status_decline_received_at_ndc = Patt_Custom_Func::get_term_by_slug('decline-received-at-ndc');
 
 
 
@@ -226,7 +227,7 @@ if($method == 'GET')
 // 				} elseif( $result['recall_status_id'] == 878 ) { // Recall Denied
 				} elseif( $result['recall_status_id'] == $status_denied_term_id ) { // Recall Denied
 					$status = $recall_denied_notification_str;
-				} elseif( $result['recall_status_id'] == $status_received_at_ndc ) { // Recall Received at NDC
+				} elseif( $result['recall_status_id'] == $status_recall_received_at_ndc ) { // Recall Received at NDC
 					$status = $recall_denied_notification_str;
 				}elseif( $result['delivered'] == 1 ) {
 					$status .= ' '.$already_delivered_notification_str;
@@ -241,6 +242,8 @@ if($method == 'GET')
 // 				if( $result['return_status_id'] == 791 ) { 
 				if( $result['return_status_id'] == $status_decline_cancelled_term_id ) { 
 					$status = $cancelled_notification_str;
+				} elseif( $result['return_status_id'] == $status_decline_received_at_ndc ) {
+					$status .= ' '.$already_delivered_notification_str;
 				} elseif( $result['delivered'] == 1 ) {
 					$status .= ' '.$already_delivered_notification_str;
 				} elseif( $result['shipped'] == 1 ) {
@@ -348,7 +351,7 @@ if($method == 'PUT') {
 		
 		// If NOT in a restricted state (Cancelled [734], Recalled [729], Recall Denied [878] shipped, delivered) --> Update shipping data
 // 		if( $recall_obj->recall_status_id != 734 && $recall_obj->recall_status_id != 729 && $recall_obj->recall_status_id != 878 && $recall_obj->shipped != 1 && $recall_obj->delivered != 1 ) {
-		if( ($recall_obj->recall_status_id != $status_cancelled_term_id && $recall_obj->recall_status_id != $status_recalled_term_id && $recall_obj->recall_status_id != $status_denied_term_id && $recall_obj->shipped != 1 && $recall_obj->delivered != 1) || $recall_obj->recall_status_id == $status_received_at_ndc) {
+		if( ($recall_obj->recall_status_id != $status_cancelled_term_id && $recall_obj->recall_status_id != $status_recalled_term_id && $recall_obj->recall_status_id != $status_denied_term_id && $recall_obj->shipped != 1 && $recall_obj->delivered != 1) || $recall_obj->recall_status_id == $status_recall_received_at_ndc) {
 			$recall_array = Patt_Custom_Func::update_recall_shipping( $data, $where );
 			
 			//Update the Updated Date
@@ -370,8 +373,8 @@ if($method == 'PUT') {
 	
 		$item_id = $_PUT['id'];
 		$item_name = $_PUT['recall_id']; //called recall_id on jsGrid
-//         $carrier_name = $_PUT['company_name']; // OLD
-        $carrier_name = Patt_Custom_Func::get_shipping_carrier($_PUT['tracking_number']); // NEW
+        $carrier_name = $_PUT['company_name']; // OLD
+        // $carrier_name = Patt_Custom_Func::get_shipping_carrier($_PUT['tracking_number']); // NEW
 		$tracking_number = $_PUT['tracking_number'];
 		
 		$data = [
@@ -433,7 +436,7 @@ if($method == 'PUT') {
 		// If NOT in a restricted state (Cancelled [791], shipped, delivered) --> Update shipping data
 //		if( $return_obj->return_status_id != 791 ) { //Old 785; now: 791 
 // 		if( $return_obj->return_status_id != 791 && $return_obj->shipped != 1 && $return_obj->delivered != 1) {	
-		if( $return_obj->return_status_id != $status_decline_cancelled_term_id && $return_obj->shipped != 1 && $return_obj->delivered != 1) {		
+		if( ($return_obj->return_status_id != $status_decline_cancelled_term_id && $return_obj->shipped != 1 && $return_obj->delivered != 1) || $return_obj->return_status_id == $status_decline_received_at_ndc) {		
 			$return_array = Patt_Custom_Func::update_return_shipping( $data, $where );
 			
 			//Update the Updated Date

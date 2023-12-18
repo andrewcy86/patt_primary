@@ -87,7 +87,7 @@ $extend_expiration_return_btn_css = $action_default_btn_css;
 
 			$comment = stripslashes($return_obj->comments);
 
-			$tracking_url = Patt_Custom_Func::get_tracking_url($return_obj->tracking_number, $return_obj->company_name);
+			$tracking_url = Patt_Custom_Func::get_tracking_url($return_obj->tracking_number, $return_obj->shipping_carrier);
 			$tracking_num = '<a href="' . $tracking_url.'" target="_blank">'.$return_obj->tracking_number.'</a>';
 
 			$shipping_carrier = $return_obj->shipping_carrier;
