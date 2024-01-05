@@ -14,8 +14,8 @@ $count = 0;
 $po_table = $wpdb->prefix . 'wpsc_epa_program_office';
 $rs_table = $wpdb->prefix . 'epa_record_schedule';
 
-$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
-//$endpoint = PO_RS_API;
+//$endpoint = "https://data.epa.gov/dmapservice/gateway-query";
+$endpoint = PO_RS_API;
 $qry_po = '{"query":"query programOffice {ecms__program_office {__all_columns__}}"}';
 $qry_rs = '{"query":"query recSched {ecms__record_schedule {__all_columns__}}"}';
 
