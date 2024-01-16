@@ -2275,6 +2275,35 @@ elseif( $parent_child_single == 'single' ) {  // NOT REAL ANYMORE
 						</select>
 		          	</div>
 				</div>
+                <div class="row">
+		          	<div data-fieldtype="dropdown" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?> col-sm-4 ndc-assignment-container">
+						<label class="wpsc_ct_field_label" for="ndc-assignment">
+						We will automatically assign an NDC for you to send boxes to. 
+                        Do you need to override manual assignment? <span style="color:red;">*</span>
+						</label>
+						<?php 
+						if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>
+						<select id="ndc-assignment" class="form-control wpsc_drop_down" name="ndc-assignment" >
+							<option value=""><?php esc_html_e( 'Please Select', 'supportcandy' ); ?></option>
+							<option value="no" selected><?php esc_html_e( 'No', 'supportcandy' ); ?></option>
+							<option value="yes"><?php esc_html_e( 'Yes', 'supportcandy' ); ?></option>
+						</select>
+		          	</div>
+				</div>
+                <div class="row">
+		          	<div id="ndc-selector-container" data-fieldtype="dropdown" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?> col-sm-4" style="display: none;">
+						<label class="wpsc_ct_field_label" for="ndc-selector">
+						    Which NDC do you need to send your boxes to? <span style="color:red;">*</span>
+						</label>
+						<?php 
+						if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>
+						<select id="ndc-selector" class="form-control wpsc_drop_down" name="ndc-selector" >
+							<option value=""><?php esc_html_e( 'Please Select', 'supportcandy' ); ?></option>
+							<option value="east" selected><?php esc_html_e( 'NDC East', 'supportcandy' ); ?></option>
+							<option value="west"><?php esc_html_e( 'NDC West', 'supportcandy' ); ?></option>
+						</select>
+		          	</div>
+				</div>
 				<?php
 			}
 		}

@@ -8375,6 +8375,7 @@ if($type == 'comment') {
 						$email_body = nl2br( $email_body );
                       
                       	$recipient_email = array('ecms@epa.gov', 'ndp@epa.gov', 'garner.kiwane@epa.gov');
+                        $recipient_email = implode(", ",$recipient_email);
                       
 						/*if (in_array("Array@domain.invalid", $recipient_email)) {
                           $recipient_email = unset($recipient_email[3]);
