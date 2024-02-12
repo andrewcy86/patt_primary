@@ -466,6 +466,15 @@ jQuery(document).on('change' ,'#date', function(){
     }
 } );
 
+// Due Date option shows only if a date is needed
+jQuery(document).on('change' ,'#ndc-assignment', function(){
+    jQuery('#wpsc_frm_create_ticket #ndc-selector-container').hide();
+    var selected_val = jQuery(this).val();
+    if( 'yes' == selected_val ) {
+        jQuery('#wpsc_frm_create_ticket #ndc-selector-container').show();
+    }
+} );
+
 //jQuery(document).ready(function(){
 /*
 jQuery(document).ajaxComplete(function (event, xhr, settings) {
