@@ -163,7 +163,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // Add Recycle Bin Cron
         add_action( 'wppatt_recycle_bin_cron', array($frontend, 'wppatt_recycle_bin_cron_schedule')); 
       	// Add Patt Transfer Recycle Bin Cron
-        add_action( 'wppatt_transfer_recycle_bin_cron', array($frontend, 'wppatt_transfer_recycle_bin_cron_schedule')); 
+        add_action( 'wppatt_transfer_recycle_bin_cron', array($frontend, 'wppatt_transfer_recycle_bin_cron_schedule'));
+        // Add Patt Datasync Cron
+        add_action( 'wppatt_datasync_cron', array($frontend, 'wppatt_datasync_cron_schedule')); 
       	// Add Ticket List Cleanup
         add_action( 'wppatt_ticket_list_cleanup_cron', array($frontend, 'wppatt_ticket_list_cleanup_cron_schedule'));  
         // Add ECMS Ingestion Cron
@@ -480,6 +482,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
+            add_submenu_page( 'wpsc-tickets', 'test', 'test', 'wpsc_agent', 'splash-page', 'splash_page' );
             add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patt-transfer-delete-init', 'patt_transfer_delete_init_page' );
           }
@@ -499,6 +502,12 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 
             function shipping_init_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/shipping_init.php'
+            );
+            }
+          
+
+            function splash_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/splash-page.php'
             );
             }
             

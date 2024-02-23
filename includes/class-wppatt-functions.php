@@ -100,6 +100,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     // CRON for PATT Transfer recycle bin
     public function wppatt_transfer_recycle_bin_cron_schedule(){    
     include WPPATT_ABSPATH . 'includes/admin/patt_transfer_recycle_bin_cron.php';
+    }
+
+    // CRON for Exceuting State Machine through PATT
+    public function wppatt_datasync_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/patt_datasync_cron.phpp';
     } 
     
     // CRON for Ticket List Cleanup
