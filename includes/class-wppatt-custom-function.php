@@ -5044,7 +5044,7 @@ public static function id_in_recall( $identifier, $type ) {
 
         }
 
-        public static function get_default_digitization_center_2($id, $manual_dc)
+        public static function get_default_digitization_center_override($id, $manual_dc)
         {
             global $wpdb, $wpscfunction;
 

@@ -466,7 +466,7 @@ jQuery(document).on('change' ,'#date', function(){
     }
 } );
 
-// Due Date option shows only if a date is needed
+// NDC Selector option shows only if a NDC manual assignment is yes
 jQuery(document).on('change' ,'#ndc-assignment', function(){
     jQuery('#wpsc_frm_create_ticket #ndc-selector-container').hide();
     var selected_val = jQuery(this).val();
