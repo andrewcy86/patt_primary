@@ -87,6 +87,8 @@ array_values($box_statuses);
 	<?php
 	}
 	?>
+
+    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_manual_datasync" onclick="patt_datasync();" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-shuffle" aria-hidden="true" title="Data Sync"></i><span class="sr-only">Data Sync</span> <?php _e('Data Sync','supportcandy')?></button>
   </div>
 	
 </div>
@@ -1226,7 +1228,24 @@ function check_assign_box_status( id_array ) {
 */
 	
 	
-}	
+}
+
+
+
+function patt_datasync() {
+    console.log('Test function executed!!');
+    jQuery.ajax({
+		type: "POST",
+		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_doc_transfer_processing.php',
+		data: {action: 'datasync'},
+		success: function( response ) {
+			
+			console.log('the response I care about');
+			console.log(response);
+			
+		}
+	});
+}
 		
 		
 </script>

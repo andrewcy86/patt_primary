@@ -674,6 +674,12 @@ $obj = array(
             'location'=>array('id'=>$lv_locationId)
     );
     
+    $test = '';
+    // Begins the Datasync Process
+    if($_POST['action'] == 'datasync'){
+        Patt_Custom_Func::patt_datasync_file_check();
+        //$test = Patt_Custom_Func::patt_datasync_file_check();
+    } 
     
 $response = array(
   "draw" => intval($draw),
@@ -688,7 +694,8 @@ $response = array(
   "is_requester" => $is_requester,
   
 		"test111"=>$boxQuery,
-"test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php'
+"test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php',
+// "datasync" => $test
 );
 
 echo json_encode($response);
