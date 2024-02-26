@@ -104,7 +104,12 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
 
     // CRON for Exceuting State Machine through PATT
     public function wppatt_datasync_cron_schedule(){    
-    include WPPATT_ABSPATH . 'includes/admin/patt_datasync_cron.phpp';
+    include WPPATT_ABSPATH . 'includes/admin/patt_datasync_cron.php';
+    }
+
+    // CRON for Exceuting Map Run through PATT
+    public function wppatt_datasync_map_run_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/patt_datasync_map_run_cron.php';
     } 
     
     // CRON for Ticket List Cleanup

@@ -142,15 +142,15 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 		        0
 		    );
           
-          add_menu_page(
-              __( 'PATT Transfer', 'supportcandy' ),
-              'PATT Transfer',
-              'manage_options',
-              'patt-transfer',
-              'patt_transfer_init_page',
-              'dashicons-randomize',
-              6
-          );
+        //   add_menu_page(
+        //       __( 'PATT Transfer', 'supportcandy' ),
+        //       'PATT Transfer',
+        //       'manage_options',
+        //       'patt-transfer',
+        //       'patt_transfer_init_page',
+        //       'dashicons-randomize',
+        //       6
+        //   );
           
 		}
         
@@ -165,7 +165,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
       	// Add Patt Transfer Recycle Bin Cron
         add_action( 'wppatt_transfer_recycle_bin_cron', array($frontend, 'wppatt_transfer_recycle_bin_cron_schedule'));
         // Add Patt Datasync Cron
-        add_action( 'wppatt_datasync_cron', array($frontend, 'wppatt_datasync_cron_schedule')); 
+        add_action( 'wppatt_datasync_cron', array($frontend, 'wppatt_datasync_cron_schedule'));
+        // Add Patt Map Run Datasync Cron
+        add_action( 'wppatt_datasync_map_run_cron', array($frontend, 'wppatt_datasync_map_run_cron_schedule'));  
       	// Add Ticket List Cleanup
         add_action( 'wppatt_ticket_list_cleanup_cron', array($frontend, 'wppatt_ticket_list_cleanup_cron_schedule'));  
         // Add ECMS Ingestion Cron
@@ -439,13 +441,26 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid-init', 'rfid_init_page' );
             add_submenu_page( '', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
             
-            add_submenu_page( 'wpsc-tickets', 'RLO Groups', 'RLO Groups', 'wpsc_agent', 'groups', 'requester_groups_page' );         
+            add_submenu_page( 'wpsc-tickets', 'RLO Groups', 'RLO Groups', 'wpsc_agent', 'groups', 'requester_groups_page' ); 
+
+            add_menu_page(
+              __( 'PATT Transfer', 'supportcandy' ),
+              'PATT Transfer',
+              'manage_options',
+              'patt-transfer',
+              'patt_transfer_init_page',
+              'dashicons-randomize',
+              6
+          );
+
+          add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );        
             
             }
           
           function epa_admin_manager_menu_items(){
             // Only users with the role of Admin or Manager should see this link
             add_submenu_page( 'wpsc-tickets', 'Assign Staff', 'Assign Staff', 'wpsc_agent', 'assign-staff', 'assign_staff_dashboard' );
+
           }
             
           function scanning_page(){
@@ -483,7 +498,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
             add_submenu_page( 'wpsc-tickets', 'test', 'test', 'wpsc_agent', 'splash-page', 'splash_page' );
-            add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
+            add_submenu_page( 'patt-transfer', 'PATT Transfer', 'PATT Transfer', 'wpsc_agent', 'patt-transfer', 'patt_transfer_init_page' );
+            //add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patt-transfer-delete-init', 'patt_transfer_delete_init_page' );
           }
             
