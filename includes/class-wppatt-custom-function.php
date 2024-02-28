@@ -8952,11 +8952,7 @@ if($type == 'comment') {
         /**
          *COMMENTS: Steps 1 and 2 of the datasync process
          */
-		public static function patt_datasync_file_check() {
-            // echo 'Testing datasync function!!!';
-            // $text = 'Testing datasync function!!!';
-           // return $text;
-            
+		public static function patt_datasync_file_check() {            
             // checks the # of files left in the binary-stg folder on S3
             // we’ll need it to know if we can trigger datasync
 	        global $wpdb, $current_user, $wpscfunction;
@@ -8980,6 +8976,7 @@ if($type == 'comment') {
             $bucketName = "arms-nuxeo";
 
             // Specify the prefix
+            // *TODO: Change prefix location
             $prefix = "digitization/binary-stg/";
             $thumbsdb = $prefix . "Thumbs.db";
             $ignore_arr = array($prefix, $thumbsdb);
@@ -9009,8 +9006,6 @@ if($type == 'comment') {
                 echo "Error: files left in the bucket!";
             }
             else {
-                echo "Proceed! </br>";
-
                 // Begin Executing Datasync
                 $client = new Aws\Sts\StsClient([
                     'version'     => 'latest',
@@ -9042,18 +9037,80 @@ if($type == 'comment') {
                 
                 // Start the task execution
                 try {
+                    // Check if the task execution was initiated successfully
+                    echo 'DataSync task execution started successfully.';
+
+
                     $result = $dataSyncClient->startTaskExecution([
                         'TaskArn' => $taskArn,
                     ]);
+
+                    foreach($result as $key => $value) {
+                        if ($key == 'Status')    {
+                            echo "<strong>".$value."</strong>";
+                            $datasync_status = $value;
+                        }
+                    }
+
+                    //echo '<pre>'; print_r($result); echo '</pre>';
+
+                    var_dump($result);
+
+                    //print_r($result);
                 
-                    // Check if the task execution was initiated successfully
-                    // echo 'DataSync task execution started successfully.';
-                    $task_executed_success = 'DataSync task execution started successfully.';
-                    return $task_executed_success;
                 } catch (Exception $e) {
-                    // echo 'Error starting DataSync task execution: ' . $e->getMessage();
-                    $task_executed_error = 'Error starting DataSync task execution: ' . $e->getMessage();
-                    return $task_executed_error;
+                    echo 'Error starting DataSync task execution: ' . $e->getMessage();
+                }
+
+
+                // Execute State Machine/Step Function if status has changed from Running to Available
+                if($datasync_status == 'Available'){
+                    $client = new Aws\Sts\StsClient([
+                        'version'     => 'latest',
+                        'region'  => region(),
+                        'endpoint' => 'https://vpce-07a469e9e500866e6-wrptt4b4.sts.us-east-1.vpce.amazonaws.com'
+                    ]);
+
+                    $ARN = "arn:aws:iam::114892021311:role/Customer-PATT-Datasync-Access";
+                    $sessionName = "AssumedRoleSession";
+
+                    $new_role = $client->AssumeRole([
+                        'RoleArn' => $ARN,
+                        'RoleSessionName' => $sessionName,
+                    ]);
+
+                    // Initialize the DataSync client
+
+                    $sfnClient = new Aws\Sfn\SfnClient([
+                        'version'     => 'latest',
+                        'region'  => region(),
+                        'credentials' =>  [
+                            'key'    => $new_role['Credentials']['AccessKeyId'],
+                            'secret' => $new_role['Credentials']['SecretAccessKey'],
+                            'token'  => $new_role['Credentials']['SessionToken']
+                        ]
+                    ]);
+
+                    // Specify the ARN of the Step Function
+                    $stateMachineArn = 'arn:aws:states:us-east-1:114892021311:stateMachine:MyStateMachine-hw0c9jta8';
+
+                    $inputData = '{"Comment": "Executed"}';
+
+                    $result = $sfnClient->startExecution([
+                        'stateMachineArn' => $stateMachineArn,
+                        'input'           => $inputData,
+                    ]);
+
+                    echo 'Execution ARN: ' . $result['executionArn'];
+
+                    $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
+
+                    // POPULATING Datasync Status Table
+
+                    $wpdb->insert($epa_datasync_status_table, array(
+                    'execution_arn_id' => $result['executionArn'];,
+                    'status' => $datasync_status ));
+
                 }
 
             }

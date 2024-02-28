@@ -1241,7 +1241,7 @@ function patt_datasync() {
 		success: function( response ) {
 			
 			console.log('the response I care about');
-			console.log(response);
+			alert(response);
 			
 		}
 	});

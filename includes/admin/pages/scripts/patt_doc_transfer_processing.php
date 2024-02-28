@@ -677,25 +677,27 @@ $obj = array(
     $test = '';
     // Begins the Datasync Process
     if($_POST['action'] == 'datasync'){
-        Patt_Custom_Func::patt_datasync_file_check();
+         $response = Patt_Custom_Func::patt_datasync_file_check();
         //$test = Patt_Custom_Func::patt_datasync_file_check();
-    } 
+    } else {
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data,
+            //"test" => $boxQuery,
+            "box_ids_for_user" => $box_ids_for_user,
+            "box_ids_for_users" => $box_ids_for_users,
+            "searchByUser" => $searchByUser,
+            "box_ids_for_user" => $box_ids_for_user,
+            "is_requester" => $is_requester,
+            
+                    "test111"=>$boxQuery,
+            "test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php',
+            // "datasync" => $test
+        );
+
+    }
     
-$response = array(
-  "draw" => intval($draw),
-  "iTotalRecords" => $totalRecords,
-  "iTotalDisplayRecords" => $totalRecordwithFilter,
-  "aaData" => $data,
-  //"test" => $boxQuery,
-  "box_ids_for_user" => $box_ids_for_user,
-  "box_ids_for_users" => $box_ids_for_users,
-  "searchByUser" => $searchByUser,
-  "box_ids_for_user" => $box_ids_for_user,
-  "is_requester" => $is_requester,
-  
-		"test111"=>$boxQuery,
-"test" => $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php',
-// "datasync" => $test
-);
 
 echo json_encode($response);
