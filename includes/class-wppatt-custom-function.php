@@ -8953,9 +8953,9 @@ if($type == 'comment') {
          *COMMENTS: Steps 1 and 2 of the datasync process
          */
 		public static function patt_datasync_file_check() {
-            echo 'Testing datasync function!!!';
-            $text = 'Testing datasync function!!!';
-            return $text;
+            // echo 'Testing datasync function!!!';
+            // $text = 'Testing datasync function!!!';
+           // return $text;
             
             // checks the # of files left in the binary-stg folder on S3
             // we’ll need it to know if we can trigger datasync
@@ -9047,9 +9047,13 @@ if($type == 'comment') {
                     ]);
                 
                     // Check if the task execution was initiated successfully
-                    echo 'DataSync task execution started successfully.';
+                    // echo 'DataSync task execution started successfully.';
+                    $task_executed_success = 'DataSync task execution started successfully.';
+                    return $task_executed_success;
                 } catch (Exception $e) {
-                    echo 'Error starting DataSync task execution: ' . $e->getMessage();
+                    // echo 'Error starting DataSync task execution: ' . $e->getMessage();
+                    $task_executed_error = 'Error starting DataSync task execution: ' . $e->getMessage();
+                    return $task_executed_error;
                 }
 
             }
