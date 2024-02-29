@@ -9108,7 +9108,7 @@ if($type == 'comment') {
                     // POPULATING Datasync Status Table
 
                     $wpdb->insert($epa_datasync_status_table, array(
-                    'execution_arn_id' => $result['executionArn'];,
+                    'execution_arn_id' => $result['executionArn'],
                     'status' => $datasync_status ));
 
                 }
