@@ -8960,11 +8960,14 @@ if($type == 'comment') {
 
             $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-            $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+            //$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+            $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
             echo 'dir file path: ' . $dir;
 
-            //require_once($dir."/vendor/autoload.php");
+            require_once($dir."/vendor/autoload.php");
+
+            echo '<br/><br/> require once file path: ' . $dir.'/vendor/autoload.php';
 
             // function region() {
             //     return 'us-east-1';
