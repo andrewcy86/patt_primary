@@ -9060,7 +9060,7 @@ if($type == 'comment') {
 
                     //echo '<pre>'; print_r($result); echo '</pre>';
 
-                    var_dump($result);
+                    // var_dump($result);
 
                     //print_r($result);
                 

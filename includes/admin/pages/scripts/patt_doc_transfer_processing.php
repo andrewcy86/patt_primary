@@ -676,10 +676,10 @@ $obj = array(
     
     $test = '';
     // Begins the Datasync Process
-    if($_POST['action'] == 'datasync'){
-         $response = Patt_Custom_Func::patt_datasync_file_check();
-        //$test = Patt_Custom_Func::patt_datasync_file_check();
-    } else {
+    // if($_POST['action'] == 'datasync'){
+    //      $response = Patt_Custom_Func::patt_datasync_file_check();
+    //     //$test = Patt_Custom_Func::patt_datasync_file_check();
+    // } else {
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
@@ -697,7 +697,7 @@ $obj = array(
             // "datasync" => $test
         );
 
-    }
+    // }
     
 
 echo json_encode($response);

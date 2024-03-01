@@ -1236,7 +1236,7 @@ function patt_datasync() {
     console.log('Test function executed!!');
     jQuery.ajax({
 		type: "POST",
-		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_doc_transfer_processing.php',
+		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_datasync_processing.php',
 		data: {action: 'datasync'},
 		success: function( response ) {
 			
@@ -1245,6 +1245,21 @@ function patt_datasync() {
 			
 		}
 	});
+
+
+    // Modal Logic
+    // wpsc_modal_open('PATT Datasync');
+		
+	// 	var data = {
+	// 	    action: 'datasync'
+	// 	};
+	// 	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+	// 	    var response = JSON.parse(response_str);
+	// // 		    jQuery('#wpsc_popup_body').html(response_str);		    
+	// 	    jQuery('#wpsc_popup_body').html(response.body);
+	// 	    jQuery('#wpsc_popup_footer').html(response.footer);
+	// 	    jQuery('#wpsc_cat_name').focus();
+	// 	}); 
 }
 		
 		
