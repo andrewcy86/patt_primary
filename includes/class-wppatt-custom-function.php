@@ -9070,7 +9070,7 @@ if($type == 'comment') {
 
 
                 // Execute State Machine/Step Function if status has changed from Running to Available
-                if($datasync_status == 'Available'){
+                // if($datasync_status == 'Available'){
                     $client = new Aws\Sts\StsClient([
                         'version'     => 'latest',
                         'region'  => region(),
@@ -9117,7 +9117,7 @@ if($type == 'comment') {
                     'execution_arn_id' => $result['executionArn'],
                     'status' => $datasync_status ));
 
-                }
+                // }
 
             }
 

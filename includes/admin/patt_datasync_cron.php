@@ -9,7 +9,8 @@ global $current_user, $wpscfunction, $wpdb;
 // Monitor the status of the Datasync
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+// $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+ $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
 require_once($dir."/vendor/autoload.php");
 
@@ -117,11 +118,15 @@ if($datasync_status == 'Available'){
 
     $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
 
-	// POPULATING Datasync Status Table
+	// Update Datasync Status Table
+    $data_update = array('status' => $datasync_status);
+    $data_where = array('execution_arn_id' => $result['executionArn']);
+    $wpdb->update($epa_datasync_status_table, $data_update, $data_where);
 
-    $wpdb->insert($epa_datasync_status_table, array(
-    'execution_arn_id' => $result['executionArn'],
-    'status' => $datasync_status ));
+    // $wpdb->insert($epa_datasync_status_table, array(
+    // 'execution_arn_id' => $result['executionArn'],
+    // 'status' => $datasync_status ));
+
 
 }
 
