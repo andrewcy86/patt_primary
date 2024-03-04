@@ -8960,7 +8960,7 @@ if($type == 'comment') {
 
             $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-            //$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+            // $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
             $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
             // echo 'dir file path: ' . $dir;
@@ -9040,6 +9040,10 @@ if($type == 'comment') {
                 
                 // Specify the ARN of the DataSync task you want to trigger
                 $taskArn = 'arn:aws:datasync:us-east-1:114892021311:task/task-0f1bfec48faf20b0b';
+
+                // $result = $dataSyncClient->describeTaskExecution(['TaskExecutionArn' => 'arn:aws:datasync:us-east-1:114892021311:task/task-0f1bfec48faf20b0b/execution/exec-084ab466bc2dea0ad']);
+
+                // print_r($result);
                 
                 // Start the task execution
                 try {
@@ -9051,14 +9055,16 @@ if($type == 'comment') {
                         'TaskArn' => $taskArn,
                     ]);
 
-                    foreach($result as $key => $value) {
-                        if ($key == 'Status')    {
-                            echo "<strong>".$value."</strong>";
-                            $datasync_status = $value;
-                        }
-                    }
+                    //$TaskExecutionArnIDResults = $dataSyncClient->describeTaskExecution(['TaskExecutionArn' => 'arn:aws:datasync:us-east-1:114892021311:task/task-0f1bfec48faf20b0b/execution/exec-084ab466bc2dea0ad']);
+                    $executionID = $result['TaskExecutionArn'];
 
-                    //echo '<pre>'; print_r($result); echo '</pre>';
+                    // echo '<pre>'; print_r($result); echo '</pre>';
+
+                    $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
+
+                    // POPULATING Datasync Status Table
+                    $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
+
 
                     // var_dump($result);
 
@@ -9068,54 +9074,7 @@ if($type == 'comment') {
                     echo 'Error starting DataSync task execution: ' . $e->getMessage();
                 }
 
-
-                // Execute State Machine/Step Function if status has changed from Running to Available
-                // if($datasync_status == 'Available'){
-                    $client = new Aws\Sts\StsClient([
-                        'version'     => 'latest',
-                        'region'  => region(),
-                        'endpoint' => 'https://vpce-07a469e9e500866e6-wrptt4b4.sts.us-east-1.vpce.amazonaws.com'
-                    ]);
-
-                    $ARN = "arn:aws:iam::114892021311:role/Customer-PATT-Datasync-Access";
-                    $sessionName = "AssumedRoleSession";
-
-                    $new_role = $client->AssumeRole([
-                        'RoleArn' => $ARN,
-                        'RoleSessionName' => $sessionName,
-                    ]);
-
-                    // Initialize the DataSync client
-
-                    $sfnClient = new Aws\Sfn\SfnClient([
-                        'version'     => 'latest',
-                        'region'  => region(),
-                        'credentials' =>  [
-                            'key'    => $new_role['Credentials']['AccessKeyId'],
-                            'secret' => $new_role['Credentials']['SecretAccessKey'],
-                            'token'  => $new_role['Credentials']['SessionToken']
-                        ]
-                    ]);
-
-                    // Specify the ARN of the Step Function
-                    $stateMachineArn = 'arn:aws:states:us-east-1:114892021311:stateMachine:MyStateMachine-hw0c9jta8';
-
-                    $inputData = '{"Comment": "Executed"}';
-
-                    $result = $sfnClient->startExecution([
-                        'stateMachineArn' => $stateMachineArn,
-                        'input'           => $inputData,
-                    ]);
-
-                    echo 'Execution ARN: ' . $result['executionArn'];
-
-                    $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
-
-                    // POPULATING Datasync Status Table
-
-                    $wpdb->insert($epa_datasync_status_table, array(
-                    'execution_arn_id' => $result['executionArn'],
-                    'status' => $datasync_status ));
+                    
 
                 // }
 
