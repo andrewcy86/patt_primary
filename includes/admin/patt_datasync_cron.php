@@ -15,7 +15,7 @@ $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 require_once($dir."/vendor/autoload.php");
 
 // Check Datasync Table last row Status column before proceeding
-$get_datasync_status = $wpdb->get_row("SELECT MAX(a.id) as last_row, execution_arn_id, status
+$get_datasync_status = $wpdb->get_row("SELECT MAX(id) as last_row, execution_arn_id, status
     FROM " . $wpdb->prefix . "epa_datasync_status");
 
 $datasync_status = $get_datasync_status->status;
@@ -67,7 +67,7 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
         $wpdb->update($epa_datasync_status_table, $data_update, $data_where);
 
         // Check Map Run Table last row Status column before proceeding
-        $get_map_run_status = $wpdb->get_row("SELECT MAX(a.id) as last_row, map_run_execution_arn_id, status
+        $get_map_run_status = $wpdb->get_row("SELECT MAX(id) as last_row, map_run_execution_arn_id, status
         FROM " . $wpdb->prefix . "epa_datasync_map_run");
 
         $map_run_status = $get_map_run_status->status;
