@@ -66,17 +66,8 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
         $data_where = array('execution_arn_id' => $executionArnID);
         $wpdb->update($epa_datasync_status_table, $data_update, $data_where);
 
-        // Check Map Run Table last row Status column before proceeding
-        $get_map_run_status = $wpdb->get_row("SELECT MAX(id) as last_row, map_run_execution_arn_id, status
-        FROM " . $wpdb->prefix . "epa_datasync_map_run");
-
-        $map_run_status = $get_map_run_status->status;
-
-        $executionArnID = $get_map_run_status->map_run_execution_arn_id;
-
         
         // Execute State Machine/Step Function if status has changed from Running to Available
-        if($map_run_status != ''){
             $client = new Aws\Sts\StsClient([
                 'version'     => 'latest',
                 'region'  => region(),
@@ -112,15 +103,15 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
                 'stateMachineArn' => $stateMachineArn,
                 'input'           => $inputData,
             ]);
-        
-        
 
             // POPULATING Map RunTable
             $wpdb->insert($epa_map_run_table, array( 'execution_arn_id_name' => $executionArnID, 'map_run_execution_arn_id' => $result['executionArn'], 'status' => '' ) );
 
         
+    
         
-        }
+        
+        
     }
     
     
