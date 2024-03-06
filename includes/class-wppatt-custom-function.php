@@ -9010,6 +9010,7 @@ if($type == 'comment') {
 
             if($file_count > 0) {
                 echo "Error: files left in the bucket!";
+                exit();
             }
             else {
                 // Begin Executing Datasync
@@ -9064,7 +9065,7 @@ if($type == 'comment') {
 
                     // POPULATING Datasync Status Table
                     $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
-
+                    exit();
 
                     // var_dump($result);
 
@@ -9072,6 +9073,7 @@ if($type == 'comment') {
                 
                 } catch (Exception $e) {
                     echo 'Error starting DataSync task execution: ' . $e->getMessage();
+                    exit();
                 }
 
                     

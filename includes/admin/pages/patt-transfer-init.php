@@ -1230,7 +1230,12 @@ function check_assign_box_status( id_array ) {
 	
 }
 
+// Diasble Datasync button if excution arn id is currently in the RUNNING status
+// if(){
 
+// }
+
+// jQuery('#wpsc_manual_datasync').prop( "disabled", true );
 
 function patt_datasync() {
     console.log('Test function executed!!');
@@ -1238,13 +1243,17 @@ function patt_datasync() {
 		type: "POST",
 		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_datasync_processing.php',
 		data: {action: 'datasync'},
+        error: function(){
+            //Error code
+            alert('datasync error');
+        },
 		success: function( response ) {
-			
 			console.log('the response I care about');
-			alert(response);
-			
+			alert(response);	
 		}
 	});
+
+    window.location.reload();
 
 
     // Modal Logic
