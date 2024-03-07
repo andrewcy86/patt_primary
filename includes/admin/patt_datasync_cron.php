@@ -93,24 +93,36 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
                     'token'  => $new_role['Credentials']['SessionToken']
                 ]
             ]);
-        
+
+
             // Specify the ARN of the Step Function
             $stateMachineArn = 'arn:aws:states:us-east-1:114892021311:stateMachine:MyStateMachine-hw0c9jta8';
-        
+
+            $mapRunArn = '';
+
             $inputData = '{"Comment": "Executed"}';
-        
+
             $result = $sfnClient->startExecution([
                 'stateMachineArn' => $stateMachineArn,
                 'input'           => $inputData,
             ]);
 
-            // POPULATING Map RunTable
-            $wpdb->insert($epa_map_run_table, array( 'execution_arn_id_name' => $executionArnID, 'map_run_execution_arn_id' => $result['executionArn'], 'status' => '' ) );
+            While(empty($mapRunArn)){
+                //sleep for 5 seconds
+                sleep(5);
+                $listMapRuns = $sfnClient->listMapRuns([
+                    'executionArn' => $result['executionArn'],
+                ]);
+            
+                // echo 'Map Run Arn: ' . $listMapRuns['mapRuns'][0]['mapRunArn'];
 
-        
-    
-        
-        
+                $mapRunArn = $listMapRuns['mapRuns'][0]['mapRunArn'];
+            }
+
+            if(!empty($mapRunArn)){
+                // POPULATING Map RunTable
+                $wpdb->insert($epa_map_run_table, array( 'execution_arn_id_name' => $executionArnID, 'map_run_execution_arn_id' => $mapRunArn, 'status' => '' ) );
+            }
         
     }
     

@@ -126,29 +126,6 @@ if($map_run_status == ''){
         }
     }
 
-    // echo "MapRun Arn: " . $mapRunArn . "</br>";
-    // echo "MapRun Status: " . $status . "</br>";
-
-    // echo "Start Date: " . $start_date->format('Y-m-d H:i:s') . "</br>";
-    // echo "End Date: " . $end_date->format('Y-m-d H:i:s') . "</br>";
-
-    // echo "Pending Count: " . $pending_count . "</br>";
-    // echo "Running Count: " . $running_count . "</br>";
-    // echo "Succeeded Count: " . $succeeded_count . "</br>";
-    // echo "Failed Count: " . $failed_count . "</br>";
-    // echo "Timed Out Count: " . $timedout_count . "</br>";
-    // echo "Aborted Count: " . $aborted_count . "</br>";
-    // echo "Total Count: " . $total_count . "</br>";
-
-
-
-        // POPULATING Datasync Map Run Table
-        // $datasync_map_run_table = $wpdb->get_results("SELECT DISTINCT(Schedule_Number) AS Schedule_Number
-        // FROM " . $wpdb->prefix . "epa_record_schedule
-        // WHERE Superseded_Flag = 0 and Deleted_Flag = 0 and Draft_Flag = 0 and Reserved_Flag = 0 and id != '-99999'");
-
-        // $rs = $item->Schedule_Number;
-        //echo $rs . "<br />";
         if($end_date != ''){
             
             $data_update = array(
