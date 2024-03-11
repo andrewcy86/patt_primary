@@ -126,7 +126,10 @@ if($map_run_status == ''){
         }
     }
 
-        if(str_contains($end_date, '0000') && !empty($end_date)){
+        if(!str_contains($end_date, '0000') && !empty($end_date)){
+            $end_date = new DateTime($end_date);
+            $end_date->setTimezone(new DateTimeZone('America/New_York'));
+            $new_end_date = $end_date->format('Y-m-d H:i:s');
             
             $data_update = array(
             'status' => $status,
@@ -138,7 +141,7 @@ if($map_run_status == ''){
             'aborted_count' => $aborted_count,
             'total_count' => $total_count,
             'start_date' => $start_date->format('Y-m-d H:i:s'),
-            'end_date' => $end_date->format('Y-m-d H:i:s') );
+            'end_date' => $new_end_date );
 
         $data_where = array('map_run_execution_arn_id' => $map_run_executionArnID);
         $wpdb->update($map_run_table, $data_update, $data_where);
