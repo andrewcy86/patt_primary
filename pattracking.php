@@ -132,25 +132,25 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         // add menu item for specialty upload section - BATCH UPLOADER
         add_action( 'admin_menu', 'wpdocs_register_my_custom_menu_page' );
 		function wpdocs_register_my_custom_menu_page() {
-		    add_menu_page(
-		        __( 'Batch Uploader', 'supportcandy' ),
-		        'Batch Uploader',
-		        'manage_options',
-		        'batch-uploader',
-		        'batch_uploader_page',
-		        'dashicons-images-alt2',
-		        0
-		    );
+		    // add_menu_page(
+		    //     __( 'Batch Uploader', 'supportcandy' ),
+		    //     'Batch Uploader',
+		    //     'manage_options',
+		    //     'batch-uploader',
+		    //     'batch_uploader_page',
+		    //     'dashicons-images-alt2',
+		    //     0
+		    // );
           
-        //   add_menu_page(
-        //       __( 'PATT Transfer', 'supportcandy' ),
-        //       'PATT Transfer',
-        //       'manage_options',
-        //       'patt-transfer',
-        //       'patt_transfer_init_page',
-        //       'dashicons-randomize',
-        //       6
-        //   );
+            //   add_menu_page(
+            //       __( 'PATT Transfer', 'supportcandy' ),
+            //       'PATT Transfer',
+            //       'manage_options',
+            //       'patt-transfer',
+            //       'patt_transfer_init_page',
+            //       'dashicons-randomize',
+            //       6
+            //   );
           
 		}
         
@@ -497,7 +497,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             add_submenu_page( '', 'Shipping Status Editor', 'Shipping Status Editor', 'edit_posts', 'shipping-init', 'shipping_init_page' ); 
             add_submenu_page( 'wpsc-tickets', 'Reports', 'Reports', 'wpsc_agent', 'qlik-report', 'custom_menu_item_redirect_external_link' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patttransferdetails', 'patt_transfer_details' );
-            add_submenu_page( 'wpsc-tickets', 'test', 'test', 'wpsc_agent', 'splash-page', 'splash_page' );
+            // add_submenu_page( 'wpsc-tickets', 'test', 'test', 'wpsc_agent', 'splash-page', 'splash_page' );
             add_submenu_page( 'patt-transfer', 'PATT Transfer', 'PATT Transfer', 'wpsc_agent', 'patt-transfer', 'patt_transfer_init_page' );
             //add_submenu_page( 'patt-transfer', 'Missed Files', 'Missed Files', 'wpsc_agent', 'missed-files', 'missed_files_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'patt-transfer-delete-init', 'patt_transfer_delete_init_page' );
