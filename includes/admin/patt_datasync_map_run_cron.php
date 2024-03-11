@@ -126,7 +126,7 @@ if($map_run_status == ''){
         }
     }
 
-        if($end_date != ''){
+        if(str_contains($end_date, '0000') && !empty($end_date)){
             
             $data_update = array(
             'status' => $status,

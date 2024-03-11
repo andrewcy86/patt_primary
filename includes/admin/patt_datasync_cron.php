@@ -117,11 +117,12 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
                 // echo 'Map Run Arn: ' . $listMapRuns['mapRuns'][0]['mapRunArn'];
 
                 $mapRunArn = $listMapRuns['mapRuns'][0]['mapRunArn'];
+                $stepFunctionArn = $listMapRuns['mapRuns'][0]['executionArn'];
             }
 
             if(!empty($mapRunArn)){
                 // POPULATING Map RunTable
-                $wpdb->insert($epa_map_run_table, array( 'execution_arn_id_name' => $executionArnID, 'map_run_execution_arn_id' => $mapRunArn, 'status' => '' ) );
+                $wpdb->insert($epa_map_run_table, array( 'datasync_execution_arn' => $executionArnID, 'execution_arn_id_name' => $stepFunctionArn, 'map_run_execution_arn_id' => $mapRunArn, 'status' => '' ) );
             }
         
     }
