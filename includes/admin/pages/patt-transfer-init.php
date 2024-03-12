@@ -1230,15 +1230,42 @@ function check_assign_box_status( id_array ) {
 	
 }
 
-// Diasble Datasync button if excution arn id is currently in the RUNNING status
-// if(){
 
-// }
+// Diasble Datasync button if most recent records in the datasync and map run tables
+// status is not SUCCESS
+<?php
+	// Check Datasync Table last row Status column before proceeding
+	$get_datasync_status = $wpdb->get_row("SELECT id as last_row, execution_arn_id, status
+	FROM " . $wpdb->prefix . "epa_datasync_status
+     ORDER BY id DESC LIMIT 1");
+	
+	$latest_datasync_record_status = $get_datasync_status->status;
+	$latest_datasync_execution_arn = $get_datasync_status->execution_arn_id;
+	
+	$get_map_run_status = $wpdb->get_row("SELECT id as last_row, map_run_execution_arn_id, status
+    FROM " . $wpdb->prefix . "epa_datasync_map_run
+     WHERE datasync_execution_arn ='" . $latest_datasync_execution_arn . "'");
 
-// jQuery('#wpsc_manual_datasync').prop( "disabled", true );
+	$latest_map_run_record_status = $get_map_run_status->status;
+?>
+
+// Store statuses returned from query into javascript variables
+var latest_datasync_record_status = '<?php echo $latest_datasync_record_status; ?>';
+var latest_map_run_record_status = '<?php echo $latest_map_run_record_status; ?>';
+var latest_datasync_execution_arn = '<?php echo $latest_datasync_execution_arn; ?>';
+
+// console.log('latest_datasync_record_status: ' + latest_datasync_record_status + ' and latest_map_run_record_status: ' + latest_map_run_record_status);
+
+if((latest_datasync_execution_arn == '') || (latest_datasync_record_status == 'SUCCESS' && latest_map_run_record_status == 'SUCCEEDED')){
+	jQuery('#wpsc_manual_datasync').prop( "disabled", false );
+} else {
+	// Function to check and update the value of each status every X milliseconds
+	jQuery('#wpsc_manual_datasync').prop( "disabled", true );
+}
+
 
 function patt_datasync() {
-    console.log('Test function executed!!');
+    // console.log('Test function executed!!');
     jQuery.ajax({
 		type: "POST",
 		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_datasync_processing.php',
@@ -1255,20 +1282,6 @@ function patt_datasync() {
 
     window.location.reload();
 
-
-    // Modal Logic
-    // wpsc_modal_open('PATT Datasync');
-		
-	// 	var data = {
-	// 	    action: 'datasync'
-	// 	};
-	// 	jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-	// 	    var response = JSON.parse(response_str);
-	// // 		    jQuery('#wpsc_popup_body').html(response_str);		    
-	// 	    jQuery('#wpsc_popup_body').html(response.body);
-	// 	    jQuery('#wpsc_popup_footer').html(response.footer);
-	// 	    jQuery('#wpsc_cat_name').focus();
-	// 	}); 
 }
 		
 		
