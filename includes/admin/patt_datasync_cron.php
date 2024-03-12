@@ -120,9 +120,12 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
                 $stepFunctionArn = $listMapRuns['mapRuns'][0]['executionArn'];
             }
 
+            $currentDateTime = new DateTime('now', new DateTimeZone('America/New_York'));
+            $formatted = $currentDateTime->format('Y-m-d H:i:s');
+
             if(!empty($mapRunArn)){
                 // POPULATING Map RunTable
-                $wpdb->insert($epa_map_run_table, array( 'datasync_execution_arn' => $executionArnID, 'execution_arn_id_name' => $stepFunctionArn, 'map_run_execution_arn_id' => $mapRunArn, 'status' => '' ) );
+                $wpdb->insert($epa_map_run_table, array( 'datasync_execution_arn' => $executionArnID, 'execution_arn_id_name' => $stepFunctionArn, 'map_run_execution_arn_id' => $mapRunArn, 'status' => '', 'start_time' => $formatted ) );
             }
         
     }
