@@ -9049,7 +9049,7 @@ if($type == 'comment') {
                 try {
                     // Check if the task execution was initiated successfully
                     echo 'DataSync task execution started successfully.';
-                    exit();
+                    
 
 
                     $result = $dataSyncClient->startTaskExecution([
