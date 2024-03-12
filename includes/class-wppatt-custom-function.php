@@ -8952,11 +8952,9 @@ if($type == 'comment') {
         /**
          *COMMENTS: Steps 1 and 2 of the datasync process
          */
-		public static function patt_datasync_file_check() {  
-            // echo 'testing datasync function alert message !!';
-            // exit();          
-            checks the # of files left in the binary-stg folder on S3
-            we’ll need it to know if we can trigger datasync
+		public static function patt_datasync_file_check() {      
+            // checks the # of files left in the binary-stg folder on S3
+            // we’ll need it to know if we can trigger datasync
 	        global $wpdb, $current_user, $wpscfunction;
 
             $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
