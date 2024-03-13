@@ -9,7 +9,7 @@ global $current_user, $wpscfunction, $wpdb;
 // Monitor the status of the Datasync
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/scripts';
 
 require_once($dir."/vendor/autoload.php");
 
