@@ -110,7 +110,7 @@ array_values($box_statuses);
 	$latest_map_run_record_status = $get_map_run_status->status;
 	$latest_map_run_id = $get_map_run_status->last_row;
 
-	if(empty($latest_datasync_record_status) || (!empty($latest_map_run_id) && empty($latest_map_run_record_status))){ ?>
+	if((empty($latest_datasync_record_status) && !empty($latest_datasync_execution_arn)) || (!empty($latest_map_run_id) && empty($latest_map_run_record_status))){ ?>
 		<div class="alert alert-info" role="alert"> The file transfer is in progress, please wait. </div>
 <?php 
 	}
