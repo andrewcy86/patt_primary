@@ -1304,7 +1304,8 @@ function patt_datasync() {
 		}
 	});
 	
-	location.href = location.pathname+'?page=patt-transfer';
+	// location.href = location.pathname+'?page=patt-transfer';
+	window.location.href = window.location.href;
 }
 		
 		
