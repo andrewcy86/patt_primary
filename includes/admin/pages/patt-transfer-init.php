@@ -1294,6 +1294,7 @@ function patt_datasync() {
 		type: "POST",
 		url: '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/patt_datasync_processing.php',
 		data: {action: 'datasync'},
+		async: false,
         error: function(){
             //Error code
             alert('DataSync error');
@@ -1303,9 +1304,11 @@ function patt_datasync() {
 			alert(response);
 		}
 	});
+
+	window.location.reload();
 	
 	// location.href = location.pathname+'?page=patt-transfer';
-	window.location.href = window.location.href;
+	// window.location.href = window.location.href;
 }
 		
 		
