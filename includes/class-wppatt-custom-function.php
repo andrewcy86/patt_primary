@@ -8952,7 +8952,10 @@ if($type == 'comment') {
         /**
          *COMMENTS: Steps 1 and 2 of the datasync process
          */
-		public static function patt_datasync_file_check() {      
+		public static function patt_datasync_file_check() {    
+            // echo 'test';
+            // exit();
+
             // checks the # of files left in the binary-stg folder on S3
             // we’ll need it to know if we can trigger datasync
 	        global $wpdb, $current_user, $wpscfunction;
@@ -9039,7 +9042,7 @@ if($type == 'comment') {
                 ]);
                 
                 // Specify the ARN of the DataSync task you want to trigger
-                $taskArn = 'arn:aws:datasync:us-east-1:114892021311:task/task-0f1bfec48faf20b0b';
+                $taskArn = PATT_DATASYNC_TASK_ARN;
 
                 // $result = $dataSyncClient->describeTaskExecution(['TaskExecutionArn' => 'arn:aws:datasync:us-east-1:114892021311:task/task-0f1bfec48faf20b0b/execution/exec-084ab466bc2dea0ad']);
 
@@ -9062,7 +9065,7 @@ if($type == 'comment') {
                     // POPULATING Datasync Status Table
                     $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
 
-                    // echo 'DataSync task execution started successfully.';
+                    echo 'DataSync task execution started successfully.';
                     exit();
                 
                 } catch (Exception $e) {
