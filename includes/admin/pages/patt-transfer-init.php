@@ -1303,9 +1303,8 @@ function patt_datasync() {
 			alert(response);
 		}
 	});
-
-    window.location.reload();
-
+	
+	location.href = location.pathname+'?page=patt-transfer';
 }
 		
 		
