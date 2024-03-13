@@ -9062,7 +9062,7 @@ if($type == 'comment') {
                     // POPULATING Datasync Status Table
                     $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
 
-                    echo 'DataSync task execution started successfully.';
+                    // echo 'DataSync task execution started successfully.';
                     exit();
                 
                 } catch (Exception $e) {

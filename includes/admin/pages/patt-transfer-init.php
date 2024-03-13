@@ -93,6 +93,30 @@ array_values($box_statuses);
 	
 </div>
 
+<?php
+
+// Check Datasync Table last row Status column before proceeding
+	$get_datasync_status = $wpdb->get_row("SELECT id as last_row, execution_arn_id, status
+	FROM " . $wpdb->prefix . "epa_datasync_status
+     ORDER BY id DESC LIMIT 1");
+	
+	$latest_datasync_record_status = $get_datasync_status->status;
+	$latest_datasync_execution_arn = $get_datasync_status->execution_arn_id;
+	
+	$get_map_run_status = $wpdb->get_row("SELECT id as last_row, map_run_execution_arn_id, status
+    FROM " . $wpdb->prefix . "epa_datasync_map_run
+     WHERE datasync_execution_arn ='" . $latest_datasync_execution_arn . "'");
+
+	$latest_map_run_record_status = $get_map_run_status->status;
+	$latest_map_run_id = $get_map_run_status->last_row;
+
+	if(empty($latest_datasync_record_status) || (!empty($latest_map_run_id) && empty($latest_map_run_record_status))){ ?>
+		<div class="alert alert-info" role="alert"> The file transfer is in progress, please wait. </div>
+<?php 
+	}
+?>
+
+
 <div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
@@ -1276,7 +1300,7 @@ function patt_datasync() {
         },
 		success: function( response ) {
 			console.log('the response I care about');
-			alert(response);	
+			alert(response);
 		}
 	});
 
