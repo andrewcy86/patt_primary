@@ -21,8 +21,16 @@ $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/page
 require_once($dir."/vendor/autoload.php");
 
 // Check Datasync Table last row Status column before proceeding
-$get_map_run_status = $wpdb->get_row("SELECT MAX(id) as last_row, map_run_execution_arn_id, status
-    FROM " . $wpdb->prefix . "epa_datasync_map_run");
+$get_datasync_status = $wpdb->get_row("SELECT id as last_row, execution_arn_id, status
+	FROM " . $wpdb->prefix . "epa_datasync_status
+     ORDER BY id DESC LIMIT 1");
+	
+	$latest_datasync_record_status = $get_datasync_status->status;
+	$latest_datasync_execution_arn = $get_datasync_status->execution_arn_id;
+	
+$get_map_run_status = $wpdb->get_row("SELECT id as last_row, map_run_execution_arn_id, status
+    FROM " . $wpdb->prefix . "epa_datasync_map_run
+     WHERE datasync_execution_arn ='" . $latest_datasync_execution_arn . "'");
 
 $map_run_status = $get_map_run_status->status;
 

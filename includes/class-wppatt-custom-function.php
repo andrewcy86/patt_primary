@@ -9047,11 +9047,7 @@ if($type == 'comment') {
                 
                 // Start the task execution
                 try {
-                    // Check if the task execution was initiated successfully
-                    echo 'DataSync task execution started successfully.';
                     
-
-
                     $result = $dataSyncClient->startTaskExecution([
                         'TaskArn' => $taskArn,
                     ]);
@@ -9065,11 +9061,9 @@ if($type == 'comment') {
 
                     // POPULATING Datasync Status Table
                     $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
+
+                    echo 'DataSync task execution started successfully.';
                     exit();
-
-                    // var_dump($result);
-
-                    //print_r($result);
                 
                 } catch (Exception $e) {
                     echo 'Error starting DataSync task execution: ' . $e->getMessage();

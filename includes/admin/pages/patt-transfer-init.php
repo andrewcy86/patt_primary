@@ -88,7 +88,7 @@ array_values($box_statuses);
 	}
 	?>
 
-    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_manual_datasync" onclick="patt_datasync();" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-shuffle" aria-hidden="true" title="Data Sync"></i><span class="sr-only">Data Sync</span> <?php _e('Data Sync','supportcandy')?></button>
+    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_manual_datasync" onclick="patt_datasync();" style="<?php echo $action_default_btn_css?> margin-right: 30px !important;"><i class="fas fa-shuffle" aria-hidden="true" title="DataSync"></i><span class="sr-only">DataSync</span> <?php _e('DataSync','supportcandy')?></button>
   </div>
 	
 </div>
@@ -1272,7 +1272,7 @@ function patt_datasync() {
 		data: {action: 'datasync'},
         error: function(){
             //Error code
-            alert('datasync error');
+            alert('DataSync error');
         },
 		success: function( response ) {
 			console.log('the response I care about');
