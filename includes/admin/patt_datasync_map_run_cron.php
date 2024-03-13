@@ -15,8 +15,7 @@ global $wpdb, $current_user, $wpscfunction;
 
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-// $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
-$dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
 require_once($dir."/vendor/autoload.php");
 
@@ -48,10 +47,10 @@ if($map_run_status == ''){
     $client = new Aws\Sts\StsClient([
         'version'     => 'latest',
         'region'  => region(),
-        'endpoint' => 'https://vpce-07a469e9e500866e6-wrptt4b4.sts.us-east-1.vpce.amazonaws.com'
+        'endpoint' => STS_VPC_ENDPOINT
     ]);
 
-    $ARN = "arn:aws:iam::114892021311:role/Customer-PATT-Datasync-Access";
+    $ARN = PATT_CUSTOMER_ROLE;
     $sessionName = "AssumedRoleSession";
 
     $new_role = $client->AssumeRole([

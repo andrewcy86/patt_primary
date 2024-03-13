@@ -9,8 +9,7 @@ global $current_user, $wpscfunction, $wpdb;
 // Monitor the status of the Datasync
 $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-// $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
- $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
+$dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
 require_once($dir."/vendor/autoload.php");
 
@@ -34,10 +33,10 @@ if($datasync_status == ''){
     $client = new Aws\Sts\StsClient([
         'version'     => 'latest',
         'region'  => region(),
-        'endpoint' => 'https://vpce-07a469e9e500866e6-wrptt4b4.sts.us-east-1.vpce.amazonaws.com'
+        'endpoint' => STS_VPC_ENDPOINT
     ]);
     
-    $ARN = "arn:aws:iam::114892021311:role/Customer-PATT-Datasync-Access";
+    $ARN = PATT_CUSTOMER_ROLE;
     $sessionName = "AssumedRoleSession";
     
     $new_role = $client->AssumeRole([
@@ -72,10 +71,10 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
             $client = new Aws\Sts\StsClient([
                 'version'     => 'latest',
                 'region'  => region(),
-                'endpoint' => 'https://vpce-07a469e9e500866e6-wrptt4b4.sts.us-east-1.vpce.amazonaws.com'
+                'endpoint' => STS_VPC_ENDPOINT
             ]);
         
-            $ARN = "arn:aws:iam::114892021311:role/Customer-PATT-Datasync-Access";
+            $ARN = PATT_CUSTOMER_ROLE;
             $sessionName = "AssumedRoleSession";
         
             $new_role = $client->AssumeRole([
@@ -97,7 +96,7 @@ $datasyncResultsStatus = $TaskExecutionArnIDResults['Status'];
 
 
             // Specify the ARN of the Step Function
-            $stateMachineArn = 'arn:aws:states:us-east-1:114892021311:stateMachine:MyStateMachine-hw0c9jta8';
+            $stateMachineArn = PATT_STEP_FUNCTION_ARN;
 
             $mapRunArn = '';
 

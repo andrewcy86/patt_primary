@@ -8952,125 +8952,118 @@ if($type == 'comment') {
         /**
          *COMMENTS: Steps 1 and 2 of the datasync process
          */
-		public static function patt_datasync_file_check() { 
-            $dir1 = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
-            $dir2 = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';   
-            echo 'dir1: ' .$dir1;
-            echo '</br> dir2: ' .$dir2;
-            exit();
+		public static function patt_datasync_file_check() {
 
-            // // checks the # of files left in the binary-stg folder on S3
-            // // we’ll need it to know if we can trigger datasync
-	        // global $wpdb, $current_user, $wpscfunction;
+            // checks the # of files left in the binary-stg folder on S3
+            // we’ll need it to know if we can trigger datasync
+	        global $wpdb, $current_user, $wpscfunction;
 
-            // $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
+            $WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -2)));
 
-            // // $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
-            // $dir = '/public/server/htdocs/web/app/mu-plugins/pattracking/includes/admin/pages/scripts';
-            
+            $dir = $_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/app/mu-plugins/pattracking/includes/admin/pages/scripts';
 
-            // require_once($dir."/vendor/autoload.php");
+            require_once($dir."/vendor/autoload.php");
 
-            // function region() {
-            //     return 'us-east-1';
-            // }
+            function region() {
+                return 'us-east-1';
+            }
 
-            // $s3 = new Aws\S3\S3Client([
-            //     'version'     => 'latest',
-            //     'region'  => region()
-            // ]);
+            $s3 = new Aws\S3\S3Client([
+                'version'     => 'latest',
+                'region'  => region()
+            ]);
 
-            // // Specify the bucket name
-            // $bucketName = PATT_S3_BUCKET;
+            // Specify the bucket name
+            $bucketName = PATT_S3_BUCKET;
 
-            // // Specify the prefix
-            // // *TODO: Change prefix location
-            // $prefix = PATT_BINARY_PREFIX;
-            // $thumbsdb = $prefix . "Thumbs.db";
-            // $ignore_arr = array($prefix, $thumbsdb);
-            // $file_count = 0;
+            // Specify the prefix
+            // *TODO: Change prefix location
+            $prefix = PATT_BINARY_PREFIX;
+            $thumbsdb = $prefix . "Thumbs.db";
+            $ignore_arr = array($prefix, $thumbsdb);
+            $file_count = 0;
 
-            // // List objects in the bucket
-            // $objects = $s3->listObjects([
-            //     'Bucket' => $bucketName,
-            //     'Prefix' => $prefix
-            // ]);
+            // List objects in the bucket
+            $objects = $s3->listObjects([
+                'Bucket' => $bucketName,
+                'Prefix' => $prefix
+            ]);
 
-            // foreach($objects['Contents']  as $o_key => $o_value) {
-            //     foreach ($o_value as $n_key => $n_value) {
+            foreach($objects['Contents']  as $o_key => $o_value) {
+                foreach ($o_value as $n_key => $n_value) {
 
-            //         if($file_count > 0) {
-            //             break;
-            //         }
+                    if($file_count > 0) {
+                        break;
+                    }
 
-            //         // Only check the object keys and ignore the prefix and thumbs.db file
-            //         if($n_key == "Key" && !in_array($n_value, $ignore_arr)) {
-            //             $file_count++;
-            //         }
-            //     }
-            // }
+                    // Only check the object keys and ignore the prefix and thumbs.db file
+                    if($n_key == "Key" && !in_array($n_value, $ignore_arr)) {
+                        $file_count++;
+                    }
+                }
+            }
 
-            // if($file_count > 0) {
-            //     echo "Error: files left in the bucket!";
-            //     exit();
-            // }
-            // else {
-            //     // Begin Executing Datasync
-            //     $client = new Aws\Sts\StsClient([
-            //         'version'     => 'latest',
-            //         'region'  => region(),
-            //         'endpoint' => STS_VPC_ENDPOINT
-            //     ]);
+            if($file_count > 0) {
+                echo "Error: files left in the bucket!";
+                exit();
+            }
+            else {
+                // Begin Executing Datasync
+                $client = new Aws\Sts\StsClient([
+                    'version'     => 'latest',
+                    'region'  => region(),
+                    'endpoint' => STS_VPC_ENDPOINT
+                ]);
                 
-            //     $ARN = PATT_CUSTOMER_ROLE;
-            //     $sessionName = "AssumedRoleSession";
+                $ARN = PATT_CUSTOMER_ROLE;
+                $sessionName = "AssumedRoleSession";
                 
-            //     $new_role = $client->AssumeRole([
-            //         'RoleArn' => $ARN,
-            //         'RoleSessionName' => $sessionName,
-            //     ]);
+                $new_role = $client->AssumeRole([
+                    'RoleArn' => $ARN,
+                    'RoleSessionName' => $sessionName,
+                ]);
                 
-            //     // Initialize the DataSync client
-            //     $dataSyncClient = new Aws\DataSync\DataSyncClient([
-            //         'version'     => 'latest',
-            //         'region'  => region(),
-            //         'credentials' =>  [
-            //             'key'    => $new_role['Credentials']['AccessKeyId'],
-            //             'secret' => $new_role['Credentials']['SecretAccessKey'],
-            //             'token'  => $new_role['Credentials']['SessionToken']
-            //         ]
-            //     ]);
+                // Initialize the DataSync client
+                $dataSyncClient = new Aws\DataSync\DataSyncClient([
+                    'version'     => 'latest',
+                    'region'  => region(),
+                    'credentials' =>  [
+                        'key'    => $new_role['Credentials']['AccessKeyId'],
+                        'secret' => $new_role['Credentials']['SecretAccessKey'],
+                        'token'  => $new_role['Credentials']['SessionToken']
+                    ]
+                ]);
                 
-            //     // Specify the ARN of the DataSync task you want to trigger
-            //     $taskArn = PATT_DATASYNC_TASK_ARN;
+                // Specify the ARN of the DataSync task you want to trigger
+                $taskArn = PATT_DATASYNC_TASK_ARN;
                 
-            //     // Start the task execution
-            //     try {
+                // Start the task execution
+                try {
                     
-            //         $result = $dataSyncClient->startTaskExecution([
-            //             'TaskArn' => $taskArn,
-            //         ]);
+                    $result = $dataSyncClient->startTaskExecution([
+                        'TaskArn' => $taskArn,
+                    ]);
 
-            //         $executionID = $result['TaskExecutionArn'];
+                    $executionID = $result['TaskExecutionArn'];
 
-            //         $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
+                    $epa_datasync_status_table = $wpdb->prefix . 'epa_datasync_status';
 
-            //         // POPULATING Datasync Status Table
-            //         $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
+                    // POPULATING Datasync Status Table
+                    $wpdb->insert($epa_datasync_status_table, array( 'execution_arn_id' => $executionID, 'status' => '' ) );
 
-            //         echo 'DataSync task execution started successfully.';
-            //         exit();
+                    echo 'DataSync task execution started successfully.';
+                    exit();
                 
-            //     } catch (Exception $e) {
-            //         echo 'Error starting DataSync task execution: ' . $e->getMessage();
-            //         exit();
-            //     }
+                } catch (Exception $e) {
+                    echo 'Error starting DataSync task execution: ' . $e->getMessage();
+                    exit();
+                }
 
                     
 
-            //     // }
+                // }
 
-            // }
+            }
 
 
 		}
