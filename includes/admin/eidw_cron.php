@@ -15,7 +15,8 @@ global $current_user, $wpscfunction, $wpdb;
 $lanid_query = $wpdb->get_results(
 "
 SELECT 
-DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, c.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id WHERE a.lan_id <> ''
+DISTINCT a.id as id, a.lan_id as lan_id, a.lan_id_details as lan_id_details, c.request_id as request_id from " . $wpdb->prefix . "wpsc_epa_folderdocinfo_files a INNER JOIN " . $wpdb->prefix . "wpsc_epa_boxinfo b ON a.box_id = b.id INNER JOIN " . $wpdb->prefix . "wpsc_ticket c ON b.ticket_id = c.id 
+WHERE a.lan_id != '' AND a.lan_id_details = ''
 "
 );
 
@@ -44,8 +45,8 @@ $headers = [
         curl_setopt($curl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
         curl_setopt($curl,CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl,CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		// curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		// curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
 $response = curl_exec($curl);
 
@@ -69,20 +70,20 @@ $org = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterpris
 $workforce_id = $json['Resources']['0']['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User']['employeeNumber'];
 
 //get LAN ID to compare on the box details page
-$lan_id_username = $json['Resources'][0]['userName'];
+// $lan_id_username = $json['Resources'][0]['userName'];
 
-if ($active != 1) {
-$find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
-INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
+// if ($active != 1) {
+// $find_requester = $wpdb->get_row("SELECT a.user_login as user_login FROM " . $wpdb->prefix . "users a
+// INNER JOIN " . $wpdb->prefix . "wpsc_ticket b ON a.user_email = b.customer_email WHERE b.request_id = '" . $request_id_val . "'");
 
-$requester_lanid = $find_requester->user_login;
+// $requester_lanid = $find_requester->user_login;
 
-$folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
+// $folderdocinfo_files_table = $wpdb->prefix . 'wpsc_epa_folderdocinfo_files';
 
-$data_lan_update = array('lan_id' => $requester_lanid);
-$data_lan_where = array('id' => $id_val);
-$wpdb->update($folderdocinfo_files_table, $data_lan_update, $data_lan_where);
-}
+// $data_lan_update = array('lan_id' => $requester_lanid);
+// $data_lan_where = array('id' => $id_val);
+// $wpdb->update($folderdocinfo_files_table, $data_lan_update, $data_lan_where);
+// }
 
 if ($active == 1) {
 
@@ -107,7 +108,7 @@ $lan_id_details_array = array(
 $json = json_encode($lan_id_details_array); 
    
 // Display the output 
-echo($json); 
+//echo($json); 
    
    
 $lan_id_details = $full_name.','.$email.','.$phone.','.$org.','.$lan_id_username.','.$workforce_id;
